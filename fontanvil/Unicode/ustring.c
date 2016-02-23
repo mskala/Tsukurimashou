@@ -1,6 +1,6 @@
-/* $Id: ustring.c 4300 2015-10-24 13:03:29Z mskala $ */
+/* $Id: ustring.c 4545 2015-12-31 18:35:25Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
-/* Copyright (C) 2015 Matthew Skala */
+/* Copyright (C) 2015  Matthew Skala */
 /*
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:

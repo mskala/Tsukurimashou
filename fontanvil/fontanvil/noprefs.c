@@ -1,4 +1,4 @@
-/* $Id: noprefs.c 4494 2015-12-12 08:13:24Z mskala $ */
+/* $Id: noprefs.c 4661 2016-02-23 10:39:59Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -96,7 +96,7 @@ extern int old_sfnt_flags;	/* in savefont.c */
 
 extern int old_ps_flags;	/* in savefont.c */
 
-extern int preferpotrace;	/* in autotrace.c */
+int preferpotrace;	/* in autotrace.c */
 
 extern int autotrace_ask;	/* in autotrace.c */
 
@@ -587,8 +587,8 @@ int GetPrefs(char *name, Val * val) {
 	    } else if (pf->type==pr_string || pf->type==pr_file) {
 	       val->type=v_str;
 	       char *tmpstr =
-		  pf->val ? *((char **) (pf->val)) : (char *) (pf->get) ();
-	       val->u.sval=fastrdup(tmpstr ? tmpstr : "");
+		  pf->val?*((char **) (pf->val)):(char *) (pf->get) ();
+	       val->u.sval=fastrdup(tmpstr?tmpstr:"");
 
 	       if (!pf->val)
 		  free(tmpstr);
@@ -636,7 +636,7 @@ int SetPrefs(char *name, Val * val1, Val * val2) {
 	       else
 		  *((float *) (pf->val)) =
 		     (val2 ==
-		      NULL ? val1->u.ival : val1->u.ival /
+		      NULL?val1->u.ival:val1->u.ival /
 		      (double) val2->u.ival);
 	    } else if (pf->type==pr_string || pf->type==pr_file) {
 	       if (val1->type != v_str || val2 != NULL)
@@ -689,7 +689,7 @@ char *getFontAnvilShareDir(void) {
    static char *sharedir=NULL;
 
    if (!sharedir) {
-      char path[MAX_PATH + 32];
+      char path[MAX_PATH+32];
       char *c=path;
       char *tail=0;
       unsigned int len=GetModuleFileNameA(NULL, path, MAX_PATH);

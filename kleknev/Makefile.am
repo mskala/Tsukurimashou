@@ -2,7 +2,7 @@
 
 #
 # Makefile source for Kleknev
-# Copyright (C) 2013, 2014  Matthew Skala
+# Copyright (C) 2013, 2014, 2015  Matthew Skala
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by

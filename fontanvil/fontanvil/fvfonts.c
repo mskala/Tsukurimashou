@@ -1,4 +1,4 @@
-/* $Id: fvfonts.c 4523 2015-12-20 12:30:49Z mskala $ */
+/* $Id: fvfonts.c 4532 2015-12-22 13:18:53Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -47,7 +47,7 @@ RefChar *RefCharsCopy(RefChar * ref) {
 		ref->layer_cnt * sizeof(struct reflayer));
 	 *cur=*ref;
 	 cur->layers=layers;
-	 for (layer=0; layer < cur->layer_cnt; ++layer) {
+	 for (layer=0; layer<cur->layer_cnt; ++layer) {
 	    cur->layers[layer].splines=NULL;
 	    cur->layers[layer].images=NULL;
 	 }
@@ -72,7 +72,7 @@ static OTLookup *MCConvertLookup(struct sfmergecontext *mc,OTLookup *otl) {
    if (mc==NULL || mc->sf_from==mc->sf_to)
       return (otl);		/* No translation needed */
 
-   for (l=0; l < mc->lcnt; ++l) {
+   for (l=0; l<mc->lcnt; ++l) {
       if (mc->lks[l].from==otl)
 	 break;
    }
@@ -116,9 +116,9 @@ struct lookup_subtable *MCConvertSubtable(struct sfmergecontext *mc,
       if (mc->sf_from==mc->sf_to)
 	 return (sub);
       mc->prefix=strconcat(mc->sf_from->fontname, "-");
-      for (doit=0; doit < 2; ++doit) {
+      for (doit=0; doit<2; ++doit) {
 	 lcnt=scnt=0;
-	 for (isgpos=0; isgpos < 2; isgpos++) {
+	 for (isgpos=0; isgpos<2; isgpos++) {
 	    for (otl=mc->sf_from->gsplookups[isgpos];otl!=NULL;
 		 otl=otl->next) {
 	       if (doit) {
@@ -151,7 +151,7 @@ struct lookup_subtable *MCConvertSubtable(struct sfmergecontext *mc,
       }
    }
 
-   for (s=0; s < mc->scnt; ++s) {
+   for (s=0; s<mc->scnt; ++s) {
       if (mc->subs[s].from==sub)
 	 break;
    }
@@ -184,7 +184,7 @@ AnchorClass *MCConvertAnchorClass(struct sfmergecontext * mc,
       char *temp;
 
       /* Not initialized */
-      for (doit=0; doit < 2; ++doit) {
+      for (doit=0; doit<2; ++doit) {
 	 acnt=0;
 	 for (testac=mc->sf_from->anchor; testac != NULL;
 	      testac=testac->next) {
@@ -208,7 +208,7 @@ AnchorClass *MCConvertAnchorClass(struct sfmergecontext * mc,
       }
    }
 
-   for (a=0; a < mc->acnt; ++a) {
+   for (a=0; a<mc->acnt; ++a) {
       if (mc->acs[a].from==ac)
 	 break;
    }
@@ -220,7 +220,7 @@ AnchorClass *MCConvertAnchorClass(struct sfmergecontext * mc,
    mc->acs[a].to=newac=chunkalloc(sizeof(AnchorClass));
    newac->name=strconcat(mc->prefix, ac->name);
    newac->subtable =
-      ac->subtable ? MCConvertSubtable(mc, ac->subtable) : NULL;
+      ac->subtable?MCConvertSubtable(mc, ac->subtable):NULL;
    newac->next=mc->sf_to->anchor;
    mc->sf_to->anchor=newac;
    return (newac);
@@ -235,14 +235,14 @@ void SFFinishMergeContext(struct sfmergecontext *mc) {
       return;
 
    /* Get all the subtables in the right order */
-   for (s=0; s < mc->scnt; s=slast) {
+   for (s=0; s<mc->scnt; s=slast) {
       if (mc->subs[s].to==NULL) {
-	 slast=s + 1;
+	 slast=s+1;
 	 continue;
       }
       otl=mc->subs[s].to->lookup;
       sub_last=otl->subtables=mc->subs[s].to;
-      for (slast=s + 1; slast < mc->scnt; ++slast) {
+      for (slast=s+1; slast<mc->scnt; ++slast) {
 	 if (mc->subs[slast].to==NULL)
 	    continue;
 	 if (mc->subs[slast].to->lookup != otl)
@@ -256,7 +256,7 @@ void SFFinishMergeContext(struct sfmergecontext *mc) {
    /* Then order the lookups. Leave the old lookups as they are, insert the */
    /*  new at the end of the list */
    last=NULL;
-   for (l=0; l < mc->lcnt; ++l) {
+   for (l=0; l<mc->lcnt; ++l) {
       if (mc->lks[l].to==NULL || mc->lks[l].old)
 	 continue;
       otl=mc->lks[l].to;
@@ -360,7 +360,7 @@ static void AnchorClassesAdd(SplineFont *into,SplineFont *from,
 	 cur->next=NULL;
 	 cur->name=fastrdup(cur->name);
 	 cur->subtable =
-	    cur->subtable ? MCConvertSubtable(mc, cur->subtable) : NULL;
+	    cur->subtable?MCConvertSubtable(mc, cur->subtable):NULL;
 	 if (last==NULL)
 	    into->anchor=cur;
 	 else
@@ -384,10 +384,10 @@ static void FPSTsAdd(SplineFont *into,SplineFont *from,
       nfpst=FPSTCopy(fpst);
       nfpst->subtable=MCConvertSubtable(mc, fpst->subtable);
       nfpst->subtable->fpst=nfpst;
-      for (i=0; i < nfpst->rule_cnt; ++i) {
+      for (i=0; i<nfpst->rule_cnt; ++i) {
 	 struct fpst_rule *r=&nfpst->rules[i], *oldr=&fpst->rules[i];
 
-	 for (k=0; k < r->lookup_cnt; ++k) {
+	 for (k=0; k<r->lookup_cnt; ++k) {
 	    r->lookups[k].lookup =
 	       MCConvertLookup(mc, oldr->lookups[k].lookup);
 	 }
@@ -414,21 +414,21 @@ static void ASMsAdd(SplineFont *into,SplineFont *from,
       nsm->subtable=MCConvertSubtable(mc, sm->subtable);
       nsm->subtable->sm=nsm;
       nsm->classes=malloc(nsm->class_cnt * sizeof(char *));
-      for (i=0; i < nsm->class_cnt; ++i)
+      for (i=0; i<nsm->class_cnt; ++i)
 	 nsm->classes[i]=fastrdup(sm->classes[i]);
       nsm->state =
 	 malloc(nsm->class_cnt * nsm->state_cnt * sizeof(struct asm_state));
       memcpy(nsm->state, sm->state,
 	     nsm->class_cnt * nsm->state_cnt * sizeof(struct asm_state));
       if (nsm->type==asm_kern) {
-	 for (i=nsm->class_cnt * nsm->state_cnt - 1; i >= 0; --i) {
+	 for (i=nsm->class_cnt * nsm->state_cnt-1; i >= 0; --i) {
 	    nsm->state[i].u.kern.kerns =
 	       malloc(nsm->state[i].u.kern.kcnt * sizeof(int16_t));
 	    memcpy(nsm->state[i].u.kern.kerns, sm->state[i].u.kern.kerns,
 		   nsm->state[i].u.kern.kcnt * sizeof(int16_t));
 	 }
       } else if (nsm->type==asm_context) {
-	 for (i=0; i < nsm->class_cnt * nsm->state_cnt; ++i) {
+	 for (i=0; i<nsm->class_cnt * nsm->state_cnt; ++i) {
 	    nsm->state[i].u.context.mark_lookup=MCConvertLookup(mc,
 								  nsm->
 								  state[i].u.
@@ -438,7 +438,7 @@ static void ASMsAdd(SplineFont *into,SplineFont *from,
 	       MCConvertLookup(mc, nsm->state[i].u.context.cur_lookup);
 	 }
       } else if (nsm->type==asm_insert) {
-	 for (i=nsm->class_cnt * nsm->state_cnt - 1; i >= 0; --i) {
+	 for (i=nsm->class_cnt * nsm->state_cnt-1; i >= 0; --i) {
 	    nsm->state[i].u.insert.mark_ins =
 	       fastrdup(sm->state[i].u.insert.mark_ins);
 	    nsm->state[i].u.insert.cur_ins =
@@ -527,13 +527,13 @@ SplineChar *SplineCharCopy(SplineChar * sc, SplineFont *into,
    }
 
    /* We copy the layers just below */
-   nsc->layer_cnt=into==NULL ? 2 : into->layer_cnt;
+   nsc->layer_cnt=into==NULL?2:into->layer_cnt;
    nsc->layers=layers;
-   lycopy=sc->layer_cnt > nsc->layer_cnt ? nsc->layer_cnt : sc->layer_cnt;
+   lycopy=sc->layer_cnt>nsc->layer_cnt?nsc->layer_cnt:sc->layer_cnt;
    memcpy(layers, sc->layers, lycopy * sizeof(Layer));
-   if (nsc->layer_cnt > lycopy)
-      memset(layers + lycopy, 0, (nsc->layer_cnt - lycopy) * sizeof(Layer));
-   for (layer=ly_back; layer < lycopy; ++layer) {
+   if (nsc->layer_cnt>lycopy)
+      memset(layers+lycopy, 0, (nsc->layer_cnt-lycopy)*sizeof(Layer));
+   for (layer=ly_back; layer<lycopy; ++layer) {
       layers[layer].splines=SplinePointListCopy(layers[layer].splines);
       layers[layer].refs=RefCharsCopy(layers[layer].refs);
       layers[layer].images=ImageListCopy(layers[layer].images);
@@ -587,10 +587,10 @@ static KernPair *KernsCopy(KernPair *kp,int *mapping,SplineFont *into,
    int index;
 
    while (kp != NULL) {
-      if ((index=mapping[kp->sc->orig_pos]) < 0
+      if ((index=mapping[kp->sc->orig_pos])<0
 	  && mc->preserveCrossFontKerning)
 	 index=_SFFindExistingSlot(into, kp->sc->unicodeenc, kp->sc->name);
-      if (index >= 0 && index < into->glyphcnt && into->glyphs[index] != NULL) {
+      if (index >= 0 && index<into->glyphcnt && into->glyphs[index] != NULL) {
 	 new=chunkalloc(sizeof(KernPair));
 	 new->off=kp->off;
 	 new->subtable=MCConvertSubtable(mc, kp->subtable);
@@ -614,9 +614,9 @@ BDFChar *BDFCharCopy(BDFChar * bc) {
    nbc->selection=NULL;
    nbc->undoes=NULL;
    nbc->redoes=NULL;
-   nbc->bitmap=malloc((nbc->ymax - nbc->ymin + 1) * nbc->bytes_per_line);
+   nbc->bitmap=malloc((nbc->ymax-nbc->ymin+1)*nbc->bytes_per_line);
    memcpy(nbc->bitmap, bc->bitmap,
-	  (nbc->ymax - nbc->ymin + 1) * nbc->bytes_per_line);
+	  (nbc->ymax-nbc->ymin+1)*nbc->bytes_per_line);
    return (nbc);
 }
 
@@ -636,9 +636,9 @@ void BitmapsCopy(SplineFont *to, SplineFont *from, int to_index,
 	 }
 	 t_bdf=t_bdf->next;
 	 f_bdf=f_bdf->next;
-      } else if (t_bdf->pixelsize < f_bdf->pixelsize) {
+      } else if (t_bdf->pixelsize<f_bdf->pixelsize) {
 	 t_bdf=t_bdf->next;
-      } else if (t_bdf->pixelsize > f_bdf->pixelsize) {
+      } else if (t_bdf->pixelsize>f_bdf->pixelsize) {
 	 /* Insert these bitmaps? Or skip? */
 	 f_bdf=f_bdf->next;
       }
@@ -651,7 +651,7 @@ void __GlyphHashFree(struct glyphnamehash *hash) {
 
    if (hash==NULL)
       return;
-   for (i=0; i < GN_HSIZE; ++i) {
+   for (i=0; i<GN_HSIZE; ++i) {
       for (test=hash->table[i]; test != NULL; test=next) {
 	 next=test->next;
 	 chunkfree(test, sizeof(struct glyphnamebucket));
@@ -685,13 +685,13 @@ static void GlyphHashCreate(SplineFont *sf) {
    sf->glyphnames=gnh=calloc(1, sizeof(*gnh));
    k=0;
    do {
-      _sf=k < sf->subfontcnt ? sf->subfonts[k] : sf;
+      _sf=k<sf->subfontcnt?sf->subfonts[k]:sf;
       /* I walk backwards because there are some ttf files where multiple */
       /*  glyphs get the same name. In the cases I've seen only one of these */
       /*  has an encoding. That's the one we want. It will be earlier in the */
       /*  font than the others. If we build the list backwards then it will */
       /*  be the top name in the bucket, and will be the one we return */
-      for (i=_sf->glyphcnt - 1; i >= 0; --i)
+      for (i=_sf->glyphcnt-1; i >= 0; --i)
 	 if (_sf->glyphs[i] != NULL) {
 	    new=chunkalloc(sizeof(struct glyphnamebucket));
 	    new->sc=_sf->glyphs[i];
@@ -700,7 +700,7 @@ static void GlyphHashCreate(SplineFont *sf) {
 	    gnh->table[hash]=new;
 	 }
       ++k;
-   } while (k < sf->subfontcnt);
+   } while (k<sf->subfontcnt);
 }
 
 void SFHashGlyph(SplineFont *sf, SplineChar * sc) {
@@ -751,7 +751,7 @@ int SFFindGID(SplineFont *sf, int unienc, const char *name) {
    SplineChar *sc;
 
    if (unienc != -1) {
-      for (gid=0; gid < sf->glyphcnt; ++gid)
+      for (gid=0; gid<sf->glyphcnt; ++gid)
 	 if (sf->glyphs[gid] != NULL) {
 	    if (SCUniMatch(sf->glyphs[gid], unienc))
 	       return (gid);
@@ -783,24 +783,24 @@ int SFFindSlot(SplineFont *sf, EncMap * map, int unienc, const char *name) {
    else if ((map->enc->is_custom || map->enc->is_compact ||
 	     map->enc->is_original) && unienc != -1) {
       /* Just on the off-chance that it is unicode after all */
-      if (unienc < map->enccount && map->map[unienc] != -1 &&
+      if (unienc<map->enccount && map->map[unienc] != -1 &&
 	  sf->glyphs[map->map[unienc]] != NULL &&
 	  sf->glyphs[map->map[unienc]]->unicodeenc==unienc)
 	 index=unienc;
       else
-	 for (index=map->enccount - 1; index >= 0; --index) {
+	 for (index=map->enccount-1; index >= 0; --index) {
 	    if ((pos=map->map[index]) != -1 && sf->glyphs[pos] != NULL &&
 		SCUniMatch(sf->glyphs[pos], unienc))
 	       break;
 	 }
    } else if (unienc != -1 &&
-	      ((unienc < 0x10000 && map->enc->is_unicodebmp) ||
-	       (unienc < 0x110000 && map->enc->is_unicodefull))) {
+	      ((unienc<0x10000 && map->enc->is_unicodebmp) ||
+	       (unienc<0x110000 && map->enc->is_unicodefull))) {
       index=unienc;
    } else if (unienc != -1) {
       index=EncFromUni(unienc, map->enc);
-      if (index < 0 || index >= map->enccount) {
-	 for (index=map->enc->char_cnt; index < map->enccount; ++index)
+      if (index<0 || index >= map->enccount) {
+	 for (index=map->enc->char_cnt; index<map->enccount; ++index)
 	    if ((pos=map->map[index]) != -1 && sf->glyphs[pos] != NULL &&
 		SCUniMatch(sf->glyphs[pos], unienc))
 	       break;
@@ -818,7 +818,7 @@ int SFFindSlot(SplineFont *sf, EncMap * map, int unienc, const char *name) {
 	 if (unienc != -1)
 	    return (SFFindSlot(sf, map, unienc, NULL));
 	 if (map->enc->psnames != NULL) {
-	    for (index=map->enc->char_cnt - 1; index >= 0; --index)
+	    for (index=map->enc->char_cnt-1; index >= 0; --index)
 	       if (map->enc->psnames[index] != NULL &&
 		   strcmp(map->enc->psnames[index], name)==0)
 		  return (index);
@@ -836,7 +836,7 @@ int SFCIDFindExistingChar(SplineFont *sf, int unienc, const char *name) {
       return (SFFindExistingSlot(sf, unienc, name));
    if (sf->cidmaster != NULL)
       sf=sf->cidmaster;
-   for (j=0; j < sf->subfontcnt; ++j)
+   for (j=0; j<sf->subfontcnt; ++j)
       if ((ret=SFFindExistingSlot(sf, unienc, name)) != -1)
 	 return (ret);
    return (-1);
@@ -863,7 +863,7 @@ int SFCIDFindCID(SplineFont *sf, int unienc, const char *name) {
    /* If the cid lookup from before failed, look through subfonts. */
    if (sf->cidmaster != NULL)
       sf=sf->cidmaster;
-   for (j=0; j < sf->subfontcnt; ++j)
+   for (j=0; j<sf->subfontcnt; ++j)
       if ((ret=SFFindGID(sf, unienc, name)) != -1)
 	 return (ret);
 
@@ -876,12 +876,12 @@ int SFHasCID(SplineFont *sf, int cid) {
    /* What subfont (if any) contains this cid? */
    if (sf->cidmaster != NULL)
       sf=sf->cidmaster;
-   for (i=0; i < sf->subfontcnt; ++i)
-      if (cid < sf->subfonts[i]->glyphcnt &&
+   for (i=0; i<sf->subfontcnt; ++i)
+      if (cid<sf->subfonts[i]->glyphcnt &&
 	  SCWorthOutputting(sf->subfonts[i]->glyphs[cid]))
 	 return (i);
-   for (i=0; i < sf->subfontcnt; ++i)
-      if (cid < sf->subfonts[i]->glyphcnt
+   for (i=0; i<sf->subfontcnt; ++i)
+      if (cid<sf->subfonts[i]->glyphcnt
 	  && sf->subfonts[i]->glyphs[cid] != NULL)
 	 return (i);
 
@@ -908,9 +908,9 @@ SplineChar *SFGetChar(SplineFont *sf, int unienc, const char *name) {
 	 char *tmp;
 
 	 if ((tmp=fastrdup(name))) {
-	    tmp[pt - name]='\0';
-	    ind=SFCIDFindCID(sf, unienc, tmp + (start - name));
-	    tmp[pt - name]=ch;
+	    tmp[pt-name]='\0';
+	    ind=SFCIDFindCID(sf, unienc, tmp+(start-name));
+	    tmp[pt-name]=ch;
 	    free(tmp);
 	 }
       }
@@ -969,7 +969,7 @@ static int _SFFindExistingSlot(SplineFont *sf,int unienc,const char *name) {
    struct altuni *altuni;
 
    if (unienc != -1) {
-      for (gid=sf->glyphcnt - 1; gid >= 0; --gid)
+      for (gid=sf->glyphcnt-1; gid >= 0; --gid)
 	 if (sf->glyphs[gid] != NULL) {
 	    if (sf->glyphs[gid]->unicodeenc==unienc)
 	       break;
@@ -986,7 +986,7 @@ static int _SFFindExistingSlot(SplineFont *sf,int unienc,const char *name) {
       if (sc==NULL)
 	 return (-1);
       gid=sc->orig_pos;
-      if (gid < 0 || gid >= sf->glyphcnt) {
+      if (gid<0 || gid >= sf->glyphcnt) {
 	 ErrorMsg(2,"Invalid glyph location when searching for %s\n", name);
 	 return (-1);
       }
@@ -1010,7 +1010,7 @@ static void MFixupSC(SplineFont *sf,SplineChar *sc,int i) {
    sc->orig_pos=i;
    sc->parent=sf;
    sc->ticked=true;
-   for (l=0; l < sc->layer_cnt; l++) {
+   for (l=0; l<sc->layer_cnt; l++) {
       for (ref=sc->layers[l].refs; ref != NULL; ref=ref->next) {
 	 /* The sc in the ref is from the old font. It's got to be in the */
 	 /*  new font too (was either already there or just got copied) */
@@ -1045,11 +1045,11 @@ static void MFixupSC(SplineFont *sf,SplineChar *sc,int i) {
 static void MergeFixupRefChars(SplineFont *sf) {
    int i;
 
-   for (i=0; i < sf->glyphcnt; ++i)
+   for (i=0; i<sf->glyphcnt; ++i)
       if (sf->glyphs[i] != NULL) {
 	 sf->glyphs[i]->ticked=false;
       }
-   for (i=0; i < sf->glyphcnt; ++i)
+   for (i=0; i<sf->glyphcnt; ++i)
       if (sf->glyphs[i] != NULL && !sf->glyphs[i]->ticked) {
 	 MFixupSC(sf, sf->glyphs[i], i);
       }
@@ -1082,30 +1082,30 @@ static void FVMergeRefigureMapSel(FontViewBase *fv,SplineFont *into,
 		  ++extras;
 	    } else {
 	       if (index==-1)
-		  index=base + extras++;
+		  index=base+extras++;
 	       map->map[index]=mapping[i];
 	       map->backmap[mapping[i]]=index;
 	    }
 	 }
       if (!doit) {
-	 if (into->glyphcnt + cnt > map->backmax) {
+	 if (into->glyphcnt+cnt>map->backmax) {
 	    map->backmap =
-	       realloc(map->backmap, (into->glyphcnt + cnt) * sizeof(int));
-	    map->backmax=into->glyphcnt + cnt;
+	       realloc(map->backmap, (into->glyphcnt+cnt)*sizeof(int));
+	    map->backmax=into->glyphcnt+cnt;
 	 }
-	 memset(map->backmap + into->glyphcnt, -1, cnt * sizeof(int));
-	 if (map->enccount + extras > map->encmax) {
+	 memset(map->backmap+into->glyphcnt, -1, cnt * sizeof(int));
+	 if (map->enccount+extras>map->encmax) {
 	    map->map =
-	       realloc(map->map, (map->enccount + extras) * sizeof(int));
-	    map->encmax=map->enccount + extras;
+	       realloc(map->map, (map->enccount+extras)*sizeof(int));
+	    map->encmax=map->enccount+extras;
 	 }
-	 memset(map->map + map->enccount, -1, extras * sizeof(int));
+	 memset(map->map+map->enccount, -1, extras * sizeof(int));
 	 map->enccount += extras;
       }
    }
    if (extras != 0) {
       fv->selected=realloc(fv->selected, map->enccount);
-      memset(fv->selected + map->enccount - extras, 0, extras);
+      memset(fv->selected+map->enccount-extras, 0, extras);
    }
 }
 
@@ -1121,14 +1121,14 @@ static void _MergeFont(SplineFont *into,SplineFont *other,
    mapping=malloc(other->glyphcnt * sizeof(int));
    memset(mapping, -1, other->glyphcnt * sizeof(int));
 
-   bitmap_into=into->cidmaster != NULL ? into->cidmaster : into;
+   bitmap_into=into->cidmaster != NULL?into->cidmaster:into;
 
-   for (doit=0; doit < 2; ++doit) {
+   for (doit=0; doit<2; ++doit) {
       cnt=0;
       k=0;
       do {
-	 o_sf=(other->subfonts==NULL) ? other : other->subfonts[k];
-	 for (i=0; i < o_sf->glyphcnt; ++i)
+	 o_sf=(other->subfonts==NULL)?other:other->subfonts[k];
+	 for (i=0; i<o_sf->glyphcnt; ++i)
 	    if (o_sf->glyphs[i] != NULL) {
 	       if (doit && (index=mapping[i]) != -1) {
 		  /* Bug here. Suppose someone has a reference to our empty */
@@ -1151,37 +1151,37 @@ static void _MergeFont(SplineFont *into,SplineFont *other,
 			  _SFFindExistingSlot(into,
 					      o_sf->glyphs[i]->unicodeenc,
 					      o_sf->glyphs[i]->name))==-1)
-			index=emptypos + cnt++;
+			index=emptypos+cnt++;
 		     mapping[i]=index;
 		  }
 	       }
 	    }
 	 if (!doit) {
-	    if (emptypos + cnt >= into->glyphcnt && emptypos + cnt > 0) {
+	    if (emptypos+cnt >= into->glyphcnt && emptypos+cnt>0) {
 	       into->glyphs =
 		  realloc(into->glyphs,
-			  (emptypos + cnt) * sizeof(SplineChar *));
-	       memset(into->glyphs + emptypos, 0, cnt * sizeof(SplineChar *));
+			  (emptypos+cnt)*sizeof(SplineChar *));
+	       memset(into->glyphs+emptypos, 0, cnt * sizeof(SplineChar *));
 	       for (bdf=bitmap_into->bitmaps; bdf != NULL; bdf=bdf->next)
-		  if (emptypos + cnt > bdf->glyphcnt) {
+		  if (emptypos+cnt>bdf->glyphcnt) {
 		     bdf->glyphs =
 			realloc(bdf->glyphs,
-				(emptypos + cnt) * sizeof(BDFChar *));
-		     memset(bdf->glyphs + emptypos, 0,
+				(emptypos+cnt)*sizeof(BDFChar *));
+		     memset(bdf->glyphs+emptypos, 0,
 			    cnt * sizeof(BDFChar *));
-		     bdf->glyphmax=bdf->glyphcnt=emptypos + cnt;
+		     bdf->glyphmax=bdf->glyphcnt=emptypos+cnt;
 		  }
 	       for (fvs=into->fv; fvs != NULL; fvs=fvs->nextsame)
 		  if (fvs->sf==into)
 		     FVMergeRefigureMapSel(fvs, into, o_sf, mapping, emptypos,
 					   cnt);
-	       into->glyphcnt=into->glyphmax=emptypos + cnt;
+	       into->glyphcnt=into->glyphmax=emptypos+cnt;
 	    }
 	 }
 	 ++k;
-      } while (k < other->subfontcnt);
+      } while (k<other->subfontcnt);
    }
-   for (i=0; i < other->glyphcnt; ++i) {
+   for (i=0; i<other->glyphcnt; ++i) {
       if ((index=mapping[i]) != -1)
 	 into->glyphs[index]->kerns =
 	    KernsCopy(other->glyphs[i]->kerns, mapping, into, mc);
@@ -1253,20 +1253,20 @@ static void CIDMergeFont(SplineFont *into,SplineFont *other,
    do {
       o_sf=other->subfonts[k];
       i_sf=into->subfonts[k];
-      for (i=o_sf->glyphcnt - 1; i >= 0 && o_sf->glyphs[i]==NULL; --i);
+      for (i=o_sf->glyphcnt-1; i >= 0 && o_sf->glyphs[i]==NULL; --i);
       if (i >= i_sf->glyphcnt) {
-	 i_sf->glyphs=realloc(i_sf->glyphs, (i + 1) * sizeof(SplineChar *));
+	 i_sf->glyphs=realloc(i_sf->glyphs, (i+1)*sizeof(SplineChar *));
 	 for (j=i_sf->glyphcnt; j <= i; ++j)
 	    i_sf->glyphs[j]=NULL;
 	 for (fvs=i_sf->fv; fvs != NULL; fvs=fvs->nextsame)
 	    if (fvs->sf==i_sf) {
-	       fvs->selected=realloc(fvs->selected, i + 1);
+	       fvs->selected=realloc(fvs->selected, i+1);
 	       for (j=i_sf->glyphcnt; j <= i; ++j)
 		  fvs->selected[j]=false;
 	    }
-	 i_sf->glyphcnt=i_sf->glyphmax=i + 1;
+	 i_sf->glyphcnt=i_sf->glyphmax=i+1;
       }
-      for (i=0; i < o_sf->glyphcnt; ++i)
+      for (i=0; i<o_sf->glyphcnt; ++i)
 	 if (o_sf->glyphs[i] != NULL) {
 	    if (o_sf->glyphs[i]->layers[ly_fore].splines==NULL
 		&& o_sf->glyphs[i]->layers[ly_fore].refs==NULL
@@ -1282,7 +1282,7 @@ static void CIDMergeFont(SplineFont *into,SplineFont *other,
 	 }
       MergeFixupRefChars(i_sf);
       ++k;
-   } while (k < other->subfontcnt);
+   } while (k<other->subfontcnt);
    into->changed=true;
    GlyphHashFree(into);
 
@@ -1299,8 +1299,8 @@ void MergeFont(FontViewBase * fv, SplineFont *other,
    if (fv->sf->cidmaster != NULL && other->subfonts != NULL &&
        (strcmp(fv->sf->cidmaster->cidregistry, other->cidregistry) != 0 ||
 	strcmp(fv->sf->cidmaster->ordering, other->ordering) != 0 ||
-	fv->sf->cidmaster->supplement < other->supplement ||
-	fv->sf->cidmaster->subfontcnt < other->subfontcnt)) {
+	fv->sf->cidmaster->supplement<other->supplement ||
+	fv->sf->cidmaster->subfontcnt<other->subfontcnt)) {
       ErrorMsg(2,
         "When merging two CID keyed fonts, they must have the same Registry "
         "and Ordering, and the font being merged into (the uke) must have a "
@@ -1347,9 +1347,9 @@ static RefChar *InterpRefs(RefChar *base,RefChar *other,double amount,
 	 free(cur->layers);
 	 *cur=*base;
 	 cur->orig_pos=cur->sc->orig_pos;
-	 for (i=0; i < 6; ++i)
+	 for (i=0; i<6; ++i)
 	    cur->transform[i] =
-	       base->transform[i] + amount * (other->transform[i] -
+	       base->transform[i]+amount * (other->transform[i] -
 					      base->transform[i]);
 	 cur->layers=NULL;
 	 cur->layer_cnt=0;
@@ -1375,27 +1375,27 @@ static void InterpPoint(SplineSet *cur,SplinePoint *base,
    int order2;
 
    order2=
-      base->prev != NULL ? base->prev->order2 : base->next !=
-      NULL ? base->next->order2 : false;
+      base->prev != NULL?base->prev->order2:base->next !=
+      NULL?base->next->order2:false;
 
-   p->me.x=base->me.x + amount * (other->me.x - base->me.x);
-   p->me.y=base->me.y + amount * (other->me.y - base->me.y);
+   p->me.x=base->me.x+amount * (other->me.x-base->me.x);
+   p->me.y=base->me.y+amount * (other->me.y-base->me.y);
    if (order2 && base->prev != NULL
        && (base->prev->islinear || other->prev->islinear))
       p->prevcp=p->me;
    else {
       p->prevcp.x =
-	 base->prevcp.x + amount * (other->prevcp.x - base->prevcp.x);
+	 base->prevcp.x+amount * (other->prevcp.x-base->prevcp.x);
       p->prevcp.y =
-	 base->prevcp.y + amount * (other->prevcp.y - base->prevcp.y);
+	 base->prevcp.y+amount * (other->prevcp.y-base->prevcp.y);
       if (order2 && cur->first != NULL) {
 	 /* In the normal course of events this isn't needed, but if we have */
 	 /*  a different number of points on one path than on the other then */
 	 /*  all hell breaks lose without this */
 	 cur->last->nextcp.x=p->prevcp.x =
-	    (cur->last->nextcp.x + p->prevcp.x) / 2;
+	    (cur->last->nextcp.x+p->prevcp.x)/2;
 	 cur->last->nextcp.y=p->prevcp.y =
-	    (cur->last->nextcp.y + p->prevcp.y) / 2;
+	    (cur->last->nextcp.y+p->prevcp.y)/2;
       }
    }
    if (order2 && base->next != NULL
@@ -1403,9 +1403,9 @@ static void InterpPoint(SplineSet *cur,SplinePoint *base,
       p->nextcp=p->me;
    else {
       p->nextcp.x =
-	 base->nextcp.x + amount * (other->nextcp.x - base->nextcp.x);
+	 base->nextcp.x+amount * (other->nextcp.x-base->nextcp.x);
       p->nextcp.y =
-	 base->nextcp.y + amount * (other->nextcp.y - base->nextcp.y);
+	 base->nextcp.y+amount * (other->nextcp.y-base->nextcp.y);
    }
    p->nonextcp=(p->nextcp.x==p->me.x && p->nextcp.y==p->me.y);
    p->noprevcp=(p->prevcp.x==p->me.x && p->prevcp.y==p->me.y);
@@ -1413,7 +1413,7 @@ static void InterpPoint(SplineSet *cur,SplinePoint *base,
    p->nextcpdef=base->nextcpdef && other->nextcpdef;
    p->selected=false;
    p->pointtype =
-      (base->pointtype==other->pointtype) ? base->pointtype : pt_corner;
+      (base->pointtype==other->pointtype)?base->pointtype:pt_corner;
    /*p->flex=0; */
    if (cur->first==NULL)
       cur->first=p;
@@ -1443,9 +1443,9 @@ static SplineSet *InterpSplineSet(SplineSet *base,SplineSet *other,
 	 if (bp->next != NULL) {
 	    if (bp->next->order2) {
 	       cur->last->nextcp.x=cur->first->prevcp.x =
-		  (cur->last->nextcp.x + cur->first->prevcp.x) / 2;
+		  (cur->last->nextcp.x+cur->first->prevcp.x)/2;
 	       cur->last->nextcp.y=cur->first->prevcp.y =
-		  (cur->last->nextcp.y + cur->first->prevcp.y) / 2;
+		  (cur->last->nextcp.y+cur->first->prevcp.y)/2;
 	    }
 	    SplineMake(cur->last, cur->first, bp->next->order2);
 	    cur->last=cur->first;
@@ -1461,9 +1461,9 @@ static SplineSet *InterpSplineSet(SplineSet *base,SplineSet *other,
 	 if (bp->next != NULL) {
 	    if (bp->next->order2) {
 	       cur->last->nextcp.x=cur->first->prevcp.x =
-		  (cur->last->nextcp.x + cur->first->prevcp.x) / 2;
+		  (cur->last->nextcp.x+cur->first->prevcp.x)/2;
 	       cur->last->nextcp.y=cur->first->prevcp.y =
-		  (cur->last->nextcp.y + cur->first->prevcp.y) / 2;
+		  (cur->last->nextcp.y+cur->first->prevcp.y)/2;
 	    }
 	    SplineMake(cur->last, cur->first, bp->next->order2);
 	    cur->last=cur->first;
@@ -1516,7 +1516,7 @@ static KernPair *InterpKerns(KernPair *kp1,KernPair *kp2,double amount,
 	    kp2=kp2->next;
 	 nkp=chunkalloc(sizeof(KernPair));
 	 nkp->sc=new->glyphs[kp1->sc->orig_pos];
-	 nkp->off=kp1->off + amount * (k->off - kp1->off);
+	 nkp->off=kp1->off+amount * (k->off-kp1->off);
 	 nkp->subtable=SFSubTableFindOrMake(new, CHR('k', 'e', 'r', 'n'),
 					      SCScriptFromUnicode(scnew),
 					      gpos_pair);
@@ -1534,16 +1534,16 @@ static KernPair *InterpKerns(KernPair *kp1,KernPair *kp2,double amount,
 static uint32_t InterpColor(uint32_t col1,uint32_t col2,double amount) {
    int r1,g1,b1,r2,b2,g2;
 
-   r1=(col1 >> 16) & 0xff;
-   r2=(col2 >> 16) & 0xff;
-   g1=(col1 >> 8) & 0xff;
-   g2=(col2 >> 8) & 0xff;
-   b1=(col1) & 0xff;
-   b2=(col2) & 0xff;
-   r1 += amount * (r2 - r1);
-   g1 += amount * (g2 - g1);
-   b1 += amount * (b2 - b1);
-   return ((r1 << 16) | (g1 << 8) | b1);
+   r1=(col1 >> 16)&0xff;
+   r2=(col2 >> 16)&0xff;
+   g1=(col1 >> 8)&0xff;
+   g2=(col2 >> 8)&0xff;
+   b1=(col1)&0xff;
+   b2=(col2)&0xff;
+   r1 += amount * (r2-r1);
+   g1 += amount * (g2-g1);
+   b1 += amount * (b2-b1);
+   return ((r1 << 16)|(g1 << 8)|b1);
 }
 
 static void LayerInterpolate(Layer *to,Layer *base,Layer *other,
@@ -1570,11 +1570,11 @@ static void LayerInterpolate(Layer *to,Layer *base,Layer *other,
    else
       ErrorMsg(2,"Different settings on whether to inherit fill color in layer %d of %s\n",
 	       lc, sc->name);
-   if (base->fill_brush.opacity < 0 && other->fill_brush.opacity < 0)
+   if (base->fill_brush.opacity<0 && other->fill_brush.opacity<0)
       to->fill_brush.opacity=WIDTH_INHERITED;
    else if (base->fill_brush.opacity >= 0 && other->fill_brush.opacity >= 0)
       to->fill_brush.opacity =
-	 base->fill_brush.opacity + amount * (other->fill_brush.opacity -
+	 base->fill_brush.opacity+amount * (other->fill_brush.opacity -
 					      base->fill_brush.opacity);
    else
       ErrorMsg(2,"Different settings on whether to inherit fill opacity in layer %d of %s\n",
@@ -1590,8 +1590,8 @@ static void LayerInterpolate(Layer *to,Layer *base,Layer *other,
    else
       ErrorMsg(2,"Different settings on whether to inherit fill color in layer %d of %s\n",
 	       lc, sc->name);
-   if (base->stroke_pen.brush.opacity < 0
-       && other->stroke_pen.brush.opacity < 0)
+   if (base->stroke_pen.brush.opacity<0
+       && other->stroke_pen.brush.opacity<0)
       to->stroke_pen.brush.opacity=WIDTH_INHERITED;
    else if (base->stroke_pen.brush.opacity >= 0
 	    && other->stroke_pen.brush.opacity >= 0)
@@ -1602,11 +1602,11 @@ static void LayerInterpolate(Layer *to,Layer *base,Layer *other,
    else
       ErrorMsg(2,"Different settings on whether to inherit stroke opacity in layer %d of %s\n",
 	       lc, sc->name);
-   if (base->stroke_pen.width < 0 && other->stroke_pen.width < 0)
+   if (base->stroke_pen.width<0 && other->stroke_pen.width<0)
       to->stroke_pen.width=WIDTH_INHERITED;
    else if (base->stroke_pen.width >= 0 && other->stroke_pen.width >= 0)
       to->stroke_pen.width =
-	 base->stroke_pen.width + amount * (other->stroke_pen.width -
+	 base->stroke_pen.width+amount * (other->stroke_pen.width -
 					    base->stroke_pen.width);
    else
       ErrorMsg(2,"Different settings on whether to inherit stroke width in layer %d of %s\n",
@@ -1660,29 +1660,29 @@ SplineChar *SplineCharInterpolate(SplineChar * base, SplineChar * other,
    sc->layers[ly_fore].redoes=sc->layers[ly_back].redoes=NULL;
    sc->kerns=NULL;
    sc->name=fastrdup(base->name);
-   sc->width=base->width + amount * (other->width - base->width);
-   sc->vwidth=base->vwidth + amount * (other->vwidth - base->vwidth);
+   sc->width=base->width+amount * (other->width-base->width);
+   sc->vwidth=base->vwidth+amount * (other->vwidth-base->vwidth);
    sc->lsidebearing =
-      base->lsidebearing + amount * (other->lsidebearing -
+      base->lsidebearing+amount * (other->lsidebearing -
 				     base->lsidebearing);
    if (base->parent->multilayer && other->parent->multilayer) {
       int lc=base->layer_cnt;
 
       if (lc != other->layer_cnt) {
 	 ErrorMsg(2,"Different numbers of layers in %s\n",base->name);
-	 if (other->layer_cnt < lc)
+	 if (other->layer_cnt<lc)
 	    lc=other->layer_cnt;
       }
-      if (lc > 2) {
+      if (lc>2) {
 	 sc->layers=realloc(sc->layers, lc * sizeof(Layer));
-	 for (i=ly_fore + 1; i < lc; ++i)
+	 for (i=ly_fore+1; i<lc; ++i)
 	    LayerDefault(&sc->layers[i]);
       }
-      for (i=ly_fore; i < lc; ++i)
+      for (i=ly_fore; i<lc; ++i)
 	 LayerInterpolate(&sc->layers[i], &base->layers[i], &other->layers[i],
 			  amount, sc, i);
    } else {
-      for (i=0; i < sc->layer_cnt; ++i) {
+      for (i=0; i<sc->layer_cnt; ++i) {
 	 if (i >= base->layer_cnt || i >= other->layer_cnt)
 	    break;
 	 sc->layers[i].splines =
@@ -1709,8 +1709,8 @@ static void _SplineCharInterpolate(SplineFont *new,int orig_pos,
       return;
    sc->orig_pos=orig_pos;
    new->glyphs[orig_pos]=sc;
-   if (orig_pos + 1 > new->glyphcnt)
-      new->glyphcnt=orig_pos + 1;
+   if (orig_pos+1>new->glyphcnt)
+      new->glyphcnt=orig_pos+1;
    sc->parent=new;
 }
 
@@ -1734,7 +1734,7 @@ static void IFixupSC(SplineFont *sf,SplineChar *sc,int i) {
 static void InterpFixupRefChars(SplineFont *sf) {
    int i;
 
-   for (i=0; i < sf->glyphcnt; ++i)
+   for (i=0; i<sf->glyphcnt; ++i)
       if (sf->glyphs[i] != NULL) {
 	 IFixupSC(sf, sf->glyphs[i], i);
       }
@@ -1758,26 +1758,26 @@ SplineFont *InterpolateFont(SplineFont *base, SplineFont *other,
       return (NULL);
    }
    new=SplineFontBlank(base->glyphcnt);
-   new->ascent=base->ascent + amount * (other->ascent - base->ascent);
-   new->descent=base->descent + amount * (other->descent - base->descent);
-   if ((lc=base->layer_cnt) > other->layer_cnt)
+   new->ascent=base->ascent+amount * (other->ascent-base->ascent);
+   new->descent=base->descent+amount * (other->descent-base->descent);
+   if ((lc=base->layer_cnt)>other->layer_cnt)
       lc=other->layer_cnt;
    if (lc != new->layer_cnt) {
       new->layer_cnt=lc;
       new->layers=realloc(new->layers, lc * sizeof(LayerInfo));
-      if (lc > 2)
-	 memset(new->layers + 2, 0, (lc - 2) * sizeof(LayerInfo));
-      for (i=2; i < lc; ++i) {
+      if (lc>2)
+	 memset(new->layers+2, 0, (lc-2)*sizeof(LayerInfo));
+      for (i=2; i<lc; ++i) {
 	 new->layers[i].name=fastrdup(base->layers[i].name);
 	 new->layers[i].background=base->layers[i].background;
 	 new->layers[i].order2=base->layers[i].order2;
       }
    }
-   for (i=0; i < 2; ++i) {
+   for (i=0; i<2; ++i) {
       new->layers[i].background=base->layers[i].background;
       new->layers[i].order2=base->layers[i].order2;
    }
-   for (i=0; i < base->glyphcnt; ++i)
+   for (i=0; i<base->glyphcnt; ++i)
       if (base->glyphs[i] != NULL) {
 	 index =
 	    SFFindExistingSlot(other, base->glyphs[i]->unicodeenc,

@@ -1,4 +1,4 @@
-/* $Id: autowidth2.c 4525 2015-12-20 19:51:59Z mskala $ */
+/* $Id: autowidth2.c 4532 2015-12-22 13:18:53Z mskala $ */
 /* Copyright (C) 2009-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -93,7 +93,7 @@ static void aw2_figure_lsb(int right_index,AW_Data *all) {
    }
    if (i != 0)
       lsb=(lsb+i/2)/i;
-   lsb=rint((3 * lsb+me->lsb)/4.0);
+   lsb=rint((3*lsb+me->lsb)/4.0);
    me->nlsb=lsb;
 }
 
@@ -116,7 +116,7 @@ static void aw2_figure_rsb(int left_index,AW_Data *all) {
    }
    if (i != 0)
       rsb=(rsb+i/2)/i;
-   rsb=rint((3 * rsb+me->rsb)/4.0);
+   rsb=rint((3*rsb+me->rsb)/4.0);
    me->nrsb=rsb;
 }
 
@@ -170,7 +170,7 @@ static void aw2_figure_all_sidebearing(AW_Data *all) {
 	 if (me->lsb+me->rsb != 0) {
 	    ldiff =
 	       (all->desired_separation -
-		(me->lsb+me->rsb)) * me->lsb/(me->lsb+me->rsb);
+		(me->lsb+me->rsb))*me->lsb/(me->lsb+me->rsb);
 	 } else {
 	    ldiff=all->desired_separation/2;
 	 }
@@ -229,8 +229,8 @@ static void aw2_findedges(AW_Glyph *me,AW_Data *all) {
 
    me->imin_y=floor(me->bb.miny/all->sub_height);
    me->imax_y=ceil(me->bb.maxy/all->sub_height);
-   me->left=malloc((me->imax_y-me->imin_y+1) * sizeof(short));
-   me->right=malloc((me->imax_y-me->imin_y+1) * sizeof(short));
+   me->left=malloc((me->imax_y-me->imin_y+1)*sizeof(short));
+   me->right=malloc((me->imax_y-me->imin_y+1)*sizeof(short));
 
    base=LayerAllSplines(&me->sc->layers[all->layer]);
    ms=SSsToMContours(base, over_remove);	/* over_remove is an arcane way of saying: Look at all contours, not just selected ones */
@@ -255,7 +255,7 @@ static void aw2_findedges(AW_Glyph *me,AW_Data *all) {
 	    t=MonotonicFindY(m, m->b.miny, -1);
 	 msp=&m->s->splines[0];
 	 if (t != -1) {
-	    x=((msp->a * t+msp->b) * t+msp->c) * t+msp->d;
+	    x=((msp->a * t+msp->b)*t+msp->c)*t+msp->d;
 	    if (x>xmax)
 	       xmax=x;
 	    if (x<xmin)
@@ -268,7 +268,7 @@ static void aw2_findedges(AW_Glyph *me,AW_Data *all) {
 	    t=MonotonicFindY(m, m->b.maxy, t);
 	 }
 	 if (t != -1) {
-	    x=((msp->a * t+msp->b) * t+msp->c) * t+msp->d;
+	    x=((msp->a * t+msp->b)*t+msp->c)*t+msp->d;
 	    if (x>xmax)
 	       xmax=x;
 	    if (x<xmin)
@@ -372,7 +372,7 @@ void AutoWidth2(FontViewBase * fv, int separation, int min_side, int max_side,
 	 if (s==scnt) {
 	    if (scnt >= smax)
 	       scripts =
-		  realloc(scripts, (smax += 10) * sizeof(struct scriptlist));
+		  realloc(scripts, (smax += 10)*sizeof(struct scriptlist));
 	    memset(&scripts[scnt], 0, sizeof(struct scriptlist));
 	    scripts[scnt].script=script;
 	    scripts[scnt].glyphs=calloc(sf->glyphcnt+1, sizeof(AW_Glyph));

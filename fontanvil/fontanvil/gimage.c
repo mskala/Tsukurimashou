@@ -1,4 +1,4 @@
-/* $Id: gimage.c 4523 2015-12-20 12:30:49Z mskala $ */
+/* $Id: gimage.c 4532 2015-12-22 13:18:53Z mskala $ */
 /* Copyright (C) 2000-2012 by George Williams */
 /* Copyright (C) 2015  Matthew Skala */
 /*
@@ -90,9 +90,9 @@ static int bitshift(unsigned long mask) {
 
    if (mask == 0)
       return (0);
-   for (off=0; !(mask & 1); mask >>= 1, ++off);
-   for (len=0, bit=1; (mask & bit) && len < 32; ++len, bit <<= 1);
-   return (off + (8 - len));
+   for (off=0; !(mask&1); mask >>= 1, ++off);
+   for (len=0, bit=1; (mask&bit) && len<32; ++len, bit <<= 1);
+   return (off+(8-len));
 }
 
 static int fillbmpheader(AFILE *fp,struct bmpheader *head) {
@@ -102,22 +102,22 @@ static int fillbmpheader(AFILE *fp,struct bmpheader *head) {
 
    if (agetc(fp) != 'B' || agetc(fp) != 'M' ||	/* Bad format */
        aread_int32_le(fp, &head->size) ||
-       (head->mbz1=aget_uint16_le(fp)) < 0 ||
-       (head->mbz2=aget_uint16_le(fp)) < 0 ||
+       (head->mbz1=aget_uint16_le(fp))<0 ||
+       (head->mbz2=aget_uint16_le(fp))<0 ||
        aread_int32_le(fp, &head->offset) || aread_int32_le(fp, &head->headersize))
      return -1;
    
    if (head->headersize == 12) {	/* Windows 2.0 format, also OS/2 */
-      if ((head->width=aget_uint16_le(fp)) < 0 ||
-	  (head->height=aget_uint16_le(fp)) < 0 ||
-	  (head->planes=aget_uint16_le(fp)) < 0 ||
-	  (head->bitsperpixel=aget_uint16_le(fp)) < 0)
+      if ((head->width=aget_uint16_le(fp))<0 ||
+	  (head->height=aget_uint16_le(fp))<0 ||
+	  (head->planes=aget_uint16_le(fp))<0 ||
+	  (head->bitsperpixel=aget_uint16_le(fp))<0)
 	return -1;
    } else {
       if (aread_int32_le(fp, &head->width) ||
 	  aread_int32_le(fp, &head->height) ||
-	  (head->planes=aget_uint16_le(fp)) < 0 ||
-	  (head->bitsperpixel=aget_uint16_le(fp)) < 0 ||
+	  (head->planes=aget_uint16_le(fp))<0 ||
+	  (head->bitsperpixel=aget_uint16_le(fp))<0 ||
 	  aread_int32_le(fp, &head->compression) ||
 	  aread_int32_le(fp, &head->imagesize) ||
 	  aread_int32_le(fp, &head->ignore1) ||
@@ -126,7 +126,7 @@ static int fillbmpheader(AFILE *fp,struct bmpheader *head) {
 	  aread_int32_le(fp, &head->colorsimportant))
 	return -1;
    }
-   if (head->height < 0)
+   if (head->height<0)
      head->height=-head->height;
    else
      head->invert=true;
@@ -154,16 +154,16 @@ static int fillbmpheader(AFILE *fp,struct bmpheader *head) {
      head->colorsused=1 << head->bitsperpixel;
    if (head->bitsperpixel >= 16)
      head->colorsused=0;
-   if (head->colorsused > (1 << head->bitsperpixel))
+   if (head->colorsused>(1 << head->bitsperpixel))
      return -1;
 
-   for (i=0; i < head->colorsused;i++) {
+   for (i=0; i<head->colorsused;i++) {
       int b,g,r;
 
-      if ((b=agetc(fp)) < 0 || (g=agetc(fp)) < 0 || (r=agetc(fp)) < 0)
+      if ((b=agetc(fp))<0 || (g=agetc(fp))<0 || (r=agetc(fp))<0)
 	return -1;
       head->clut[i]=COLOR_CREATE(r, g, b);
-      if (head->headersize != 12 && agetc(fp) < 0)
+      if (head->headersize != 12 && agetc(fp)<0)
 	return -1;
    }
    if (head->compression == 3 || head->headersize == 108) {
@@ -201,17 +201,17 @@ static int readpixels(AFILE *file, struct bmpheader *head) {
 
    ll=head->width;
    if (head->bitsperpixel == 8 && head->compression == 0) {
-      excess=((ll + 3) / 4) * 4 - ll;
-      for (i=0; i < head->height;i++) {
-	 afread(head->byte_pixels + i * ll, 1, ll, file);
-	 for (j=0; j < excess;j++)
+      excess=((ll+3)/4)*4-ll;
+      for (i=0; i<head->height;i++) {
+	 afread(head->byte_pixels+i * ll, 1, ll, file);
+	 for (j=0; j<excess;j++)
 	    (void)agetc(file);
       }
    } else if (head->bitsperpixel == 8) {
       /* 8 bit RLE */
       int ii=0;
 
-      while (ii < head->height * head->width) {
+      while (ii<head->height * head->width) {
 	 int cnt=agetc(file);
 
 	 if (cnt != 0) {
@@ -222,61 +222,61 @@ static int readpixels(AFILE *file, struct bmpheader *head) {
 	 } else {
 	    cnt=agetc(file);
 	    if (cnt >= 3) {
-	       int odd=cnt & 1;
+	       int odd=cnt&1;
 
 	       while (--cnt >= 0)
 		  head->byte_pixels[ii++]=agetc(file);
 	       if (odd)
 		 agetc(file);
 	    } else if (cnt == 0) {	/* end of scan line */
-	       ii=((ii + head->width - 1) / head->width) * head->width;
+	       ii=((ii+head->width-1)/head->width)*head->width;
 	    } else if (cnt == 1) {
 	       break;
 	    } else if (cnt == 2) {
 	       int x=agetc(file);
 	       int y=agetc(file);
 
-	       y += ii / head->width;
-	       x += ii % head->width;
-	       ii=y * head->width + x;
+	       y += ii/head->width;
+	       x += ii%head->width;
+	       ii=y * head->width+x;
 	    }
 	 }
       }
    } else if (head->bitsperpixel == 4 && head->compression == 0) {
-      excess=(ll + 1) / 2;
-      excess=((excess + 3) / 4) * 4 - excess;
-      for (i=0; i < head->height;i++) {
+      excess=(ll+1)/2;
+      excess=((excess+3)/4)*4-excess;
+      for (i=0; i<head->height;i++) {
 	 ii=i * ll;
-	 for (j=0; j < ((head->width + 7) / 8) * 8; j += 8) {
+	 for (j=0; j<((head->width+7)/8)*8; j += 8) {
 	    int b1=agetc(file);
 	    int b2=agetc(file);
 	    int b3=agetc(file);
 	    int b4=agetc(file);
 
-	    head->byte_pixels[ii + j]=(b1 >> 4);
-	    if (j + 1 < ll)
-	       head->byte_pixels[ii + j + 1]=(b1 & 0xf);
-	    if (j + 2 < ll)
-	       head->byte_pixels[ii + j + 2]=(b2 >> 4);
-	    if (j + 3 < ll)
-	       head->byte_pixels[ii + j + 3]=(b2 & 0xf);
-	    if (j + 4 < ll)
-	       head->byte_pixels[ii + j + 4]=(b3 >> 4);
-	    if (j + 5 < ll)
-	       head->byte_pixels[ii + j + 5]=(b3 & 0xf);
-	    if (j + 6 < ll)
-	       head->byte_pixels[ii + j + 6]=(b4 >> 4);
-	    if (j + 7 < ll)
-	       head->byte_pixels[ii + j + 7]=(b4 & 0xf);
+	    head->byte_pixels[ii+j]=(b1 >> 4);
+	    if (j+1<ll)
+	       head->byte_pixels[ii+j+1]=(b1&0xf);
+	    if (j+2<ll)
+	       head->byte_pixels[ii+j+2]=(b2 >> 4);
+	    if (j+3<ll)
+	       head->byte_pixels[ii+j+3]=(b2&0xf);
+	    if (j+4<ll)
+	       head->byte_pixels[ii+j+4]=(b3 >> 4);
+	    if (j+5<ll)
+	       head->byte_pixels[ii+j+5]=(b3&0xf);
+	    if (j+6<ll)
+	       head->byte_pixels[ii+j+6]=(b4 >> 4);
+	    if (j+7<ll)
+	       head->byte_pixels[ii+j+7]=(b4&0xf);
 	 }
-	 for (j=0; j < excess;j++)
+	 for (j=0; j<excess;j++)
 	    (void)agetc(file);
       }
    } else if (head->bitsperpixel == 4) {
       /* 4 bit RLE */
       int ii=0;
 
-      while (ii < head->height * head->width) {
+      while (ii<head->height * head->width) {
 	 int cnt=agetc(file);
 
 	 if (cnt != 0) {
@@ -284,103 +284,103 @@ static int readpixels(AFILE *file, struct bmpheader *head) {
 
 	    while ((cnt -= 2) >= -1) {
 	       head->byte_pixels[ii++]=ch >> 4;
-	       head->byte_pixels[ii++]=ch & 0xf;
+	       head->byte_pixels[ii++]=ch&0xf;
 	    }
 	    if (cnt == -1)
 	       ii--;
 	 } else {
 	    cnt=agetc(file);
 	    if (cnt >= 3) {
-	       int odd=cnt & 2;
+	       int odd=cnt&2;
 
 	       while ((cnt -= 2) >= -1) {
 		  int ch=agetc(file);
 
 		  head->byte_pixels[ii++]=ch >> 4;
-		  head->byte_pixels[ii++]=ch & 0xf;
+		  head->byte_pixels[ii++]=ch&0xf;
 	       }
 	       if (cnt == -1)
 		 ii--;
 	       if (odd)
 		 agetc(file);
 	    } else if (cnt == 0) {	/* end of scan line */
-	       ii=((ii + head->width - 1) / head->width) * head->width;
+	       ii=((ii+head->width-1)/head->width)*head->width;
 	    } else if (cnt == 1) {
 	       break;
 	    } else if (cnt == 2) {
 	       int x=agetc(file);
 	       int y=agetc(file);
 
-	       y += ii / head->width;
-	       x += ii % head->width;
-	       ii=y * head->width + x;
+	       y += ii/head->width;
+	       x += ii%head->width;
+	       ii=y * head->width+x;
 	    }
 	 }
       }
    } else if (head->bitsperpixel == 1) {
-      excess=(ll + 7) / 8;
-      excess=((excess + 3) / 4) * 4 - excess;
-      for (i=0; i < head->height;i++) {
-	 ii=i * ((ll + 7) / 8);
-	 for (j=0; j < ((head->width + 7) / 8);j++) {
-	    head->byte_pixels[ii + j]=agetc(file);
+      excess=(ll+7)/8;
+      excess=((excess+3)/4)*4-excess;
+      for (i=0; i<head->height;i++) {
+	 ii=i * ((ll+7)/8);
+	 for (j=0; j<((head->width+7)/8);j++) {
+	    head->byte_pixels[ii+j]=agetc(file);
 	 }
-	 for (j=0; j < excess;j++)
+	 for (j=0; j<excess;j++)
 	    (void)agetc(file);
       }
    } else if (head->bitsperpixel == 24) {
-      excess=((3 * head->width + 3) / 4) * 4 - 3 * head->width;
-      for (i=0; i < head->height;i++) {
+      excess=((3*head->width+3)/4)*4-3*head->width;
+      for (i=0; i<head->height;i++) {
 	 ii=i * head->width;
-	 for (j=0; j < head->width;j++) {
+	 for (j=0; j<head->width;j++) {
 	    int b=agetc(file);
 	    int g=agetc(file);
 	    int r=agetc(file);
 
-	    head->int32_pixels[ii + j]=COLOR_CREATE(r, g, b);
+	    head->int32_pixels[ii+j]=COLOR_CREATE(r, g, b);
 	 }
-	 for (j=0; j < excess;j++)
+	 for (j=0; j<excess;j++)
 	    (void)agetc(file);	/* ignore padding */
       }
    } else if (head->bitsperpixel == 32 && head->compression == 0) {
-      for (i=0; i < head->height;i++) {
+      for (i=0; i<head->height;i++) {
 	 ii=i * head->width;
-	 for (j=0; j < head->width;j++) {
+	 for (j=0; j<head->width;j++) {
 	    int b, g, r;
 
 	    b=agetc(file);
 	    g=agetc(file);
 	    r=agetc(file);
 	    (void)agetc(file);	/* Ignore the alpha channel */
-	    head->int32_pixels[ii + j]=COLOR_CREATE(r, g, b);
+	    head->int32_pixels[ii+j]=COLOR_CREATE(r, g, b);
 	 }
       }
    } else if (head->bitsperpixel == 16) {
-      for (i=0; i < head->height;i++) {
+      for (i=0; i<head->height;i++) {
 	 ii=i * head->width;
-	 for (j=0; j < head->width;j++) {
+	 for (j=0; j<head->width;j++) {
 	    int pix=aget_uint16_le(file);
 
-	    head->int32_pixels[ii + j] =
-	       COLOR_CREATE((pix & head->red_mask) >> head->red_shift,
-			    (pix & head->green_mask) >> head->green_shift,
-			    (pix & head->blue_mask) >> head->blue_shift);
+	    head->int32_pixels[ii+j] =
+	       COLOR_CREATE((pix&head->red_mask) >> head->red_shift,
+			    (pix&head->green_mask) >> head->green_shift,
+			    (pix&head->blue_mask) >> head->blue_shift);
 	 }
       }
-      if (head->width & 1)
+      if (head->width&1)
 	 aget_uint16_le(file);
    } else if (head->bitsperpixel == 32) {
-      for (i=0; i < head->height;i++) {
+      for (i=0; i<head->height;i++) {
 	 ii=i * head->width;
-	 for (j=0; j < head->width;j++) {
+	 for (j=0; j<head->width;j++) {
 	    uint32_t pix;
 
 	    if (aread_int32_le(file, &pix))
 	       return (1);
-	    head->int32_pixels[ii + j] =
-	       COLOR_CREATE((pix & head->red_mask) >> head->red_shift,
-			    (pix & head->green_mask) >> head->green_shift,
-			    (pix & head->blue_mask) >> head->blue_shift);
+	    head->int32_pixels[ii+j] =
+	       COLOR_CREATE((pix&head->red_mask) >> head->red_shift,
+			    (pix&head->green_mask) >> head->green_shift,
+			    (pix&head->blue_mask) >> head->blue_shift);
 	 }
       }
    }
@@ -428,8 +428,8 @@ GImage *GImageRead_Bmp(AFILE *file) {
    if (!bmp.invert) {
       if ((ret =
 	   _GImage_Create(bmp.bitsperpixel >=
-			  16 ? it_true : bmp.bitsperpixel !=
-			  1 ? it_index : it_mono, bmp.width,
+			  16?it_true:bmp.bitsperpixel !=
+			  1?it_index:it_mono, bmp.width,
 			  bmp.height)) == NULL) {
 	 goto errorGImageMemBmp;
       }
@@ -444,10 +444,10 @@ GImage *GImageRead_Bmp(AFILE *file) {
 	    goto errorGImageMemBmp;
 	 }
 	 base=ret->u.image;
-	 for (i=0; i < bmp.height;i++) {
-	    l=bmp.height - 1 - i;
-	    memcpy(base->data + l * base->bytes_per_line,
-		   bmp.int32_pixels + i * bmp.width,
+	 for (i=0; i<bmp.height;i++) {
+	    l=bmp.height-1-i;
+	    memcpy(base->data+l * base->bytes_per_line,
+		   bmp.int32_pixels+i * bmp.width,
 		   bmp.width * sizeof(uint32_t));
 	 }
 	 free(bmp.int32_pixels);
@@ -456,10 +456,10 @@ GImage *GImageRead_Bmp(AFILE *file) {
 	    goto errorGImageMemBmp;
 	 }
 	 base=ret->u.image;
-	 for (i=0; i < bmp.height;i++) {
-	    l=bmp.height - 1 - i;
-	    memcpy(base->data + l * base->bytes_per_line,
-		   bmp.byte_pixels + i * bmp.width, bmp.width);
+	 for (i=0; i<bmp.height;i++) {
+	    l=bmp.height-1-i;
+	    memcpy(base->data+l * base->bytes_per_line,
+		   bmp.byte_pixels+i * bmp.width, bmp.width);
 	 }
 	 free(bmp.byte_pixels);
       } else {
@@ -467,10 +467,10 @@ GImage *GImageRead_Bmp(AFILE *file) {
 	    goto errorGImageMemBmp;
 	 }
 	 base=ret->u.image;
-	 for (i=0; i < bmp.height;i++) {
-	    l=bmp.height - 1 - i;
-	    memcpy(base->data + l * base->bytes_per_line,
-		   bmp.byte_pixels + i * base->bytes_per_line,
+	 for (i=0; i<bmp.height;i++) {
+	    l=bmp.height-1-i;
+	    memcpy(base->data+l * base->bytes_per_line,
+		   bmp.byte_pixels+i * base->bytes_per_line,
 		   base->bytes_per_line);
 	 }
 	 free(bmp.byte_pixels);
@@ -528,22 +528,22 @@ int GImageWrite_Bmp(GImage *gi,AFILE *file) {
    if (base->image_type == it_mono) {
       ncol=2;
       bitsperpixel=1;
-      clutsize=ncol * 4;
+      clutsize=ncol*4;
    } else if (base->image_type == it_index) {
       ncol=base->clut->clut_len;
       if (ncol <= 16)
 	 bitsperpixel=4;
       else
 	 bitsperpixel=8;
-      clutsize=ncol * 4;
+      clutsize=ncol*4;
    } else {
       bitsperpixel=24;
       clutsize=0;
       ncol=0;
    }
-   imagesize=((base->bytes_per_line + 3) & ~3U) * base->height;
-   offset=preheadersize + headersize + clutsize;
-   filesize=offset + imagesize;
+   imagesize=((base->bytes_per_line+3)&~3U)*base->height;
+   offset=preheadersize+headersize+clutsize;
+   filesize=offset+imagesize;
 
    aputc('B',file);
    aputc('M',file);
@@ -567,7 +567,7 @@ int GImageWrite_Bmp(GImage *gi,AFILE *file) {
       int i;
 
       if (base->clut != NULL) {
-	 for (i=0; i < ncol;i++) {
+	 for (i=0; i<ncol;i++) {
 	    aputc(COLOR_BLUE(base->clut->clut[i]), file);
 	    aputc(COLOR_GREEN(base->clut->clut[i]), file);
 	    aputc(COLOR_RED(base->clut->clut[i]), file);
@@ -585,42 +585,42 @@ int GImageWrite_Bmp(GImage *gi,AFILE *file) {
       }
    }
 
-   for (row=base->height - 1; row >= 0; --row) {
+   for (row=base->height-1; row >= 0; --row) {
       int pad=0;
 
       if (bitsperpixel == 24) {
-	 uint32_t *pt=(uint32_t *) (base->data + row * base->bytes_per_line);
+	 uint32_t *pt=(uint32_t *) (base->data+row * base->bytes_per_line);
 
-	 for (col=0; col < base->width; ++col) {
+	 for (col=0; col<base->width; ++col) {
 	    aputc(COLOR_BLUE(pt[col]), file);
 	    aputc(COLOR_GREEN(pt[col]), file);
 	    aputc(COLOR_RED(pt[col]), file);
 	 }
-	 pad=base->width & 3;
+	 pad=base->width&3;
       } else if (bitsperpixel == 8) {
 	 unsigned char *pt =
-	    (unsigned char *) (base->data + row * base->bytes_per_line);
+	    (unsigned char *) (base->data+row * base->bytes_per_line);
 	 afwrite(pt, 1, base->width, file);
-	 pad=4 - (base->width & 3);
+	 pad=4-(base->width&3);
       } else if (bitsperpixel == 4) {
 	 unsigned char *pt =
-	    (unsigned char *) (base->data + row * base->bytes_per_line);
-	 for (col=0; col < base->width / 2; ++col) {
-	    aputc((*pt << 4) | pt[1], file);
+	    (unsigned char *) (base->data+row * base->bytes_per_line);
+	 for (col=0; col<base->width/2; ++col) {
+	    aputc((*pt << 4)|pt[1], file);
 	    pt += 2;
 	 }
-	 if (base->width & 1)
+	 if (base->width&1)
 	    aputc(*pt << 4, file);
-	 pad=4 - (((base->width + 1) >> 1) & 3);
+	 pad=4-(((base->width+1) >> 1)&3);
       } else if (bitsperpixel == 1) {
 	 unsigned char *pt =
-	    (unsigned char *) (base->data + row * base->bytes_per_line);
+	    (unsigned char *) (base->data+row * base->bytes_per_line);
 	 afwrite(pt, 1, base->bytes_per_line, file);
-	 pad=4 - (base->bytes_per_line & 3);
+	 pad=4-(base->bytes_per_line&3);
       }
-      if (pad & 1)		/* pad to 4byte boundary */
+      if (pad&1)		/* pad to 4byte boundary */
 	 aputc('\0', file);
-      if (pad & 2)
+      if (pad&2)
 	 aput_int16_le(0, file);
    }
    i=aferror(file);
@@ -727,7 +727,7 @@ static GImage *ProcessSavedImage(GifFileType *gif,struct SavedImage *si,
       /* Convert interlaced image into a sequential image */
       j=0;
       k=0;
-      for (i=0; i < base->height;i++) {
+      for (i=0; i<base->height;i++) {
 	 id[i]=k;
 	 if (j == 0) {
 	    k += 8;
@@ -750,21 +750,21 @@ static GImage *ProcessSavedImage(GifFileType *gif,struct SavedImage *si,
 	 } else
 	    k += 2;
       }
-      for (j=0; j < base->bytes_per_line;j++) {
-	 for (i=1; i < base->height;i++)
-	    iv[id[i]]=base->data[i * base->bytes_per_line + j];
-	 for (i=1; i < base->height;i++)
-	    base->data[i * base->bytes_per_line + j]=iv[i];
+      for (j=0; j<base->bytes_per_line;j++) {
+	 for (i=1; i<base->height;i++)
+	    iv[id[i]]=base->data[i * base->bytes_per_line+j];
+	 for (i=1; i<base->height;i++)
+	    base->data[i * base->bytes_per_line+j]=iv[i];
       }
       free(id);
       free(iv);
    }
-   for (i=0; i < si->ExtensionBlockCount;i++) {
+   for (i=0; i<si->ExtensionBlockCount;i++) {
       if (si->ExtensionBlocks[i].Function == 0xf9 &&
 	  si->ExtensionBlocks[i].ByteCount >= 4) {
 	 base->delay=(si->ExtensionBlocks[i].Bytes[2] << 8) |
-	    (si->ExtensionBlocks[i].Bytes[2] & 0xff);
-	 if (si->ExtensionBlocks[i].Bytes[0] & 1) {
+	    (si->ExtensionBlocks[i].Bytes[2]&0xff);
+	 if (si->ExtensionBlocks[i].Bytes[0]&1) {
 	    base->trans=(unsigned char) si->ExtensionBlocks[i].Bytes[3];
 	    if (base->clut != NULL)
 	       base->clut->trans_index=base->trans;
@@ -816,7 +816,7 @@ GImage *GImageReadGif(char *filename) {
       return (NULL);
    }
    il=gif->SavedImages[0].ImageDesc.Interlace;
-   for (i=0; i < gif->ImageCount;i++) {
+   for (i=0; i<gif->ImageCount;i++) {
       if ((images[i] =
 	   ProcessSavedImage(gif, &gif->SavedImages[i], il)) == NULL) {
 	 while (--i >= 0)
@@ -895,8 +895,8 @@ static void transferBufferToImage(struct jpegState *js, int ypos) {
    JSAMPLE *pt, *end;
    Color *ppt;
 
-   ppt=(Color *) (js->base->data + ypos * js->base->bytes_per_line);
-   for (pt=js->buffer, end=pt + 3 * cinfo->image_width; pt < end;) {
+   ppt=(Color *) (js->base->data+ypos * js->base->bytes_per_line);
+   for (pt=js->buffer, end=pt+3*cinfo->image_width; pt<end;) {
       register int r, g, b;
 
       r=*(pt++);
@@ -1043,7 +1043,7 @@ static void transferImageToBuffer(struct _GImage *base, JSAMPLE * buffer,
 
    uint32_t *ppt;
 
-   ppt=(uint32_t *) (base->data + ypos * base->bytes_per_line);
+   ppt=(uint32_t *) (base->data+ypos * base->bytes_per_line);
    if (base->image_type == it_index && base->clut == NULL) {
       unsigned char *px=(unsigned char *) ppt;
 
@@ -1051,8 +1051,8 @@ static void transferImageToBuffer(struct _GImage *base, JSAMPLE * buffer,
 
       register int bit=0x80;
 
-      for (pt=buffer, end=pt + 3 * w; pt < end;) {
-	 if (*px & bit)
+      for (pt=buffer, end=pt+3*w; pt<end;) {
+	 if (*px&bit)
 	    col=0xffffff;
 	 else
 	    col=0;
@@ -1071,8 +1071,8 @@ static void transferImageToBuffer(struct _GImage *base, JSAMPLE * buffer,
 
       register int bit=0x80;
 
-      for (pt=buffer, end=pt + 3 * w; pt < end;) {
-	 if (*px & bit)
+      for (pt=buffer, end=pt+3*w; pt<end;) {
+	 if (*px&bit)
 	    col=base->clut->clut[1];
 	 else
 	    col=base->clut->clut[0];
@@ -1089,14 +1089,14 @@ static void transferImageToBuffer(struct _GImage *base, JSAMPLE * buffer,
 
       int col;
 
-      for (pt=buffer, end=pt + 3 * w; pt < end;) {
+      for (pt=buffer, end=pt+3*w; pt<end;) {
 	 col=base->clut->clut[*px++];
 	 *pt++=COLOR_RED(col);
 	 *pt++=COLOR_GREEN(col);
 	 *pt++=COLOR_BLUE(col);
       }
    } else {
-      for (pt=buffer, end=pt + 3 * w; pt < end; ++ppt) {
+      for (pt=buffer, end=pt+3*w; pt<end; ++ppt) {
 	 *pt++=COLOR_RED(*ppt);
 	 *pt++=COLOR_GREEN(*ppt);
 	 *pt++=COLOR_BLUE(*ppt);
@@ -1114,7 +1114,7 @@ static void setColorSpace(struct jpeg_compress_struct *cinfo,
    if (base->image_type == it_index) {
       if (base->clut->clut_len != 256)
 	 return;
-      for (i=0; i < 256;i++)
+      for (i=0; i<256;i++)
 	 if (base->clut->clut[i] != COLOR_CREATE(i, i, i))
 	    break;
       if (i == 256) {
@@ -1170,7 +1170,7 @@ static void fajpeg_afile_dest(j_compress_ptr cinfo,AFILE *outfile) {
 /* quality is a number between 0 and 100 */
 int GImageWrite_Jpeg(GImage *gi,AFILE *outfile,int quality,
 		     int progressive) {
-   struct _GImage *base=gi->list_len == 0 ? gi->u.image : gi->u.images[0];
+   struct _GImage *base=gi->list_len == 0?gi->u.image:gi->u.images[0];
    struct jpeg_compress_struct cinfo;
    struct my_error_mgr jerr;
 
@@ -1196,8 +1196,8 @@ int GImageWrite_Jpeg(GImage *gi,AFILE *outfile,int quality,
    jpeg_start_compress(&cinfo, TRUE);
 
    if (cinfo.in_color_space != JCS_GRAYSCALE)
-      row_pointer[0]=(JSAMPROW) malloc(3 * base->width);
-   while (cinfo.next_scanline < cinfo.image_height) {
+      row_pointer[0]=(JSAMPROW) malloc(3*base->width);
+   while (cinfo.next_scanline<cinfo.image_height) {
       if (cinfo.in_color_space == JCS_GRAYSCALE)
 	 row_pointer[0] =
 	    (unsigned char *) (base->data +
@@ -1234,7 +1234,7 @@ static int loadpng() {
 
 static void user_error_fn(png_structp png_ptr, png_const_charp error_msg) {
    ErrorMsg(2,"%s\n", error_msg);
-#   if (PNG_LIBPNG_VER < 10500)
+#   if (PNG_LIBPNG_VER<10500)
    longjmp(png_ptr->jmpbuf, 1);
 #   else
    png_longjmp(png_ptr, 1);
@@ -1323,7 +1323,7 @@ GImage *GImageRead_Png(AFILE *fp) {
       clut=ret->u.image->clut;
       clut->is_grey=true;
       clut->clut_len=256;
-      for (i=0; i < 256;i++)
+      for (i=0; i<256;i++)
 	 clut->clut[i]=COLOR_CREATE(i, i, i);
    } else if (png_get_color_type(png_ptr, info_ptr) ==
 	      PNG_COLOR_TYPE_RGB_ALPHA) {
@@ -1343,7 +1343,7 @@ GImage *GImageRead_Png(AFILE *fp) {
 
       ret =
 	 GImageCreate(png_get_bit_depth(png_ptr, info_ptr) !=
-		      1 ? it_index : it_mono, png_get_image_width(png_ptr,
+		      1?it_index:it_mono, png_get_image_width(png_ptr,
 								  info_ptr),
 		      png_get_image_height(png_ptr, info_ptr));
       clut=ret->u.image->clut;
@@ -1352,13 +1352,13 @@ GImage *GImageRead_Png(AFILE *fp) {
       clut->is_grey=true;
       png_get_PLTE(png_ptr, info_ptr, &palette, &num_palette);
       clut->clut_len=num_palette;
-      for (i=0; i < num_palette;i++)
+      for (i=0; i<num_palette;i++)
 	 clut->clut[i]=COLOR_CREATE(palette[i].red,
 				      palette[i].green, palette[i].blue);
    }
    png_get_tRNS(png_ptr, info_ptr, &trans_alpha, &num_trans, &trans_color);
    base=ret->u.image;
-   if ((png_get_valid(png_ptr, info_ptr, PNG_INFO_tRNS)) && num_trans > 0) {
+   if ((png_get_valid(png_ptr, info_ptr, PNG_INFO_tRNS)) && num_trans>0) {
       if (png_get_color_type(png_ptr, info_ptr) == PNG_COLOR_TYPE_RGB
 	  || png_get_color_type(png_ptr,
 				info_ptr) == PNG_COLOR_TYPE_RGB_ALPHA)
@@ -1366,17 +1366,17 @@ GImage *GImageRead_Png(AFILE *fp) {
 	    COLOR_CREATE((trans_color->red >> 8), (trans_color->green >> 8),
 			 (trans_color->blue >> 8));
       else if (base->image_type == it_mono)
-	 base->trans=trans_alpha ? trans_alpha[0] : 0;
+	 base->trans=trans_alpha?trans_alpha[0]:0;
       else
 	 base->clut->trans_index=base->trans =
-	    trans_alpha ? trans_alpha[0] : 0;
+	    trans_alpha?trans_alpha[0]:0;
    }
 
    row_pointers =
       (png_byte **) malloc(png_get_image_height(png_ptr, info_ptr) *
 			   sizeof(png_bytep));
-   for (i=0; i < png_get_image_height(png_ptr, info_ptr);i++)
-      row_pointers[i]=(png_bytep) (base->data + i * base->bytes_per_line);
+   for (i=0; i<png_get_image_height(png_ptr, info_ptr);i++)
+      row_pointers[i]=(png_bytep) (base->data+i * base->bytes_per_line);
 
    /* Ignore progressive loads for now */
    /* libpng wants me to do it with callbacks, but that doesn't sit well */
@@ -1390,13 +1390,13 @@ GImage *GImageRead_Png(AFILE *fp) {
       uint32_t *ipt, *iend;
 
       for (ipt=(uint32_t *) (base->data), iend =
-	   ipt + base->width * base->height; ipt < iend; ++ipt) {
-	 uint32_t r, g, b, a=*ipt & 0xff000000;
+	   ipt+base->width * base->height; ipt<iend; ++ipt) {
+	 uint32_t r, g, b, a=*ipt&0xff000000;
 
-	 r=(*ipt) & 0xff;
-	 g=(*ipt >> 8) & 0xff;
-	 b=(*ipt >> 16) & 0xff;
-	 *ipt=COLOR_CREATE(r, g, b) | a;
+	 r=(*ipt)&0xff;
+	 g=(*ipt >> 8)&0xff;
+	 b=(*ipt >> 16)&0xff;
+	 *ipt=COLOR_CREATE(r, g, b)|a;
       }
    }
 
@@ -1455,7 +1455,7 @@ int GImageWrite_Png(GImage *gi,AFILE *fp,int progressive) {
       png_destroy_write_struct(&png_ptr, (png_infopp) NULL);
       return (false);
    }
-#   if (PNG_LIBPNG_VER < 10500)
+#   if (PNG_LIBPNG_VER<10500)
    if (setjmp(png_ptr->jmpbuf))
 #   else
    if (setjmp(*png_set_longjmp_fn(png_ptr, longjmp, sizeof(jmp_buf))))
@@ -1468,7 +1468,7 @@ int GImageWrite_Png(GImage *gi,AFILE *fp,int progressive) {
    png_set_write_fn(png_ptr,fp,&fa_png_write_cb,&fa_png_flush_cb);
 
    bit_depth=8;
-   num_palette=base->clut == NULL ? 2 : base->clut->clut_len;
+   num_palette=base->clut == NULL?2:base->clut->clut_len;
    if (base->image_type == it_index || base->image_type == it_bitmap) {
       color_type=PNG_COLOR_TYPE_PALETTE;
       if (num_palette <= 2)
@@ -1492,7 +1492,7 @@ int GImageWrite_Png(GImage *gi,AFILE *fp,int progressive) {
 	 palette[0].red=palette[0].green=palette[0].blue=0;
 	 palette[1].red=palette[1].green=palette[1].blue=0xff;
       } else {
-	 for (i=0; i < num_palette;i++) {
+	 for (i=0; i<num_palette;i++) {
 	    long col=base->clut->clut[i];
 
 	    palette[i].red=COLOR_RED(col);
@@ -1525,8 +1525,8 @@ int GImageWrite_Png(GImage *gi,AFILE *fp,int progressive) {
       png_set_filler(png_ptr, '\0', PNG_FILLER_BEFORE);
 
    rows=(png_byte **) malloc(base->height * sizeof(png_byte *));
-   for (i=0; i < base->height;i++)
-      rows[i]=(png_byte *) (base->data + i * base->bytes_per_line);
+   for (i=0; i<base->height;i++)
+      rows[i]=(png_byte *) (base->data+i * base->bytes_per_line);
 
    png_write_image(png_ptr, rows);
 
@@ -1591,12 +1591,12 @@ static int getrasheader(SUNRASTER *head,AFILE *fp) {
 
    /* Check if header information okay (only try Big-Endian for now).  */
    if (head->MagicNumber != SUN_RAS_MAGIC ||
-       head->Type < 0 || head->Type > TypeRGB ||
+       head->Type<0 || head->Type>TypeRGB ||
        (head->ColorMapType != ClutNone && head->ColorMapType != ClutRGB) ||
        (head->Depth != 1 && head->Depth != 8 && head->Depth != 24
 	&& head->Depth != 32) || (head->Depth >= 24
 				  && head->ColorMapType != ClutNone)
-       || head->ColorMapLength > 3 * 256)
+       || head->ColorMapLength>3*256)
       return (-1);
 
    return (0);
@@ -1607,21 +1607,21 @@ static GImage *ReadRasBitmap(GImage * ret, int width, int height,AFILE *fp) {
    int i, j, len;
    unsigned char *pt, *buf;
 
-   len=((width + 15) / 16) * 2;	/* pad out to 16 bits */
+   len=((width+15)/16)*2;	/* pad out to 16 bits */
    if ((buf=(unsigned char *) malloc(len * sizeof(unsigned char))) == NULL) {
       GImageDestroy(ret);
       return NULL;
    }
 
-   for (i=0; i < height;i++) {
-      if (afread(buf, len, 1, fp) < 1) {
+   for (i=0; i<height;i++) {
+      if (afread(buf, len, 1, fp)<1) {
 	 free(buf);
 	 GImageDestroy(ret);
 	 return NULL;
       }
-      pt=(unsigned char *) (base->data + i * base->bytes_per_line);
-      for (j=0; j < (width + 7) >> 3;j++)
-	 pt[j]=256 - buf[j];
+      pt=(unsigned char *) (base->data+i * base->bytes_per_line);
+      for (j=0; j<(width+7) >> 3;j++)
+	 pt[j]=256-buf[j];
    }
    free(buf);
    return (ret);
@@ -1631,12 +1631,12 @@ static GImage *ReadRas8Bit(GImage *ret,int width,int height,AFILE *fp) {
    struct _GImage *base=ret->u.image;
    int i;
 
-   for (i=0; i < height;i++) {
-      if (afread((base->data + i * base->bytes_per_line), width, 1, fp) < 1) {
+   for (i=0; i<height;i++) {
+      if (afread((base->data+i * base->bytes_per_line), width, 1, fp)<1) {
 	 goto errorReadRas8Bit;
       }
-      if (width & 1)		/* pad out to 16 bits */
-	 if (agetc(fp) < 0)
+      if (width&1)		/* pad out to 16 bits */
+	 if (agetc(fp)<0)
 	    goto errorReadRas8Bit;
    }
    return ret;
@@ -1652,16 +1652,16 @@ static GImage *ReadRas24Bit(GImage *ret,int width,int height,AFILE *fp) {
    int i;
    long *ipt, *end;
 
-   for (i=0; i < height;i++) {
-      for (ipt=(long *) (base->data + i * base->bytes_per_line), end =
-	   ipt + width; ipt < end;) {
-	 if ((ch1=agetc(fp)) < 0 || (ch2=agetc(fp)) < 0
-	     || (ch3=agetc(fp)) < 0)
+   for (i=0; i<height;i++) {
+      for (ipt=(long *) (base->data+i * base->bytes_per_line), end =
+	   ipt+width; ipt<end;) {
+	 if ((ch1=agetc(fp))<0 || (ch2=agetc(fp))<0
+	     || (ch3=agetc(fp))<0)
 	    goto errorReadRas24Bit;
 	 *ipt++=COLOR_CREATE(ch3, ch2, ch1);
       }
-      if (width & 1)		/* pad out to 16 bits */
-	 if (agetc(fp) < 0)
+      if (width&1)		/* pad out to 16 bits */
+	 if (agetc(fp)<0)
 	    goto errorReadRas24Bit;
    }
    return ret;
@@ -1677,9 +1677,9 @@ static GImage *ReadRas32Bit(GImage * ret, int width, int height,AFILE *fp) {
    int i;
    long *ipt, *end;
 
-   for (i=0; i < height;i++)
-      for (ipt=(long *) (base->data + i * base->bytes_per_line), end =
-	   ipt + width; ipt < end;) {
+   for (i=0; i<height;i++)
+      for (ipt=(long *) (base->data+i * base->bytes_per_line), end =
+	   ipt+width; ipt<end;) {
 	 agetc(fp);		/* pad byte */
 	 ch1=agetc(fp);
 	 ch2=agetc(fp);
@@ -1699,16 +1699,16 @@ static GImage *ReadRas24RBit(GImage *ret,int width,int height,AFILE *fp) {
    int i;
    long *ipt, *end;
 
-   for (i=0; i < height;i++) {
-      for (ipt=(long *) (base->data + i * base->bytes_per_line), end =
-	   ipt + width; ipt < end;) {
-	 if ((ch1=agetc(fp)) < 0 || (ch2=agetc(fp)) < 0
-	     || (ch3=agetc(fp)) < 0)
+   for (i=0; i<height;i++) {
+      for (ipt=(long *) (base->data+i * base->bytes_per_line), end =
+	   ipt+width; ipt<end;) {
+	 if ((ch1=agetc(fp))<0 || (ch2=agetc(fp))<0
+	     || (ch3=agetc(fp))<0)
 	    goto errorReadRas24RBit;
 	 *ipt++=COLOR_CREATE(ch1, ch2, ch3);
       }
-      if (width & 1)		/* pad out to 16 bits */
-	 if (agetc(fp) < 0)
+      if (width&1)		/* pad out to 16 bits */
+	 if (agetc(fp)<0)
 	    goto errorReadRas24RBit;
    }
    return (ret);
@@ -1724,9 +1724,9 @@ static GImage *ReadRas32RBit(GImage *ret,int width,int height,AFILE *fp) {
    int i;
    long *ipt, *end;
 
-   for (i=0; i < height;i++)
-      for (ipt=(long *) (base->data + i * base->bytes_per_line), end =
-	   ipt + width; ipt < end;) {
+   for (i=0; i<height;i++)
+      for (ipt=(long *) (base->data+i * base->bytes_per_line), end =
+	   ipt+width; ipt<end;) {
 	 agetc(fp);		/* pad byte */
 	 ch1=agetc(fp);
 	 ch2=agetc(fp);
@@ -1753,25 +1753,25 @@ static GImage *ReadRle8Bit(GImage *ret,int width,int height,AFILE *fp) {
    while (1) {
       while (cnt && x) {
 	 cnt--;
-	 if (--x || (width & 1) - 1)
+	 if (--x || (width&1)-1)
 	    *pt++=val;
       }
       if (x == 0) {
-	 pt=(unsigned char *) (base->data + y * base->bytes_per_line);
-	 if (++y > height)
+	 pt=(unsigned char *) (base->data+y * base->bytes_per_line);
+	 if (++y>height)
 	    return (ret);
-	 x=((width + 1) >> 1) << 1;
+	 x=((width+1) >> 1) << 1;
       }
       if (cnt == 0) {
-	 if ((val=agetc(fp)) < 0)
+	 if ((val=agetc(fp))<0)
 	    goto errorReadRle8Bit;
 	 cnt++;
 	 if (val == 0x80) {
-	    if ((cnt=agetc(fp)) < 0)
+	    if ((cnt=agetc(fp))<0)
 	       goto errorReadRle8Bit;
 	    if (cnt++ != 0)
 	       /* prepare to go insert 'val', 'cnt' times */
-	       if ((val=agetc(fp)) < 0)
+	       if ((val=agetc(fp))<0)
 		  goto errorReadRle8Bit;
 	 }
       }
@@ -1802,7 +1802,7 @@ GImage *GImageReadRas(char *filename) {
 	(ret=GImageCreate(it_bitmap, header.Width, header.Height)) == NULL)
        || (header.Depth != 1
 	   && (ret =
-	       GImageCreate(header.Depth == 24 ? it_true : it_index,
+	       GImageCreate(header.Depth == 24?it_true:it_index,
 			    header.Width, header.Height)) == NULL)) {
       afclose(fp);
       return NULL;
@@ -1811,16 +1811,16 @@ GImage *GImageReadRas(char *filename) {
    /* Convert *.ras ColorMap to one that FF can use */
    base=ret->u.image;
    if (header.ColorMapLength != 0 && base->clut != NULL) {
-      unsigned char clutb[3 * 256];
+      unsigned char clutb[3*256];
       int i, n;
       
-      if (afread(clutb, header.ColorMapLength, 1, fp) < 1)
+      if (afread(clutb, header.ColorMapLength, 1, fp)<1)
 	goto errorGImageReadRas;
-      n=header.ColorMapLength / 3;
+      n=header.ColorMapLength/3;
       base->clut->clut_len=n;
-      for (i=0; i < n;i++)
+      for (i=0; i<n;i++)
 	base->clut->clut[i] =
-	COLOR_CREATE(clutb[i], clutb[i + n], clutb[i + 2 * n]);
+	COLOR_CREATE(clutb[i], clutb[i+n], clutb[i+2*n]);
    }
 
    if (header.Type == TypeOld || header.Type == TypeStandard) {	/* Synonymous */
@@ -1881,7 +1881,7 @@ struct sgiheader {
    int32_t pixmin;			/* Minimum pixel value  (darkest)       */
    int32_t pixmax;			/* Maximum pixel value  (brightest)     */
    int8_t dummy[4];		/* Ignored                              */
-   char imagename[80];		/* Image name   (0..79chars + '\0')     */
+   char imagename[80];		/* Image name   (0..79chars+'\0')     */
    int32_t colormap;		/* Colormap ID  (0,1,2,3)               */
    int8_t pad[404];		/* Ignored      (total=512bytes)        */
 };
@@ -1892,28 +1892,28 @@ struct sgiheader {
 
 static int getsgiheader(struct sgiheader *head,AFILE * fp) {
 /* Get Header info. Return 0 if read input file okay, -1 if read error	*/
-   if ((head->magic=aget_uint16_le(fp)) < 0 || head->magic != SGI_MAGIC ||
-       (head->format=agetc(fp)) < 0 ||
-       (head->bpc=agetc(fp)) < 0 ||
-       (head->dim=aget_uint16_le(fp)) < 0 ||
-       (head->width=aget_uint16_le(fp)) < 0 ||
-       (head->height=aget_uint16_le(fp)) < 0 ||
-       (head->chans=aget_uint16_le(fp)) < 0 ||
+   if ((head->magic=aget_uint16_le(fp))<0 || head->magic != SGI_MAGIC ||
+       (head->format=agetc(fp))<0 ||
+       (head->bpc=agetc(fp))<0 ||
+       (head->dim=aget_uint16_le(fp))<0 ||
+       (head->width=aget_uint16_le(fp))<0 ||
+       (head->height=aget_uint16_le(fp))<0 ||
+       (head->chans=aget_uint16_le(fp))<0 ||
        aread_int32_le(fp, &head->pixmin) ||
        aread_int32_le(fp, &head->pixmax) ||
-       afread(head->dummy, sizeof(head->dummy), 1, fp) < 1 ||
-       afread(head->imagename, sizeof(head->imagename), 1, fp) < 1 ||
+       afread(head->dummy, sizeof(head->dummy), 1, fp)<1 ||
+       afread(head->imagename, sizeof(head->imagename), 1, fp)<1 ||
        aread_int32_le(fp, &head->colormap) ||
-       afread(head->pad, sizeof(head->pad), 1, fp) < 1)
+       afread(head->pad, sizeof(head->pad), 1, fp)<1)
       return (-1);
 
    /* Check if header information okay (for us to use here ) */
    if ((head->format != VERBATIM && head->format != RLE) ||
        (head->bpc != 1 && head->bpc != 2) ||
-       head->dim < 1 || head->dim > 3 ||
-       head->pixmax > 65535 || (head->pixmax > 255 && head->bpc == 1) ||
+       head->dim<1 || head->dim>3 ||
+       head->pixmax>65535 || (head->pixmax>255 && head->bpc == 1) ||
        (head->chans != 1 && head->chans != 3 && head->chans != 4) ||
-       head->pixmax < 0 || head->pixmin < 0 || head->pixmin >= head->pixmax ||
+       head->pixmax<0 || head->pixmin<0 || head->pixmin >= head->pixmax ||
        head->colormap != 0)
       return (-1);
 
@@ -1921,7 +1921,7 @@ static int getsgiheader(struct sgiheader *head,AFILE * fp) {
 }
 
 static long scalecolor(struct sgiheader *header, long value) {
-   return ((value - header->pixmin) * 255L / (header->pixmax -
+   return ((value-header->pixmin)*255L/(header->pixmax -
 					      header->pixmin));
 }
 
@@ -1932,7 +1932,7 @@ static int find_scanline(AFILE *fp, struct sgiheader *header, int cur,
    int32_t val;
    unsigned char *pt;
 
-   for (i=0; i < cur;i++)
+   for (i=0; i<cur;i++)
       if (starttab[i] == starttab[cur]) {
 	 ptrtab[cur]=ptrtab[i];
 	 return (0);
@@ -1943,18 +1943,18 @@ static int find_scanline(AFILE *fp, struct sgiheader *header, int cur,
    if (afseek(fp, starttab[cur], 0) != 0)
       return (-2);
    while (header->bpc == 1) {
-      if ((ch=agetc(fp)) < 0)
+      if ((ch=agetc(fp))<0)
 	 return (-2);
-      if ((cnt=(ch & 0x7f)) == 0)
+      if ((cnt=(ch&0x7f)) == 0)
 	 return (0);
-      if (ch & 0x80) {
+      if (ch&0x80) {
 	 while (--cnt >= 0) {
-	    if ((ch=agetc(fp)) < 0)
+	    if ((ch=agetc(fp))<0)
 	       return (-2);
 	    *pt++=scalecolor(header, ch);
 	 }
       } else {
-	 if ((ch=agetc(fp)) < 0)
+	 if ((ch=agetc(fp))<0)
 	    return (-2);
 	 ch=scalecolor(header, ch);
 	 while (--cnt >= 0)
@@ -1964,9 +1964,9 @@ static int find_scanline(AFILE *fp, struct sgiheader *header, int cur,
    while (header->bpc != 1) {
       if (aread_int32_le(fp, &val))
 	 return (-2);
-      if ((cnt=(ch & 0x7f)) == 0)
+      if ((cnt=(ch&0x7f)) == 0)
 	 return (0);
-      if (ch & 0x80) {
+      if (ch&0x80) {
 	 while (--cnt >= 0) {
 	    if (aread_int32_le(fp, &val))
 	       return (-2);
@@ -1987,9 +1987,9 @@ static void freeptrtab(unsigned char **ptrtab, long tot) {
    long i, j;
 
    if (ptrtab != NULL)
-      for (i=0; i < tot;i++)
+      for (i=0; i<tot;i++)
 	 if (ptrtab[i] != NULL) {
-	    for (j=i + 1; j < tot;j++)
+	    for (j=i+1; j<tot;j++)
 	       if (ptrtab[j] == ptrtab[i])
 		  ptrtab[j]=NULL;
 	    free(ptrtab[i]);
@@ -2020,7 +2020,7 @@ GImage *GImageReadRgb(char *filename) {
 
    /* Create memory to hold image, exit with NULL if not enough memory */
    if ((ret =
-	GImageCreate(header.dim == 3 ? it_true : it_index, header.width,
+	GImageCreate(header.dim == 3?it_true:it_index, header.width,
 		     header.height)) == NULL) {
       afclose(fp);
       return (NULL);
@@ -2045,7 +2045,7 @@ GImage *GImageReadRgb(char *filename) {
 	 goto errorGImageReadRgbFile;
 
       /* Next, get image data */
-      for (i=0; i < tablen;i++)
+      for (i=0; i<tablen;i++)
 	 if ((k=find_scanline(fp, &header, i, starttab, ptrtab))) {
 	    if (k == -1)
 	       goto errorGImageReadRgbMem;
@@ -2055,22 +2055,22 @@ GImage *GImageReadRgb(char *filename) {
 
       /* Then, build image */
       if (header.chans == 1) {
-	 for (i=0; i < header.height;i++)
+	 for (i=0; i<header.height;i++)
 	    memcpy(base->data +
-		   (header.height - 1 - i) * base->bytes_per_line, ptrtab[i],
+		   (header.height-1-i)*base->bytes_per_line, ptrtab[i],
 		   header.width);
       } else {
 	 unsigned long *ipt;
 
-	 for (i=0; i < header.height;i++) {
+	 for (i=0; i<header.height;i++) {
 	    ipt =
 	       (unsigned long *) (base->data +
-				  (header.height - 1 -
-				   i) * base->bytes_per_line);
-	    for (j=0; j < header.width;j++)
+				  (header.height-1 -
+				   i)*base->bytes_per_line);
+	    for (j=0; j<header.width;j++)
 	       *ipt++=COLOR_CREATE(ptrtab[i][j],
-				     ptrtab[i + header.height][j],
-				     ptrtab[i + 2 * header.height][j]);
+				     ptrtab[i+header.height][j],
+				     ptrtab[i+2*header.height][j]);
 	 }
       }
       freeptrtab(ptrtab, tablen);
@@ -2079,28 +2079,28 @@ GImage *GImageReadRgb(char *filename) {
    } else {
       /* working with Verbatim image data */
       if (header.chans == 1 && header.bpc == 1) {
-	 for (i=0; i < header.height;i++) {
-	    afread(base->data + (header.height - 1 - i) * base->bytes_per_line,
+	 for (i=0; i<header.height;i++) {
+	    afread(base->data+(header.height-1-i)*base->bytes_per_line,
 		  header.width, 1, fp);
 	    if (header.pixmax != 255) {
 	       pt =
 		  (unsigned char *) (base->data +
-				     (header.height - 1 -
-				      i) * base->bytes_per_line);
-	       for (end=pt + header.width; pt < end; ++pt)
-		  *pt=(*pt * 255) / header.pixmax;
+				     (header.height-1 -
+				      i)*base->bytes_per_line);
+	       for (end=pt+header.width; pt<end; ++pt)
+		  *pt=(*pt*255)/header.pixmax;
 	    }
 	 }
       } else if (header.chans == 1) {
-	 for (i=0; i < header.height;i++) {
+	 for (i=0; i<header.height;i++) {
 	    pt =
 	       (unsigned char *) (base->data +
-				  (header.height - 1 -
-				   i) * base->bytes_per_line);
-	    for (end=pt + header.width; pt < end;) {
-	       if ((k=aget_uint16_le(fp)) < 0)
+				  (header.height-1 -
+				   i)*base->bytes_per_line);
+	    for (end=pt+header.width; pt<end;) {
+	       if ((k=aget_uint16_le(fp))<0)
 		  goto errorGImageReadRgbFile;
-	       *pt++=(k * 255L) / header.pixmax;
+	       *pt++=(k*255L)/header.pixmax;
 	    }
 	 }
       } else {
@@ -2124,40 +2124,40 @@ GImage *GImageReadRgb(char *filename) {
 	    goto errorGImageReadRgbMem;
 	 }
 	 if (header.bpc == 1) {
-	    for (i=0; i < header.height;i++) {
-	       if ((afread(r, header.width, 1, fp)) < 1 ||
-		   (afread(g, header.width, 1, fp)) < 1 ||
-		   (afread(b, header.width, 1, fp)) < 1 ||
-		   (header.chans == 4 && (afread(a, header.width, 1, fp)) < 1))
+	    for (i=0; i<header.height;i++) {
+	       if ((afread(r, header.width, 1, fp))<1 ||
+		   (afread(g, header.width, 1, fp))<1 ||
+		   (afread(b, header.width, 1, fp))<1 ||
+		   (header.chans == 4 && (afread(a, header.width, 1, fp))<1))
 		  goto errorGImageReadRgbFile;
 	       ipt =
 		  (unsigned long *) (base->data +
-				     (header.height - 1 -
-				      i) * base->bytes_per_line);
+				     (header.height-1 -
+				      i)*base->bytes_per_line);
 	       rpt=r;
 	       gpt=g;
 	       bpt=b;
-	       for (iend=ipt + header.width; ipt < iend;)
-		  *ipt++=COLOR_CREATE(*rpt++ * 255L / header.pixmax,
-					*gpt++ * 255L / header.pixmax,
-					*bpt++ * 255L / header.pixmax);
+	       for (iend=ipt+header.width; ipt<iend;)
+		  *ipt++=COLOR_CREATE(*rpt++*255L/header.pixmax,
+					*gpt++*255L/header.pixmax,
+					*bpt++*255L/header.pixmax);
 	    }
 	 } else {
-	    for (i=0; i < header.height;i++) {
-	       for (j=0; j < header.width;j++) {
-		  if ((k=aget_uint16_le(fp)) < 0)
+	    for (i=0; i<header.height;i++) {
+	       for (j=0; j<header.width;j++) {
+		  if ((k=aget_uint16_le(fp))<0)
 		     goto errorGImageReadRgbFile;
-		  r[j]=k * 255L / header.pixmax;
+		  r[j]=k*255L/header.pixmax;
 	       }
-	       for (j=0; j < header.width;j++) {
-		  if ((k=aget_uint16_le(fp)) < 0)
+	       for (j=0; j<header.width;j++) {
+		  if ((k=aget_uint16_le(fp))<0)
 		     goto errorGImageReadRgbFile;
-		  g[j]=k * 255L / header.pixmax;
+		  g[j]=k*255L/header.pixmax;
 	       }
-	       for (j=0; j < header.width;j++) {
-		  if ((k=aget_uint16_le(fp)) < 0)
+	       for (j=0; j<header.width;j++) {
+		  if ((k=aget_uint16_le(fp))<0)
 		     goto errorGImageReadRgbFile;
-		  b[j]=k * 255L / header.pixmax;
+		  b[j]=k*255L/header.pixmax;
 	       }
 	       if (header.chans == 4) {
 		  afread(a, header.width, 1, fp);
@@ -2165,12 +2165,12 @@ GImage *GImageReadRgb(char *filename) {
 	       }
 	       ipt =
 		  (unsigned long *) (base->data +
-				     (header.height - 1 -
-				      i) * base->bytes_per_line);
+				     (header.height-1 -
+				      i)*base->bytes_per_line);
 	       rpt=r;
 	       gpt=g;
 	       bpt=b;
-	       for (iend=ipt + header.width; ipt < iend;)
+	       for (iend=ipt+header.width; ipt<iend;)
 		  *ipt++=COLOR_CREATE(*rpt++, *gpt++, *bpt++);
 	    }
 	 }
@@ -2226,7 +2226,7 @@ GImage *GImageReadTiff(char *filename) {
        TIFFGetField(tif, TIFFTAG_IMAGELENGTH, &h) != 1)
       goto errorGImageReadTiff;
 
-   /* Create memory to hold image & raster, exit if not enough memory  */
+   /* Create memory to hold image&raster, exit if not enough memory  */
    if ((ret=GImageCreate(it_true, w, h)) == NULL)
       goto errorGImageReadTiffMem;
    if ((raster=(uint32_t *) malloc(w * h * sizeof(uint32_t))) == NULL) {
@@ -2237,10 +2237,10 @@ GImage *GImageReadTiff(char *filename) {
    if (TIFFReadRGBAImage(tif, w, h, raster, 0)) {
       TIFFClose(tif);
       base=ret->u.image;
-      for (i=0; i < h;i++) {
-	 ipt=(uint32_t *) (base->data + i * base->bytes_per_line);
-	 fpt=raster + (h - 1 - i) * w;
-	 for (j=0; j < w;j++)
+      for (i=0; i<h;i++) {
+	 ipt=(uint32_t *) (base->data+i * base->bytes_per_line);
+	 fpt=raster+(h-1-i)*w;
+	 for (j=0; j<w;j++)
 	    *ipt++ =
 	       COLOR_CREATE(TIFFGetR(fpt[j]), TIFFGetG(fpt[j]),
 			    TIFFGetB(fpt[j]));
@@ -2267,8 +2267,8 @@ GImage *GImageReadTiff(char *filename) {
 static int ConvertXbmByte(int pixels) {
    int i, val=0;
 
-   for (i=0; i < 8;i++)
-      if (pixels & (1 << i))
+   for (i=0; i<8;i++)
+      if (pixels&(1 << i))
 	 val |= (0x80 >> i);
    return (val ^ 0xff);		/* I default black the other way */
 }
@@ -2294,35 +2294,35 @@ GImage *GImageReadXbm(char *filename) {
       goto errorGImageReadXbm;
 
    /* Check for, and skip past hotspot */
-   if ((ch=getc(file)) < 0)
+   if ((ch=getc(file))<0)
       goto errorGImageReadXbm;
    if (ch == '#') {
-      if (fscanf(file, "define %*s %*d\n") < 0 ||	/* x hotspot */
-	  fscanf(file, "#define %*s %*d\n") < 0)	/* y hotspot */
+      if (fscanf(file, "define %*s %*d\n")<0 ||	/* x hotspot */
+	  fscanf(file, "#define %*s %*d\n")<0)	/* y hotspot */
 	 goto errorGImageReadXbm;
-   } else if (ungetc(ch, file) < 0)
+   } else if (ungetc(ch, file)<0)
       goto errorGImageReadXbm;
 
    /* Data starts after finding "static unsigned " or "static " */
-   if (fscanf(file, "static ") < 0 || (ch=getc(file)) < 0)
+   if (fscanf(file, "static ")<0 || (ch=getc(file))<0)
       goto errorGImageReadXbm;
    if (ch == 'u') {
-      if (fscanf(file, "nsigned ") < 0 || (ch=getc(file)) < 0)
+      if (fscanf(file, "nsigned ")<0 || (ch=getc(file))<0)
 	 goto errorGImageReadXbm;
       /* TODO: Do we want to track signed/unsigned data? */
    }
 
    /* Data may be in char,short or long formats */
    if (ch == 'c') {
-      if (fscanf(file, "har %*s={") < 0)
+      if (fscanf(file, "har %*s={")<0)
 	 goto errorGImageReadXbm;
       l=8;
    } else if (ch == 's') {
-      if (fscanf(file, "hort %*s={") < 0)
+      if (fscanf(file, "hort %*s={")<0)
 	 goto errorGImageReadXbm;
       l=16;
    } else if (ch == 'l') {
-      if (fscanf(file, "ong %*s={") < 0)
+      if (fscanf(file, "ong %*s={")<0)
 	 goto errorGImageReadXbm;
       l=32;
    }
@@ -2333,20 +2333,20 @@ GImage *GImageReadXbm(char *filename) {
 
    /* Convert *.xbm graphic into one that FF can use */
    base=gi->u.image;
-   for (i=0; i < height;i++) {
-      scanline=base->data + i * base->bytes_per_line;
-      for (j=0; j < base->bytes_per_line;j++) {
+   for (i=0; i<height;i++) {
+      scanline=base->data+i * base->bytes_per_line;
+      for (j=0; j<base->bytes_per_line;j++) {
 	 if (fscanf(file, " 0x%x", (unsigned *) &pixels) != 1)
 	    goto errorGImageReadXbm;
 	 *scanline++=ConvertXbmByte(pixels);
-	 if (l > 8 && j + 1 < base->bytes_per_line) {
+	 if (l>8 && j+1<base->bytes_per_line) {
 	    *scanline++=ConvertXbmByte(pixels >> 8);
 	    ++j;
 	 }
-	 if (l > 16 && j + 1 < base->bytes_per_line) {
+	 if (l>16 && j+1<base->bytes_per_line) {
 	    *scanline++=ConvertXbmByte(pixels >> 16);
 	    ++j;
-	    if (j + 1 < base->bytes_per_line) {
+	    if (j+1<base->bytes_per_line) {
 	       *scanline++=ConvertXbmByte(pixels >> 24);
 	       ++j;
 	    }
@@ -2367,7 +2367,7 @@ GImage *GImageReadXbm(char *filename) {
 
 int GImageWriteXbm(GImage * gi, char *filename) {
 /* Export an *.xbm image, return 0 if all done okay */
-   struct _GImage *base=gi->list_len == 0 ? gi->u.image : gi->u.images[0];
+   struct _GImage *base=gi->list_len == 0?gi->u.image:gi->u.images[0];
    FILE *file;
    int i, j, val, val2, k;
    char stem[256];
@@ -2397,18 +2397,18 @@ int GImageWriteXbm(GImage * gi, char *filename) {
    fprintf(file, "#define %s_width %d\n", stem, (int) base->width);
    fprintf(file, "#define %s_height %d\n", stem, (int) base->height);
    fprintf(file, "static unsigned char %s_bits[]={\n", stem);
-   for (i=0; i < base->height;i++) {
+   for (i=0; i<base->height;i++) {
       fprintf(file, "  ");
-      scanline=base->data + i * base->bytes_per_line;
-      for (j=0; j < base->bytes_per_line;j++) {
+      scanline=base->data+i * base->bytes_per_line;
+      for (j=0; j<base->bytes_per_line;j++) {
 	 val=*scanline++;
 	 val2=0;
-	 for (k=0; k < 8; ++k) {
-	    if ((val & (1 << k)))
+	 for (k=0; k<8; ++k) {
+	    if ((val&(1 << k)))
 	       val2 |= (0x80 >> k);
 	 }
-	 fprintf(file, "0x%.2x%s", val2 ^ 0xff, i == base->height - 1
-		 && j == base->bytes_per_line - 1 ? "" : ", ");
+	 fprintf(file, "0x%.2x%s", val2 ^ 0xff, i == base->height-1
+		 && j == base->bytes_per_line-1?"":", ");
       }
       fprintf(file, "\n");
    }
@@ -2424,7 +2424,7 @@ int GImageWriteXbm(GImage * gi, char *filename) {
 /* X PIXMAP (XPM) */
 
 /* These are c files, all the significant data resides in strings, everything
-else may be ignored (well, the first line must be the comment / * XPM * /)
+else may be ignored (well, the first line must be the comment/* XPM * /)
 
     / * XPM * /
     static char * plaid[] =
@@ -2483,14 +2483,14 @@ static int getstring(unsigned char *buf, int sz, FILE * fp) {
       if (ch == '"' && !incomment)
 	 break;
       if (!incomment && ch == '/') {
-	 if ((ch=getc(fp)) < 0)
+	 if ((ch=getc(fp))<0)
 	    break;
 	 if (ch == '*')
 	    incomment=true;
 	 else
 	    ungetc(ch, fp);
       } else if (incomment && ch == '*') {
-	 if ((ch=getc(fp)) < 0)
+	 if ((ch=getc(fp))<0)
 	    break;
 	 if (ch == '/')
 	    incomment=false;
@@ -2498,11 +2498,11 @@ static int getstring(unsigned char *buf, int sz, FILE * fp) {
 	    ungetc(ch, fp);
       }
    }
-   if (ch < 0)
+   if (ch<0)
       return (0);
 
    /* Get data within quote marks */
-   while (--sz > 0 && (ch=getc(fp)) >= 0 && ch != '"')
+   while (--sz>0 && (ch=getc(fp)) >= 0 && ch != '"')
       *buf++=ch;
    if (ch != '"')
       return (0);
@@ -2516,12 +2516,12 @@ static int gww_getline(unsigned char *buf, int sz, FILE * fp) {
 
    unsigned char *pt=buf;
 
-   while (--sz > 0 && (ch=getc(fp)) >= 0 && ch != '\n' && ch != '\r')
+   while (--sz>0 && (ch=getc(fp)) >= 0 && ch != '\n' && ch != '\r')
       *pt++=ch;
    if (ch == '\r' && (ch=getc(fp)) != '\n')
       ungetc(ch, fp);
    *pt='\0';
-   if (ch < 0 && pt == buf)
+   if (ch<0 && pt == buf)
       return (0);
    return (1);
 }
@@ -2535,10 +2535,10 @@ union hash {
 static void freetab(union hash *tab, int nchars) {
    int i;
 
-   if (tab && nchars > 1) {
-      for (i=0; i < 256;i++)
+   if (tab && nchars>1) {
+      for (i=0; i<256;i++)
 	 if (tab[i].table != NULL)
-	    freetab(tab[i].table, nchars - 1);
+	    freetab(tab[i].table, nchars-1);
    }
    free(tab);
 }
@@ -2547,7 +2547,7 @@ static int fillupclut(Color * clut, union hash *tab, int index, int nchars) {
    int i;
 
    if (nchars == 1) {
-      for (i=0; i < 256;i++)
+      for (i=0; i<256;i++)
 	 if (tab[i].color != -1) {
 	    if (tab[i].color == TRANS) {
 	       clut[256]=index;
@@ -2557,9 +2557,9 @@ static int fillupclut(Color * clut, union hash *tab, int index, int nchars) {
 	    tab[i].color=index++;
 	 }
    } else {
-      for (i=0; i < 256;i++)
+      for (i=0; i<256;i++)
 	 if (tab[i].table != NULL)
-	    index=fillupclut(clut, tab[i].table, index, nchars - 1);
+	    index=fillupclut(clut, tab[i].table, index, nchars-1);
    }
    return (index);
 }
@@ -2572,7 +2572,7 @@ static long parsecol(char *start, char *end) {
       ++start;
    while (isspace(*start))
       ++start;
-   while (end > start && isspace(end[-1]))
+   while (end>start && isspace(end[-1]))
       --end;
    ch=*end;
    *end='\0';
@@ -2580,17 +2580,17 @@ static long parsecol(char *start, char *end) {
    if (strcmp(start, "None") == 0)
       ret=TRANS;		/* no_color==transparent */
    else if (*start == '#' || *start == '%') {
-      if (end - start == 4) {
-	 sscanf(start + 1, "%lx", &ret);
+      if (end-start == 4) {
+	 sscanf(start+1, "%lx", &ret);
 	 ret =
-	    ((ret & 0xf00) << 12) | ((ret & 0xf0) << 8) | ((ret & 0xf) << 4);
-      } else if (end - start == 7)
-	 sscanf(start + 1, "%lx", &ret);
-      else if (end - start == 13) {
+	    ((ret&0xf00) << 12)|((ret&0xf0) << 8)|((ret&0xf) << 4);
+      } else if (end-start == 7)
+	 sscanf(start+1, "%lx", &ret);
+      else if (end-start == 13) {
 	 int r, g, b;
 
-	 sscanf(start + 1, "%4x%4x%4x", &r, &g, &b);
-	 ret=((r >> 8) << 16) | ((g >> 8) << 8) | (b >> 8);
+	 sscanf(start+1, "%4x%4x%4x", &r, &g, &b);
+	 ret=((r >> 8) << 16)|((g >> 8) << 8)|(b >> 8);
       }
       if (*start == '%') {
 	 /* TODO! */
@@ -2634,7 +2634,7 @@ static long findcol(char *str) {
    while (*try_order) {
       pt=findnextkey(str);
       while (*pt) {
-	 end=findnextkey(pt + 2);
+	 end=findnextkey(pt+2);
 	 if (*pt == *try_order)
 	    return (parsecol(pt, end));
 	 pt=end;
@@ -2652,31 +2652,31 @@ static union hash *parse_colors(FILE * fp, unsigned char *line, int lsiz,
    union hash *sub;
    int i, j;
 
-   if ((tab=(union hash *) malloc(256 * sizeof(union hash))) == NULL) {
+   if ((tab=(union hash *) malloc(256*sizeof(union hash))) == NULL) {
       return (NULL);
    }
 
    if (nchars == 1)
-      memset(tab, -1, 256 * sizeof(union hash));
-   for (i=0; i < ncols;i++) {
+      memset(tab, -1, 256*sizeof(union hash));
+   for (i=0; i<ncols;i++) {
       if (!getdata(line, lsiz, fp)) {
 	 freetab(tab, nchars);
 	 return (NULL);
       }
       sub=tab;
-      for (j=0; j < nchars - 1;j++) {
+      for (j=0; j<nchars-1;j++) {
 	 if (sub[line[j]].table == NULL) {
 	    if ((sub[line[j]].table =
-		 (union hash *) malloc(256 * sizeof(union hash))) == NULL) {
+		 (union hash *) malloc(256*sizeof(union hash))) == NULL) {
 	       freetab(tab, nchars);
 	       return (NULL);
 	    }
-	    if (j == nchars - 2)
-	       memset(sub[line[j]].table, -1, 256 * sizeof(union hash));
+	    if (j == nchars-2)
+	       memset(sub[line[j]].table, -1, 256*sizeof(union hash));
 	 }
 	 sub=sub[line[j]].table;
       }
-      sub[line[j]].color=findcol((char *) line + j + 1);
+      sub[line[j]].color=findcol((char *) line+j+1);
    }
    return (tab);
 }
@@ -2707,7 +2707,7 @@ GImage *GImageReadXpm(char *filename) {
    nchar=0;
    /* If file begins with XPM then read lines using getstring;() */
    /* otherwise for XPM2 read lines using function gww_getline() */
-   if ((fgets((char *) buf, sizeof(buf), fp)) < 0)
+   if ((fgets((char *) buf, sizeof(buf), fp))<0)
       goto errorGImageReadXpm;
    if (strstr((char *) buf, "XPM2") != NULL)
       getdata=gww_getline;
@@ -2725,7 +2725,7 @@ GImage *GImageReadXpm(char *filename) {
 
    /* Prepare to fetch one graphic line at a time for conversion */
    if ((line =
-	(unsigned char *) malloc((lsiz=nchar * width + 20) *
+	(unsigned char *) malloc((lsiz=nchar * width+20) *
 				 sizeof(unsigned char))) == NULL) {
       goto errorGImageReadXpmMem;
    }
@@ -2753,17 +2753,17 @@ GImage *GImageReadXpm(char *filename) {
 
    /* Get image */
    base=ret->u.image;
-   for (y=0; y < height; ++y) {
+   for (y=0; y<height; ++y) {
       if (!getdata(line, lsiz, fp))
 	 goto errorGImageReadXpm;
-      pt=(uint8_t *) (base->data + y * base->bytes_per_line);
+      pt=(uint8_t *) (base->data+y * base->bytes_per_line);
       ipt=NULL;
-      end=pt + width;
-      if (cols > 256)
+      end=pt+width;
+      if (cols>256)
 	 ipt=(unsigned long *) pt;
-      for (lpt=line; *line && pt < end;) {
+      for (lpt=line; *line && pt<end;) {
 	 sub=tab;
-	 for (j=0; *lpt && j < nchar - 1; ++j, ++lpt)
+	 for (j=0; *lpt && j<nchar-1; ++j, ++lpt)
 	    if (sub != NULL)
 	       sub=sub[*lpt].table;
 	 if (sub != NULL) {
@@ -2801,7 +2801,7 @@ GImage *GImageCreate(enum image_type type, int32_t width, int32_t height) {
    GImage *gi;
    struct _GImage *base;
 
-   if (type < it_mono || type > it_rgba)
+   if (type<it_mono || type>it_rgba)
       return (NULL);
 
    gi=(GImage *) calloc(1, sizeof(GImage));
@@ -2814,8 +2814,8 @@ GImage *GImageCreate(enum image_type type, int32_t width, int32_t height) {
    base->width=width;
    base->height=height;
    base->bytes_per_line=(type == it_true
-			   || type == it_rgba) ? 4 * width : type ==
-      it_index ? width : (width + 7) / 8;
+			   || type == it_rgba)?4*width:type ==
+      it_index?width:(width+7)/8;
    base->data=NULL;
    base->clut=NULL;
    base->trans=COLOR_UNKNOWN;
@@ -2840,7 +2840,7 @@ GImage *_GImage_Create(enum image_type type, int32_t width, int32_t height) {
    GImage *gi;
    struct _GImage *base;
 
-   if (type < it_mono || type > it_rgba)
+   if (type<it_mono || type>it_rgba)
       return (NULL);
 
    gi=(GImage *) calloc(1, sizeof(GImage));
@@ -2853,8 +2853,8 @@ GImage *_GImage_Create(enum image_type type, int32_t width, int32_t height) {
    base->width=width;
    base->height=height;
    base->bytes_per_line=(type == it_true
-			   || type == it_rgba) ? 4 * width : type ==
-      it_index ? width : (width + 7) / 8;
+			   || type == it_rgba)?4*width:type ==
+      it_index?width:(width+7)/8;
    base->data=NULL;
    base->clut=NULL;
    if (type == it_index) {
@@ -2875,7 +2875,7 @@ void GImageDestroy(GImage * gi) {
 
    if (gi != NULL) {
       if (gi->list_len != 0) {
-	 for (i=0; i < gi->list_len;i++) {
+	 for (i=0; i<gi->list_len;i++) {
 	    free(gi->u.images[i]->clut);
 	    free(gi->u.images[i]->data);
 	    free(gi->u.images[i]);
@@ -2899,7 +2899,7 @@ GImage *GImageCreateAnimation(GImage ** images, int n) {
    
    /* Check if "images" are okay to copy before creating an animation. */
    /* We expect to find single images (not an array). Type must match. */
-   for (i=0; i < n;i++) {
+   for (i=0; i<n;i++) {
       if (images[i]->list_len != 0 ||
 	  images[i]->u.image->image_type != images[0]->u.image->image_type) {
 	 fprintf(stderr, "Images are not compatible to make an Animation\n");
@@ -2919,7 +2919,7 @@ GImage *GImageCreateAnimation(GImage ** images, int n) {
    /* Copy images[i] pointer into 'gi', then release each "images[i]". */
    gi->list_len=n;
    gi->u.images=imgs;
-   for (i=0; i < n;i++) {
+   for (i=0; i<n;i++) {
       imgs[i]=images[i]->u.image;
       free(images[i]);
    }
@@ -2935,20 +2935,20 @@ void GImageDrawRect(GImage * img, GRect * r, Color col) {
    if (r->y >= base->height || r->x >= base->width)
       return;
 
-   for (i=0; i < r->width;i++) {
-      if (i + r->x >= base->width)
+   for (i=0; i<r->width;i++) {
+      if (i+r->x >= base->width)
 	 break;
-      base->data[r->y * base->bytes_per_line + i + r->x]=col;
-      if (r->y + r->height - 1 < base->height)
-	 base->data[(r->y + r->height - 1) * base->bytes_per_line + i +
+      base->data[r->y * base->bytes_per_line+i+r->x]=col;
+      if (r->y+r->height-1<base->height)
+	 base->data[(r->y+r->height-1)*base->bytes_per_line+i +
 		    r->x]=col;
    }
-   for (i=0; i < r->height;i++) {
-      if (i + r->y >= base->height)
+   for (i=0; i<r->height;i++) {
+      if (i+r->y >= base->height)
 	 break;
-      base->data[(r->y + i) * base->bytes_per_line + r->x]=col;
-      if (r->x + r->width - 1 < base->width)
-	 base->data[(r->y + i) * base->bytes_per_line + r->x + r->width - 1] =
+      base->data[(r->y+i)*base->bytes_per_line+r->x]=col;
+      if (r->x+r->width-1<base->width)
+	 base->data[(r->y+i)*base->bytes_per_line+r->x+r->width-1] =
 	    col;
    }
 }
@@ -2970,44 +2970,44 @@ void GImageDrawImage(GImage * dest, GImage * src, GRect * junk, int x, int y) {
 
    maxpix=1;
    if (dbase->clut != NULL)
-      maxpix=dbase->clut->clut_len - 1;
+      maxpix=dbase->clut->clut_len-1;
 
    if (dbase->clut != NULL && sbase->clut != NULL
-       && sbase->clut->clut_len > 1) {
-      factor=(dbase->clut->clut_len - 1) / (sbase->clut->clut_len - 1);
+       && sbase->clut->clut_len>1) {
+      factor=(dbase->clut->clut_len-1)/(sbase->clut->clut_len-1);
       if (factor == 0)
 	 factor=1;
    } else
       factor=1;
 
    if (sbase->image_type == it_index) {
-      for (i=0; i < sbase->height;i++) {
-	 di=y + i;
-	 if (di < 0 || di >= dbase->height)
+      for (i=0; i<sbase->height;i++) {
+	 di=y+i;
+	 if (di<0 || di >= dbase->height)
 	    continue;
 	 sbi=i * sbase->bytes_per_line;
 	 dbi=di * dbase->bytes_per_line;
-	 for (j=0; j < sbase->width;j++) {
-	    if (x + j < 0 || x + j >= dbase->width)
+	 for (j=0; j<sbase->width;j++) {
+	    if (x+j<0 || x+j >= dbase->width)
 	       continue;
-	    val=dbase->data[dbi + x + j] + sbase->data[sbi + j] * factor;
-	    if (val > 255)
+	    val=dbase->data[dbi+x+j]+sbase->data[sbi+j] * factor;
+	    if (val>255)
 	       val=255;
-	    dbase->data[dbi + x + j]=val;
+	    dbase->data[dbi+x+j]=val;
 	 }
       }
    } else if (sbase->image_type == it_mono) {
-      for (i=0; i < sbase->height;i++) {
-	 di=y + i;
-	 if (di < 0 || di >= dbase->height)
+      for (i=0; i<sbase->height;i++) {
+	 di=y+i;
+	 if (di<0 || di >= dbase->height)
 	    continue;
 	 sbi=i * sbase->bytes_per_line;
 	 dbi=di * dbase->bytes_per_line;
-	 for (j=0, sbit=0x80; j < sbase->width;j++) {
-	    if (x + j < 0 || x + j >= dbase->width)
+	 for (j=0, sbit=0x80; j<sbase->width;j++) {
+	    if (x+j<0 || x+j >= dbase->width)
 	       continue;
-	    if (sbase->data[sbi + (j >> 3)] & sbit)
-	       dbase->data[dbi + x + j]=maxpix;
+	    if (sbase->data[sbi+(j >> 3)]&sbit)
+	       dbase->data[dbi+x+j]=maxpix;
 	    if ((sbit >>= 1) == 0)
 	       sbit=0x80;
 	 }
@@ -3035,21 +3035,21 @@ static void GImageBlendOver(GImage * dest, GImage * src, GRect * from, int x, in
       return;
    }
 
-   for (i=0; i < from->height;i++) {
+   for (i=0; i<from->height;i++) {
       dpt =
-	 (uint32_t *) (dbase->data + (i + y) * dbase->bytes_per_line +
+	 (uint32_t *) (dbase->data+(i+y)*dbase->bytes_per_line +
 		     x * sizeof(uint32_t));
       spt =
-	 (uint32_t *) (sbase->data + (i + from->y) * sbase->bytes_per_line +
+	 (uint32_t *) (sbase->data+(i+from->y)*sbase->bytes_per_line +
 		     from->x * sizeof(uint32_t));
 
-      for (j=0; j < from->width; j++) {
+      for (j=0; j<from->width; j++) {
 	 a=COLOR_ALPHA(*spt);
-	 r=((255 - a) * COLOR_RED(*dpt) + a * COLOR_RED(*spt)) / 255;
-	 g=((255 - a) * COLOR_GREEN(*dpt) + a * COLOR_GREEN(*spt)) / 255;
-	 b=((255 - a) * COLOR_BLUE(*dpt) + a * COLOR_BLUE(*spt)) / 255;
+	 r=((255-a)*COLOR_RED(*dpt)+a * COLOR_RED(*spt))/255;
+	 g=((255-a)*COLOR_GREEN(*dpt)+a * COLOR_GREEN(*spt))/255;
+	 b=((255-a)*COLOR_BLUE(*dpt)+a * COLOR_BLUE(*spt))/255;
 	 spt++;
-	 *dpt++=0xff000000 | COLOR_CREATE(r, g, b);
+	 *dpt++=0xff000000|COLOR_CREATE(r, g, b);
       }
    }
 }
@@ -3170,28 +3170,28 @@ static void WriteBase(FILE * file, struct _GImage *base, char *stem,
 
    if (base->image_type == it_true) {
       fprintf(file, "static uint32_t %s%d_data[]={\n", stem, instance);
-      for (i=0; i < base->height;i++) {
-	 ipt=(uint32_t *) (base->data + i * base->bytes_per_line);
-	 for (j=0; j < base->width;) {
-	    fprintf(file, j == 0 ? "    " : "\t");
-	    for (k=0; k < 8 && j < base->width; ++k, ++j, ++ipt) {
-	       val=*ipt & 0xffffffff;
+      for (i=0; i<base->height;i++) {
+	 ipt=(uint32_t *) (base->data+i * base->bytes_per_line);
+	 for (j=0; j<base->width;) {
+	    fprintf(file, j == 0?"    ":"\t");
+	    for (k=0; k<8 && j<base->width; ++k, ++j, ++ipt) {
+	       val=*ipt&0xffffffff;
 	       fprintf(file, "0x%.8x%s", (unsigned int) val,
-		       j == base->width - 1
-		       && i == base->height - 1 ? "" : ", ");
+		       j == base->width-1
+		       && i == base->height-1?"":", ");
 	    }
 	    fprintf(file, "\n");
 	 }
       }
    } else {
       fprintf(file, "static uint8_t %s%d_data[]={\n", stem, instance);
-      for (i=0; i < base->height;i++) {
-	 pt=(uint8_t *) (base->data + i * base->bytes_per_line);
-	 for (j=0; j < base->bytes_per_line;) {
-	    fprintf(file, j == 0 ? "    " : "\t");
-	    for (k=0; k < 8 && j < base->bytes_per_line; ++k, ++j, ++pt)
-	       fprintf(file, "0x%.2x%s", *pt, j == base->width - 1
-		       && i == base->height - 1 ? "" : ", ");
+      for (i=0; i<base->height;i++) {
+	 pt=(uint8_t *) (base->data+i * base->bytes_per_line);
+	 for (j=0; j<base->bytes_per_line;) {
+	    fprintf(file, j == 0?"    ":"\t");
+	    for (k=0; k<8 && j<base->bytes_per_line; ++k, ++j, ++pt)
+	       fprintf(file, "0x%.2x%s", *pt, j == base->width-1
+		       && i == base->height-1?"":", ");
 	    fprintf(file, "\n");
 	 }
       }
@@ -3202,20 +3202,20 @@ static void WriteBase(FILE * file, struct _GImage *base, char *stem,
       fprintf(file, "\nstatic GClut %s%d_clut={ %d, %d, %ld,\n",
 	      stem, instance,
 	      base->clut->clut_len, base->clut->is_grey,
-	      (unsigned long) base->clut->trans_index & 0xfffffff);
-      for (i=0; i < base->clut->clut_len;) {
+	      (unsigned long) base->clut->trans_index&0xfffffff);
+      for (i=0; i<base->clut->clut_len;) {
 	 fprintf(file, "    ");
-	 for (k=0; k < 8 && i < base->clut->clut_len; ++k, ++i) {
-	    val=base->clut->clut[i] & 0xffffffff;
+	 for (k=0; k<8 && i<base->clut->clut_len; ++k, ++i) {
+	    val=base->clut->clut[i]&0xffffffff;
 	    fprintf(file, "0x%.8x%s", (unsigned int) val,
-		    i == base->clut->clut_len - 1 ? " };" : ", ");
+		    i == base->clut->clut_len-1?" };":", ");
 	 }
 	 fprintf(file, "\n");
       }
    }
    fprintf(file, "\nstatic struct _GImage %s%d_base={\n", stem, instance);
-   fprintf(file, base->image_type == it_true ? "    it_true,\n" :
-	   base->image_type == it_index ? "    it_index,\n" :
+   fprintf(file, base->image_type == it_true?"    it_true,\n" :
+	   base->image_type == it_index?"    it_index,\n" :
 	   "    it_mono,\n");
    fprintf(file, "    %d,%ld,%ld,%ld,\n", (int) base->delay,
 	   (long) base->width, (long) base->height,
@@ -3226,7 +3226,7 @@ static void WriteBase(FILE * file, struct _GImage *base, char *stem,
    else
       fprintf(file, "    &%s%d_clut,\n", stem, instance);
    fprintf(file, "    0x%.8x\n};\n\n",
-	   (unsigned int) base->trans & 0xffffffff);
+	   (unsigned int) base->trans&0xffffffff);
 }
 
 int GImageWriteGImage(GImage * gi, char *filename) {
@@ -3264,12 +3264,12 @@ int GImageWriteGImage(GImage * gi, char *filename) {
       fprintf(file, "GImage %s={ 0, &%s0_base };\n", stem, stem);
    } else {
       /* Construct an array of images */
-      for (i=0; i < gi->list_len;i++)
+      for (i=0; i<gi->list_len;i++)
 	 WriteBase(file, gi->u.images[i], stem, i);
       fprintf(file, "static struct _GImage *%s_bases={\n", stem);
-      for (i=0; i < gi->list_len;i++)
+      for (i=0; i<gi->list_len;i++)
 	 fprintf(file, "    &%s%d_base%s\n", stem, i,
-		 i == gi->list_len - 1 ? "" : ",");
+		 i == gi->list_len-1?"":",");
       fprintf(file, "};\n\n");
 
       fprintf(file, "GImage %s={ %d, (struct _GImage *) %s_bases };\n",

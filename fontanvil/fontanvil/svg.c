@@ -1,4 +1,4 @@
-/* $Id: svg.c 4525 2015-12-20 19:51:59Z mskala $ */
+/* $Id: svg.c 4532 2015-12-22 13:18:53Z mskala $ */
 /* Copyright (C) 2003-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -46,8 +46,8 @@
 static void latin1ToUtf8Out(AFILE *file,char *str) {
    /* beware of characters above 0x80, also &, <, > (things that are magic for xml) */
    while (*str) {
-      if (*str=='&' || *str=='<' || *str=='>' || (*str & 0x80))
-	 afprintf(file, "&#%d;", (uint8_t) * str);
+      if (*str=='&' || *str=='<' || *str=='>' || (*str&0x80))
+	 afprintf(file, "&#%d;", (uint8_t)*str);
       else
 	 aputc(*str, file);
       ++str;
@@ -93,32 +93,32 @@ static int svg_outfontheader(AFILE *file,SplineFont *sf,int layer) {
    afprintf(file, "<defs>\n");
    afprintf(file, "<font id=\"%s\" horiz-adv-x=\"%d\" ", sf->fontname, defwid);
    if (sf->hasvmetrics)
-      afprintf(file, "vert-adv-y=\"%d\" ", sf->ascent + sf->descent);
+      afprintf(file, "vert-adv-y=\"%d\" ", sf->ascent+sf->descent);
    aputc('>', file);
    aputc('\n', file);
    afprintf(file, "  <font-face \n");
    afprintf(file, "    font-family=\"%s\"\n",
-	   sf->familyname_with_timestamp ? sf->
-	   familyname_with_timestamp : sf->familyname);
+	   sf->familyname_with_timestamp?sf->
+	   familyname_with_timestamp:sf->familyname);
    afprintf(file, "    font-weight=\"%d\"\n", info.weight);
    if (strstrmatch(sf->fontname, "obli")
        || strstrmatch(sf->fontname, "slanted"))
       afprintf(file, "    font-style=\"oblique\"\n");
-   else if (MacStyleCode(sf, NULL) & sf_italic)
+   else if (MacStyleCode(sf, NULL)&sf_italic)
       afprintf(file, "    font-style=\"italic\"\n");
    if (strstrmatch(sf->fontname, "small") || strstrmatch(sf->fontname, "cap"))
       afprintf(file, "    font-variant=\"small-caps\"\n");
    afprintf(file, "    font-stretch=\"%s\"\n", condexp[info.width]);
-   afprintf(file, "    units-per-em=\"%d\"\n", sf->ascent + sf->descent);
+   afprintf(file, "    units-per-em=\"%d\"\n", sf->ascent+sf->descent);
    afprintf(file, "    panose-1=\"%d %d %d %d %d %d %d %d %d %d\"\n",
 	   info.panose[0], info.panose[1], info.panose[2], info.panose[3],
 	   info.panose[4], info.panose[5], info.panose[6], info.panose[7],
 	   info.panose[8], info.panose[9]);
    afprintf(file, "    ascent=\"%d\"\n", sf->ascent);
    afprintf(file, "    descent=\"%d\"\n", -sf->descent);
-   if (bd.xheight > 0)
+   if (bd.xheight>0)
       afprintf(file, "    x-height=\"%g\"\n", (double) bd.xheight);
-   if (bd.caph > 0)
+   if (bd.caph>0)
       afprintf(file, "    cap-height=\"%g\"\n", (double) bd.caph);
    afprintf(file, "    bbox=\"%g %g %g %g\"\n", (double) bb.minx,
 	   (double) bb.miny, (double) bb.maxx, (double) bb.maxy);
@@ -131,9 +131,9 @@ static int svg_outfontheader(AFILE *file,SplineFont *sf,int layer) {
    if (hash != NULL) {
       if (*hash=='[')
 	 ++hash;
-      ch=hash[strlen(hash) - 1];
+      ch=hash[strlen(hash)-1];
       if (ch==']')
-	 hash[strlen(hash) - 1]='\0';
+	 hash[strlen(hash)-1]='\0';
       afprintf(file, "    stemh=\"%s\"\n", hash);
       if (ch==']')
 	 hash[strlen(hash)]=ch;
@@ -141,20 +141,20 @@ static int svg_outfontheader(AFILE *file,SplineFont *sf,int layer) {
    if (hasv != NULL) {
       if (*hasv=='[')
 	 ++hasv;
-      ch=hasv[strlen(hasv) - 1];
+      ch=hasv[strlen(hasv)-1];
       if (ch==']')
-	 hasv[strlen(hasv) - 1]='\0';
+	 hasv[strlen(hasv)-1]='\0';
       afprintf(file, "    stemv=\"%s\"\n", hasv);
       if (ch==']')
 	 hasv[strlen(hasv)]=ch;
    }
    minu=0x7fffff;
    maxu=0;
-   for (i=0; i < sf->glyphcnt; ++i)
-      if (sf->glyphs[i] != NULL && sf->glyphs[i]->unicodeenc > 0) {
-	 if (sf->glyphs[i]->unicodeenc < minu)
+   for (i=0; i<sf->glyphcnt; ++i)
+      if (sf->glyphs[i] != NULL && sf->glyphs[i]->unicodeenc>0) {
+	 if (sf->glyphs[i]->unicodeenc<minu)
 	    minu=sf->glyphs[i]->unicodeenc;
-	 if (sf->glyphs[i]->unicodeenc > maxu)
+	 if (sf->glyphs[i]->unicodeenc>maxu)
 	    maxu=sf->glyphs[i]->unicodeenc;
       }
    if (maxu != 0)
@@ -180,7 +180,7 @@ static int svg_pathdump(AFILE *file,SplineSet *spl,int lineout,
 	  || (!do_clips && !spl->is_clip_path)) {
 	 sprintf(buffer, "M%g %g", (double) spl->first->me.x,
 		 (double) spl->first->me.y);
-	 if (lineout + strlen(buffer) >= 255) {
+	 if (lineout+strlen(buffer) >= 255) {
 	    aputc('\n', file);
 	    lineout=0;
 	 }
@@ -196,50 +196,50 @@ static int svg_pathdump(AFILE *file,SplineSet *spl,int lineout,
 	       first=sp;
 	    if (sp->knownlinear) {
 	       if (sp->to->me.x==sp->from->me.x)
-		  sprintf(buffer, "v%g", (double) (sp->to->me.y - last.y));
+		  sprintf(buffer, "v%g", (double) (sp->to->me.y-last.y));
 	       else if (sp->to->me.y==sp->from->me.y)
-		  sprintf(buffer, "h%g", (double) (sp->to->me.x - last.x));
+		  sprintf(buffer, "h%g", (double) (sp->to->me.x-last.x));
 	       else if (sp->to->next==first) {
 		  strcpy(buffer, "z");
 		  closed=true;
 	       } else
-		  sprintf(buffer, "l%g %g", (double) (sp->to->me.x - last.x),
-			  (double) (sp->to->me.y - last.y));
+		  sprintf(buffer, "l%g %g", (double) (sp->to->me.x-last.x),
+			  (double) (sp->to->me.y-last.y));
 	    } else if (sp->order2) {
 	       if (sp->from->prev != NULL && sp->from != spl->first &&
-		   sp->from->me.x - sp->from->prevcp.x ==
-		   sp->from->nextcp.x - sp->from->me.x
-		   && sp->from->me.y - sp->from->prevcp.y ==
-		   sp->from->nextcp.y - sp->from->me.y)
-		  sprintf(buffer, "t%g %g", (double) (sp->to->me.x - last.x),
-			  (double) (sp->to->me.y - last.y));
+		   sp->from->me.x-sp->from->prevcp.x ==
+		   sp->from->nextcp.x-sp->from->me.x
+		   && sp->from->me.y-sp->from->prevcp.y ==
+		   sp->from->nextcp.y-sp->from->me.y)
+		  sprintf(buffer, "t%g %g", (double) (sp->to->me.x-last.x),
+			  (double) (sp->to->me.y-last.y));
 	       else
 		  sprintf(buffer, "q%g %g %g %g",
-			  (double) (sp->to->prevcp.x - last.x),
-			  (double) (sp->to->prevcp.y - last.y),
-			  (double) (sp->to->me.x - last.x),
-			  (double) (sp->to->me.y - last.y));
+			  (double) (sp->to->prevcp.x-last.x),
+			  (double) (sp->to->prevcp.y-last.y),
+			  (double) (sp->to->me.x-last.x),
+			  (double) (sp->to->me.y-last.y));
 	    } else {
 	       if (sp->from->prev != NULL && sp->from != spl->first &&
-		   sp->from->me.x - sp->from->prevcp.x ==
-		   sp->from->nextcp.x - sp->from->me.x
-		   && sp->from->me.y - sp->from->prevcp.y ==
-		   sp->from->nextcp.y - sp->from->me.y)
+		   sp->from->me.x-sp->from->prevcp.x ==
+		   sp->from->nextcp.x-sp->from->me.x
+		   && sp->from->me.y-sp->from->prevcp.y ==
+		   sp->from->nextcp.y-sp->from->me.y)
 		  sprintf(buffer, "s%g %g %g %g",
-			  (double) (sp->to->prevcp.x - last.x),
-			  (double) (sp->to->prevcp.y - last.y),
-			  (double) (sp->to->me.x - last.x),
-			  (double) (sp->to->me.y - last.y));
+			  (double) (sp->to->prevcp.x-last.x),
+			  (double) (sp->to->prevcp.y-last.y),
+			  (double) (sp->to->me.x-last.x),
+			  (double) (sp->to->me.y-last.y));
 	       else
 		  sprintf(buffer, "c%g %g %g %g %g %g",
-			  (double) (sp->from->nextcp.x - last.x),
-			  (double) (sp->from->nextcp.y - last.y),
-			  (double) (sp->to->prevcp.x - last.x),
-			  (double) (sp->to->prevcp.y - last.y),
-			  (double) (sp->to->me.x - last.x),
-			  (double) (sp->to->me.y - last.y));
+			  (double) (sp->from->nextcp.x-last.x),
+			  (double) (sp->from->nextcp.y-last.y),
+			  (double) (sp->to->prevcp.x-last.x),
+			  (double) (sp->to->prevcp.y-last.y),
+			  (double) (sp->to->me.x-last.x),
+			  (double) (sp->to->me.y-last.y));
 	    }
-	    if (lineout + strlen(buffer) >= 255) {
+	    if (lineout+strlen(buffer) >= 255) {
 	       aputc('\n', file);
 	       lineout=0;
 	    }
@@ -272,7 +272,7 @@ static void svg_dumpstroke(AFILE *file,struct pen *cpen,
    if (fallback != NULL) {
       if (pen.brush.col==COLOR_INHERITED)
 	 pen.brush.col=fallback->brush.col;
-      if (pen.brush.opacity < 0)
+      if (pen.brush.opacity<0)
 	 pen.brush.opacity=fallback->brush.opacity;
       if (pen.width==WIDTH_INHERITED)
 	 pen.width=fallback->width;
@@ -326,7 +326,7 @@ static void svg_dumpstroke(AFILE *file,struct pen *cpen,
       int i;
 
       afprintf(file, "stroke-dasharray=\"");
-      for (i=0; i < DASH_MAX && pen.dashes[i] != 0; ++i)
+      for (i=0; i<DASH_MAX && pen.dashes[i] != 0; ++i)
 	 afprintf(file, "%d ", pen.dashes[i]);
       afprintf(file, "\" ");
    } else {
@@ -350,7 +350,7 @@ static void svg_dumpfill(AFILE *file,struct brush *cbrush,
    if (fallback != NULL) {
       if (brush.col==COLOR_INHERITED)
 	 brush.col=fallback->col;
-      if (brush.opacity < 0)
+      if (brush.opacity<0)
 	 brush.opacity=fallback->opacity;
    }
 
@@ -381,7 +381,7 @@ static SplineSet *TransBy(SplineSet *ss,double trans[4]) {
 
    if (trans[0]==1.0 && trans[3]==1.0 && trans[1]==0 && trans[2]==0)
       return (ss);
-   memcpy(transform, trans, 4 * sizeof(double));
+   memcpy(transform, trans, 4*sizeof(double));
    transform[4]=transform[5]=0;
    MatInverse(inversetrans, transform);
    return (SplinePointListTransform
@@ -396,12 +396,12 @@ static int svg_sc_any(SplineChar *sc,int layer) {
 
    first=last=layer;
    if (sc->parent->multilayer)
-      last=sc->layer_cnt - 1;
+      last=sc->layer_cnt-1;
    any=false;
    for (i=first; i <= last && !any; ++i) {
       any=sc->layers[i].splines != NULL || sc->layers[i].images != NULL;
       for (ref=sc->layers[i].refs; ref != NULL && !any; ref=ref->next)
-	 for (j=0; j < ref->layer_cnt && !any; ++j)
+	 for (j=0; j<ref->layer_cnt && !any; ++j)
 	    any=ref->layers[j].splines != NULL;
    }
    return (any);
@@ -423,7 +423,7 @@ static void DataURI_ImageDump(AFILE *file,struct gimage *img) {
 
 #if !defined(_NO_LIBJPEG)
    struct _GImage *base =
-      img->list_len==0 ? img->u.image : img->u.images[0];
+      img->list_len==0?img->u.image:img->u.images[0];
 #endif
 
    /* Technically we can only put a file into an URI if the whole thing is */
@@ -456,20 +456,20 @@ static void DataURI_ImageDump(AFILE *file,struct gimage *img) {
    ch_on_line=0;
    while (ch != EOF) {
       threechars[0]=threechars[1]=threechars[2]=0;
-      for (i=0; i < 3 && ch != EOF; ++i) {
+      for (i=0; i<3 && ch != EOF; ++i) {
 	 threechars[i]=ch;
 	 ch=agetc(imgf);
       }
-      if (i > 0) {
+      if (i>0) {
 	 fourchars[0]=base64tab[threechars[0] >> 2];
 	 fourchars[1] =
-	    base64tab[((threechars[0] & 0x3) << 4) | (threechars[1] >> 4)];
+	    base64tab[((threechars[0]&0x3) << 4)|(threechars[1] >> 4)];
 	 fourchars[2] =
-	    base64tab[((threechars[1] & 0xf) << 2) | (threechars[2] >> 6)];
-	 fourchars[3]=base64tab[threechars[2] & 0x3f];
-	 if (i < 3)
+	    base64tab[((threechars[1]&0xf) << 2)|(threechars[2] >> 6)];
+	 fourchars[3]=base64tab[threechars[2]&0x3f];
+	 if (i<3)
 	    fourchars[3]='=';
-	 if (i < 2)
+	 if (i<2)
 	    fourchars[2]='=';
 	 aputc(fourchars[0], file);
 	 aputc(fourchars[1], file);
@@ -493,13 +493,13 @@ static void svg_dumpgradient(AFILE *file,struct gradient *gradient,
    float osame;
 
    afprintf(file, "    <%s ",
-	   gradient->radius==0 ? "linearGradient" : "radialGradient");
+	   gradient->radius==0?"linearGradient":"radialGradient");
    if (nested==NULL)
       afprintf(file, " id=\"%s-ly%d-%s-grad\"", scname, layer,
-	      is_fill ? "fill" : "stroke");
+	      is_fill?"fill":"stroke");
    else
       afprintf(file, " id=\"%s-%s-ly%d-%s-grad\"", scname, nested->name, layer,
-	      is_fill ? "fill" : "stroke");
+	      is_fill?"fill":"stroke");
    afprintf(file, "\n\tgradientUnits=\"userSpaceOnUse\"");
    if (gradient->radius==0) {
       afprintf(file, "\n\tx1=\"%g\" y1=\"%g\" x2=\"%g\" y2=\"%g\"",
@@ -518,12 +518,12 @@ static void svg_dumpgradient(AFILE *file,struct gradient *gradient,
 		 (double) gradient->radius);
    }
    afprintf(file, "\n\tspreadMethod=\"%s\">\n",
-	   gradient->sm==sm_pad ? "pad" :
-	   gradient->sm==sm_reflect ? "reflect" : "repeat");
+	   gradient->sm==sm_pad?"pad" :
+	   gradient->sm==sm_reflect?"reflect":"repeat");
 
    csame=-1;
    osame=-1;
-   for (i=0; i < gradient->stop_cnt; ++i) {
+   for (i=0; i<gradient->stop_cnt; ++i) {
       if (csame==-1)
 	 csame=gradient->grad_stops[i].col;
       else if (csame != gradient->grad_stops[i].col)
@@ -533,7 +533,7 @@ static void svg_dumpgradient(AFILE *file,struct gradient *gradient,
       else if (osame != gradient->grad_stops[i].opacity)
 	 osame=-2;
    }
-   for (i=0; i < gradient->stop_cnt; ++i) {
+   for (i=0; i<gradient->stop_cnt; ++i) {
       afprintf(file, "      <stop offset=\"%g\"",
 	      (double) gradient->grad_stops[i].offset);
       if (csame==-2) {
@@ -543,7 +543,7 @@ static void svg_dumpgradient(AFILE *file,struct gradient *gradient,
 	    afprintf(file, " stop-color=\"#%06x\"",
 		    gradient->grad_stops[i].col);
       }
-      if (osame < 0) {
+      if (osame<0) {
 	 if (gradient->grad_stops[i].opacity==COLOR_INHERITED)
 	    afprintf(file, " stop-opacity=\"inherit\"");
 	 else
@@ -553,7 +553,7 @@ static void svg_dumpgradient(AFILE *file,struct gradient *gradient,
       afprintf(file, "/>\n");
    }
    afprintf(file, "    </%s>\n",
-	   gradient->radius==0 ? "linearGradient" : "radialGradient");
+	   gradient->radius==0?"linearGradient":"radialGradient");
 }
 
 static void svg_dumpscdefs(AFILE *file,SplineChar *sc,char *name,
@@ -577,10 +577,10 @@ static void svg_dumppattern(AFILE *file,struct pattern *pattern,
    afprintf(file, "    <pattern ");
    if (nested==NULL)
       afprintf(file, " id=\"%s-ly%d-%s-pattern\"", scname, layer,
-	      is_fill ? "fill" : "stroke");
+	      is_fill?"fill":"stroke");
    else
       afprintf(file, " id=\"%s-%s-ly%d-%s-pattern\"", scname, nested->name,
-	      layer, is_fill ? "fill" : "stroke");
+	      layer, is_fill?"fill":"stroke");
    afprintf(file, "\n\tpatternUnits=\"userSpaceOnUse\"");
    if (pattern_sc != NULL) {
       DBounds b;
@@ -588,7 +588,7 @@ static void svg_dumppattern(AFILE *file,struct pattern *pattern,
       PatternSCBounds(pattern_sc, &b);
       afprintf(file, "\n\tviewBox=\"%g %g %g %g\"",
 	      (double) b.minx, (double) b.miny,
-	      (double) (b.maxx - b.minx), (double) (b.maxy - b.miny));
+	      (double) (b.maxx-b.minx), (double) (b.maxy-b.miny));
    }
    afprintf(file, "\n\twidth=\"%g\" height=\"%g\"",
 	   (double) pattern->width, (double) pattern->height);
@@ -640,11 +640,11 @@ static void svg_dumpscdefs(AFILE *file,SplineChar *sc,char *name,
    int i, j;
    RefChar *ref;
 
-   for (i=ly_fore; i < sc->layer_cnt; ++i) {
+   for (i=ly_fore; i<sc->layer_cnt; ++i) {
       svg_layer_defs(file, sc->layers[i].splines, &sc->layers[i].fill_brush,
 		     &sc->layers[i].stroke_pen, sc, name, NULL, i, istop);
       for (ref=sc->layers[i].refs; ref != NULL; ref=ref->next) {
-	 for (j=0; j < ref->layer_cnt; ++j)
+	 for (j=0; j<ref->layer_cnt; ++j)
 	    if (ref->layers[j].splines != NULL) {
 	       svg_layer_defs(file, ref->layers[j].splines,
 			      &ref->layers[j].fill_brush,
@@ -661,7 +661,7 @@ static void svg_dumptype3(AFILE *file,SplineChar *sc,char *name,int istop) {
    ImageList *images;
    SplineSet *transed;
 
-   for (i=ly_fore; i < sc->layer_cnt; ++i) {
+   for (i=ly_fore; i<sc->layer_cnt; ++i) {
       if (SSHasDrawn(sc->layers[i].splines)) {
 	 afprintf(file, "  <g ");
 	 if (SSHasClip(sc->layers[i].splines))
@@ -683,7 +683,7 @@ static void svg_dumptype3(AFILE *file,SplineChar *sc,char *name,int istop) {
 	 afprintf(file, "  </g>\n");
       }
       for (ref=sc->layers[i].refs; ref != NULL; ref=ref->next) {
-	 for (j=0; j < ref->layer_cnt; ++j)
+	 for (j=0; j<ref->layer_cnt; ++j)
 	    if (ref->layers[j].splines != NULL) {
 	       afprintf(file, "   <g ");
 	       transed=ref->layers[j].splines;
@@ -714,7 +714,7 @@ static void svg_dumptype3(AFILE *file,SplineChar *sc,char *name,int istop) {
 	 struct _GImage *base;
 
 	 afprintf(file, "      <image\n");
-	 base=images->image->list_len==0 ? images->image->u.image :
+	 base=images->image->list_len==0?images->image->u.image :
 	    images->image->u.images[0];
 	 afprintf(file, "\twidth=\"%g\"\n\theight=\"%g\"\n",
 		 (double) (base->width * images->xscale),
@@ -750,7 +750,7 @@ static void svg_scpathdump(AFILE *file,SplineChar *sc,char *endpath,
       for (ref=sc->layers[layer].refs; ref != NULL; ref=ref->next)
 	 lineout =
 	    svg_pathdump(file, ref->layers[0].splines, lineout, false, false);
-      if (lineout >= 255 - 4)
+      if (lineout >= 255-4)
 	 aputc('\n', file);
       aputc('"', file);
       afputs(" />\n  </g>\n", file);
@@ -761,13 +761,13 @@ static void svg_scpathdump(AFILE *file,SplineChar *sc,char *endpath,
       for (ref=sc->layers[layer].refs; ref != NULL; ref=ref->next)
 	 lineout =
 	    svg_pathdump(file, ref->layers[0].splines, lineout, true, false);
-      if (lineout >= 255 - 4)
+      if (lineout >= 255-4)
 	 aputc('\n', file);
       aputc('"', file);
       afputs(" />\n", file);
    } else {
       afputs(">\n", file);
-      for (i=ly_fore; i < sc->layer_cnt && !needs_defs; ++i) {
+      for (i=ly_fore; i<sc->layer_cnt && !needs_defs; ++i) {
 	 if (SSHasClip(sc->layers[i].splines))
 	    needs_defs=true;
 	 else if (sc->layers[i].fill_brush.pattern != NULL ||
@@ -776,7 +776,7 @@ static void svg_scpathdump(AFILE *file,SplineChar *sc,char *endpath,
 		  sc->layers[i].stroke_pen.brush.gradient != NULL)
 	    needs_defs=true;
 	 for (ref=sc->layers[i].refs; ref != NULL; ref=ref->next) {
-	    for (j=0; j < ref->layer_cnt; ++j)
+	    for (j=0; j<ref->layer_cnt; ++j)
 	       if (ref->layers[j].splines != NULL) {
 		  if (SSHasClip(ref->layers[j].splines))
 		     needs_defs=true;
@@ -822,7 +822,7 @@ static int LigCnt(SplineFont *sf,PST *lig,int32_t *univals,int max) {
       univals[c++]=sc->unicodeenc;
       if (end==NULL)
 	 return (c);
-      pt=end + 1;
+      pt=end+1;
       while (*pt==' ')
 	 ++pt;
    }
@@ -836,8 +836,8 @@ static PST *HasLigature(SplineChar *sc) {
    for (pst=sc->possub; pst != NULL; pst=pst->next) {
       if (pst->type==pst_ligature) {
 	 c=LigCnt(sc->parent, pst, univals,
-		    sizeof(univals) / sizeof(univals[0]));
-	 if (c > 1 && c > bestc) {
+		    sizeof(univals)/sizeof(univals[0]));
+	 if (c>1 && c>bestc) {
 	    c=bestc;
 	    best=pst;
 	 }
@@ -871,15 +871,15 @@ static void svg_scdump(AFILE *file,SplineChar *sc,int defwid,int encuni,
    afprintf(file, "    <glyph glyph-name=\"%s\" ", sc->name);
    if (best != NULL) {
       c=LigCnt(sc->parent, best, univals,
-		 sizeof(univals) / sizeof(univals[0]));
+		 sizeof(univals)/sizeof(univals[0]));
       afputs("unicode=\"", file);
-      for (i=0; i < c; ++i)
-	 if (univals[i] >= 'A' && univals[i] < 'z')
+      for (i=0; i<c; ++i)
+	 if (univals[i] >= 'A' && univals[i]<'z')
 	    aputc(univals[i], file);
 	 else
 	    afprintf(file, "&#x%x;", (unsigned int) univals[i]);
       afputs("\" ", file);
-   } else if (encuni != -1 && encuni < 0x110000) {
+   } else if (encuni != -1 && encuni<0x110000) {
       if (encuni != 0x9 &&
 	  encuni != 0xa &&
 	  encuni != 0xd &&
@@ -890,9 +890,9 @@ static void svg_scdump(AFILE *file,SplineChar *sc,int defwid,int encuni,
       else if ((encuni >= 0x7f && encuni <= 0x84) ||
 	       (encuni >= 0x86 && encuni <= 0x9f) ||
 	       (encuni >= 0xfdd0 && encuni <= 0xfddf) ||
-	       (encuni & 0xffff)==0xfffe || (encuni & 0xffff)==0xffff)
+	       (encuni&0xffff)==0xfffe || (encuni&0xffff)==0xffff)
 	 /* Not recommended in XML */ ;
-      else if (encuni >= 32 && encuni < 127 &&
+      else if (encuni >= 32 && encuni<127 &&
 	       encuni != '"' && encuni != '&' &&
 	       encuni != '<' && encuni != '>')
 	 afprintf(file, "unicode=\"%c\" ", encuni);
@@ -907,11 +907,11 @@ static void svg_scdump(AFILE *file,SplineChar *sc,int defwid,int encuni,
    if (sc->width != defwid)
       afprintf(file, "horiz-adv-x=\"%d\" ", sc->width);
    if (sc->parent->hasvmetrics
-       && sc->vwidth != sc->parent->ascent + sc->parent->descent)
+       && sc->vwidth != sc->parent->ascent+sc->parent->descent)
       afprintf(file, "vert-adv-y=\"%d\" ", sc->vwidth);
    if (strstr(sc->name, ".vert") != NULL || strstr(sc->name, ".vrt2") != NULL)
       afprintf(file, "orientation=\"v\" ");
-   if (encuni != -1 && encuni < 0x10000) {
+   if (encuni != -1 && encuni<0x10000) {
       if (isarabinitial(encuni))
 	 afprintf(file, "arabic-form=\"initial\" ");
       else if (isarabmedial(encuni))
@@ -939,7 +939,7 @@ static void svg_notdefdump(AFILE *file,SplineFont *sf,int defwid,
       if (sc->width != defwid)
 	 afprintf(file, "horiz-adv-x=\"%d\" ", sc->width);
       if (sc->parent->hasvmetrics
-	  && sc->vwidth != sc->parent->ascent + sc->parent->descent)
+	  && sc->vwidth != sc->parent->ascent+sc->parent->descent)
 	 afprintf(file, "vert-adv-y=\"%d\" ", sc->vwidth);
       aputc('\n', file);
       svg_scpathdump(file, sc, " </glyph>\n", layer);
@@ -968,12 +968,12 @@ static void svg_dumpkerns(AFILE *file,SplineFont *sf,int isv) {
    KernPair *kp;
    KernClass *kc;
 
-   for (i=0; i < sf->glyphcnt; ++i)
+   for (i=0; i<sf->glyphcnt; ++i)
       if (SCWorthOutputting(sf->glyphs[i])) {
-	 for (kp=isv ? sf->glyphs[i]->vkerns : sf->glyphs[i]->kerns;
+	 for (kp=isv?sf->glyphs[i]->vkerns:sf->glyphs[i]->kerns;
 	      kp != NULL; kp=kp->next)
 	    if (kp->off != 0 && SCWorthOutputting(kp->sc)) {
-	       afprintf(file, isv ? "    <vkern " : "    <hkern ");
+	       afprintf(file, isv?"    <vkern ":"    <hkern ");
 	       if (sf->glyphs[i]->unicodeenc==-1
 		   || HasLigature(sf->glyphs[i]))
 		  afprintf(file, "g1=\"%s\" ", sf->glyphs[i]->name);
@@ -993,17 +993,17 @@ static void svg_dumpkerns(AFILE *file,SplineFont *sf,int isv) {
 	    }
       }
 
-   for (kc=isv ? sf->vkerns : sf->kerns; kc != NULL; kc=kc->next) {
-      for (i=1; i < kc->first_cnt; ++i)
-	 for (j=1; j < kc->second_cnt; ++j) {
-	    if (kc->offsets[i * kc->second_cnt + j] != 0 &&
+   for (kc=isv?sf->vkerns:sf->kerns; kc != NULL; kc=kc->next) {
+      for (i=1; i<kc->first_cnt; ++i)
+	 for (j=1; j<kc->second_cnt; ++j) {
+	    if (kc->offsets[i * kc->second_cnt+j] != 0 &&
 		*kc->firsts[i] != '\0' && *kc->seconds[j] != '\0') {
-	       afprintf(file, isv ? "    <vkern g1=\"" : "    <hkern g1=\"");
+	       afprintf(file, isv?"    <vkern g1=\"":"    <hkern g1=\"");
 	       fputkerns(file, kc->firsts[i]);
 	       afprintf(file, "\"\n\tg2=\"");
 	       fputkerns(file, kc->seconds[j]);
 	       afprintf(file, "\"\n\tk=\"%d\" />\n",
-		       -kc->offsets[i * kc->second_cnt + j]);
+		       -kc->offsets[i * kc->second_cnt+j]);
 	    }
 	 }
    }
@@ -1017,13 +1017,13 @@ static void svg_outfonttrailer(AFILE *file,SplineFont *sf) {
 static int AnyArabicForm(SplineChar *sc) {
    struct altuni *altuni;
 
-   if (sc->unicodeenc != -1 && sc->unicodeenc < 0x10000 &&
+   if (sc->unicodeenc != -1 && sc->unicodeenc<0x10000 &&
        (isarabinitial(sc->unicodeenc) ||
 	isarabmedial(sc->unicodeenc) ||
 	isarabfinal(sc->unicodeenc) || isarabisolated(sc->unicodeenc)))
       return (sc->unicodeenc);
    for (altuni=sc->altuni; altuni != NULL; altuni=altuni->next)
-      if (altuni->unienc != -1 && altuni->unienc < 0x10000 &&
+      if (altuni->unienc != -1 && altuni->unienc<0x10000 &&
 	  altuni->vs==-1 && altuni->fid==0 &&
 	  (isarabinitial(altuni->unienc) ||
 	   isarabmedial(altuni->unienc) ||
@@ -1043,7 +1043,7 @@ static void svg_sfdump(AFILE *file,SplineFont *sf,int layer) {
    int defwid, i, formeduni;
    struct altuni *altuni;
 
-   for (i=0; i < sf->glyphcnt; ++i)
+   for (i=0; i<sf->glyphcnt; ++i)
       if (sf->glyphs[i] != NULL)
 	 sf->glyphs[i]->ticked=false;
 
@@ -1051,7 +1051,7 @@ static void svg_sfdump(AFILE *file,SplineFont *sf,int layer) {
    svg_notdefdump(file, sf, defwid, layer);
 
    /* Ligatures must be output before their initial components */
-   for (i=0; i < sf->glyphcnt; ++i) {
+   for (i=0; i<sf->glyphcnt; ++i) {
       if (SCWorthOutputting(sf->glyphs[i])) {
 	 if (HasLigature(sf->glyphs[i]))
 	    svg_scdump(file, sf->glyphs[i], defwid, sf->glyphs[i]->unicodeenc,
@@ -1065,7 +1065,7 @@ static void svg_sfdump(AFILE *file,SplineFont *sf,int layer) {
       }
    }
    /* And formed arabic before unformed */
-   for (i=0; i < sf->glyphcnt; ++i) {
+   for (i=0; i<sf->glyphcnt; ++i) {
       SplineChar *sc=sf->glyphs[i];
 
       if (SCWorthOutputting(sc) && !sc->ticked) {
@@ -1108,7 +1108,7 @@ static void svg_sfdump(AFILE *file,SplineFont *sf,int layer) {
 	 }
       }
    }
-   for (i=0; i < sf->glyphcnt; ++i) {
+   for (i=0; i<sf->glyphcnt; ++i) {
       if (SCWorthOutputting(sf->glyphs[i]) && !sf->glyphs[i]->ticked) {
 	 if (UnformedUni(sf->glyphs[i]->unicodeenc))
 	    svg_scdump(file, sf->glyphs[i], defwid, sf->glyphs[i]->unicodeenc,
@@ -1147,14 +1147,14 @@ int _ExportSVG(AFILE *svg, SplineChar * sc, int layer) {
    DBounds b;
 
    SplineCharLayerFindBounds(sc, layer, &b);
-   em_size=sc->parent->ascent + sc->parent->descent;
-   if (b.minx > 0)
+   em_size=sc->parent->ascent+sc->parent->descent;
+   if (b.minx>0)
       b.minx=0;
-   if (b.maxx < em_size)
+   if (b.maxx<em_size)
       b.maxx=em_size;
-   if (b.miny > -sc->parent->descent)
+   if (b.miny>-sc->parent->descent)
       b.miny=-sc->parent->descent;
-   if (b.maxy < em_size)
+   if (b.maxy<em_size)
       b.maxy=em_size;
 
    afprintf(svg, "<?xml version=\"1.0\" standalone=\"no\"?>\n");
@@ -1306,7 +1306,7 @@ static xmlNodePtr SVGPickFont(xmlNodePtr *fonts,char *filename) {
    int choice;
 
    for (cnt=0; fonts[cnt] != NULL; ++cnt);
-   names=malloc((cnt + 1) * sizeof(char *));
+   names=malloc((cnt+1)*sizeof(char *));
    for (cnt=0; fonts[cnt] != NULL; ++cnt) {
       name=xmlGetProp(fonts[cnt], (xmlChar *) "id");
       if (name==NULL) {
@@ -1326,12 +1326,12 @@ static xmlNodePtr SVGPickFont(xmlNodePtr *fonts,char *filename) {
       pt=filename;
    if (pt != NULL && (lparen=strchr(pt, '(')) != NULL
        && strchr(lparen, ')') != NULL) {
-      char *find=fastrdup(lparen + 1);
+      char *find=fastrdup(lparen+1);
 
       pt=strchr(find, ')');
       if (pt != NULL)
 	 *pt='\0';
-      for (choice=cnt - 1; choice >= 0; --choice)
+      for (choice=cnt-1; choice >= 0; --choice)
 	 if (strcmp(names[choice], find)==0)
 	    break;
       if (choice==-1) {
@@ -1381,45 +1381,45 @@ static void SVGTraceArc(SplineSet *cur,BasePoint *current,
    static double cosines[]={ 1,0,-1,0,1,0,-1,0,1,0,-1,0 };
 
    final=SplinePointCreate(x, y);
-   if (rx < 0)
+   if (rx<0)
       rx=-rx;
-   if (ry < 0)
+   if (ry<0)
       ry=-ry;
    if (rx != 0 && ry != 0) {
       /* Page 647 in the SVG 1.1 spec describes how to do this */
       /* This is Appendix F (Implementation notes) section 6.5 */
       cosr=cos(axisrot);
       sinr=sin(axisrot);
-      x1p=cosr * (current->x - x) / 2 + sinr * (current->y - y) / 2;
-      y1p=-sinr * (current->x - x) / 2 + cosr * (current->y - y) / 2;
+      x1p=cosr * (current->x-x)/2+sinr * (current->y-y)/2;
+      y1p=-sinr * (current->x-x)/2+cosr * (current->y-y)/2;
       /* Correct for bad radii */
-      lambda=x1p * x1p / (rx * rx) + y1p * y1p / (ry * ry);
-      if (lambda > 1) {
+      lambda=x1p * x1p/(rx * rx)+y1p * y1p/(ry * ry);
+      if (lambda>1) {
 	 lambda=sqrt(lambda);
 	 rx *= lambda;
 	 ry *= lambda;
       }
-      factor=rx * rx * ry * ry - rx * rx * y1p * y1p - ry * ry * x1p * x1p;
+      factor=rx * rx * ry * ry-rx * rx * y1p * y1p-ry * ry * x1p * x1p;
       if (RealNear(factor, 0))
 	 factor=0;		/* Avoid rounding errors that lead to small negative values */
       else
-	 factor=sqrt(factor / (rx * rx * y1p * y1p + ry * ry * x1p * x1p));
+	 factor=sqrt(factor/(rx * rx * y1p * y1p+ry * ry * x1p * x1p));
       if (large_arc==sweep)
 	 factor=-factor;
-      cxp=factor * (rx * y1p) / ry;
-      cyp=-factor * (ry * x1p) / rx;
-      cx=cosr * cxp - sinr * cyp + (current->x + x) / 2;
-      cy=sinr * cxp + cosr * cyp + (current->y + y) / 2;
+      cxp=factor * (rx * y1p)/ry;
+      cyp=-factor * (ry * x1p)/rx;
+      cx=cosr * cxp-sinr * cyp+(current->x+x)/2;
+      cy=sinr * cxp+cosr * cyp+(current->y+y)/2;
 
-      tmpx=(x1p - cxp) / rx;
-      tmpy=(y1p - cyp) / ry;
-      startangle=acos(tmpx / sqrt(tmpx * tmpx + tmpy * tmpy));
-      if (tmpy < 0)
+      tmpx=(x1p-cxp)/rx;
+      tmpy=(y1p-cyp)/ry;
+      startangle=acos(tmpx/sqrt(tmpx * tmpx+tmpy * tmpy));
+      if (tmpy<0)
 	 startangle=-startangle;
-      t2x=(-x1p - cxp) / rx;
-      t2y=(-y1p - cyp) / ry;
-      delta=(tmpx * t2x + tmpy * t2y) /
-	 sqrt((tmpx * tmpx + tmpy * tmpy) * (t2x * t2x + t2y * t2y));
+      t2x=(-x1p-cxp)/rx;
+      t2y=(-y1p-cyp)/ry;
+      delta=(tmpx * t2x+tmpy * t2y) /
+	 sqrt((tmpx * tmpx+tmpy * tmpy)*(t2x * t2x+t2y * t2y));
       /* We occasionally got rounding errors near -1 */
       if (delta <= -1)
 	 delta=M_PI;
@@ -1427,79 +1427,79 @@ static void SVGTraceArc(SplineSet *cur,BasePoint *current,
 	 delta=0;
       else
 	 delta=acos(delta);
-      if (tmpx * t2y - tmpy * t2x < 0)
+      if (tmpx * t2y-tmpy * t2x<0)
 	 delta=-delta;
-      if (sweep==0 && delta > 0)
-	 delta -= 2 * M_PI;
-      if (sweep && delta < 0)
-	 delta += 2 * M_PI;
+      if (sweep==0 && delta>0)
+	 delta -= 2*M_PI;
+      if (sweep && delta<0)
+	 delta += 2*M_PI;
 
-      if (delta > 0) {
+      if (delta>0) {
 	 i=0;
-	 ia=firstia=floor(startangle / (M_PI / 2)) + 1;
-	 for (a=ia * (M_PI / 2), ia += 4;
-	      a < startangle + delta && !RealNear(a, startangle + delta);
-	      a += M_PI / 2, ++i, ++ia) {
+	 ia=firstia=floor(startangle/(M_PI/2))+1;
+	 for (a=ia * (M_PI/2), ia += 4;
+	      a<startangle+delta && !RealNear(a, startangle+delta);
+	      a += M_PI/2, ++i, ++ia) {
 	    t2x=rx * cosines[ia];
 	    t2y=ry * sines[ia];
-	    arcp[i].x=cosr * t2x - sinr * t2y + cx;
-	    arcp[i].y=sinr * t2x + cosr * t2y + cy;
+	    arcp[i].x=cosr * t2x-sinr * t2y+cx;
+	    arcp[i].y=sinr * t2x+cosr * t2y+cy;
 	    if (t2x==0) {
-	       t2x=rx * cosines[ia + 1];
+	       t2x=rx * cosines[ia+1];
 	       t2y=0;
 	    } else {
 	       t2x=0;
-	       t2y=ry * sines[ia + 1];
+	       t2y=ry * sines[ia+1];
 	    }
-	    prevcp[i].x=arcp[i].x - .552 * (cosr * t2x - sinr * t2y);
-	    prevcp[i].y=arcp[i].y - .552 * (sinr * t2x + cosr * t2y);
-	    nextcp[i].x=arcp[i].x + .552 * (cosr * t2x - sinr * t2y);
-	    nextcp[i].y=arcp[i].y + .552 * (sinr * t2x + cosr * t2y);
+	    prevcp[i].x=arcp[i].x-.552*(cosr * t2x-sinr * t2y);
+	    prevcp[i].y=arcp[i].y-.552*(sinr * t2x+cosr * t2y);
+	    nextcp[i].x=arcp[i].x+.552*(cosr * t2x-sinr * t2y);
+	    nextcp[i].y=arcp[i].y+.552*(sinr * t2x+cosr * t2y);
 	 }
       } else {
 	 i=0;
-	 ia=firstia=ceil(startangle / (M_PI / 2)) - 1;
-	 for (a=ia * (M_PI / 2), ia += 8;
-	      a > startangle + delta && !RealNear(a, startangle + delta);
-	      a -= M_PI / 2, ++i, --ia) {
+	 ia=firstia=ceil(startangle/(M_PI/2))-1;
+	 for (a=ia * (M_PI/2), ia += 8;
+	      a>startangle+delta && !RealNear(a, startangle+delta);
+	      a -= M_PI/2, ++i, --ia) {
 	    t2x=rx * cosines[ia];
 	    t2y=ry * sines[ia];
-	    arcp[i].x=cosr * t2x - sinr * t2y + cx;
-	    arcp[i].y=sinr * t2x + cosr * t2y + cy;
+	    arcp[i].x=cosr * t2x-sinr * t2y+cx;
+	    arcp[i].y=sinr * t2x+cosr * t2y+cy;
 	    if (t2x==0) {
-	       t2x=rx * cosines[ia + 1];
+	       t2x=rx * cosines[ia+1];
 	       t2y=0;
 	    } else {
 	       t2x=0;
-	       t2y=ry * sines[ia + 1];
+	       t2y=ry * sines[ia+1];
 	    }
-	    prevcp[i].x=arcp[i].x + .552 * (cosr * t2x - sinr * t2y);
-	    prevcp[i].y=arcp[i].y + .552 * (sinr * t2x + cosr * t2y);
-	    nextcp[i].x=arcp[i].x - .552 * (cosr * t2x - sinr * t2y);
-	    nextcp[i].y=arcp[i].y - .552 * (sinr * t2x + cosr * t2y);
+	    prevcp[i].x=arcp[i].x+.552*(cosr * t2x-sinr * t2y);
+	    prevcp[i].y=arcp[i].y+.552*(sinr * t2x+cosr * t2y);
+	    nextcp[i].x=arcp[i].x-.552*(cosr * t2x-sinr * t2y);
+	    nextcp[i].y=arcp[i].y-.552*(sinr * t2x+cosr * t2y);
 	 }
       }
       if (i != 0) {
-	 double firsta=firstia * M_PI / 2;
-	 double d=(firsta - startangle) / 2;
-	 double th=startangle + d;
-	 double hypot=1 / cos(d);
+	 double firsta=firstia * M_PI/2;
+	 double d=(firsta-startangle)/2;
+	 double th=startangle+d;
+	 double hypot=1/cos(d);
 	 BasePoint temp;
 
-	 t2x=rx * cos(th) * hypot;
-	 t2y=ry * sin(th) * hypot;
-	 temp.x=cosr * t2x - sinr * t2y + cx;
-	 temp.y=sinr * t2x + cosr * t2y + cy;
-	 firstcp[0].x=cur->last->me.x + .552 * (temp.x - cur->last->me.x);
-	 firstcp[0].y=cur->last->me.y + .552 * (temp.y - cur->last->me.y);
-	 firstcp[1].x=arcp[0].x + .552 * (temp.x - arcp[0].x);
-	 firstcp[1].y=arcp[0].y + .552 * (temp.y - arcp[0].y);
+	 t2x=rx * cos(th)*hypot;
+	 t2y=ry * sin(th)*hypot;
+	 temp.x=cosr * t2x-sinr * t2y+cx;
+	 temp.y=sinr * t2x+cosr * t2y+cy;
+	 firstcp[0].x=cur->last->me.x+.552*(temp.x-cur->last->me.x);
+	 firstcp[0].y=cur->last->me.y+.552*(temp.y-cur->last->me.y);
+	 firstcp[1].x=arcp[0].x+.552*(temp.x-arcp[0].x);
+	 firstcp[1].y=arcp[0].y+.552*(temp.y-arcp[0].y);
       }
-      for (j=0; j < i; ++j) {
+      for (j=0; j<i; ++j) {
 	 sp=SplinePointCreate(arcp[j].x, arcp[j].y);
 	 if (j != 0) {
 	    sp->prevcp=prevcp[j];
-	    cur->last->nextcp=nextcp[j - 1];
+	    cur->last->nextcp=nextcp[j-1];
 	 } else {
 	    sp->prevcp=firstcp[1];
 	    cur->last->nextcp=firstcp[0];
@@ -1513,30 +1513,30 @@ static void SVGTraceArc(SplineSet *cur,BasePoint *current,
 	 BasePoint temp;
 
 	 if (i==0) {
-	    double th=startangle + delta / 2;
+	    double th=startangle+delta/2;
 
-	    hypot=1.0 / cos(delta / 2);
+	    hypot=1.0/cos(delta/2);
 	    c=cos(th);
 	    s=sin(th);
 	 } else {
-	    double lasta=delta < 0 ? a + M_PI / 2 : a - M_PI / 2;
-	    double d=(startangle + delta - lasta);
-	    double th=lasta + d / 2;
+	    double lasta=delta<0?a+M_PI/2:a-M_PI/2;
+	    double d=(startangle+delta-lasta);
+	    double th=lasta+d/2;
 
-	    hypot=1.0 / cos(d / 2);
+	    hypot=1.0/cos(d/2);
 	    c=cos(th);
 	    s=sin(th);
 	 }
 	 t2x=rx * c * hypot;
 	 t2y=ry * s * hypot;
-	 temp.x=cosr * t2x - sinr * t2y + cx;
-	 temp.y=sinr * t2x + cosr * t2y + cy;
+	 temp.x=cosr * t2x-sinr * t2y+cx;
+	 temp.y=sinr * t2x+cosr * t2y+cy;
 	 cur->last->nextcp.x =
-	    cur->last->me.x + .552 * (temp.x - cur->last->me.x);
+	    cur->last->me.x+.552*(temp.x-cur->last->me.x);
 	 cur->last->nextcp.y =
-	    cur->last->me.y + .552 * (temp.y - cur->last->me.y);
-	 final->prevcp.x=final->me.x + .552 * (temp.x - final->me.x);
-	 final->prevcp.y=final->me.y + .552 * (temp.y - final->me.y);
+	    cur->last->me.y+.552*(temp.y-cur->last->me.y);
+	 final->prevcp.x=final->me.x+.552*(temp.x-final->me.x);
+	 final->prevcp.y=final->me.y+.552*(temp.y-final->me.y);
 	 cur->last->nonextcp=final->noprevcp=false;
       }
    }
@@ -1698,8 +1698,8 @@ static SplineSet *SVGParsePath(xmlChar *path) {
 	      break;
 	   case 's':
 	   case 'S':
-	      x1=2 * cur->last->me.x - cur->last->prevcp.x;
-	      y1=2 * cur->last->me.y - cur->last->prevcp.y;
+	      x1=2*cur->last->me.x-cur->last->prevcp.x;
+	      y1=2*cur->last->me.y-cur->last->prevcp.y;
 	      x2=strtod((char *) path, &end);
 	      end=skipcomma(end);
 	      y2=strtod(end, &end);
@@ -1760,8 +1760,8 @@ static SplineSet *SVGParsePath(xmlChar *path) {
 		 x += current.x;
 		 y += current.y;
 	      }
-	      x1=2 * cur->last->me.x - cur->last->prevcp.x;
-	      y1=2 * cur->last->me.y - cur->last->prevcp.y;
+	      x1=2*cur->last->me.x-cur->last->prevcp.x;
+	      y1=2*cur->last->me.y-cur->last->prevcp.y;
 	      sp=SplinePointCreate(x, y);
 	      sp->prevcp.x=x1;
 	      sp->prevcp.y=y1;
@@ -1780,7 +1780,7 @@ static SplineSet *SVGParsePath(xmlChar *path) {
 	      end=skipcomma(end);
 	      ry=strtod(end, &end);
 	      end=skipcomma(end);
-	      axisrot=strtod(end, &end) * M_PI / 180;
+	      axisrot=strtod(end, &end)*M_PI/180;
 	      end=skipcomma(end);
 	      large_arc=strtol(end, &end, 10);
 	      end=skipcomma(end);
@@ -1868,17 +1868,17 @@ static SplineSet *SVGParseRect(xmlNodePtr rect) {
       xmlFree(num);
    }
 
-   if (2 * rx > width)
-      rx=width / 2;
-   if (2 * ry > height)
-      ry=height / 2;
+   if (2*rx>width)
+      rx=width/2;
+   if (2*ry>height)
+      ry=height/2;
 
    cur=chunkalloc(sizeof(SplineSet));
    if (rx==0) {
-      cur->first=SplinePointCreate(x, y + height);
-      cur->last=SplinePointCreate(x + width, y + height);
+      cur->first=SplinePointCreate(x, y+height);
+      cur->last=SplinePointCreate(x+width, y+height);
       SplineMake(cur->first, cur->last, true);
-      sp=SplinePointCreate(x + width, y);
+      sp=SplinePointCreate(x+width, y);
       SplineMake(cur->last, sp, true);
       cur->last=sp;
       sp=SplinePointCreate(x, y);
@@ -1887,50 +1887,50 @@ static SplineSet *SVGParseRect(xmlNodePtr rect) {
       cur->last=cur->first;
       return (cur);
    } else {
-      cur->first=SplinePointCreate(x, y + height - ry);
-      cur->last=SplinePointCreate(x + rx, y + height);
+      cur->first=SplinePointCreate(x, y+height-ry);
+      cur->last=SplinePointCreate(x+rx, y+height);
       cur->first->nextcp.x=x;
-      cur->first->nextcp.y=y + height;
+      cur->first->nextcp.y=y+height;
       cur->last->prevcp=cur->first->nextcp;
       cur->first->nonextcp=cur->last->noprevcp=false;
       SplineMake(cur->first, cur->last, false);
-      if (rx < 2 * width) {
-	 sp=SplinePointCreate(x + width - rx, y + height);
+      if (rx<2*width) {
+	 sp=SplinePointCreate(x+width-rx, y+height);
 	 SplineMake(cur->last, sp, true);
 	 cur->last=sp;
       }
-      sp=SplinePointCreate(x + width, y + height - ry);
-      sp->prevcp.x=x + width;
-      sp->prevcp.y=y + height;
+      sp=SplinePointCreate(x+width, y+height-ry);
+      sp->prevcp.x=x+width;
+      sp->prevcp.y=y+height;
       cur->last->nextcp=sp->prevcp;
       cur->last->nonextcp=sp->noprevcp=false;
       SplineMake(cur->last, sp, false);
       cur->last=sp;
-      if (ry < 2 * height) {
-	 sp=SplinePointCreate(x + width, y + ry);
+      if (ry<2*height) {
+	 sp=SplinePointCreate(x+width, y+ry);
 	 SplineMake(cur->last, sp, false);
 	 cur->last=sp;
       }
-      sp=SplinePointCreate(x + width - rx, y);
-      sp->prevcp.x=x + width;
+      sp=SplinePointCreate(x+width-rx, y);
+      sp->prevcp.x=x+width;
       sp->prevcp.y=y;
       cur->last->nextcp=sp->prevcp;
       cur->last->nonextcp=sp->noprevcp=false;
       SplineMake(cur->last, sp, false);
       cur->last=sp;
-      if (rx < 2 * width) {
-	 sp=SplinePointCreate(x + rx, y);
+      if (rx<2*width) {
+	 sp=SplinePointCreate(x+rx, y);
 	 SplineMake(cur->last, sp, false);
 	 cur->last=sp;
       }
       cur->last->nextcp.x=x;
       cur->last->nextcp.y=y;
       cur->last->nonextcp=false;
-      if (ry >= 2 * height) {
+      if (ry >= 2*height) {
 	 cur->first->prevcp=cur->last->nextcp;
 	 cur->first->noprevcp=false;
       } else {
-	 sp=SplinePointCreate(x, y + ry);
+	 sp=SplinePointCreate(x, y+ry);
 	 sp->prevcp=cur->last->nextcp;
 	 sp->noprevcp=false;
 	 SplineMake(cur->last, sp, false);
@@ -2024,33 +2024,33 @@ static SplineSet *SVGParseEllipse(xmlNodePtr ellipse,int iscircle) {
       } else
 	 return (NULL);
    }
-   if (rx < 0)
+   if (rx<0)
       rx=-rx;
-   if (ry < 0)
+   if (ry<0)
       ry=-ry;
 
    cur=chunkalloc(sizeof(SplineSet));
-   cur->first=SplinePointCreate(cx - rx, cy);
-   cur->last=SplinePointCreate(cx, cy + ry);
-   cur->first->nextcp.x=cx - rx;
-   cur->first->nextcp.y=cy + ry;
+   cur->first=SplinePointCreate(cx-rx, cy);
+   cur->last=SplinePointCreate(cx, cy+ry);
+   cur->first->nextcp.x=cx-rx;
+   cur->first->nextcp.y=cy+ry;
    cur->last->prevcp=cur->first->nextcp;
    cur->first->noprevcp=cur->first->nonextcp=false;
    cur->last->noprevcp=cur->last->nonextcp=false;
    SplineMake(cur->first, cur->last, true);
-   sp=SplinePointCreate(cx + rx, cy);
-   sp->prevcp.x=cx + rx;
-   sp->prevcp.y=cy + ry;
-   sp->nextcp.x=cx + rx;
-   sp->nextcp.y=cy - ry;
+   sp=SplinePointCreate(cx+rx, cy);
+   sp->prevcp.x=cx+rx;
+   sp->prevcp.y=cy+ry;
+   sp->nextcp.x=cx+rx;
+   sp->nextcp.y=cy-ry;
    sp->nonextcp=sp->noprevcp=false;
    cur->last->nextcp=sp->prevcp;
    SplineMake(cur->last, sp, true);
    cur->last=sp;
-   sp=SplinePointCreate(cx, cy - ry);
+   sp=SplinePointCreate(cx, cy-ry);
    sp->prevcp=cur->last->nextcp;
-   sp->nextcp.x=cx - rx;
-   sp->nextcp.y=cy - ry;
+   sp->nextcp.x=cx-rx;
+   sp->nextcp.y=cy-ry;
    sp->nonextcp=sp->noprevcp=false;
    cur->first->prevcp=sp->nextcp;
    SplineMake(cur->last, sp, true);
@@ -2138,16 +2138,16 @@ static void SVGFigureTransform(struct svg_state *st,char *name) {
       paren=strchr(pt, '(');
       if (paren==NULL)
 	 break;
-      if (strncmp(pt, "matrix", paren - pt)==0) {
-	 trans[0]=strtod(paren + 1, &end);
+      if (strncmp(pt, "matrix", paren-pt)==0) {
+	 trans[0]=strtod(paren+1, &end);
 	 trans[1]=strtod(skipcomma(end), &end);
 	 trans[2]=strtod(skipcomma(end), &end);
 	 trans[3]=strtod(skipcomma(end), &end);
 	 trans[4]=strtod(skipcomma(end), &end);
 	 trans[5]=strtod(skipcomma(end), &end);
-      } else if (strncmp(pt, "rotate", paren - pt)==0) {
+      } else if (strncmp(pt, "rotate", paren-pt)==0) {
 	 trans[4]=trans[5]=0;
-	 a=strtod(paren + 1, &end) * M_PI / 180;
+	 a=strtod(paren+1, &end)*M_PI/180;
 	 trans[0]=trans[3]=cos(a);
 	 trans[1]=sin(a);
 	 trans[2]=-trans[1];
@@ -2168,29 +2168,29 @@ static void SVGFigureTransform(struct svg_state *st,char *name) {
 	    MatMultiply(res, trans, res);
 	    memcpy(trans, res, sizeof(res));
 	 }
-      } else if (strncmp(pt, "scale", paren - pt)==0) {
+      } else if (strncmp(pt, "scale", paren-pt)==0) {
 	 trans[1]=trans[2]=trans[4]=trans[5]=0;
-	 trans[0]=trans[3]=strtod(paren + 1, &end);
+	 trans[0]=trans[3]=strtod(paren+1, &end);
 	 while (isspace(*end))
 	    ++end;
 	 if (*end != ')')
 	    trans[3]=strtod(skipcomma(end), &end);
-      } else if (strncmp(pt, "translate", paren - pt)==0) {
+      } else if (strncmp(pt, "translate", paren-pt)==0) {
 	 trans[0]=trans[3]=1;
 	 trans[1]=trans[2]=trans[5]=0;
-	 trans[4]=strtod(paren + 1, &end);
+	 trans[4]=strtod(paren+1, &end);
 	 while (isspace(*end))
 	    ++end;
 	 if (*end != ')')
 	    trans[5]=strtod(skipcomma(end), &end);
-      } else if (strncmp(pt, "skewX", paren - pt)==0) {
+      } else if (strncmp(pt, "skewX", paren-pt)==0) {
 	 trans[0]=trans[3]=1;
 	 trans[1]=trans[2]=trans[4]=trans[5]=0;
-	 trans[2]=tan(strtod(paren + 1, &end) * M_PI / 180);
-      } else if (strncmp(pt, "skewY", paren - pt)==0) {
+	 trans[2]=tan(strtod(paren+1, &end)*M_PI/180);
+      } else if (strncmp(pt, "skewY", paren-pt)==0) {
 	 trans[0]=trans[3]=1;
 	 trans[1]=trans[2]=trans[4]=trans[5]=0;
-	 trans[1]=tan(strtod(paren + 1, &end) * M_PI / 180);
+	 trans[1]=tan(strtod(paren+1, &end)*M_PI/180);
       } else
 	 break;
       while (isspace(*end))
@@ -2198,7 +2198,7 @@ static void SVGFigureTransform(struct svg_state *st,char *name) {
       if (*end != ')')
 	 break;
       MatMultiply(trans, st->transform, st->transform);
-      pt=end + 1;
+      pt=end+1;
       while (isspace(*pt))
 	 ++pt;
    }
@@ -2244,9 +2244,9 @@ static void SVGuseTransform(struct svg_state *st,xmlNodePtr use,
    num=(char *) xmlGetProp(symbol, (xmlChar *) "viewBox");
    if (num != NULL) {
       x=strtod((char *) num, &end);
-      y=strtod((char *) end + 1, &end);
-      swid=strtod((char *) end + 1, &end);
-      sheight=strtod((char *) end + 1, &end);
+      y=strtod((char *) end+1, &end);
+      swid=strtod((char *) end+1, &end);
+      sheight=strtod((char *) end+1, &end);
       xmlFree(num);
    } else
       return;
@@ -2254,9 +2254,9 @@ static void SVGuseTransform(struct svg_state *st,xmlNodePtr use,
       trans[0]=trans[3]=1;
       trans[1]=trans[2]=trans[4]=trans[5]=0;
       if (uwid != 0 && swid != 0)
-	 trans[0]=uwid / swid;
+	 trans[0]=uwid/swid;
       if (uheight != 0 && sheight != 0)
-	 trans[3]=uheight / sheight;
+	 trans[3]=uheight/sheight;
       MatMultiply(trans, st->transform, st->transform);
    }
 }
@@ -2270,7 +2270,7 @@ static double parseGCoord(xmlChar *prop,int bb_units,double bb_low,
       val /= 100.0;
 
    if (bb_units)
-      val=bb_low + val * (bb_high - bb_low);
+      val=bb_low+val * (bb_high-bb_low);
    return (val);
 }
 
@@ -2358,12 +2358,12 @@ static void xmlParseColorSource(xmlNodePtr top,char *name,DBounds *bbox,
 
 	 grad->radius=0;
       } else {
-	 double offx=(bbox->maxx - bbox->minx) / 2;
-	 double offy=(bbox->maxy - bbox->miny) / 2;
+	 double offx=(bbox->maxx-bbox->minx)/2;
+	 double offy=(bbox->maxy-bbox->miny)/2;
 
-	 grad->stop.x=(bbox->minx + bbox->maxx) / 2;
-	 grad->stop.y=(bbox->minx + bbox->maxy) / 2;
-	 grad->radius=sqrt(offx * offx + offy * offy);
+	 grad->stop.x=(bbox->minx+bbox->maxx)/2;
+	 grad->stop.y=(bbox->minx+bbox->maxy)/2;
+	 grad->radius=sqrt(offx * offx+offy * offy);
 
 	 prop=xmlGetProp(colour_source, (xmlChar *) "cx");
 	 if (prop != NULL) {
@@ -2383,7 +2383,7 @@ static void xmlParseColorSource(xmlNodePtr top,char *name,DBounds *bbox,
 	 if (prop != NULL) {
 	    grad->radius =
 	       parseGCoord(prop, bbox_units, 0,
-			   sqrt(4 * (offx * offx + offy * offy)));
+			   sqrt(4*(offx * offx+offy * offy)));
 	    xmlFree(prop);
 	 }
 
@@ -2480,20 +2480,20 @@ static void xmlApplyColourSources(xmlNodePtr top,Entity *head,
 	 if (b.minx==0 && b.miny==0 && b.maxx==0 && b.maxy==0)
 	    b=ssb;
 	 else {
-	    if (b.minx > ssb.minx)
+	    if (b.minx>ssb.minx)
 	       b.minx=ssb.minx;
-	    if (b.maxx > ssb.maxx)
+	    if (b.maxx>ssb.maxx)
 	       b.maxx=ssb.maxx;
-	    if (b.miny > ssb.miny)
+	    if (b.miny>ssb.miny)
 	       b.miny=ssb.miny;
-	    if (b.maxy > ssb.maxy)
+	    if (b.maxy>ssb.maxy)
 	       b.maxy=ssb.maxy;
 	 }
       }
    if (b.minx==b.maxx)
-      b.maxx=b.minx + 1;
+      b.maxx=b.minx+1;
    if (b.miny==b.maxy)
-      b.maxy=b.maxy + 1;
+      b.maxy=b.maxy+1;
 
    if (fill_colour_source != NULL) {
       xmlParseColorSource(top, fill_colour_source, &b, st, &grad, &epat);
@@ -2577,8 +2577,8 @@ static int xmlParseColor(xmlChar *name,uint32_t *color,char **url,
 	 if (sscanf((char *) name, "#%x", &temp) != 1)
 	    ErrorMsg(2,"Bad hex color spec: %s\n", (char *) name);
 	 if (strlen((char *) name)==4) {
-	    *color=(((temp & 0xf00) * 0x11) << 8) |
-	       (((temp & 0x0f0) * 0x11) << 4) | (((temp & 0x00f) * 0x11));
+	    *color=(((temp&0xf00)*0x11) << 8) |
+	       (((temp&0x0f0)*0x11) << 4)|(((temp&0x00f)*0x11));
 	 } else if (strlen((char *) name)==7) {
 	    *color=temp;
 	 } else
@@ -2586,37 +2586,37 @@ static int xmlParseColor(xmlChar *name,uint32_t *color,char **url,
       } else if (strncmp((char *) name, "rgb(", 4)==0) {
 	 float r=0, g=0, b=0;
 
-	 if (sscanf((char *) name + 4, "%g,%g,%g", &r, &g, &b) != 3)
+	 if (sscanf((char *) name+4, "%g,%g,%g", &r, &g, &b) != 3)
 	    ErrorMsg(2,"Bad RGB color spec: %s\n", (char *) name);
 	 if (strchr((char *) name, '.') != NULL) {
 	    if (r >= 1)
 	       r=1;
-	    else if (r < 0)
+	    else if (r<0)
 	       r=0;
 	    if (g >= 1)
 	       g=1;
-	    else if (g < 0)
+	    else if (g<0)
 	       g=0;
 	    if (b >= 1)
 	       b=1;
-	    else if (b < 0)
+	    else if (b<0)
 	       b=0;
-	    *color=(((int) rint(r * 255)) << 16) |
-	       (((int) rint(g * 255)) << 8) | (((int) rint(b * 255)));
+	    *color=(((int) rint(r*255)) << 16) |
+	       (((int) rint(g*255)) << 8)|(((int) rint(b*255)));
 	 } else {
 	    if (r >= 255)
 	       r=255;
-	    else if (r < 0)
+	    else if (r<0)
 	       r=0;
 	    if (g >= 255)
 	       g=255;
-	    else if (g < 0)
+	    else if (g<0)
 	       g=0;
 	    if (b >= 255)
 	       b=255;
-	    else if (b < 0)
+	    else if (b<0)
 	       b=0;
-	    *color=(((int) r) << 16) | (((int) g) << 8) | (((int) b));
+	    *color=(((int) r) << 16)|(((int) g) << 8)|(((int) b));
 	 }
       } else if (url != NULL && strncmp((char *) name, "url(#", 5)==0) {
 	 *url=fastrdup((char *) name);
@@ -2631,11 +2631,11 @@ static int xmlParseColor(xmlChar *name,uint32_t *color,char **url,
 
 static int base64ch(int ch) {
    if (ch >= 'A' && ch <= 'Z')
-      return (ch - 'A');
+      return (ch-'A');
    if (ch >= 'a' && ch <= 'z')
-      return (ch - 'a' + 26);
+      return (ch-'a'+26);
    if (ch >= '0' && ch <= '9')
-      return (ch - '0' + 52);
+      return (ch-'0'+52);
    if (ch=='+')
       return (62);
    if (ch=='/')
@@ -2652,19 +2652,19 @@ static void DecodeBase64ToFile(AFILE *tmp,char *str) {
 
    while (*str) {
       fourchars[0]=fourchars[1]=fourchars[2]=fourchars[3]=64;
-      for (i=0; i < 4; ++i) {
+      for (i=0; i<4; ++i) {
 	 while (isspace(*str) || base64ch(*str)==-1)
 	    ++str;
 	 if (*str=='\0')
 	    break;
 	 fourchars[i]=base64ch(*str++);
       }
-      if (fourchars[0] < 64 && fourchars[1] < 64) {
-	 aputc((fourchars[0] << 2) | (fourchars[1] >> 4), tmp);
-	 if (fourchars[2] < 64) {
-	    aputc((fourchars[1] << 4) | (fourchars[2] >> 2), tmp);
-	    if (fourchars[3] < 64)
-	       aputc((fourchars[2] << 6) | fourchars[3], tmp);
+      if (fourchars[0]<64 && fourchars[1]<64) {
+	 aputc((fourchars[0] << 2)|(fourchars[1] >> 4), tmp);
+	 if (fourchars[2]<64) {
+	    aputc((fourchars[1] << 4)|(fourchars[2] >> 2), tmp);
+	    if (fourchars[3]<64)
+	       aputc((fourchars[2] << 6)|fourchars[3], tmp);
 	 }
       }
    }
@@ -2689,7 +2689,7 @@ static GImage *GImageFromDataURI(char *uri) {
       return (NULL);
    ch=*uri;
    *uri='\0';
-   if (ch==';' && strncmp(uri + 1, "base64,", 7)==0) {
+   if (ch==';' && strncmp(uri+1, "base64,", 7)==0) {
       is_base64=true;
       uri += 6;
       ch=',';
@@ -2780,8 +2780,8 @@ static Entity *SVGParseImage(xmlNodePtr svg) {
    ent->type=et_image;
    ent->u.image.image=img;
    ent->u.image.transform[1]=ent->u.image.transform[2]=0;
-   ent->u.image.transform[0]=width / base->width;
-   ent->u.image.transform[3]=height / base->height;
+   ent->u.image.transform[0]=width/base->width;
+   ent->u.image.transform[3]=height/base->height;
    ent->u.image.transform[4]=x;
    ent->u.image.transform[5]=y;
    ent->u.image.col=0xffffffff;
@@ -2797,13 +2797,13 @@ static Entity *EntityCreate(SplinePointList *head,struct svg_state *state) {
    ent->u.splines.join=state->lj;
    ent->u.splines.stroke_width=state->linewidth;
    ent->u.splines.fill.col =
-      state->dofill ? state->fillcol : state->
-      dostroke ? 0xffffffff : COLOR_INHERITED;
+      state->dofill?state->fillcol:state->
+      dostroke?0xffffffff:COLOR_INHERITED;
    ent->u.splines.stroke.col =
-      state->dostroke ? state->strokecol : 0xffffffff;
+      state->dostroke?state->strokecol:0xffffffff;
    ent->u.splines.fill.opacity=state->fillopacity;
    ent->u.splines.stroke.opacity=state->strokeopacity;
-   memcpy(ent->u.splines.transform, state->transform, 6 * sizeof(double));
+   memcpy(ent->u.splines.transform, state->transform, 6*sizeof(double));
    ent->clippath=SplinePointListCopy(state->clippath);
    return (ent);
 }
@@ -2832,7 +2832,7 @@ static void SVGFigureStyle(struct svg_state *st,char *name,
 	 pt=namebuf;
 	 while (*name != '\0' && *name != ':' && *name != ';'
 		&& !isspace(*name)) {
-	    if (pt < namebuf + sizeof(namebuf) - 1)
+	    if (pt<namebuf+sizeof(namebuf)-1)
 	       *pt++=*name;
 	    ++name;
 	 }
@@ -2849,7 +2849,7 @@ static void SVGFigureStyle(struct svg_state *st,char *name,
 	 if (*name != '\0' && *name != ';') {
 	    pt=propbuf;
 	    while (*name != '\0' && *name != ';' && !isspace(*name)) {
-	       if (pt < propbuf + sizeof(propbuf) - 1)
+	       if (pt<propbuf+sizeof(propbuf)-1)
 		  *pt++=*name;
 	       ++name;
 	    }
@@ -2879,11 +2879,11 @@ static void SVGFigureStyle(struct svg_state *st,char *name,
 	 else if (strcmp(namebuf, "stroke-width")==0)
 	    st->linewidth=strtod((char *) propbuf, NULL);
 	 else if (strcmp(namebuf, "stroke-linecap")==0)
-	    st->lc=strcmp(propbuf, "butt") ? lc_butt :
-	       strcmp(propbuf, "round") ? lc_round : lc_square;
+	    st->lc=strcmp(propbuf, "butt")?lc_butt :
+	       strcmp(propbuf, "round")?lc_round:lc_square;
 	 else if (strcmp(namebuf, "stroke-linejoin")==0)
-	    st->lj=strcmp(propbuf, "miter") ? lj_miter :
-	       strcmp(propbuf, "round") ? lj_round : lj_bevel;
+	    st->lj=strcmp(propbuf, "miter")?lj_miter :
+	       strcmp(propbuf, "round")?lj_round:lj_bevel;
 	 else if (strcmp(namebuf, "stroke-dasharray")==0) {
 	    if (strcmp(propbuf, "inherit")) {
 	       st->dashes[0]=0;
@@ -2896,11 +2896,11 @@ static void SVGFigureStyle(struct svg_state *st,char *name,
 	       char *pt, *end;
 
 	       pt=propbuf;
-	       for (i=0; i < DASH_MAX && *pt != '\0'; ++i) {
+	       for (i=0; i<DASH_MAX && *pt != '\0'; ++i) {
 		  st->dashes[i]=strtol(pt, &end, 10);
 		  pt=end;
 	       }
-	       if (i < DASH_MAX)
+	       if (i<DASH_MAX)
 		  st->dashes[i]=0;
 	    }
 	 } else if (strcmp(namebuf, "stop-color")==0)
@@ -2976,14 +2976,14 @@ static Entity *_SVGParseSVG(xmlNodePtr svg,xmlNodePtr top,
    }
    name=xmlGetProp(svg, (xmlChar *) "stroke-linecap");
    if (name != NULL) {
-      st.lc=xmlStrcmp(name, (xmlChar *) "butt") ? lc_butt :
-	 xmlStrcmp(name, (xmlChar *) "round") ? lc_round : lc_square;
+      st.lc=xmlStrcmp(name, (xmlChar *) "butt")?lc_butt :
+	 xmlStrcmp(name, (xmlChar *) "round")?lc_round:lc_square;
       xmlFree(name);
    }
    name=xmlGetProp(svg, (xmlChar *) "stroke-linejoin");
    if (name != NULL) {
-      st.lj=xmlStrcmp(name, (xmlChar *) "miter") ? lj_miter :
-	 xmlStrcmp(name, (xmlChar *) "round") ? lj_round : lj_bevel;
+      st.lj=xmlStrcmp(name, (xmlChar *) "miter")?lj_miter :
+	 xmlStrcmp(name, (xmlChar *) "round")?lj_round:lj_bevel;
       xmlFree(name);
    }
    name=xmlGetProp(svg, (xmlChar *) "stroke-dasharray");
@@ -2999,11 +2999,11 @@ static Entity *_SVGParseSVG(xmlNodePtr svg,xmlNodePtr top,
 	 xmlChar *pt, *end;
 
 	 pt=name;
-	 for (i=0; i < DASH_MAX && *pt != '\0'; ++i) {
+	 for (i=0; i<DASH_MAX && *pt != '\0'; ++i) {
 	    st.dashes[i]=strtol((char *) pt, (char **) &end, 10);
 	    pt=end;
 	 }
-	 if (i < DASH_MAX)
+	 if (i<DASH_MAX)
 	    st.dashes[i]=0;
       }
       xmlFree(name);
@@ -3070,7 +3070,7 @@ static Entity *_SVGParseSVG(xmlNodePtr svg,xmlNodePtr top,
       name=xmlGetProp(svg, (xmlChar *) "href");
       kid=NULL;
       if (name != NULL && *name=='#') {	/* Within this file */
-	 kid=XmlFindID(top, (char *) name + 1);
+	 kid=XmlFindID(top, (char *) name+1);
 	 treat_symbol_as_g=true;
       }
       SVGuseTransform(&st, svg, kid);
@@ -3163,19 +3163,19 @@ static Entity *SVGParseSVG(xmlNodePtr svg,int em_size,int ascent) {
    num=(char *) xmlGetProp(svg, (xmlChar *) "viewBox");
    if (num != NULL) {
       x=strtod((char *) num, &end);
-      y=strtod((char *) end + 1, &end);
-      swidth=strtod((char *) end + 1, &end);
-      sheight=strtod((char *) end + 1, &end);
+      y=strtod((char *) end+1, &end);
+      swidth=strtod((char *) end+1, &end);
+      sheight=strtod((char *) end+1, &end);
       xmlFree(num);
-      if (width > height) {
+      if (width>height) {
 	 if (swidth != 0) {
-	    st.transform[0] *= em_size / swidth;
-	    st.transform[3] *= em_size / swidth;
+	    st.transform[0] *= em_size/swidth;
+	    st.transform[3] *= em_size/swidth;
 	 }
       } else {
 	 if (sheight != 0) {
-	    st.transform[0] *= em_size / sheight;
-	    st.transform[3] *= em_size / sheight;
+	    st.transform[0] *= em_size/sheight;
+	    st.transform[3] *= em_size/sheight;
 	 }
       }
    }
@@ -3191,7 +3191,7 @@ static void SVGParseGlyphBody(SplineChar *sc,xmlNodePtr glyph,int *flags) {
       xmlFree(path);
    } else {
       Entity *ent =
-	 SVGParseSVG(glyph, sc->parent->ascent + sc->parent->descent,
+	 SVGParseSVG(glyph, sc->parent->ascent+sc->parent->descent,
 		     sc->parent->ascent);
 
       sc->layer_cnt=1;
@@ -3261,7 +3261,7 @@ static SplineChar *SVGParseGlyphArgs(xmlNodePtr glyph,int defh,int defv,
       xmlFree(glyphname);
    } else if (orientation != NULL && *orientation=='v'
 	      && sc->unicodeenc != -1) {
-      if (sc->unicodeenc < 0x10000)
+      if (sc->unicodeenc<0x10000)
 	 sprintf(buffer, "uni%04X.vert", sc->unicodeenc);
       else
 	 sprintf(buffer, "u%04X.vert", sc->unicodeenc);
@@ -3336,24 +3336,24 @@ static void SVGLigatureFixupCheck(SplineChar *sc,xmlNodePtr glyph) {
 	    if (chars[len]==NULL)
 	       len2 += 9;
 	    else {
-	       len2 += strlen(chars[len]->name) + 1;
+	       len2 += strlen(chars[len]->name)+1;
 	       if (any==NULL)
 		  any=chars[len];
 	    }
 	 }
 	 if (any==NULL)
 	    any=sc;
-	 comp=pt=malloc(len2 + 1);
+	 comp=pt=malloc(len2+1);
 	 *pt='\0';
 	 for (len=0; u[len] != 0; ++len) {
 	    if (chars[len] != NULL)
 	       strcpy(pt, chars[len]->name);
-	    else if (u[len] < 0x10000)
+	    else if (u[len]<0x10000)
 	       sprintf(pt, "uni%04X", (unsigned int) u[len]);
 	    else
 	       sprintf(pt, "u%04X", (unsigned int) u[len]);
 	    pt += strlen(pt);
-	    if (u[len + 1] != '\0')
+	    if (u[len+1] != '\0')
 	       *pt++=' ';
 	 }
 	 SubsNew(sc, pst_ligature, CHR('l', 'i', 'g', 'a'), comp, any);
@@ -3404,11 +3404,11 @@ static char *SVGGetNames(SplineFont *sf,xmlChar *g,xmlChar *utf8,
 	 if (temp != NULL) {
 	    if (*sc==NULL)
 	       *sc=temp;
-	    len=strlen(temp->name) + 1;
+	    len=strlen(temp->name)+1;
 	 }
       }
    }
-   names=pt=malloc(len + (g != NULL ? strlen((char *) g) : 0) + 1);
+   names=pt=malloc(len+(g != NULL?strlen((char *) g):0)+1);
    if (utf8 != NULL) {
       for (i=0; u[i] != 0; ++i) {
 	 temp=SFGetChar(sf, u[i], NULL);
@@ -3439,7 +3439,7 @@ static char *SVGGetNames(SplineFont *sf,xmlChar *g,xmlChar *utf8,
 	 *gpt=ch;
       }
    }
-   if (pt > names && pt[-1]==' ')
+   if (pt>names && pt[-1]==' ')
       --pt;
    *pt='\0';
    return (names);
@@ -3494,14 +3494,14 @@ static void SVGParseKern(SplineFont *sf,xmlNodePtr kern,int isv) {
 /*  complex shinanigans we do in parsing feature files, but it's a lot easier */
 /*  just to make kernpairs. */
    subtable=SFSubTableFindOrMake(sf,
-				   isv ? CHR('v', 'k', 'r', 'n') : CHR('k',
+				   isv?CHR('v', 'k', 'r', 'n'):CHR('k',
 								       'e',
 								       'r',
 								       'n'),
 				   script, gpos_pair);
    subtable->lookup->lookup_flags=((sc1 != NULL && SCRightToLeft(sc1))
 				     || (sc1==NULL && sc2 != NULL
-					 && SCRightToLeft(sc2))) ? pst_r2l :
+					 && SCRightToLeft(sc2)))?pst_r2l :
       0;
    for (pt1=c1;;) {
       while (*pt1==' ')
@@ -3539,12 +3539,12 @@ static void SVGParseKern(SplineFont *sf,xmlNodePtr kern,int isv) {
 	    if (end2==NULL)
 	       break;
 	    *end2=' ';
-	    pt2=end2 + 1;
+	    pt2=end2+1;
 	 }
       if (end1==NULL)
 	 break;
       *end1=' ';
-      pt1=end1 + 1;
+      pt1=end1+1;
    }
    free(c1);
    free(c2);
@@ -3587,10 +3587,10 @@ static SplineFont *SVGParseFont(xmlNodePtr font) {
 	    int val=rint(strtod((char *) name, NULL));
 
 	    xmlFree(name);
-	    if (val < 0)
+	    if (val<0)
 	       val=0;
-	    sf->ascent=val * 800 / 1000;
-	    sf->descent=val - sf->ascent;
+	    sf->ascent=val*800/1000;
+	    sf->descent=val-sf->ascent;
 	    if (defv==0)
 	       defv=val;
 	    if (defh==0)
@@ -3692,7 +3692,7 @@ static SplineFont *SVGParseFont(xmlNodePtr font) {
 	    char *pt, *end;
 	    int i;
 
-	    for (i=0, pt=(char *) name; i < 10 && *pt; pt=end, ++i) {
+	    for (i=0, pt=(char *) name; i<10 && *pt; pt=end, ++i) {
 	       sf->pfminfo.panose[i]=strtol(pt, &end, 10);
 	    }
 	    sf->pfminfo.panose_set=true;
@@ -3723,7 +3723,7 @@ static SplineFont *SVGParseFont(xmlNodePtr font) {
 	    descent=strtod((char *) name, NULL);
 	    xmlFree(name);
 	 }
-	 if (ascent - descent==sf->ascent + sf->descent) {
+	 if (ascent-descent==sf->ascent+sf->descent) {
 	    sf->ascent=ascent;
 	    sf->descent=-descent;
 	 }
@@ -3750,8 +3750,8 @@ static SplineFont *SVGParseFont(xmlNodePtr font) {
 
    /* Give ourselves an xuid, just in case they want to convert to PostScript */
    if (xuid != NULL) {
-      sf->xuid=malloc(strlen(xuid) + 20);
-      sprintf(sf->xuid, "[%s %d]", xuid, (rand() & 0xffffff));
+      sf->xuid=malloc(strlen(xuid)+20);
+      sprintf(sf->xuid, "[%s %d]", xuid, (rand()&0xffffff));
    }
 
    sf->glyphcnt=sf->glyphmax=cnt;
@@ -3792,7 +3792,7 @@ static SplineFont *SVGParseFont(xmlNodePtr font) {
    map->enc=FindOrMakeEncoding("Original");
    map->map=malloc(sf->glyphcnt * sizeof(int));
    map->backmap=malloc(sf->glyphcnt * sizeof(int));
-   for (i=0; i < sf->glyphcnt; ++i)
+   for (i=0; i<sf->glyphcnt; ++i)
       map->map[i]=map->backmap[i]=i;
    sf->map=map;
 
@@ -3832,7 +3832,7 @@ static int EntFindOrder(Entity *ent) {
 int SFFindOrder(SplineFont *sf) {
    int i, ret;
 
-   for (i=0; i < sf->glyphcnt; ++i)
+   for (i=0; i<sf->glyphcnt; ++i)
       if (sf->glyphs[i] != NULL) {
 	 ret=SPLFindOrder(sf->glyphs[i]->layers[ly_fore].splines);
 	 if (ret != -1)
@@ -3844,7 +3844,7 @@ int SFFindOrder(SplineFont *sf) {
 int SFLFindOrder(SplineFont *sf, int layerdest) {
    int i, ret;
 
-   for (i=0; i < sf->glyphcnt; ++i)
+   for (i=0; i<sf->glyphcnt; ++i)
       if (sf->glyphs[i] != NULL) {
 	 ret=SPLFindOrder(sf->glyphs[i]->layers[layerdest].splines);
 	 if (ret != -1)
@@ -3889,12 +3889,12 @@ static void SPLSetOrder(SplineSet *ss,int order2) {
 		  first=from->next;
 	       s=to->prev;
 	    } else {
-	       s->from->nextcp.x=s->splines[0].c / 3 + s->from->me.x;
-	       s->from->nextcp.y=s->splines[1].c / 3 + s->from->me.y;
+	       s->from->nextcp.x=s->splines[0].c/3+s->from->me.x;
+	       s->from->nextcp.y=s->splines[1].c/3+s->from->me.y;
 	       s->to->prevcp.x =
-		  s->from->nextcp.x + (s->splines[0].b + s->splines[0].c) / 3;
+		  s->from->nextcp.x+(s->splines[0].b+s->splines[0].c)/3;
 	       s->to->prevcp.y =
-		  s->from->nextcp.y + (s->splines[1].b + s->splines[1].c) / 3;
+		  s->from->nextcp.y+(s->splines[1].b+s->splines[1].c)/3;
 	       s->order2=false;
 	       SplineRefigure(s);
 	    }
@@ -3916,9 +3916,9 @@ static void EntSetOrder(Entity *ent,int order2) {
 void SFSetOrder(SplineFont *sf, int order2) {
    int i, j;
 
-   for (i=0; i < sf->glyphcnt; ++i)
+   for (i=0; i<sf->glyphcnt; ++i)
       if (sf->glyphs[i] != NULL) {
-	 for (j=ly_fore; j < sf->glyphs[i]->layer_cnt; ++j) {
+	 for (j=ly_fore; j<sf->glyphs[i]->layer_cnt; ++j) {
 	    SPLSetOrder(sf->glyphs[i]->layers[j].splines, order2);
 	    sf->glyphs[i]->layers[j].order2=order2;
 	 }
@@ -3928,7 +3928,7 @@ void SFSetOrder(SplineFont *sf, int order2) {
 void SFLSetOrder(SplineFont *sf, int layerdest, int order2) {
    int i;
 
-   for (i=0; i < sf->glyphcnt; ++i)
+   for (i=0; i<sf->glyphcnt; ++i)
       if (sf->glyphs[i] != NULL) {
 	 SPLSetOrder(sf->glyphs[i]->layers[layerdest].splines, order2);
 	 sf->glyphs[i]->layers[layerdest].order2=order2;
@@ -3990,7 +3990,7 @@ SplineFont *SFReadSVG(char *filename, int flags) {
       pt=filename;
    if ((lparen=strchr(pt, '(')) != NULL && strchr(lparen, ')') != NULL) {
       temp=fastrdup(filename);
-      pt=temp + (lparen - filename);
+      pt=temp+(lparen-filename);
       *pt='\0';
    }
 
@@ -4029,7 +4029,7 @@ char **NamesReadSVG(char *filename) {
    }
 
    for (cnt=0; fonts[cnt] != NULL; ++cnt);
-   ret=malloc((cnt + 1) * sizeof(char *));
+   ret=malloc((cnt+1)*sizeof(char *));
    for (cnt=0; fonts[cnt] != NULL; ++cnt) {
       name=xmlGetProp(fonts[cnt], (xmlChar *) "id");
       if (name==NULL) {

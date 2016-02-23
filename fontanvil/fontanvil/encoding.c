@@ -1,4 +1,4 @@
-/* $Id: encoding.c 4525 2015-12-20 19:51:59Z mskala $ */
+/* $Id: encoding.c 4532 2015-12-22 13:18:53Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -76,7 +76,7 @@ static Encoding unicodebmp =
    { "UnicodeBmp", 65536, NULL, NULL, &original, 1, 1, 0, 0, 1, 1, 0, 0, 0, 0,
 0, 0, 0, 0, "", 0, 0, 0, NULL, NULL, NULL, NULL, NULL, 0, 0 };
 static Encoding unicodefull =
-   { "UnicodeFull", 17 * 65536, NULL, NULL, &unicodebmp, 1, 1, 0, 0, 1, 0, 1,
+   { "UnicodeFull", 17*65536, NULL, NULL, &unicodebmp, 1, 1, 0, 0, 1, 0, 1,
 0, 0, 0, 0, 0, 0, 0, "", 0, 0, 0, NULL, NULL, NULL, NULL, NULL, 0, 0 };
 static Encoding adobestd =
    { "AdobeStandard", 256, unicode_from_adobestd, AdobeStandardEncoding,
@@ -1038,7 +1038,7 @@ static struct coderange *ExtendArray(struct coderange *ranges,int *n,
    if (*n==0)
       ranges=calloc(val, sizeof(struct coderange));
    else {
-      ranges=realloc(ranges, (*n+val) * sizeof(struct coderange));
+      ranges=realloc(ranges, (*n+val)*sizeof(struct coderange));
       memset(ranges+*n, 0, val * sizeof(struct coderange));
    }
    *n += val;
@@ -1272,12 +1272,12 @@ static SplineFont *CIDFlatten(SplineFont *cidmaster,SplineChar ** glyphs,
 	 if (fvs->map->encmax<new->glyphcnt)
 	    fvs->map->map =
 	       realloc(fvs->map->map,
-		       (fvs->map->encmax=new->glyphcnt) * sizeof(int32_t));
+		       (fvs->map->encmax=new->glyphcnt)*sizeof(int32_t));
 	 fvs->map->enccount=new->glyphcnt;
 	 if (fvs->map->backmax<new->glyphcnt)
 	    fvs->map->backmap =
 	       realloc(fvs->map->backmap,
-		       (fvs->map->backmax=new->glyphcnt) * sizeof(int32_t));
+		       (fvs->map->backmax=new->glyphcnt)*sizeof(int32_t));
 	 for (j=0; j<new->glyphcnt; ++j)
 	    fvs->map->map[j]=fvs->map->backmap[j]=j;
       }
@@ -1388,7 +1388,7 @@ int SFFlattenByCMap(SplineFont *sf, char *cmapname) {
       map->map =
 	realloc(map->map,
 		(map->encmax=map->enccount =
-		    max+extras) * sizeof(int32_t));
+		    max+extras)*sizeof(int32_t));
       memset(map->map, -1, map->enccount * sizeof(int32_t));
       memset(map->backmap, -1, sf->glyphcnt * sizeof(int32_t));
       map->remap=cmap->remap;
@@ -1720,7 +1720,7 @@ static int _SFForceEncoding(SplineFont *sf,EncMap *old,Encoding *new_enc) {
 	 old->encmax=enc_cnt;
       }
       memset(old->map+old->enccount, -1,
-	     (enc_cnt-old->enccount) * sizeof(int32_t));
+	     (enc_cnt-old->enccount)*sizeof(int32_t));
       old->enccount=enc_cnt;
    }
    old->enc=new_enc;
@@ -1810,7 +1810,7 @@ EncMap *EncMapFromEncoding(SplineFont *sf, Encoding * enc) {
 	       /*  hurt to leave the code (it's from when we encoded duplicates see below) */
 	       if (extras >= unmax)
 		  unencoded =
-		     realloc(unencoded, (unmax += 300) * sizeof(int32_t));
+		     realloc(unencoded, (unmax += 300)*sizeof(int32_t));
 	       unencoded[extras++]=i;
 	    }
 	    for (altuni=sc->altuni; altuni != NULL; altuni=altuni->next) {
@@ -2043,7 +2043,7 @@ static int MapAddEncodingSlot(EncMap *map,int gid) {
    int enc;
 
    if (map->enccount >= map->encmax)
-      map->map=realloc(map->map, (map->encmax += 10) * sizeof(int32_t));
+      map->map=realloc(map->map, (map->encmax += 10)*sizeof(int32_t));
    enc=map->enccount++;
    map->map[enc]=gid;
    map->backmap[gid]=enc;
@@ -2073,8 +2073,8 @@ static int MapAddEnc(SplineFont *sf,SplineChar *sc,EncMap *basemap,
 
    if (gid >= map->backmax) {
       map->backmap =
-	 realloc(map->backmap, (map->backmax += 10) * sizeof(int32_t));
-      memset(map->backmap+map->backmax-10, -1, 10 * sizeof(int32_t));
+	 realloc(map->backmap, (map->backmax += 10)*sizeof(int32_t));
+      memset(map->backmap+map->backmax-10, -1, 10*sizeof(int32_t));
    }
    if (map->enc->psnames != NULL) {
       /* Check for multiple encodings */
@@ -2121,16 +2121,16 @@ void SFAddGlyphAndEncode(SplineFont *sf, SplineChar * sc, EncMap * basemap,
    if (sf->cidmaster==NULL) {
       if (sf->glyphcnt+1 >= sf->glyphmax)
 	 sf->glyphs =
-	    realloc(sf->glyphs, (sf->glyphmax += 10) * sizeof(SplineChar *));
+	    realloc(sf->glyphs, (sf->glyphmax += 10)*sizeof(SplineChar *));
       gid=sf->glyphcnt++;
       for (bdf=sf->bitmaps; bdf != NULL; bdf=bdf->next) {
 	 if (sf->glyphcnt+1 >= bdf->glyphmax)
 	    bdf->glyphs =
 	       realloc(bdf->glyphs,
-		       (bdf->glyphmax=sf->glyphmax) * sizeof(BDFChar *));
+		       (bdf->glyphmax=sf->glyphmax)*sizeof(BDFChar *));
 	 if (sf->glyphcnt>bdf->glyphcnt) {
 	    memset(bdf->glyphs+bdf->glyphcnt, 0,
-		   (sf->glyphcnt-bdf->glyphcnt) * sizeof(BDFChar *));
+		   (sf->glyphcnt-bdf->glyphcnt)*sizeof(BDFChar *));
 	    bdf->glyphcnt=sf->glyphcnt;
 	 }
       }
@@ -2140,7 +2140,7 @@ void SFAddGlyphAndEncode(SplineFont *sf, SplineChar * sc, EncMap * basemap,
 	 if (gid >= map->backmax)
 	    map->backmap =
 	       realloc(map->backmap,
-		       (map->backmax=gid+10) * sizeof(int32_t));
+		       (map->backmax=gid+10)*sizeof(int32_t));
 	 map->backmap[gid]=-1;
       }
    } else {
@@ -2148,19 +2148,19 @@ void SFAddGlyphAndEncode(SplineFont *sf, SplineChar * sc, EncMap * basemap,
       if (baseenc+1 >= sf->glyphmax)
 	 sf->glyphs =
 	    realloc(sf->glyphs,
-		    (sf->glyphmax=baseenc+10) * sizeof(SplineChar *));
+		    (sf->glyphmax=baseenc+10)*sizeof(SplineChar *));
       if (baseenc >= sf->glyphcnt) {
 	 memset(sf->glyphs+sf->glyphcnt, 0,
-		(baseenc+1-sf->glyphcnt) * sizeof(SplineChar *));
+		(baseenc+1-sf->glyphcnt)*sizeof(SplineChar *));
 	 sf->glyphcnt=baseenc+1;
 	 for (bdf=sf->cidmaster->bitmaps; bdf != NULL; bdf=bdf->next) {
 	    if (baseenc+1 >= bdf->glyphmax)
 	       bdf->glyphs =
 		  realloc(bdf->glyphs,
-			  (bdf->glyphmax=baseenc+10) * sizeof(BDFChar *));
+			  (bdf->glyphmax=baseenc+10)*sizeof(BDFChar *));
 	    if (baseenc+1>bdf->glyphcnt) {
 	       memset(bdf->glyphs+bdf->glyphcnt, 0,
-		      (baseenc+1-bdf->glyphcnt) * sizeof(BDFChar *));
+		      (baseenc+1-bdf->glyphcnt)*sizeof(BDFChar *));
 	       bdf->glyphcnt=baseenc+1;
 	    }
 	 }
@@ -2171,7 +2171,7 @@ void SFAddGlyphAndEncode(SplineFont *sf, SplineChar * sc, EncMap * basemap,
 	       if (gid >= map->backmax)
 		  map->backmap =
 		     realloc(map->backmap,
-			     (map->backmax=gid+10) * sizeof(int32_t));
+			     (map->backmax=gid+10)*sizeof(int32_t));
 	       map->backmap[gid]=-1;
 	    }
       }
@@ -2239,9 +2239,9 @@ void SFMatchGlyphs(SplineFont *sf, SplineFont *target, int addempties) {
 	 ++cnt2;
    if (target->glyphcnt+cnt2>cnt) {
       glyphs =
-	 realloc(glyphs, (target->glyphcnt+cnt2) * sizeof(SplineChar *));
+	 realloc(glyphs, (target->glyphcnt+cnt2)*sizeof(SplineChar *));
       memset(glyphs+cnt, 0,
-	     (target->glyphcnt+cnt2-cnt) * sizeof(SplineChar *));
+	     (target->glyphcnt+cnt2-cnt)*sizeof(SplineChar *));
       cnt=target->glyphcnt+cnt2;
    }
    j=target->glyphcnt;
@@ -2310,7 +2310,7 @@ void MMMatchGlyphs(MMSet * mm) {
 			base->glyphs =
 			   realloc(base->glyphs,
 				   (base->glyphmax +=
-				    20) * sizeof(SplineChar *));
+				    20)*sizeof(SplineChar *));
 		     if (lasthole >= base->glyphcnt)
 			base->glyphcnt=lasthole+1;
 		  }
@@ -2486,7 +2486,7 @@ void SFExpandGlyphCount(SplineFont *sf, int newcnt) {
       sf->glyphmax=newcnt;
    }
    memset(sf->glyphs+sf->glyphcnt, 0,
-	  (newcnt-sf->glyphcnt) * sizeof(SplineChar *));
+	  (newcnt-sf->glyphcnt)*sizeof(SplineChar *));
    sf->glyphcnt=newcnt;
 
    for (fv=sf->fv; fv != NULL; fv=fv->nextsame) {
@@ -2498,8 +2498,8 @@ void SFExpandGlyphCount(SplineFont *sf, int newcnt) {
 	 if (newcnt>fv->map->backmax)
 	    fv->map->backmap =
 	       realloc(fv->map->backmap,
-		       (fv->map->backmax=newcnt+5) * sizeof(int32_t));
-	 memset(fv->map->backmap+old, -1, (newcnt-old) * sizeof(int32_t));
+		       (fv->map->backmax=newcnt+5)*sizeof(int32_t));
+	 memset(fv->map->backmap+old, -1, (newcnt-old)*sizeof(int32_t));
       }
    }
 }

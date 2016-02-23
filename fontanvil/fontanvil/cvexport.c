@@ -1,4 +1,4 @@
-/* $Id: cvexport.c 4525 2015-12-20 19:51:59Z mskala $ */
+/* $Id: cvexport.c 4532 2015-12-22 13:18:53Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -49,7 +49,7 @@ static void EpsGeneratePreview(AFILE *eps,SplineChar *sc,int layer,
    temp=72.0/(b->maxy-b->miny);
    if (temp<scale)
       scale=temp;
-   pixelsize=rint((sc->parent->ascent+sc->parent->descent) * scale);
+   pixelsize=rint((sc->parent->ascent+sc->parent->descent)*scale);
 
    depth=4;
    bdfc=SplineCharFreeTypeRasterizeNoHints(sc, layer, pixelsize, 72, 4);
@@ -222,7 +222,7 @@ int _ExportPDF(AFILE *pdf, SplineChar * sc, int layer) {
       else
 	 afprintf(pdf, "+");
       afprintf(pdf, "%02d'%02d')\n", (int) (timezone/3600),
-	      (int) (timezone/60-(timezone/3600) * 60));
+	      (int) (timezone/60-(timezone/3600)*60));
    }
 #endif
    afprintf(pdf, "    /Title (%s from %s)\n", sc->name, sc->parent->fontname);
@@ -370,8 +370,8 @@ static void FigDumpPt(AFILE *fig,BasePoint *me,double scale,double ascent) {
 static void FigSplineSet(AFILE *fig,SplineSet *spl,int spmax,int asc) {
    SplinePoint *sp;
    int cnt;
-   double scale=7 * 1200.0/spmax;
-   double ascent=11 * 1200 * asc/spmax;
+   double scale=7*1200.0/spmax;
+   double ascent=11*1200*asc/spmax;
 
    while (spl != NULL) {
       /* type=3, SPline; sub_type=3, closed interpreted; linestyle=0(solid); thickness=1 */

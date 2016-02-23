@@ -1,4 +1,4 @@
-/* $Id: splinefont.c 4523 2015-12-20 12:30:49Z mskala $ */
+/* $Id: splinefont.c 4532 2015-12-22 13:18:53Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -41,7 +41,7 @@
 void SFUntickAll(SplineFont *sf) {
    int i;
 
-   for (i=0; i < sf->glyphcnt; ++i)
+   for (i=0; i<sf->glyphcnt; ++i)
       if (sf->glyphs[i] != NULL)
 	 sf->glyphs[i]->ticked=false;
 }
@@ -52,9 +52,9 @@ void SFOrderBitmapList(SplineFont *sf) {
 
    for (prev=NULL, bdf=sf->bitmaps; bdf != NULL; bdf=bdf->next) {
       for (prev2=NULL, bdf2=bdf->next; bdf2 != NULL; bdf2=bdf2->next) {
-	 if (bdf->pixelsize > bdf2->pixelsize ||
+	 if (bdf->pixelsize>bdf2->pixelsize ||
 	     (bdf->pixelsize==bdf2->pixelsize
-	      && BDFDepth(bdf) > BDFDepth(bdf2))) {
+	      && BDFDepth(bdf)>BDFDepth(bdf2))) {
 	    if (prev==NULL)
 	       sf->bitmaps=bdf2;
 	    else
@@ -165,8 +165,8 @@ static SplineChar *_SFMakeChar(SplineFont *sf,EncMap *map,int enc) {
 
    if (sf->subfontcnt != 0 && gid != -1) {
       ssf=NULL;
-      for (j=0; j < sf->subfontcnt; ++j)
-	if (gid < sf->subfonts[j]->glyphcnt) {
+      for (j=0; j<sf->subfontcnt; ++j)
+	if (gid<sf->subfonts[j]->glyphcnt) {
 	   ssf=sf->subfonts[j];
 	   if (ssf->glyphs[gid] != NULL) {
 	      return (ssf->glyphs[gid]);
@@ -180,10 +180,10 @@ static SplineChar *_SFMakeChar(SplineFont *sf,EncMap *map,int enc) {
 	  (enc >= 0xe000 && enc <= 0xf8ff) &&
 	  (sf->uni_interp==ui_ams || sf->uni_interp==ui_trad_chinese) &&
 	  (real_uni =
-	      (sf->uni_interp==ui_ams ? amspua : cns14pua)[enc - 0xe000]) !=
+	      (sf->uni_interp==ui_ams?amspua:cns14pua)[enc-0xe000]) !=
 	  0) {
 
-	 if (real_uni < map->enccount) {
+	 if (real_uni<map->enccount) {
 	    SplineChar *sc;
 
 	    /* if necessary, create the real unicode code point */
@@ -241,7 +241,7 @@ SplineChar *SFMakeChar(SplineFont *sf, EncMap * map, int enc) {
       int j;
 
       _SFMakeChar(sf->mm->normal, map, enc);
-      for (j=0; j < sf->mm->instance_count; ++j)
+      for (j=0; j<sf->mm->instance_count; ++j)
 	 _SFMakeChar(sf->mm->instances[j], map, enc);
    }
    return (_SFMakeChar(sf, map, enc));
@@ -267,16 +267,16 @@ int NameToEncoding(SplineFont *sf, EncMap * map, const char *name) {
       return (enc);
    }
    if ((*name=='U' || *name=='u') && name[1]=='+') {
-      uni=strtol(name + 2, &end, 16);
+      uni=strtol(name+2, &end, 16);
       if (*end != '\0')
 	 uni=-1;
    } else if (name[0]=='u' && name[1]=='n' && name[2]=='i') {
-      uni=strtol(name + 3, &end, 16);
+      uni=strtol(name+3, &end, 16);
       if (*end != '\0')
 	 uni=-1;
    } else if (name[0]=='g' && name[1]=='l' && name[2]=='y'
 	      && name[3]=='p' && name[4]=='h') {
-      int orig=strtol(name + 5, &end, 10);
+      int orig=strtol(name+5, &end, 10);
 
       if (*end != '\0')
 	 orig=-1;
@@ -291,7 +291,7 @@ int NameToEncoding(SplineFont *sf, EncMap * map, const char *name) {
 
 	 while (remap->infont != -1) {
 	    if (enc >= remap->firstenc && enc <= remap->lastenc) {
-	       enc += remap->infont - remap->firstenc;
+	       enc += remap->infont-remap->firstenc;
 	       break;
 	    }
 	    ++remap;
@@ -300,11 +300,11 @@ int NameToEncoding(SplineFont *sf, EncMap * map, const char *name) {
    } else {
       if (enc==-1) {
 	 uni=UniFromName(name, sf->uni_interp, map->enc);
-	 if (uni < 0 && name[1]=='\0')
+	 if (uni<0 && name[1]=='\0')
 	    uni=name[0];
       }
    }
-   if (enc >= map->enccount || enc < 0)
+   if (enc >= map->enccount || enc<0)
       enc=-1;
    if (enc==-1 && uni != -1)
       enc=SFFindSlot(sf, map, uni, NULL);
@@ -326,7 +326,7 @@ static char *scaleString(char *string,double scale) {
 
    while (*string==' ')
       ++string;
-   result=malloc(10 * strlen(string) + 1);
+   result=malloc(10*strlen(string)+1);
    if (*string != '[') {
       val=strtod(string, &end);
       if (end==string) {
@@ -369,7 +369,7 @@ static char *iscaleString(char *string,double scale) {
 
    while (*string==' ')
       ++string;
-   result=malloc(10 * strlen(string) + 1);
+   result=malloc(10*strlen(string)+1);
    if (*string != '[') {
       val=strtod(string, &end);
       if (end==string) {
@@ -440,7 +440,7 @@ static void ScaleBase(struct Base *base,double scale) {
    int i;
 
    for (bs=base->scripts; bs != NULL; bs=bs->next) {
-      for (i=0; i < base->baseline_cnt; ++i)
+      for (i=0; i<base->baseline_cnt; ++i)
 	 bs->baseline_pos[i]=(int) rint(bs->baseline_pos[i] * scale);
       for (bl=bs->langs; bl != NULL; bl=bl->next) {
 	 bl->ascent=(int) rint(scale * bl->ascent);
@@ -459,10 +459,10 @@ int SFScaleToEm(SplineFont *sf, int as, int des) {
    BVTFunc bvts;
    uint8_t *oldselected=sf->fv->selected;
    enum fvtrans_flags trans_flags =
-      fvt_alllayers | fvt_round_to_int | fvt_dontsetwidth |
-      fvt_scalekernclasses | fvt_scalepstpos | fvt_dogrid;
+      fvt_alllayers|fvt_round_to_int|fvt_dontsetwidth |
+      fvt_scalekernclasses|fvt_scalepstpos|fvt_dogrid;
 
-   scale=(as + des) / (double) (sf->ascent + sf->descent);
+   scale=(as+des)/(double) (sf->ascent+sf->descent);
    sf->pfminfo.hhead_ascent=rint(sf->pfminfo.hhead_ascent * scale);
    sf->pfminfo.hhead_descent=rint(sf->pfminfo.hhead_descent * scale);
    sf->pfminfo.linegap=rint(sf->pfminfo.linegap * scale);
@@ -495,7 +495,7 @@ int SFScaleToEm(SplineFont *sf, int as, int des) {
    if (sf->vert_base != NULL)
       ScaleBase(sf->vert_base, scale);
 
-   if (as + des==sf->ascent + sf->descent) {
+   if (as+des==sf->ascent+sf->descent) {
       if (as != sf->ascent && des != sf->descent) {
 	 sf->ascent=as;
 	 sf->descent=des;
@@ -515,7 +515,7 @@ int SFScaleToEm(SplineFont *sf, int as, int des) {
 
    /* If someone has set an absurdly small em size, try to contain
       the damage by not rounding to int. */
-   if ((as + des) < 32) {
+   if ((as+des)<32) {
       trans_flags &= ~fvt_round_to_int;
    }
 
@@ -573,7 +573,7 @@ struct archivers archivers[]={
    {".tbz2", "tar", "tar", "tfj", "xfj", "rfj", ars_tar},
    {".tbz", "tar", "tar", "tfj", "xfj", "rfj", ars_tar},
    {".zip", "unzip", "zip", "-l", "", "", ars_zip},
-   /* { ".tar.lzma", ? } */
+   /* { ".tar.lzma",?} */
    ARCHIVERS_EMPTY
 };
 
@@ -581,7 +581,7 @@ void ArchiveCleanup(char *archivedir) {
    /* Free this directory and all files within it */
    char *cmd;
 
-   cmd=malloc(strlen(archivedir) + 20);
+   cmd=malloc(strlen(archivedir)+20);
    sprintf(cmd, "rm -rf %s", archivedir);
    system(cmd);
    free(cmd);
@@ -603,7 +603,7 @@ static char *ArchiveParseTOC(char *listfile,enum archive_list_style ars,
    while ((ch=agetc(file)) != EOF) {
       if (ch=='\n') {
 	 ++nlcnt;
-	 if (linelen > linelenmax)
+	 if (linelen>linelenmax)
 	    linelenmax=linelen;
 	 linelen=0;
       } else
@@ -614,9 +614,9 @@ static char *ArchiveParseTOC(char *listfile,enum archive_list_style ars,
    /* tar outputs its table of contents as a simple list of names */
    /* zip includes a bunch of other info, headers (and lines for directories) */
 
-   linebuffer=malloc(linelenmax + 3);
+   linebuffer=malloc(linelenmax+3);
    fcnt=0;
-   files=malloc((nlcnt + 1) * sizeof(char *));
+   files=malloc((nlcnt+1)*sizeof(char *));
 
    if (ars==ars_tar) {
       pt=linebuffer;
@@ -632,9 +632,9 @@ static char *ArchiveParseTOC(char *listfile,enum archive_list_style ars,
       }
    } else {
       /* Skip the first three lines, header info */
-      afgets(linebuffer, linelenmax + 3, file);
-      afgets(linebuffer, linelenmax + 3, file);
-      afgets(linebuffer, linelenmax + 3, file);
+      afgets(linebuffer, linelenmax+3, file);
+      afgets(linebuffer, linelenmax+3, file);
+      afgets(linebuffer, linelenmax+3, file);
       pt=linebuffer;
       while ((ch=agetc(file)) != EOF) {
 	 if (ch=='\n') {
@@ -644,8 +644,8 @@ static char *ArchiveParseTOC(char *listfile,enum archive_list_style ars,
 	       break;		/* End of file list */
 	    /* Blessed if I know what encoded was used for filenames */
 	    /*  inside the zip file. I shall assume utf8, faut de mieux */
-	    if (pt - linebuffer >= 28 && pt[-1] != '/')
-	       files[fcnt++]=fastrdup(linebuffer + 28);
+	    if (pt-linebuffer >= 28 && pt[-1] != '/')
+	       files[fcnt++]=fastrdup(linebuffer+28);
 	    pt=linebuffer;
 	 } else
 	    *pt++=ch;
@@ -675,13 +675,13 @@ static char *ArchiveParseTOC(char *listfile,enum archive_list_style ars,
 	       || strncasecmp(pt-4,"_ufo",4)==0))) {
 	 /* Ok, looks like a potential directory font. Now is EVERYTHING */
 	 /*  in the archive inside this guy? */
-	 for (i=0; i < fcnt; ++i)
-	    if (strncmp(files[i], files[0], pt - files[0] + 1) != 0)
+	 for (i=0; i<fcnt; ++i)
+	    if (strncmp(files[i], files[0], pt-files[0]+1) != 0)
 	       break;
 	 if (i==fcnt) {
-	    char *onlydirfont=copyn(files[0], pt - files[0] + 1);
+	    char *onlydirfont=copyn(files[0], pt-files[0]+1);
 
-	    for (i=0; i < fcnt; ++i)
+	    for (i=0; i<fcnt; ++i)
 	       free(files[i]);
 	    free(files);
 	    *doall=true;
@@ -692,7 +692,7 @@ static char *ArchiveParseTOC(char *listfile,enum archive_list_style ars,
 
    def=0;
    def_prio=-1;
-   for (i=0; i < fcnt; ++i) {
+   for (i=0; i<fcnt; ++i) {
       pt=strrchr(files[i], '.');
       if (pt==NULL)
 	 continue;
@@ -708,7 +708,7 @@ static char *ArchiveParseTOC(char *listfile,enum archive_list_style ars,
 	 prio=40;
       else
 	 continue;
-      if (prio > def_prio) {
+      if (prio>def_prio) {
 	 def=i;
 	 def_prio=prio;
       }
@@ -720,7 +720,7 @@ static char *ArchiveParseTOC(char *listfile,enum archive_list_style ars,
    else
       name=fastrdup(files[choice]);
 
-   for (i=0; i < fcnt; ++i)
+   for (i=0; i<fcnt; ++i)
       free(files[i]);
    free(files);
    return (name);
@@ -747,7 +747,7 @@ char *Unarchive(char *name, char **_archivedir) {
 	 break;
    if (archivers[i].ext==NULL) {
       /* some of those endings have two extensions... */
-      while (pt > name && pt[-1] != '.')
+      while (pt>name && pt[-1] != '.')
 	 --pt;
       if (pt==name)
 	 return (NULL);
@@ -761,19 +761,19 @@ char *Unarchive(char *name, char **_archivedir) {
 
    if (dir==NULL)
       dir=P_tmpdir;
-   archivedir=malloc(strlen(dir) + 100);
+   archivedir=malloc(strlen(dir)+100);
    sprintf(archivedir, "%s/ffarchive-%d-%d", dir, getpid(), ++cnt);
    if (GFileMkDir(archivedir) != 0) {
       free(archivedir);
       return (NULL);
    }
 
-   listfile=malloc(strlen(archivedir) + strlen("/" TOC_NAME) + 1);
+   listfile=malloc(strlen(archivedir)+strlen("/" TOC_NAME)+1);
    sprintf(listfile, "%s/" TOC_NAME, archivedir);
 
-   listcommand=malloc(strlen(archivers[i].unarchive) + 1 +
-			strlen(archivers[i].listargs) + 1 +
-			strlen(name) + 3 + strlen(listfile) + 4);
+   listcommand=malloc(strlen(archivers[i].unarchive)+1 +
+			strlen(archivers[i].listargs)+1 +
+			strlen(name)+3+strlen(listfile)+4);
    sprintf(listcommand, "%s %s %s > %s", archivers[i].unarchive,
 	   archivers[i].listargs, name, listfile);
    if (system(listcommand) != 0) {
@@ -793,13 +793,13 @@ char *Unarchive(char *name, char **_archivedir) {
 
    /* I tried sending everything to stdout, but that doesn't work if the */
    /*  output is a directory file */
-   unarchivecmd=malloc(strlen(archivers[i].unarchive) + 1 +
-			 strlen(archivers[i].listargs) + 1 +
-			 strlen(name) + 1 +
-			 strlen(desiredfile) + 3 + strlen(archivedir) + 30);
+   unarchivecmd=malloc(strlen(archivers[i].unarchive)+1 +
+			 strlen(archivers[i].listargs)+1 +
+			 strlen(name)+1 +
+			 strlen(desiredfile)+3+strlen(archivedir)+30);
    sprintf(unarchivecmd, "( cd %s ; %s %s %s %s ) > /dev/null", archivedir,
 	   archivers[i].unarchive,
-	   archivers[i].extractargs, name, doall ? "" : desiredfile);
+	   archivers[i].extractargs, name, doall?"":desiredfile);
    if (system(unarchivecmd) != 0) {
       free(unarchivecmd);
       free(desiredfile);
@@ -808,7 +808,7 @@ char *Unarchive(char *name, char **_archivedir) {
    }
    free(unarchivecmd);
 
-   finalfile=malloc(strlen(archivedir) + 1 + strlen(desiredfile) + 1);
+   finalfile=malloc(strlen(archivedir)+1+strlen(desiredfile)+1);
    sprintf(finalfile, "%s/%s", archivedir, desiredfile);
    free(desiredfile);
 
@@ -834,7 +834,7 @@ char *Decompress(char *name, int compression) {
 
    if (dir==NULL)
       dir=P_tmpdir;
-   tmpfile=malloc(strlen(dir) + strlen(GFileNameTail(name)) + 2);
+   tmpfile=malloc(strlen(dir)+strlen(GFileNameTail(name))+2);
    strcpy(tmpfile, dir);
    strcat(tmpfile, "/");
    strcat(tmpfile, GFileNameTail(name));
@@ -848,7 +848,7 @@ char *Decompress(char *name, int compression) {
 }
 
 static char *ForceFileToHaveName(AFILE *file,char *exten) {
-   char tmpfilename[L_tmpnam + 100];
+   char tmpfilename[L_tmpnam+100];
    static int try=0;
    AFILE *newfile;
 
@@ -861,7 +861,7 @@ static char *ForceFileToHaveName(AFILE *file,char *exten) {
 	 char buffer[1024];
 	 int len;
 
-	 while ((len=afread(buffer, 1, sizeof(buffer), file)) > 0)
+	 while ((len=afread(buffer, 1, sizeof(buffer), file))>0)
 	    afwrite(buffer, 1, len, newfile);
 	 afclose(newfile);
       }
@@ -898,12 +898,12 @@ SplineFont *_ReadSplineFont(AFILE *file, char *filename,
    if ((paren=strrchr(pt, '(')) != NULL &&
        (rparen=strrchr(paren, ')')) != NULL && rparen[1]=='\0') {
       strippedname=fastrdup(filename);
-      strippedname[paren - filename]='\0';
+      strippedname[paren-filename]='\0';
    }
 
    pt=strrchr(strippedname, '.');
    if (pt != NULL) {
-      for (ext2=pt - 1; ext2 > strippedname && *ext2 != '.'; --ext2);
+      for (ext2=pt-1; ext2>strippedname && *ext2 != '.'; --ext2);
       for (i=0; archivers[i].ext != NULL; ++i) {
 	 /* some of the archive "extensions" are actually two like ".tar.bz2" */
 	 if (strcmp(archivers[i].ext, pt)==0
@@ -921,7 +921,7 @@ SplineFont *_ReadSplineFont(AFILE *file, char *filename,
 	    if (strippedname==NULL)
 	       return (NULL);
 	    if (strippedname != filename && paren != NULL) {
-	       fullname=malloc(strlen(strippedname) + strlen(paren) + 1);
+	       fullname=malloc(strlen(strippedname)+strlen(paren)+1);
 	       strcpy(fullname, strippedname);
 	       strcat(fullname, paren);
 	    } else
@@ -958,9 +958,9 @@ SplineFont *_ReadSplineFont(AFILE *file, char *filename,
 	 ErrorMsg(2,"Decompression failed.\n");
 	 return (NULL);
       }
-      compression=i + 1;
+      compression=i+1;
       if (strippedname != filename && paren != NULL) {
-	 fullname=malloc(strlen(strippedname) + strlen(paren) + 1);
+	 fullname=malloc(strlen(strippedname)+strlen(paren)+1);
 	 strcpy(fullname, strippedname);
 	 strcat(fullname, paren);
       } else
@@ -976,7 +976,7 @@ SplineFont *_ReadSplineFont(AFILE *file, char *filename,
    else
       strncat(ubuf, temp=fastrdup(GFileNameTail(filename)), 100);
    free(temp);
-   ubuf[100 + len]='\0';
+   ubuf[100+len]='\0';
 
    if (file==NULL) {
       file=afopen(strippedname, "rb");
@@ -997,7 +997,7 @@ SplineFont *_ReadSplineFont(AFILE *file, char *filename,
 /* checked=='i'   => ikarus */
    if (!wasurl && GFileIsDir(strippedname)) {
       char *temp =
-	 malloc(strlen(strippedname) + strlen("/glyphs/contents.plist") + 1);
+	 malloc(strlen(strippedname)+strlen("/glyphs/contents.plist")+1);
       strcpy(temp, strippedname);
       strcat(temp, "/glyphs/contents.plist");
       if (GFileExists(temp)) {
@@ -1084,64 +1084,64 @@ SplineFont *_ReadSplineFont(AFILE *file, char *filename,
 
    if (sf != NULL)
       /* good */ ;
-   else if ((strmatch(fullname + strlen(fullname) - 4, ".sfd")==0 ||
-	     strmatch(fullname + strlen(fullname) - 5, ".sfd~")==0)
+   else if ((strmatch(fullname+strlen(fullname)-4, ".sfd")==0 ||
+	     strmatch(fullname+strlen(fullname)-5, ".sfd~")==0)
 	    && checked != 'f') {
       sf=SFDRead(fullname);
       fromsfd=true;
-   } else if ((strmatch(fullname + strlen(fullname) - 4, ".ttf")==0 ||
-	       strmatch(fullname + strlen(strippedname) - 4, ".ttc")==0 ||
-	       strmatch(fullname + strlen(fullname) - 4, ".gai")==0 ||
-	       strmatch(fullname + strlen(fullname) - 4, ".otf")==0 ||
-	       strmatch(fullname + strlen(fullname) - 4, ".otb")==0)
+   } else if ((strmatch(fullname+strlen(fullname)-4, ".ttf")==0 ||
+	       strmatch(fullname+strlen(strippedname)-4, ".ttc")==0 ||
+	       strmatch(fullname+strlen(fullname)-4, ".gai")==0 ||
+	       strmatch(fullname+strlen(fullname)-4, ".otf")==0 ||
+	       strmatch(fullname+strlen(fullname)-4, ".otb")==0)
 	      && checked != 't') {
       sf=SFReadTTF(fullname, 0, openflags);
-   } else if (strmatch(fullname + strlen(strippedname) - 4, ".svg")==0
+   } else if (strmatch(fullname+strlen(strippedname)-4, ".svg")==0
 	      && checked != 'S') {
       sf=SFReadSVG(fullname, 0);
-   } else if (strmatch(fullname + strlen(fullname) - 4, ".ufo")==0
+   } else if (strmatch(fullname+strlen(fullname)-4, ".ufo")==0
 	      && checked != 'u') {
       sf=SFReadUFO(fullname, 0);
-   } else if (strmatch(fullname + strlen(fullname) - 4, ".bdf")==0
+   } else if (strmatch(fullname+strlen(fullname)-4, ".bdf")==0
 	      && checked != 'b') {
       sf=SFFromBDF(fullname, 0, false);
-   } else if (strmatch(fullname + strlen(fullname) - 2, "pk")==0) {
+   } else if (strmatch(fullname+strlen(fullname)-2, "pk")==0) {
       sf=SFFromBDF(fullname, 1, true);
-   } else if (strmatch(fullname + strlen(fullname) - 2, "gf")==0) {
+   } else if (strmatch(fullname+strlen(fullname)-2, "gf")==0) {
       sf=SFFromBDF(fullname, 3, true);
-   } else if (strmatch(fullname + strlen(fullname) - 4, ".pcf")==0 ||
-	      strmatch(fullname + strlen(fullname) - 4, ".pmf")==0) {
+   } else if (strmatch(fullname+strlen(fullname)-4, ".pcf")==0 ||
+	      strmatch(fullname+strlen(fullname)-4, ".pmf")==0) {
       /* Sun seems to use a variant of the pcf format which they call pmf */
       /*  the encoding actually starts at 0x2000 and the one I examined was */
       /*  for a pixel size of 200. Some sort of printer font? */
       sf=SFFromBDF(fullname, 2, false);
-   } else if (strmatch(fullname + strlen(strippedname) - 4, ".bin")==0 ||
-	      strmatch(fullname + strlen(strippedname) - 4, ".hqx")==0 ||
-	      strmatch(fullname + strlen(strippedname) - 6, ".dfont")==0) {
+   } else if (strmatch(fullname+strlen(strippedname)-4, ".bin")==0 ||
+	      strmatch(fullname+strlen(strippedname)-4, ".hqx")==0 ||
+	      strmatch(fullname+strlen(strippedname)-6, ".dfont")==0) {
       sf=SFReadMacBinary(fullname, 0, openflags);
-   } else if (strmatch(fullname + strlen(strippedname) - 4, ".fon")==0 ||
-	      strmatch(fullname + strlen(strippedname) - 4, ".fnt")==0) {
+   } else if (strmatch(fullname+strlen(strippedname)-4, ".fon")==0 ||
+	      strmatch(fullname+strlen(strippedname)-4, ".fnt")==0) {
       sf=SFReadWinFON(fullname, 0);
-   } else if (strmatch(fullname + strlen(strippedname) - 4, ".pdb")==0) {
+   } else if (strmatch(fullname+strlen(strippedname)-4, ".pdb")==0) {
       sf=SFReadPalmPdb(fullname, 0);
-   } else if ((strmatch(fullname + strlen(fullname) - 4, ".pfa")==0 ||
-	       strmatch(fullname + strlen(fullname) - 4, ".pfb")==0 ||
-	       strmatch(fullname + strlen(fullname) - 4, ".pf3")==0 ||
-	       strmatch(fullname + strlen(fullname) - 4, ".cid")==0 ||
-	       strmatch(fullname + strlen(fullname) - 4, ".gsf")==0 ||
-	       strmatch(fullname + strlen(fullname) - 4, ".pt3")==0 ||
-	       strmatch(fullname + strlen(fullname) - 3, ".ps")==0)
+   } else if ((strmatch(fullname+strlen(fullname)-4, ".pfa")==0 ||
+	       strmatch(fullname+strlen(fullname)-4, ".pfb")==0 ||
+	       strmatch(fullname+strlen(fullname)-4, ".pf3")==0 ||
+	       strmatch(fullname+strlen(fullname)-4, ".cid")==0 ||
+	       strmatch(fullname+strlen(fullname)-4, ".gsf")==0 ||
+	       strmatch(fullname+strlen(fullname)-4, ".pt3")==0 ||
+	       strmatch(fullname+strlen(fullname)-3, ".ps")==0)
 	      && checked != 'p') {
       sf=SFReadPostScript(fullname);
-   } else if (strmatch(fullname + strlen(fullname) - 4, ".cff")==0
+   } else if (strmatch(fullname+strlen(fullname)-4, ".cff")==0
 	      && checked != 'c') {
       sf=CFFParse(fullname);
-   } else if (strmatch(fullname + strlen(fullname) - 3, ".mf")==0) {
+   } else if (strmatch(fullname+strlen(fullname)-3, ".mf")==0) {
       sf=SFFromMF(fullname);
-   } else if (strmatch(strippedname + strlen(strippedname) - 4, ".pdf")==0
+   } else if (strmatch(strippedname+strlen(strippedname)-4, ".pdf")==0
 	      && checked != 'P') {
       sf=SFReadPdfFont(fullname, openflags);
-   } else if (strmatch(fullname + strlen(fullname) - 3, ".ik")==0
+   } else if (strmatch(fullname+strlen(fullname)-3, ".ik")==0
 	      && checked != 'i') {
       sf=SFReadIkarus(fullname);
    } else {
@@ -1149,7 +1149,7 @@ SplineFont *_ReadSplineFont(AFILE *file, char *filename,
    }
 
    if (sf != NULL) {
-      SplineFont *norm=sf->mm != NULL ? sf->mm->normal : sf;
+      SplineFont *norm=sf->mm != NULL?sf->mm->normal:sf;
 
       if (compression != 0) {
 	 free(sf->filename);
@@ -1166,7 +1166,7 @@ SplineFont *_ReadSplineFont(AFILE *file, char *filename,
 	 norm->new=true;
       } else if (sf->chosenname != NULL && strippedname==filename) {
 	 norm->origname =
-	    malloc(strlen(filename) + strlen(sf->chosenname) + 8);
+	    malloc(strlen(filename)+strlen(sf->chosenname)+8);
 	 strcpy(norm->origname, filename);
 	 strcat(norm->origname, "(");
 	 strcat(norm->origname, sf->chosenname);
@@ -1178,7 +1178,7 @@ SplineFont *_ReadSplineFont(AFILE *file, char *filename,
       if (sf->mm != NULL) {
 	 int j;
 
-	 for (j=0; j < sf->mm->instance_count; ++j) {
+	 for (j=0; j<sf->mm->instance_count; ++j) {
 	    free(sf->mm->instances[j]->origname);
 	    sf->mm->instances[j]->origname=fastrdup(norm->origname);
 	 }
@@ -1204,10 +1204,10 @@ SplineFont *_ReadSplineFont(AFILE *file, char *filename,
    }
    if (wasarchived)
       ArchiveCleanup(archivedir);
-   if ((openflags & of_fstypepermitted) && sf != NULL
-       && (sf->pfminfo.fstype & 0xff)==0x0002) {
+   if ((openflags&of_fstypepermitted) && sf != NULL
+       && (sf->pfminfo.fstype&0xff)==0x0002) {
       /* Ok, they have told us from a script they have access to the font */
-   } else if (!fromsfd && sf != NULL && (sf->pfminfo.fstype & 0xff)==0x0002) {
+   } else if (!fromsfd && sf != NULL && (sf->pfminfo.fstype&0xff)==0x0002) {
       SplineFontFree(sf);
       return NULL;
    }
@@ -1253,9 +1253,9 @@ SplineFont *LoadSplineFont(char *filename, enum openflags openflags) {
 	 afclose(test);
       }
       if (!ok) {
-	 tobefreed1=malloc(strlen(filename) + 8);
+	 tobefreed1=malloc(strlen(filename)+8);
 	 strcpy(tobefreed1, filename);
-	 ept=tobefreed1 + strlen(tobefreed1);
+	 ept=tobefreed1+strlen(tobefreed1);
 	 for (i=0; extens[i] != NULL; ++i) {
 	    strcpy(ept, extens[i]);
 	    if (GFileExists(tobefreed1))
@@ -1347,7 +1347,7 @@ char *_GetModifiers(char *fontname, char *familyname, char *weight) {
       for (i=0; mods[i] != NULL; ++i)
 	 for (j=0; mods[i][j] != NULL; ++j) {
 	    pt=strstr(fontname, mods[i][j]);
-	    if (pt != NULL && (fpt==NULL || pt < fpt))
+	    if (pt != NULL && (fpt==NULL || pt<fpt))
 	       fpt=pt;
 	 }
    }
@@ -1355,7 +1355,7 @@ char *_GetModifiers(char *fontname, char *familyname, char *weight) {
       for (i=0; mods[i] != NULL; ++i)
 	 for (j=0; mods[i][j] != NULL; ++j) {
 	    if (strcmp(fpt, mods[i][j])==0) {
-	       strncpy(space, fullmods[i][j], sizeof(space) - 1);
+	       strncpy(space, fullmods[i][j], sizeof(space)-1);
 	       return (space);
 	    }
 	 }
@@ -1367,7 +1367,7 @@ char *_GetModifiers(char *fontname, char *familyname, char *weight) {
       return (fpt);
    }
 
-   return (weight==NULL || *weight=='\0' ? "Regular" : weight);
+   return (weight==NULL || *weight=='\0'?"Regular":weight);
 }
 
 char *SFGetModifiers(SplineFont *sf) {
@@ -1390,23 +1390,23 @@ static double SPLMaxHeight(SplineSet *spl,enum flatness *isflat) {
 	    first=s;
 	 if (s->from->me.y >= max ||
 	     s->to->me.y >= max ||
-	     s->from->nextcp.y > max || s->to->prevcp.y > max) {
+	     s->from->nextcp.y>max || s->to->prevcp.y>max) {
 	    if (!s->knownlinear) {
-	       if (s->from->me.y > max) {
+	       if (s->from->me.y>max) {
 		  f=mt_round;
 		  max=s->from->me.y;
 	       }
-	       if (s->to->me.y > max) {
+	       if (s->to->me.y>max) {
 		  f=mt_round;
 		  max=s->to->me.y;
 	       }
 	       SplineFindExtrema(&s->splines[1], &ts[0], &ts[1]);
-	       for (i=0; i < 2; ++i)
+	       for (i=0; i<2; ++i)
 		  if (ts[i] != -1) {
 		     double y =
-			((s->splines[1].a * ts[i] + s->splines[1].b) * ts[i] +
-			 s->splines[1].c) * ts[i] + s->splines[1].d;
-		     if (y > max) {
+			((s->splines[1].a * ts[i]+s->splines[1].b)*ts[i] +
+			 s->splines[1].c)*ts[i]+s->splines[1].d;
+		     if (y>max) {
 			f=mt_round;
 			max=y;
 		     }
@@ -1417,11 +1417,11 @@ static double SPLMaxHeight(SplineSet *spl,enum flatness *isflat) {
 		  f=mt_flat;
 	       }
 	    } else {
-	       if (s->from->me.y > max) {
+	       if (s->from->me.y>max) {
 		  f=mt_pointy;
 		  max=s->from->me.y;
 	       }
-	       if (s->to->me.y > max) {
+	       if (s->to->me.y>max) {
 		  f=mt_pointy;
 		  max=s->to->me.y;
 	       }
@@ -1444,7 +1444,7 @@ static double SCMaxHeight(SplineChar *sc,int layer,enum flatness *isflat) {
    f=curf;
    for (r=sc->layers[layer].refs; r != NULL; r=r->next) {
       test=SPLMaxHeight(r->layers[0].splines, &curf);
-      if (test > max || (test==max && curf==mt_flat)) {
+      if (test>max || (test==max && curf==mt_flat)) {
 	 max=test;
 	 f=curf;
       }
@@ -1467,23 +1467,23 @@ static double SPLMinHeight(SplineSet *spl,enum flatness *isflat) {
 	    first=s;
 	 if (s->from->me.y <= min ||
 	     s->to->me.y <= min ||
-	     s->from->nextcp.y < min || s->to->prevcp.y < min) {
+	     s->from->nextcp.y<min || s->to->prevcp.y<min) {
 	    if (!s->knownlinear) {
-	       if (s->from->me.y < min) {
+	       if (s->from->me.y<min) {
 		  f=mt_round;
 		  min=s->from->me.y;
 	       }
-	       if (s->to->me.y < min) {
+	       if (s->to->me.y<min) {
 		  f=mt_round;
 		  min=s->to->me.y;
 	       }
 	       SplineFindExtrema(&s->splines[1], &ts[0], &ts[1]);
-	       for (i=0; i < 2; ++i)
+	       for (i=0; i<2; ++i)
 		  if (ts[i] != -1) {
 		     double y =
-			((s->splines[1].a * ts[i] + s->splines[1].b) * ts[i] +
-			 s->splines[1].c) * ts[i] + s->splines[1].d;
-		     if (y < min) {
+			((s->splines[1].a * ts[i]+s->splines[1].b)*ts[i] +
+			 s->splines[1].c)*ts[i]+s->splines[1].d;
+		     if (y<min) {
 			f=mt_round;
 			min=y;
 		     }
@@ -1494,11 +1494,11 @@ static double SPLMinHeight(SplineSet *spl,enum flatness *isflat) {
 		  f=mt_flat;
 	       }
 	    } else {
-	       if (s->from->me.y < min) {
+	       if (s->from->me.y<min) {
 		  f=mt_pointy;
 		  min=s->from->me.y;
 	       }
-	       if (s->to->me.y < min) {
+	       if (s->to->me.y<min) {
 		  f=mt_pointy;
 		  min=s->to->me.y;
 	       }
@@ -1521,7 +1521,7 @@ static double SCMinHeight(SplineChar *sc,int layer,enum flatness *isflat) {
    f=curf;
    for (r=sc->layers[layer].refs; r != NULL; r=r->next) {
       test=SPLMinHeight(r->layers[0].splines, &curf);
-      if (test < min || (test==min && curf==mt_flat)) {
+      if (test<min || (test==min && curf==mt_flat)) {
 	 min=test;
 	 f=curf;
       }
@@ -1540,7 +1540,7 @@ struct dimcnt {
 static int dclist_insert(struct dimcnt *arr,int cnt,double val) {
    int i;
 
-   for (i=0; i < cnt; ++i) {
+   for (i=0; i<cnt; ++i) {
       if (arr[i].pos==val) {
 	 ++arr[i].cnt;
 	 return (cnt);
@@ -1548,7 +1548,7 @@ static int dclist_insert(struct dimcnt *arr,int cnt,double val) {
    }
    arr[i].pos=val;
    arr[i].cnt=1;
-   return (i + 1);
+   return (i+1);
 }
 
 static double SFStandardHeight(SplineFont *sf,int layer,int do_max,
@@ -1587,34 +1587,34 @@ static double SFStandardHeight(SplineFont *sf,int layer,int do_max,
    /* All flat surfaces at tops of glyphs are at the same level */
    if (fcnt==1)
       result=flats[0].pos;
-   else if (fcnt > 1) {
+   else if (fcnt>1) {
       cnt=0;
-      for (i=0; i < fcnt; ++i) {
-	 if (flats[i].cnt > cnt)
+      for (i=0; i<fcnt; ++i) {
+	 if (flats[i].cnt>cnt)
 	    cnt=flats[i].cnt;
       }
       test=0;
       tot=0;
       /* find the mode. If multiple values have the same high count, average them */
-      for (i=0; i < fcnt; ++i) {
+      for (i=0; i<fcnt; ++i) {
 	 if (flats[i].cnt==cnt) {
 	    test += flats[i].pos;
 	    ++tot;
 	 }
       }
-      result=test / tot;
+      result=test/tot;
    } else if (ccnt==0)
-      return (do_max ? -1e23 : 1e23);	/* We didn't find any glyphs */
+      return (do_max?-1e23:1e23);	/* We didn't find any glyphs */
    else {
       /* Italic fonts will often have no flat surfaces for x-height just wavies */
       test=0;
       tot=0;
       /* find the mean */
-      for (i=0; i < ccnt; ++i) {
+      for (i=0; i<ccnt; ++i) {
 	 test += curves[i].pos;
 	 ++tot;
       }
-      result=test / tot;
+      result=test/tot;
    }
 
    /* Do we have a BlueValues entry? */
@@ -1622,12 +1622,12 @@ static double SFStandardHeight(SplineFont *sf,int layer,int do_max,
    if (sf->private != NULL
        && (blues =
 	   PSDictHasEntry(sf->private,
-			  do_max ? "BlueValues" : "OtherBlues")) != NULL) {
+			  do_max?"BlueValues":"OtherBlues")) != NULL) {
       while (*blues==' ' || *blues=='[')
 	 ++blues;
       /* Must get at least this close, else we'll just use what we found */
       bestheight=result;
-      bestdiff=(sf->ascent + sf->descent) / 100.0;
+      bestdiff=(sf->ascent+sf->descent)/100.0;
       useit=true;
       while (*blues != '\0' && *blues != ']') {
 	 val=strtod(blues, &end);
@@ -1637,9 +1637,9 @@ static double SFStandardHeight(SplineFont *sf,int layer,int do_max,
 	 while (*blues==' ')
 	    ++blues;
 	 if (useit) {
-	    if ((diff=val - result) < 0)
+	    if ((diff=val-result)<0)
 	       diff=-diff;
-	    if (diff < bestdiff) {
+	    if (diff<bestdiff) {
 	       bestheight=val;
 	       bestdiff=diff;
 	    }
@@ -1684,7 +1684,7 @@ double SFCapHeight(SplineFont *sf, int layer, int return_error) {
    double result=SFStandardHeight(sf, layer, true, capheight_str);
 
    if (result==-1e23 && !return_error)
-      result=(8 * sf->ascent) / 10;
+      result=(8*sf->ascent)/10;
    return (result);
 }
 
@@ -1692,7 +1692,7 @@ double SFXHeight(SplineFont *sf, int layer, int return_error) {
    double result=SFStandardHeight(sf, layer, true, xheight_str);
 
    if (result==-1e23 && !return_error)
-      result=(6 * sf->ascent) / 10;
+      result=(6*sf->ascent)/10;
    return (result);
 }
 
@@ -1700,7 +1700,7 @@ double SFAscender(SplineFont *sf, int layer, int return_error) {
    double result=SFStandardHeight(sf, layer, true, ascender_str);
 
    if (result==-1e23 && !return_error)
-      result=(81 * sf->ascent) / 100;
+      result=(81*sf->ascent)/100;
    return (result);
 }
 
@@ -1708,16 +1708,16 @@ double SFDescender(SplineFont *sf, int layer, int return_error) {
    double result=SFStandardHeight(sf, layer, false, descender_str);
 
    if (result==1e23 && !return_error)
-      result=-sf->descent / 2;
+      result=-sf->descent/2;
    return (result);
 }
 
 static void arraystring(char *buffer,double *array,int cnt) {
    int i, ei;
 
-   for (ei=cnt; ei > 1 && array[ei - 1]==0; --ei);
+   for (ei=cnt; ei>1 && array[ei-1]==0; --ei);
    *buffer++='[';
-   for (i=0; i < ei; ++i) {
+   for (i=0; i<ei; ++i) {
       sprintf(buffer, "%d ", (int) array[i]);
       buffer += strlen(buffer);
    }
@@ -1733,14 +1733,14 @@ static void SnapSet(struct psdict *private,double stemsnap[12],
    char buffer[211];
 
    mi=-1;
-   for (i=0; i < 12 && stemsnap[i] != 0; ++i)
+   for (i=0; i<12 && stemsnap[i] != 0; ++i)
       if (mi==-1)
 	 mi=i;
-      else if (snapcnt[i] > snapcnt[mi])
+      else if (snapcnt[i]>snapcnt[mi])
 	 mi=i;
    if (mi==-1)
       return;
-   if (which < 2) {
+   if (which<2) {
       sprintf(buffer, "[%d]", (int) stemsnap[mi]);
       PSDictChangeEntry(private, name1, buffer);
    }
@@ -1776,11 +1776,11 @@ int SFPrivateGuess(SplineFont *sf, int layer, struct psdict *private,
    } else if (strcmp(name, "StdHW")==0 || strcmp(name, "StemSnapH")==0) {
       FindHStems(sf, stemsnap, snapcnt);
       SnapSet(private, stemsnap, snapcnt, "StdHW", "StemSnapH",
-	      !onlyone ? 0 : strcmp(name, "StdHW")==0 ? 1 : 0);
+	      !onlyone?0:strcmp(name, "StdHW")==0?1:0);
    } else if (strcmp(name, "StdVW")==0 || strcmp(name, "StemSnapV")==0) {
       FindVStems(sf, stemsnap, snapcnt);
       SnapSet(private, stemsnap, snapcnt, "StdVW", "StemSnapV",
-	      !onlyone ? 0 : strcmp(name, "StdVW")==0 ? 1 : 0);
+	      !onlyone?0:strcmp(name, "StdVW")==0?1:0);
    } else if (strcmp(name, "BlueScale")==0) {
       double val=-1;
 
@@ -1808,7 +1808,7 @@ int SFPrivateGuess(SplineFont *sf, int layer, struct psdict *private,
 	 isbold=true;
       if (sf->pfminfo.pfmset && sf->pfminfo.weight >= 700)
 	 isbold=true;
-      PSDictChangeEntry(private, "ForceBold", isbold ? "true" : "false");
+      PSDictChangeEntry(private, "ForceBold", isbold?"true":"false");
    } else if (strcmp(name, "LanguageGroup")==0) {
       PSDictChangeEntry(private, "LanguageGroup", "0");
    } else if (strcmp(name, "ExpansionFactor")==0) {

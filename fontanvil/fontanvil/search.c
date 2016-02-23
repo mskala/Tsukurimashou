@@ -1,4 +1,4 @@
-/* $Id: search.c 4501 2015-12-16 13:47:38Z mskala $ */
+/* $Id: search.c 4532 2015-12-22 13:18:53Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -58,12 +58,12 @@ typedef struct searchdata {
 static int CoordMatches(double real_off,double search_off,SearchData *s) {
    double fudge;
 
-   if (real_off >= search_off - s->fudge && real_off <= search_off + s->fudge)
+   if (real_off >= search_off-s->fudge && real_off <= search_off+s->fudge)
       return (true);
    fudge=s->fudge_percent * search_off;
-   if (fudge < 0)
+   if (fudge<0)
       fudge=-fudge;
-   if (real_off >= search_off - fudge && real_off <= search_off + fudge)
+   if (real_off >= search_off-fudge && real_off <= search_off+fudge)
       return (true);
    return (false);
 }
@@ -73,13 +73,13 @@ static int BPMatches(BasePoint *sc_p1,BasePoint *sc_p2,BasePoint *p_p1,
 		     SearchData * s) {
    double sxoff, syoff, pxoff, pyoff;
 
-   sxoff=sc_p1->x - sc_p2->x;
-   syoff=sc_p1->y - sc_p2->y;
-   pxoff=p_p1->x - p_p2->x;
-   pyoff=p_p1->y - p_p2->y;
-   if (flip & 1)
+   sxoff=sc_p1->x-sc_p2->x;
+   syoff=sc_p1->y-sc_p2->y;
+   pxoff=p_p1->x-p_p2->x;
+   pyoff=p_p1->y-p_p2->y;
+   if (flip&1)
       sxoff=-sxoff;
-   if (flip & 2)
+   if (flip&2)
       syoff=-syoff;
    sxoff *= scale;
    syoff *= scale;
@@ -87,8 +87,8 @@ static int BPMatches(BasePoint *sc_p1,BasePoint *sc_p2,BasePoint *p_p1,
       return (CoordMatches(sxoff, pxoff, s) && CoordMatches(syoff, pyoff, s));
 
    return (CoordMatches
-	   (sxoff * s->matched_co + syoff * s->matched_si, pxoff, s)
-	   && CoordMatches(-sxoff * s->matched_si + syoff * s->matched_co,
+	   (sxoff * s->matched_co+syoff * s->matched_si, pxoff, s)
+	   && CoordMatches(-sxoff * s->matched_si+syoff * s->matched_co,
 			   pyoff, s));
 }
 
@@ -119,7 +119,7 @@ static int SPMatchesF(SplinePoint *sp,SearchData *s,SplineSet *path,
 
       if (p_sp->next==NULL) {
 	 if (substring || sc_sp->next==NULL) {
-	    s->last_sp=saw_sc_first ? NULL : sp;
+	    s->last_sp=saw_sc_first?NULL:sp;
 	    return (true);
 	 }
 	 break;
@@ -130,21 +130,21 @@ static int SPMatchesF(SplinePoint *sp,SearchData *s,SplineSet *path,
       nsc_sp=sc_sp->next->to;
 
       if (!CoordMatches
-	  (sc_sp->nextcp.x - sc_sp->me.x, p_sp->nextcp.x - p_sp->me.x, s)
-	  || !CoordMatches(sc_sp->nextcp.y - sc_sp->me.y,
-			   p_sp->nextcp.y - p_sp->me.y, s)
-	  || !CoordMatches(nsc_sp->me.x - sc_sp->me.x,
-			   np_sp->me.x - p_sp->me.x, s)
-	  || !CoordMatches(nsc_sp->me.y - sc_sp->me.y,
-			   np_sp->me.y - p_sp->me.y, s)
-	  || !CoordMatches(nsc_sp->prevcp.x - nsc_sp->me.x,
-			   np_sp->prevcp.x - np_sp->me.x, s)
-	  || !CoordMatches(nsc_sp->prevcp.y - nsc_sp->me.y,
-			   np_sp->prevcp.y - np_sp->me.y, s))
+	  (sc_sp->nextcp.x-sc_sp->me.x, p_sp->nextcp.x-p_sp->me.x, s)
+	  || !CoordMatches(sc_sp->nextcp.y-sc_sp->me.y,
+			   p_sp->nextcp.y-p_sp->me.y, s)
+	  || !CoordMatches(nsc_sp->me.x-sc_sp->me.x,
+			   np_sp->me.x-p_sp->me.x, s)
+	  || !CoordMatches(nsc_sp->me.y-sc_sp->me.y,
+			   np_sp->me.y-p_sp->me.y, s)
+	  || !CoordMatches(nsc_sp->prevcp.x-nsc_sp->me.x,
+			   np_sp->prevcp.x-np_sp->me.x, s)
+	  || !CoordMatches(nsc_sp->prevcp.y-nsc_sp->me.y,
+			   np_sp->prevcp.y-np_sp->me.y, s))
 	 break;
       if (np_sp==path->first) {
 	 if (nsc_sp==sp) {
-	    s->last_sp=saw_sc_first ? NULL : sp;
+	    s->last_sp=saw_sc_first?NULL:sp;
 	    return (true);
 	 }
 	 break;
@@ -172,17 +172,17 @@ static int SPMatchesO(SplinePoint *sp,SearchData *s,SplineSet *path) {
 	    return (false);
 	 nsc_sp=sc_sp->next->to;
 	 if (!CoordMatches
-	     (sc_sp->nextcp.x - sc_sp->me.x, p_sp->nextcp.x - p_sp->me.x, s)
-	     || !CoordMatches(sc_sp->nextcp.y - sc_sp->me.y,
-			      p_sp->nextcp.y - p_sp->me.y, s)
-	     || !CoordMatches(nsc_sp->me.x - sc_sp->me.x,
-			      np_sp->me.x - p_sp->me.x, s)
-	     || !CoordMatches(nsc_sp->me.y - sc_sp->me.y,
-			      np_sp->me.y - p_sp->me.y, s)
-	     || !CoordMatches(nsc_sp->prevcp.x - nsc_sp->me.x,
-			      np_sp->prevcp.x - np_sp->me.x, s)
-	     || !CoordMatches(nsc_sp->prevcp.y - nsc_sp->me.y,
-			      np_sp->prevcp.y - np_sp->me.y, s))
+	     (sc_sp->nextcp.x-sc_sp->me.x, p_sp->nextcp.x-p_sp->me.x, s)
+	     || !CoordMatches(sc_sp->nextcp.y-sc_sp->me.y,
+			      p_sp->nextcp.y-p_sp->me.y, s)
+	     || !CoordMatches(nsc_sp->me.x-sc_sp->me.x,
+			      np_sp->me.x-p_sp->me.x, s)
+	     || !CoordMatches(nsc_sp->me.y-sc_sp->me.y,
+			      np_sp->me.y-p_sp->me.y, s)
+	     || !CoordMatches(nsc_sp->prevcp.x-nsc_sp->me.x,
+			      np_sp->prevcp.x-np_sp->me.x, s)
+	     || !CoordMatches(nsc_sp->prevcp.y-nsc_sp->me.y,
+			      np_sp->prevcp.y-np_sp->me.y, s))
 	    return (false);
 	 if (np_sp==path->first)
 	    return (nsc_sp==sp);
@@ -190,8 +190,8 @@ static int SPMatchesO(SplinePoint *sp,SearchData *s,SplineSet *path) {
 	 p_sp=np_sp;
       }
    } else if (s->matched_rot==0 && s->matched_scale==1) {
-      int xsign=(s->matched_flip & 1) ? -1 : 1, ysign =
-	 (s->matched_flip & 2) ? -1 : 1;
+      int xsign=(s->matched_flip&1)?-1:1, ysign =
+	 (s->matched_flip&2)?-1:1;
       for (sc_sp=sp, p_sp=path->first;;) {
 	 if (p_sp->next==NULL)
 	    return (sc_sp->next==NULL);
@@ -200,18 +200,18 @@ static int SPMatchesO(SplinePoint *sp,SearchData *s,SplineSet *path) {
 	    return (false);
 	 nsc_sp=sc_sp->next->to;
 	 if (!CoordMatches
-	     (sc_sp->nextcp.x - sc_sp->me.x,
-	      xsign * (p_sp->nextcp.x - p_sp->me.x), s)
-	     || !CoordMatches(sc_sp->nextcp.y - sc_sp->me.y,
-			      ysign * (p_sp->nextcp.y - p_sp->me.y), s)
-	     || !CoordMatches(nsc_sp->me.x - sc_sp->me.x,
-			      xsign * (np_sp->me.x - p_sp->me.x), s)
-	     || !CoordMatches(nsc_sp->me.y - sc_sp->me.y,
-			      ysign * (np_sp->me.y - p_sp->me.y), s)
-	     || !CoordMatches(nsc_sp->prevcp.x - nsc_sp->me.x,
-			      xsign * (np_sp->prevcp.x - np_sp->me.x), s)
-	     || !CoordMatches(nsc_sp->prevcp.y - nsc_sp->me.y,
-			      ysign * (np_sp->prevcp.y - np_sp->me.y), s))
+	     (sc_sp->nextcp.x-sc_sp->me.x,
+	      xsign * (p_sp->nextcp.x-p_sp->me.x), s)
+	     || !CoordMatches(sc_sp->nextcp.y-sc_sp->me.y,
+			      ysign * (p_sp->nextcp.y-p_sp->me.y), s)
+	     || !CoordMatches(nsc_sp->me.x-sc_sp->me.x,
+			      xsign * (np_sp->me.x-p_sp->me.x), s)
+	     || !CoordMatches(nsc_sp->me.y-sc_sp->me.y,
+			      ysign * (np_sp->me.y-p_sp->me.y), s)
+	     || !CoordMatches(nsc_sp->prevcp.x-nsc_sp->me.x,
+			      xsign * (np_sp->prevcp.x-np_sp->me.x), s)
+	     || !CoordMatches(nsc_sp->prevcp.y-nsc_sp->me.y,
+			      ysign * (np_sp->prevcp.y-np_sp->me.y), s))
 	    return (false);
 	 if (np_sp==path->first)
 	    return (nsc_sp==sp);
@@ -248,9 +248,9 @@ static int SPMatchesO(SplinePoint *sp,SearchData *s,SplineSet *path) {
 static void SVBuildTrans(SearchData *s,double transform[6]) {
    memset(transform, 0, sizeof(double[6]));
    transform[0]=transform[3]=1;
-   if (s->matched_flip & 1)
+   if (s->matched_flip&1)
       transform[0]=-1;
-   if (s->matched_flip & 2)
+   if (s->matched_flip&2)
       transform[3]=-1;
    transform[0] /= s->matched_scale;
    transform[3] /= s->matched_scale;
@@ -268,10 +268,10 @@ static void SVFigureTranslation(SearchData *s,BasePoint *p,
    BasePoint res;
 
    SVBuildTrans(s, transform);
-   res.x=transform[0] * p->x + transform[2] * p->y + transform[4];
-   res.y=transform[1] * p->x + transform[3] * p->y + transform[5];
-   s->matched_x=sp->me.x - res.x;
-   s->matched_y=sp->me.y - res.y;
+   res.x=transform[0] * p->x+transform[2] * p->y+transform[4];
+   res.y=transform[1] * p->x+transform[3] * p->y+transform[5];
+   s->matched_x=sp->me.x-res.x;
+   s->matched_y=sp->me.y-res.y;
 }
 
 static int SPMatches(SplinePoint *sp,SearchData *s,SplineSet *path,
@@ -280,14 +280,14 @@ static int SPMatches(SplinePoint *sp,SearchData *s,SplineSet *path,
    BasePoint *p, res;
 
    if (oriented) {
-      double fudge=s->fudge < .1 ? 10 * s->fudge : s->fudge;
+      double fudge=s->fudge<.1?10*s->fudge:s->fudge;
 
       SVBuildTrans(s, transform);
       p=&path->first->me;
-      res.x=transform[0] * p->x + transform[2] * p->y + transform[4];
-      res.y=transform[1] * p->x + transform[3] * p->y + transform[5];
-      if (sp->me.x > res.x + fudge || sp->me.x < res.x - fudge ||
-	  sp->me.y > res.y + fudge || sp->me.y < res.y - fudge)
+      res.x=transform[0] * p->x+transform[2] * p->y+transform[4];
+      res.y=transform[1] * p->x+transform[3] * p->y+transform[5];
+      if (sp->me.x>res.x+fudge || sp->me.x<res.x-fudge ||
+	  sp->me.y>res.y+fudge || sp->me.y<res.y-fudge)
 	 return (false);
 
       return (SPMatchesO(sp, s, path));
@@ -308,10 +308,10 @@ static int SCMatchesIncomplete(SplineChar *sc,SearchData *s,
    SplinePoint *sp;
    int layer=s->fv->active_layer;
 
-   for (spl=startafter ? s->matched_spl : sc->layers[layer].splines;
+   for (spl=startafter?s->matched_spl:sc->layers[layer].splines;
 	spl != NULL; spl=spl->next) {
       s->matched_spl=spl;
-      for (sp=startafter ? s->last_sp : spl->first; sp != NULL;) {
+      for (sp=startafter?s->last_sp:spl->first; sp != NULL;) {
 	 if (SPMatchesF(sp, s, s->path, spl->first, true)) {
 	    SVFigureTranslation(s, &s->path->first->me, sp);
 	    return (true);
@@ -342,7 +342,7 @@ static int SCMatchesFull(SplineChar *sc,SearchData *s) {
    first=true;
    for (s_r=s->sc_srch.layers[ly_fore].refs; s_r != NULL; s_r=s_r->next) {
       for (r=sc->layers[layer].refs, i=0; r != NULL; r=r->next, ++i)
-	 if (!(s->matched_refs & (1 << i))) {
+	 if (!(s->matched_refs&(1 << i))) {
 	    if (r->sc==s_r->sc) {
 	       /* I should check the transform to see if the tryflips (etc) flags would make this not a match */
 	       if (r->transform[0]==s_r->transform[0]
@@ -351,13 +351,13 @@ static int SCMatchesFull(SplineChar *sc,SearchData *s) {
 		   && r->transform[3]==s_r->transform[3]) {
 		  if (first) {
 		     s->matched_scale=1.0;
-		     s->matched_x=r->transform[4] - s_r->transform[4];
-		     s->matched_y=r->transform[5] - s_r->transform[5];
+		     s->matched_x=r->transform[4]-s_r->transform[4];
+		     s->matched_y=r->transform[5]-s_r->transform[5];
 		     first=false;
 		     break;
-		  } else if (r->transform[4] - s_r->transform[4] ==
+		  } else if (r->transform[4]-s_r->transform[4] ==
 			     s->matched_x
-			     && r->transform[5] - s_r->transform[5] ==
+			     && r->transform[5]-s_r->transform[5] ==
 			     s->matched_y)
 		     break;
 	       }
@@ -378,11 +378,11 @@ static int SCMatchesFull(SplineChar *sc,SearchData *s) {
 	s_spl=s_spl->next, s_r_spl=s_r_spl->next) {
       for (spl=sc->layers[layer].splines, i=0; spl != NULL;
 	   spl=spl->next, ++i)
-	 if (!(s->matched_ss & (1 << i))) {
+	 if (!(s->matched_ss&(1 << i))) {
 	    s->matched_spl=spl;
 	    if (spl->first->prev==NULL) {	/* Open */
 	       if (s_spl->first != s_spl->last) {
-		  if (SPMatches(spl->first, s, s_spl, spl->first, 1 - first))
+		  if (SPMatches(spl->first, s, s_spl, spl->first, 1-first))
 		     break;
 	       }
 	    } else {
@@ -390,7 +390,7 @@ static int SCMatchesFull(SplineChar *sc,SearchData *s) {
 		  int found=false;
 
 		  for (sp=spl->first;;) {
-		     if (SPMatches(sp, s, s_spl, spl->first, 1 - first)) {
+		     if (SPMatches(sp, s, s_spl, spl->first, 1-first)) {
 			found=true;
 			break;
 		     }
@@ -428,18 +428,18 @@ static int AdjustBP(BasePoint *changeme,BasePoint *rel,
 		    BasePoint * fudge, SearchData * s) {
    double xoff, yoff;
 
-   xoff=(shouldbe->x - shouldberel->x);
-   yoff=(shouldbe->y - shouldberel->y);
-   if (s->matched_flip & 1)
+   xoff=(shouldbe->x-shouldberel->x);
+   yoff=(shouldbe->y-shouldberel->y);
+   if (s->matched_flip&1)
       xoff=-xoff;
-   if (s->matched_flip & 2)
+   if (s->matched_flip&2)
       yoff=-yoff;
    xoff *= s->matched_scale;
    yoff *= s->matched_scale;
    changeme->x =
-      xoff * s->matched_co - yoff * s->matched_si + fudge->x + rel->x;
+      xoff * s->matched_co-yoff * s->matched_si+fudge->x+rel->x;
    changeme->y =
-      yoff * s->matched_co + xoff * s->matched_si + fudge->y + rel->y;
+      yoff * s->matched_co+xoff * s->matched_si+fudge->y+rel->y;
    return (changeme->x==rel->x && changeme->y==rel->y);
 }
 
@@ -450,10 +450,10 @@ static void AdjustAll(SplinePoint *change,BasePoint *rel,
 
    old=change->me;
    AdjustBP(&change->me, rel, shouldbe, shouldberel, fudge, s);
-   change->nextcp.x += change->me.x - old.x;
-   change->nextcp.y += change->me.y - old.y;
-   change->prevcp.x += change->me.x - old.x;
-   change->prevcp.y += change->me.y - old.y;
+   change->nextcp.x += change->me.x-old.x;
+   change->nextcp.y += change->me.y-old.y;
+   change->prevcp.x += change->me.x-old.x;
+   change->prevcp.y += change->me.y-old.y;
 
    change->nonextcp=(change->nextcp.x==change->me.x
 		       && change->nextcp.y==change->me.y);
@@ -470,23 +470,23 @@ static SplinePoint *RplInsertSP(SplinePoint *after,SplinePoint *nrpl,
    SVBuildTrans(s, transform);
    /*transform[4] += fudge->x; transform[5] += fudge->y; */
    new->me.x =
-      after->me.x + transform[0] * (nrpl->me.x - rpl->me.x) +
-      transform[1] * (nrpl->me.y - rpl->me.y) + fudge->x;
+      after->me.x+transform[0] * (nrpl->me.x-rpl->me.x) +
+      transform[1] * (nrpl->me.y-rpl->me.y)+fudge->x;
    new->me.y =
-      after->me.y + transform[2] * (nrpl->me.x - rpl->me.x) +
-      transform[3] * (nrpl->me.y - rpl->me.y) + fudge->y;
+      after->me.y+transform[2] * (nrpl->me.x-rpl->me.x) +
+      transform[3] * (nrpl->me.y-rpl->me.y)+fudge->y;
    new->nextcp.x =
-      after->me.x + transform[0] * (nrpl->nextcp.x - rpl->me.x) +
-      transform[1] * (nrpl->nextcp.y - rpl->me.y) + fudge->x;
+      after->me.x+transform[0] * (nrpl->nextcp.x-rpl->me.x) +
+      transform[1] * (nrpl->nextcp.y-rpl->me.y)+fudge->x;
    new->nextcp.y =
-      after->me.y + transform[2] * (nrpl->nextcp.x - rpl->me.x) +
-      transform[3] * (nrpl->nextcp.y - rpl->me.y) + fudge->y;
+      after->me.y+transform[2] * (nrpl->nextcp.x-rpl->me.x) +
+      transform[3] * (nrpl->nextcp.y-rpl->me.y)+fudge->y;
    new->prevcp.x =
-      after->me.x + transform[0] * (nrpl->prevcp.x - rpl->me.x) +
-      transform[1] * (nrpl->prevcp.y - rpl->me.y) + fudge->x;
+      after->me.x+transform[0] * (nrpl->prevcp.x-rpl->me.x) +
+      transform[1] * (nrpl->prevcp.y-rpl->me.y)+fudge->x;
    new->prevcp.y =
-      after->me.y + transform[2] * (nrpl->prevcp.x - rpl->me.x) +
-      transform[3] * (nrpl->prevcp.y - rpl->me.y) + fudge->y;
+      after->me.y+transform[2] * (nrpl->prevcp.x-rpl->me.x) +
+      transform[3] * (nrpl->prevcp.y-rpl->me.y)+fudge->y;
    new->nonextcp=(new->nextcp.x==new->me.x && new->nextcp.y==new->me.y);
    new->noprevcp=(new->prevcp.x==new->me.x && new->prevcp.y==new->me.y);
    new->pointtype=rpl->pointtype;
@@ -524,19 +524,19 @@ static void FudgeFigure(SplineChar *sc,SearchData *s,SplineSet *path,
       search=search->next->to;
    }
 
-   xoff=(found->me.x - foundrel->me.x);
-   yoff=(found->me.y - foundrel->me.y);
-   if (s->matched_flip & 1)
+   xoff=(found->me.x-foundrel->me.x);
+   yoff=(found->me.y-foundrel->me.y);
+   if (s->matched_flip&1)
       xoff=-xoff;
-   if (s->matched_flip & 2)
+   if (s->matched_flip&2)
       yoff=-yoff;
    xoff *= s->matched_scale;
    yoff *= s->matched_scale;
    fudge->x =
-      xoff * s->matched_co + yoff * s->matched_si - (search->me.x -
+      xoff * s->matched_co+yoff * s->matched_si-(search->me.x -
 						     searchrel->me.x);
    fudge->y =
-      yoff * s->matched_co - xoff * s->matched_si - (search->me.y -
+      yoff * s->matched_co-xoff * s->matched_si-(search->me.y -
 						     searchrel->me.y);
 }
 
@@ -560,7 +560,7 @@ static void DoReplaceIncomplete(SplineChar *sc,SearchData *s) {
    p_p=path->first, r_p=rpath->first;
    while (1) {
       if ((p_p->next==NULL) && (r_p->next==NULL)) {
-	 s->last_sp=s->last_sp==NULL ? NULL : sc_p;	/* If we crossed the contour start, move to next contour */
+	 s->last_sp=s->last_sp==NULL?NULL:sc_p;	/* If we crossed the contour start, move to next contour */
 	 return;		/* done */
       } else if (p_p->next==NULL) {
 	 /* The search pattern is shorter that the replace pattern */
@@ -577,7 +577,7 @@ static void DoReplaceIncomplete(SplineChar *sc,SearchData *s) {
 	    SplineFree(sc_p->next);
 	    sc_p->next=NULL;
 	    s->matched_spl->last=sc_p;
-	    s->last_sp=s->last_sp==NULL ? NULL : sc_p;
+	    s->last_sp=s->last_sp==NULL?NULL:sc_p;
 	    return;
 	 } else {
 	    nsc_p=nsc_p->next->to;
@@ -653,7 +653,7 @@ static int HeuristiclyBadMatch(SplineChar *sc,SearchData *s) {
    contour_cnt=0;
    for (spl=sc->layers[layer].splines, i=0; spl != NULL;
 	spl=spl->next, ++i) {
-      if (!(s->matched_ss & (1 << i))) {
+      if (!(s->matched_ss&(1 << i))) {
 	 if (SplinePointListIsClockwise(spl)==1)
 	    return (false);
 	 ++contour_cnt;
@@ -677,13 +677,13 @@ static void DoReplaceFull(SplineChar *sc,SearchData *s) {
    /* first remove those bits that matched */
    for (r=sc->layers[layer].refs, i=0; r != NULL; r=rnext, ++i) {
       rnext=r->next;
-      if (s->matched_refs & (1 << i))
+      if (s->matched_refs&(1 << i))
 	 SCRemoveDependent(sc, r, layer);
    }
    sprev=NULL;
    for (spl=sc->layers[layer].splines, i=0; spl != NULL; spl=snext, ++i) {
       snext=spl->next;
-      if (s->matched_ss & (1 << i)) {
+      if (s->matched_ss&(1 << i)) {
 	 if (sprev==NULL)
 	    sc->layers[layer].splines=snext;
 	 else
@@ -698,18 +698,18 @@ static void DoReplaceFull(SplineChar *sc,SearchData *s) {
    SVBuildTrans(s, transform);
    for (r=s->sc_rpl.layers[ly_fore].refs; r != NULL; r=r->next) {
       subtrans[0] =
-	 transform[0] * r->transform[0] + transform[1] * r->transform[2];
+	 transform[0] * r->transform[0]+transform[1] * r->transform[2];
       subtrans[1] =
-	 transform[0] * r->transform[1] + transform[1] * r->transform[3];
+	 transform[0] * r->transform[1]+transform[1] * r->transform[3];
       subtrans[2] =
-	 transform[2] * r->transform[0] + transform[3] * r->transform[2];
+	 transform[2] * r->transform[0]+transform[3] * r->transform[2];
       subtrans[3] =
-	 transform[2] * r->transform[1] + transform[3] * r->transform[3];
+	 transform[2] * r->transform[1]+transform[3] * r->transform[3];
       subtrans[4] =
-	 transform[4] * r->transform[0] + transform[5] * r->transform[2] +
+	 transform[4] * r->transform[0]+transform[5] * r->transform[2] +
 	 r->transform[4];
       subtrans[5] =
-	 transform[4] * r->transform[1] + transform[5] * r->transform[3] +
+	 transform[4] * r->transform[1]+transform[5] * r->transform[3] +
 	 r->transform[5];
       new=RefCharCreate();
       free(new->layers);
@@ -859,7 +859,7 @@ static int _DoFindAll(SearchData * sv) {
    int i, any=0, gid;
    SplineChar *startcur=sv->curchar;
 
-   for (i=0; i < sv->fv->map->enccount; ++i) {
+   for (i=0; i<sv->fv->map->enccount; ++i) {
       if ((gid=sv->fv->map->map[i]) != -1
 	  && sv->fv->sf->glyphs[gid] != NULL) {
 	 SCSplinePointsUntick(sv->fv->sf->glyphs[gid], sv->fv->active_layer);
@@ -885,9 +885,9 @@ static void SDDestroy(SearchData * sv) {
 
    SCClearContents(&sv->sc_srch, ly_fore);
    SCClearContents(&sv->sc_rpl, ly_fore);
-   for (i=0; i < sv->sc_srch.layer_cnt; ++i)
+   for (i=0; i<sv->sc_srch.layer_cnt; ++i)
       UndoesFree(sv->sc_srch.layers[i].undoes);
-   for (i=0; i < sv->sc_rpl.layer_cnt; ++i)
+   for (i=0; i<sv->sc_rpl.layer_cnt; ++i)
       UndoesFree(sv->sc_rpl.layers[i].undoes);
    free(sv->sc_srch.layers);
    free(sv->sc_rpl.layers);
@@ -919,7 +919,7 @@ static int IsASingleReferenceOrEmpty(SplineChar *sc,int layer) {
 
    if (sc->parent->multilayer) {
       first=ly_fore;
-      last=sc->layer_cnt - 1;
+      last=sc->layer_cnt-1;
    } else
       first=last=layer;
    for (i=first; i <= last; ++i) {
@@ -944,7 +944,7 @@ static void SDCopyToSC(SplineChar *checksc,SplineChar *into,
    int i;
    RefChar *ref;
 
-   for (i=0; i < into->layer_cnt; ++i) {
+   for (i=0; i<into->layer_cnt; ++i) {
       SplinePointListsFree(into->layers[i].splines);
       RefCharsFree(into->layers[i].refs);
       into->layers[i].splines=NULL;
@@ -983,12 +983,12 @@ void FVBReplaceOutlineWithReference(FontViewBase * fv, double fudge) {
    changed=calloc(fv->map->enccount, 1);
 
    selcnt=0;
-   for (i=0; i < fv->map->enccount; ++i)
+   for (i=0; i<fv->map->enccount; ++i)
       if (selected[i] && (gid=fv->map->map[i]) != -1 &&
 	  sf->glyphs[gid] != NULL)
 	 ++selcnt;
 
-   for (i=0; i < fv->map->enccount; ++i)
+   for (i=0; i<fv->map->enccount; ++i)
       if (selected[i] && (gid=fv->map->map[i]) != -1 &&
 	  (checksc=sf->glyphs[gid]) != NULL) {
 	 if (IsASingleReferenceOrEmpty(sf->glyphs[gid], fv->active_layer))
@@ -1000,7 +1000,7 @@ void FVBReplaceOutlineWithReference(FontViewBase * fv, double fudge) {
 	 if (!_DoFindAll(sv) && selcnt==1)
 	    ErrorMsg(2,"The outlines of glyph %2$.30s were not found in the font %1$.60s\n",
                      sf->fontname,sf->glyphs[gid]->name);
-	 for (j=0; j < fv->map->enccount; ++j)
+	 for (j=0; j<fv->map->enccount; ++j)
 	    if (fv->selected[j])
 	       changed[j]=1;
       }

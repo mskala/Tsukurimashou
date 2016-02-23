@@ -1,4 +1,4 @@
-/* $Id: fsys.c 4305 2015-10-25 10:51:24Z mskala $ */
+/* $Id: fsys.c 4526 2015-12-21 08:10:33Z mskala $ */
 /* Copyright (C) 2000-2004 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -55,12 +55,12 @@ static char dirname_[1024];
 static void _backslash_to_slash(char *c) {
    for (; *c; c++)
       if (*c == '\\')
-	 *c = '/';
+	 *c='/';
 }
 static void _u_backslash_to_slash(unichar_t * c) {
    for (; *c; c++)
       if (*c == '\\')
-	 *c = '/';
+	 *c='/';
 }
 #else
 static void _backslash_to_slash(char *c) {
@@ -76,7 +76,7 @@ static int mkdir_p(const char *path, mode_t mode) {
 
    const char *e;
 
-   char *p = NULL;
+   char *p=NULL;
 
    char tmp[1024];
 
@@ -85,32 +85,32 @@ static int mkdir_p(const char *path, mode_t mode) {
    int r;
 
    /* ensure the path is valid */
-   if (!(e = strrchr(path, '/')))
+   if (!(e=strrchr(path, '/')))
       return -EINVAL;
    /* ensure path is a directory */
-   r = stat(path, &st);
+   r=stat(path, &st);
    if (r == 0 && !S_ISDIR(st.st_mode))
       return -ENOTDIR;
 
    /* copy the pathname */
    snprintf(tmp, sizeof(tmp), "%s", path);
-   len = strlen(tmp);
-   if (tmp[len - 1] == '/')
-      tmp[len - 1] = 0;
+   len=strlen(tmp);
+   if (tmp[len-1] == '/')
+      tmp[len-1]=0;
 
    /* iterate mkdir over the path */
-   for (p = tmp + 1; *p; p++)
+   for (p=tmp+1; *p; p++)
       if (*p == '/') {
-	 *p = 0;
-	 r = MKDIR(tmp, mode);
-	 if (r < 0 && errno != EEXIST)
+	 *p=0;
+	 r=MKDIR(tmp, mode);
+	 if (r<0 && errno != EEXIST)
 	    return -errno;
-	 *p = '/';
+	 *p='/';
       }
 
    /* try to make the whole path */
-   r = MKDIR(tmp, mode);
-   if (r < 0 && errno != EEXIST)
+   r=MKDIR(tmp, mode);
+   if (r<0 && errno != EEXIST)
       return -errno;
    /* creation successful or the file already exists */
    return EXIT_SUCCESS;
@@ -118,7 +118,7 @@ static int mkdir_p(const char *path, mode_t mode) {
 
 static void savestrcpy(char *dest, const char *src) {
    while (1) {
-      *dest = *src;
+      *dest=*src;
       if (*dest == '\0')
 	 break;
       ++dest;
@@ -153,7 +153,7 @@ char *GFileGetAbsoluteName(char *name, char *result, int rsiz) {
 	 getcwd(dirname_, sizeof(dirname_));
       }
       strcpy(buffer, dirname_);
-      if (buffer[strlen(buffer) - 1] != '/')
+      if (buffer[strlen(buffer)-1] != '/')
 	 strcat(buffer, "/");
       strcat(buffer, name);
 #if defined(__MINGW32__)
@@ -161,36 +161,36 @@ char *GFileGetAbsoluteName(char *name, char *result, int rsiz) {
 #endif
 
       /* Normalize out any .. */
-      spt = rpt = buffer;
+      spt=rpt=buffer;
       while (*spt != '\0') {
 	 if (*spt == '/') {
 	    if (*++spt == '\0')
 	       break;
 	 }
-	 for (pt = spt; *pt != '\0' && *pt != '/'; ++pt);
-	 if (pt == spt)		/* Found // in a path spec, reduce to / (we've */
-	    savestrcpy(spt, spt + 1);	/*  skipped past the :// of the machine name) */
-	 else if (pt == spt + 1 && spt[0] == '.' && *pt == '/') {	/* Noop */
-	    savestrcpy(spt, spt + 2);
-	 } else if (pt == spt + 2 && spt[0] == '.' && spt[1] == '.') {
-	    for (bpt = spt - 2; bpt > rpt && *bpt != '/'; --bpt);
+	 for (pt=spt; *pt != '\0' && *pt != '/'; ++pt);
+	 if (pt == spt)		/* Found // in a path spec, reduce to/(we've */
+	    savestrcpy(spt, spt+1);	/*  skipped past the :// of the machine name) */
+	 else if (pt == spt+1 && spt[0] == '.' && *pt == '/') {	/* Noop */
+	    savestrcpy(spt, spt+2);
+	 } else if (pt == spt+2 && spt[0] == '.' && spt[1] == '.') {
+	    for (bpt=spt-2; bpt>rpt && *bpt != '/'; --bpt);
 	    if (bpt >= rpt && *bpt == '/') {
 	       savestrcpy(bpt, pt);
-	       spt = bpt;
+	       spt=bpt;
 	    } else {
-	       rpt = pt;
-	       spt = pt;
+	       rpt=pt;
+	       spt=pt;
 	    }
 	 } else
-	    spt = pt;
+	    spt=pt;
       }
-      name = buffer;
-      if (rsiz > sizeof(buffer))
-	 rsiz = sizeof(buffer);	/* Else valgrind gets unhappy */
+      name=buffer;
+      if (rsiz>sizeof(buffer))
+	 rsiz=sizeof(buffer);	/* Else valgrind gets unhappy */
    }
    if (result != name) {
       strncpy(result, name, rsiz);
-      result[rsiz - 1] = '\0';
+      result[rsiz-1]='\0';
 #if defined(__MINGW32__)
       _backslash_to_slash(result);
 #endif
@@ -208,9 +208,9 @@ char *GFileMakeAbsoluteName(char *name) {
 char *GFileNameTail(const char *oldname) {
    char *pt;
 
-   pt = strrchr(oldname, '/');
+   pt=strrchr(oldname, '/');
    if (pt != NULL)
-      return (pt + 1);
+      return (pt+1);
    else
       return ((char *) oldname);
 }
@@ -218,17 +218,17 @@ char *GFileNameTail(const char *oldname) {
 char *GFileAppendFile(char *dir, char *name, int isdir) {
    char *ret, *pt;
 
-   ret = (char *) malloc((strlen(dir) + strlen(name) + 3));
+   ret=(char *) malloc((strlen(dir)+strlen(name)+3));
    strcpy(ret, dir);
-   pt = ret + strlen(ret);
-   if (pt > ret && pt[-1] != '/')
-      *pt++ = '/';
+   pt=ret+strlen(ret);
+   if (pt>ret && pt[-1] != '/')
+      *pt++='/';
    strcpy(pt, name);
    if (isdir) {
       pt += strlen(pt);
-      if (pt > ret && pt[-1] != '/') {
-	 *pt++ = '/';
-	 *pt = '\0';
+      if (pt>ret && pt[-1] != '/') {
+	 *pt++='/';
+	 *pt='\0';
       }
    }
    return (ret);

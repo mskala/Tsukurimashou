@@ -1,4 +1,4 @@
-/* $Id: start.c 4494 2015-12-12 08:13:24Z mskala $ */
+/* $Id: start.c 4528 2015-12-21 10:53:16Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -55,7 +55,7 @@ struct lconv localeinfo;
 static void initadobeenc(void) {
    int i, j;
 
-   for (i=0; i < 0x100; ++i) {
+   for (i=0; i<0x100; ++i) {
       if (strcmp(AdobeStandardEncoding[i], ".notdef")==0)
 	 unicode_from_adobestd[i]=0xfffd;
       else {

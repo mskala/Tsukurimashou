@@ -116,7 +116,7 @@ inline static void gen_rand_array(sfmt_t * sfmt, w128_t *array, int size) {
         r1 = r2;
         r2 = &array[i];
     }
-    for (j = 0; j < 2 * SFMT_N - size; j++) {
+    for (j = 0; j < 2*SFMT_N - size; j++) {
         sfmt->state[j] = array[j + size - SFMT_N];
     }
     for (; i < size; i++, j++) {
@@ -151,7 +151,7 @@ inline static void swap(w128_t *array, int size) {
  * @return 32-bit integer
  */
 static uint32_t func1(uint32_t x) {
-    return (x ^ (x >> 27)) * (uint32_t)1664525UL;
+    return (x ^ (x >> 27))*(uint32_t)1664525UL;
 }
 
 /**
@@ -161,7 +161,7 @@ static uint32_t func1(uint32_t x) {
  * @return 32-bit integer
  */
 static uint32_t func2(uint32_t x) {
-    return (x ^ (x >> 27)) * (uint32_t)1566083941UL;
+    return (x ^ (x >> 27))*(uint32_t)1566083941UL;
 }
 
 /**
@@ -283,7 +283,7 @@ void sfmt_gen_rand_all(sfmt_t * sfmt) {
  *
  * @param size the number of 32-bit pseudorandom integers to be
  * generated.  size must be a multiple of 4, and greater than or equal
- * to (MEXP / 128 + 1) * 4.
+ * to (MEXP / 128 + 1)*4.
  *
  * @note \b memalign or \b posix_memalign is available to get aligned
  * memory. Mac OSX doesn't have these functions, but \b malloc of OSX
@@ -319,7 +319,7 @@ void sfmt_fill_array32(sfmt_t * sfmt, uint32_t *array, int size) {
  *
  * @param size the number of 64-bit pseudorandom integers to be
  * generated.  size must be a multiple of 2, and greater than or equal
- * to (MEXP / 128 + 1) * 2
+ * to (MEXP / 128 + 1)*2
  *
  * @note \b memalign or \b posix_memalign is available to get aligned
  * memory. Mac OSX doesn't have these functions, but \b malloc of OSX
@@ -371,7 +371,7 @@ void sfmt_init_by_array(sfmt_t * sfmt, uint32_t *init_key, int key_length) {
     uint32_t r;
     int lag;
     int mid;
-    int size = SFMT_N * 4;
+    int size = SFMT_N*4;
     uint32_t *psfmt32 = &sfmt->state[0].u[0];
 
     if (size >= 623) {

@@ -1,4 +1,4 @@
-/* $Id: scripting.c 4525 2015-12-20 19:51:59Z mskala $ */
+/* $Id: scripting.c 4532 2015-12-22 13:18:53Z mskala $ */
 /* Copyright (C) 2002-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -119,7 +119,7 @@ static char *script2latin1_copy(const char *str) {
 void arrayfree(Array * a) {
    int i;
 
-   for (i=0; i < a->argc; ++i) {
+   for (i=0; i<a->argc; ++i) {
       if (a->vals[i].type==v_str)
 	 free(a->vals[i].u.sval);
       else if (a->vals[i].type==v_arr)
@@ -137,7 +137,7 @@ static Array *arraycopy(Array *a) {
    c->argc=a->argc;
    c->vals=malloc(c->argc * sizeof(Val));
    memcpy(c->vals, a->vals, c->argc * sizeof(Val));
-   for (i=0; i < a->argc; ++i) {
+   for (i=0; i<a->argc; ++i) {
       if (a->vals[i].type==v_str)
 	 c->vals[i].u.sval=fastrdup(a->vals[i].u.sval);
       else if (a->vals[i].type==v_arr)
@@ -149,12 +149,12 @@ static Array *arraycopy(Array *a) {
 static void array_copy_into(Array *dest,int offset,Array *src) {
    int i;
 
-   memcpy(dest->vals + offset, src->vals, src->argc * sizeof(Val));
-   for (i=0; i < src->argc; ++i) {
+   memcpy(dest->vals+offset, src->vals, src->argc * sizeof(Val));
+   for (i=0; i<src->argc; ++i) {
       if (src->vals[i].type==v_str)
-	 dest->vals[i + offset].u.sval=fastrdup(src->vals[i].u.sval);
+	 dest->vals[i+offset].u.sval=fastrdup(src->vals[i].u.sval);
       else if (src->vals[i].type==v_arr)
-	 dest->vals[i + offset].u.aval=arraycopy(src->vals[i].u.aval);
+	 dest->vals[i+offset].u.aval=arraycopy(src->vals[i].u.aval);
    }
 }
 
@@ -164,7 +164,7 @@ void DictionaryFree(struct dictionary *dica) {
    if (dica==NULL)
       return;
 
-   for (i=0; i < dica->cnt; ++i) {
+   for (i=0; i<dica->cnt; ++i) {
       free(dica->entries[i].name);
       if (dica->entries[i].val.type==v_str)
 	 free(dica->entries[i].val.u.sval);
@@ -178,7 +178,7 @@ static int DicaLookup(struct dictionary *dica,char *name,Val *val) {
    int i;
 
    if (dica != NULL && dica->entries != NULL) {
-      for (i=0; i < dica->cnt; ++i)
+      for (i=0; i<dica->cnt; ++i)
 	 if (strcmp(dica->entries[i].name, name)==0) {
 	    val->type=v_lval;
 	    val->u.lval=&dica->entries[i].val;
@@ -207,7 +207,7 @@ static void DicaNewEntry(struct dictionary *dica,char *name,Val *val) {
 static void calldatafree(Context *c) {
    int i;
 
-   for (i=1; i < c->a.argc; ++i) {	/* child may have freed some args itself by shifting, but argc will reflect the proper values none the less */
+   for (i=1; i<c->a.argc; ++i) {	/* child may have freed some args itself by shifting, but argc will reflect the proper values none the less */
       if (c->a.vals[i].type==v_str)
 	 free(c->a.vals[i].u.sval);
       if (c->a.vals[i].type==v_arrfree
@@ -237,7 +237,7 @@ static void traceback(Context *c) {
       }
       if (cnt==1)
 	 ErrorMsg(2,"Called from...\n");
-      if (cnt > 0)
+      if (cnt>0)
 	 ErrorMsg(2," %s: line %d\n", c->filename, c->lineno);
       calldatafree(c);
       if (c->err_env != NULL)
@@ -264,7 +264,7 @@ static void showtoken(Context *c,enum token_type got) {
 
 static void expect(Context *c,enum token_type expected,enum token_type got) {
    if (got != expected) {
-      if (verbose > 0)
+      if (verbose>0)
 	 fflush(stdout);
       if (c->interactive)
 	 ErrorMsg(2,"Error: Expected %s, got %s\n",
@@ -277,7 +277,7 @@ static void expect(Context *c,enum token_type expected,enum token_type got) {
 }
 
 static void unexpected(Context *c,enum token_type got) {
-   if (verbose > 0)
+   if (verbose>0)
       fflush(stdout);
    if (c->interactive)
       ErrorMsg(2,"Error: Unexpected %s found\n", toknames[got]);
@@ -295,7 +295,7 @@ void ScriptError(Context * c, const char *msg) {
    /* no difference between latin1 and utf8. User errors are a different */
    /* matter */
 
-   if (verbose > 0)
+   if (verbose>0)
       fflush(stdout);
    if (c->interactive)
       ErrorMsg(2,"Error: %s\n", t1);
@@ -313,7 +313,7 @@ void ScriptErrorString(Context * c, const char *msg, const char *name) {
    char *t2=script2utf8_copy(name);
    char *ufile=fastrdup(c->filename);
 
-   if (verbose > 0)
+   if (verbose>0)
       fflush(stdout);
    if (c->interactive)
       ErrorMsg(2,"Error: %s: %s\n", t1, t2);
@@ -338,7 +338,7 @@ void ScriptErrorF(Context * c, const char *format, ...) {
    vsnprintf(errbuf, sizeof(errbuf), format, ap);
    va_end(ap);
 
-   if (verbose > 0)
+   if (verbose>0)
       fflush(stdout);
    if (c->interactive)
       ErrorMsg(2,"Error: %s\n", errbuf);
@@ -370,7 +370,7 @@ static char *forceASCIIcopy(Context *c,char *str) {
    char *pt;
 
    for (pt=str; *pt; ++pt) {
-      if (*pt < ' ' || *pt >= 0x7f)
+      if (*pt<' ' || *pt >= 0x7f)
 	 ScriptErrorString(c, "Invalid ASCII character in: ", str);
    }
    return (fastrdup(str));
@@ -396,12 +396,12 @@ static void PrintVal(Val *val) {
       free(t1);
    } else if (val->type==v_arr || val->type==v_arrfree) {
       putchar('[');
-      if (val->u.aval->argc > 0) {
+      if (val->u.aval->argc>0) {
 	 PrintVal(&val->u.aval->vals[0]);
-	 for (j=1; j < val->u.aval->argc; ++j) {
+	 for (j=1; j<val->u.aval->argc; ++j) {
 	    putchar(',');
-	    if (val->u.aval->vals[j - 1].type==v_arr
-		|| val->u.aval->vals[j - 1].type==v_arrfree)
+	    if (val->u.aval->vals[j-1].type==v_arr
+		|| val->u.aval->vals[j-1].type==v_arrfree)
 	       putchar('\n');
 	    PrintVal(&val->u.aval->vals[j]);
 	 }
@@ -424,7 +424,7 @@ static int GetOneSelCharIndex(Context *c) {
    EncMap *map=fv->map;
    int i, found=-1;
 
-   for (i=0; i < map->enccount; ++i)
+   for (i=0; i<map->enccount; ++i)
       if (fv->selected[i]) {
 	 if (found==-1)
 	    found=i;
@@ -471,10 +471,10 @@ static void TableAddInstrs(SplineFont *sf,uint32_t tag,int replace,
       memcpy(tab->data, instrs, icnt);
       tab->len=icnt;
    } else {
-      uint8_t *newi=malloc(icnt + tab->len);
+      uint8_t *newi=malloc(icnt+tab->len);
 
       memcpy(newi, tab->data, tab->len);
-      memcpy(newi + tab->len, instrs, icnt);
+      memcpy(newi+tab->len, instrs, icnt);
       free(tab->data);
       tab->data=newi;
       tab->len += icnt;
@@ -499,10 +499,10 @@ static void GlyphAddInstrs(SplineChar *sc,int replace,
       memcpy(sc->ttf_instrs, instrs, icnt);
       sc->ttf_instrs_len=icnt;
    } else {
-      uint8_t *newi=malloc(icnt + sc->ttf_instrs_len);
+      uint8_t *newi=malloc(icnt+sc->ttf_instrs_len);
 
       memcpy(newi, sc->ttf_instrs, sc->ttf_instrs_len);
-      memcpy(newi + sc->ttf_instrs_len, instrs, icnt);
+      memcpy(newi+sc->ttf_instrs_len, instrs, icnt);
       free(sc->ttf_instrs);
       sc->ttf_instrs=newi;
       sc->ttf_instrs_len += icnt;
@@ -517,11 +517,11 @@ static int32_t ParseTag(Context *c,Val *tagstr,int macok,int *wasmac) {
    memset(tag, ' ', 4);
    str=tagstr->u.sval;
    if (macok && *str=='<') {
-      if (sscanf(str, "<%d,%d>", &feat, &set) != 2 || feat < 0 || feat > 65535
-	  || set < 0 || set > 65535)
+      if (sscanf(str, "<%d,%d>", &feat, &set) != 2 || feat<0 || feat>65535
+	  || set<0 || set>65535)
 	 ScriptError(c, "Bad Apple feature/setting");
       *wasmac=true;
-      return ((feat << 16) | set);
+      return ((feat << 16)|set);
    } else if (*str) {
       tag[0]=*str;
       if (str[1]) {
@@ -538,7 +538,7 @@ static int32_t ParseTag(Context *c,Val *tagstr,int macok,int *wasmac) {
       }
    }
    *wasmac=false;
-   return ((tag[0] << 24) | (tag[1] << 16) | (tag[2] << 8) | tag[3]);
+   return ((tag[0] << 24)|(tag[1] << 16)|(tag[2] << 8)|tag[3]);
 }
 
 static FeatureScriptLangList *ParseFeatureList(Context *c,Array *a) {
@@ -548,7 +548,7 @@ static FeatureScriptLangList *ParseFeatureList(Context *c,Array *a) {
    int wasmac;
    Array *scripts, *langs;
 
-   for (f=0; f < a->argc; ++f) {
+   for (f=0; f<a->argc; ++f) {
       if (a->vals[f].type != v_arr && a->vals[f].type != v_arrfree)
 	 ScriptError(c, "A feature list is composed of an array of arrays");
       else if (a->vals[f].u.aval->argc != 2)
@@ -572,7 +572,7 @@ static FeatureScriptLangList *ParseFeatureList(Context *c,Array *a) {
 	 ScriptErrorString(c, "No scripts specified for feature",
 			   a->vals[f].u.aval->vals[0].u.sval);
       sltail=NULL;
-      for (s=0; s < scripts->argc; ++s) {
+      for (s=0; s<scripts->argc; ++s) {
 	 if (scripts->vals[s].type != v_arr
 	     && scripts->vals[s].type != v_arrfree)
 	    ScriptError(c, "A script list is composed of an array of arrays");
@@ -597,16 +597,16 @@ static FeatureScriptLangList *ParseFeatureList(Context *c,Array *a) {
 	    sl->langs[0]=DEFAULT_LANG;
 	 } else {
 	    sl->lang_cnt=langs->argc;
-	    if (langs->argc > MAX_LANG)
+	    if (langs->argc>MAX_LANG)
 	       sl->morelangs =
-		  malloc((langs->argc - MAX_LANG) * sizeof(uint32_t));
-	    for (l=0; l < langs->argc; ++l) {
+		  malloc((langs->argc-MAX_LANG)*sizeof(uint32_t));
+	    for (l=0; l<langs->argc; ++l) {
 	       uint32_t lang=ParseTag(c, &langs->vals[l], false, &wasmac);
 
-	       if (l < MAX_LANG)
+	       if (l<MAX_LANG)
 		  sl->langs[l]=lang;
 	       else
-		  sl->morelangs[l - MAX_LANG]=lang;
+		  sl->morelangs[l-MAX_LANG]=lang;
 	    }
 	 }
       }
@@ -623,10 +623,10 @@ static int FSLMatch(FeatureScriptLangList *fl,uint32_t feat_tag,
       if (fl->featuretag==feat_tag || feat_tag==CHR('*', ' ', ' ', ' ')) {
 	 for (sl=fl->scripts; sl != NULL; sl=sl->next) {
 	    if (sl->script==script || script==CHR('*', ' ', ' ', ' ')) {
-	       for (l=0; l < sl->lang_cnt; ++l) {
+	       for (l=0; l<sl->lang_cnt; ++l) {
 		  uint32_t lng =
 		     l <
-		     MAX_LANG ? sl->langs[l] : sl->morelangs[l - MAX_LANG];
+		     MAX_LANG?sl->langs[l]:sl->morelangs[l-MAX_LANG];
 		  if (lng==lang || lang==CHR('*', ' ', ' ', ' '))
 		     return (true);
 	       }
@@ -658,7 +658,7 @@ static void SCReplaceWith(SplineChar *dest,SplineChar *src) {
    free(dest->name);
    last=ly_fore;
    if (dest->parent->multilayer)
-      last=dest->layer_cnt - 1;
+      last=dest->layer_cnt-1;
    for (layer=ly_fore; layer <= last; ++layer) {
       SplinePointListsFree(dest->layers[layer].splines);
       RefCharsFree(dest->layers[layer].refs);
@@ -679,16 +679,16 @@ static void SCReplaceWith(SplineChar *dest,SplineChar *src) {
    *dest=*src;
    dest->layers=malloc(dest->layer_cnt * sizeof(Layer));
    memcpy(&dest->layers[ly_back], &layers[ly_back], sizeof(Layer));
-   for (layer=ly_fore; layer < dest->layer_cnt; ++layer) {
+   for (layer=ly_fore; layer<dest->layer_cnt; ++layer) {
       memcpy(&dest->layers[layer], &src->layers[layer], sizeof(Layer));
       dest->layers[layer].undoes=dest->layers[layer].redoes=NULL;
       src->layers[layer].splines=NULL;
       src->layers[layer].images=NULL;
       src->layers[layer].refs=NULL;
    }
-   for (layer=ly_fore; layer < dest->layer_cnt && layer < lc; ++layer)
+   for (layer=ly_fore; layer<dest->layer_cnt && layer<lc; ++layer)
       dest->layers[layer].undoes=layers[layer].undoes;
-   for (; layer < lc; ++layer)
+   for (; layer<lc; ++layer)
       UndoesFree(layers[layer].undoes);
    free(layers);
    dest->orig_pos=opos;
@@ -711,7 +711,7 @@ static void SCReplaceWith(SplineChar *dest,SplineChar *src) {
    SplineCharFree(src);
 
    /* Fix up dependant info */
-   for (layer=ly_fore; layer < dest->layer_cnt; ++layer)
+   for (layer=ly_fore; layer<dest->layer_cnt; ++layer)
       for (refs=dest->layers[layer].refs; refs != NULL; refs=refs->next) {
 	 for (scl=refs->sc->dependents; scl != NULL; scl=scl->next)
 	    if (scl->sc==src)
@@ -741,7 +741,7 @@ static void FVApplySubstitution(FontViewBase *fv,uint32_t script,uint32_t lang,
    replacements=calloc(sf->glyphcnt, sizeof(SplineChar *));
    removes=calloc(sf->glyphcnt, sizeof(uint8_t));
 
-   for (i=0; i < map->enccount; ++i)
+   for (i=0; i<map->enccount; ++i)
       if (fv->selected[i] &&
 	  (gid=map->map[i]) != -1 && (sc=sf->glyphs[gid]) != NULL) {
 	 for (pst=sc->possub; pst != NULL; pst=pst->next) {
@@ -759,16 +759,16 @@ static void FVApplySubstitution(FontViewBase *fv,uint32_t script,uint32_t lang,
 	 }
       }
 
-   for (gid=0; gid < sf->glyphcnt; ++gid)
+   for (gid=0; gid<sf->glyphcnt; ++gid)
       if ((sc=sf->glyphs[gid]) != NULL) {
 	 if (replacements[gid] != NULL) {
 	    SCReplaceWith(sc, replacements[gid]);
 	 } else if (removes[gid]) {
 	    /* This is deliberatly in the else. We don't want to remove a glyph */
 	    /*  we are about to replace */
-	    for (gid2=0; gid2 < sf->glyphcnt; ++gid2)
+	    for (gid2=0; gid2<sf->glyphcnt; ++gid2)
 	       if ((sc2=replacements[gid2]) != NULL) {
-		  if (sc2->layers && ly_fore < sc2->layer_cnt) {
+		  if (sc2->layers && ly_fore<sc2->layer_cnt) {
 		     RefChar *rf, *rnext;
 
 		     for (rf=sc2->layers[ly_fore].refs; rf != NULL;
@@ -796,7 +796,7 @@ static void Bitmapper(Context *c,int isavail) {
 /* bControlAfmLigatureOutputc->a.argc != 2 && (!isavail || c->a.argc != 3) */
    if (c->a.vals[1].type != v_arr)
       ScriptError(c, "Bad type of argument");
-   for (i=0; i < c->a.vals[1].u.aval->argc; ++i)
+   for (i=0; i<c->a.vals[1].u.aval->argc; ++i)
       if (c->a.vals[1].u.aval->vals[i].type != v_int ||
 	  c->a.vals[1].u.aval->vals[i].u.ival <= 2)
 	 ScriptError(c, "Bad type of array component");
@@ -805,8 +805,8 @@ static void Bitmapper(Context *c,int isavail) {
 	 ScriptError(c, "Bad type of argument");
       rasterize=c->a.vals[2].u.ival;
    }
-   sizes=malloc((c->a.vals[1].u.aval->argc + 1) * sizeof(int32_t));
-   for (i=0; i < c->a.vals[1].u.aval->argc; ++i) {
+   sizes=malloc((c->a.vals[1].u.aval->argc+1)*sizeof(int32_t));
+   for (i=0; i<c->a.vals[1].u.aval->argc; ++i) {
       sizes[i]=c->a.vals[1].u.aval->vals[i].u.ival;
       if ((sizes[i] >> 16)==0)
 	 sizes[i] |= 0x10000;
@@ -821,30 +821,30 @@ static void Bitmapper(Context *c,int isavail) {
 static void _SetFontNames(Context *c,SplineFont *sf) {
    int i;
 
-   for (i=1; i < c->a.argc; ++i)
+   for (i=1; i<c->a.argc; ++i)
       if (c->a.vals[i].type != v_str)
 	 ScriptError(c, "Bad argument type");
    if (*c->a.vals[1].u.sval != '\0') {
       free(sf->fontname);
       sf->fontname=forcePSName_copy(c, c->a.vals[1].u.sval);
    }
-   if (c->a.argc > 2 && *c->a.vals[2].u.sval != '\0') {
+   if (c->a.argc>2 && *c->a.vals[2].u.sval != '\0') {
       free(sf->familyname);
       sf->familyname=script2latin1_copy(c->a.vals[2].u.sval);
    }
-   if (c->a.argc > 3 && *c->a.vals[3].u.sval != '\0') {
+   if (c->a.argc>3 && *c->a.vals[3].u.sval != '\0') {
       free(sf->fullname);
       sf->fullname=script2latin1_copy(c->a.vals[3].u.sval);
    }
-   if (c->a.argc > 4 && *c->a.vals[4].u.sval != '\0') {
+   if (c->a.argc>4 && *c->a.vals[4].u.sval != '\0') {
       free(sf->weight);
       sf->weight=script2latin1_copy(c->a.vals[4].u.sval);
    }
-   if (c->a.argc > 5 && *c->a.vals[5].u.sval != '\0') {
+   if (c->a.argc>5 && *c->a.vals[5].u.sval != '\0') {
       free(sf->copyright);
       sf->copyright=script2latin1_copy(c->a.vals[5].u.sval);
    }
-   if (c->a.argc > 6 && *c->a.vals[6].u.sval != '\0') {
+   if (c->a.argc>6 && *c->a.vals[6].u.sval != '\0') {
       free(sf->version);
       sf->version=script2latin1_copy(c->a.vals[6].u.sval);
    }
@@ -855,12 +855,12 @@ static char *Tag2Str(uint32_t tag,int ismac) {
    char buffer[20];
 
    if (ismac)
-      sprintf(buffer, "<%d,%d>", tag >> 16, tag & 0xffff);
+      sprintf(buffer, "<%d,%d>", tag >> 16, tag&0xffff);
    else {
       buffer[0]=tag >> 24;
       buffer[1]=tag >> 16;
       buffer[2]=tag >> 8;
-      buffer[3]=tag & 0xff;
+      buffer[3]=tag&0xff;
       buffer[4]='\0';
    }
    return (fastrdup(buffer));
@@ -912,11 +912,11 @@ static void Reblend(Context *c,int tonew) {
    else if (c->a.vals[1].u.aval->argc != mm->axis_count)
      ScriptError(c, "Incorrect number of blend values");
 
-   for (i=0; i < mm->axis_count; ++i) {
+   for (i=0; i<mm->axis_count; ++i) {
       if (c->a.vals[1].u.aval->vals[i].type != v_int)
 	ScriptError(c, "Bad type of array element");
-      blends[i]=c->a.vals[1].u.aval->vals[i].u.ival / 65536.0;
-      if (blends[i] < mm->axismaps[i].min || blends[i] > mm->axismaps[i].max)
+      blends[i]=c->a.vals[1].u.aval->vals[i].u.ival/65536.0;
+      if (blends[i]<mm->axismaps[i].min || blends[i]>mm->axismaps[i].max)
 	ErrorMsg(2,"Warning: %dth axis value (%g) is outside the allowed range [%g,%g]\n",
 		 i, blends[i], mm->axismaps[i].min, mm->axismaps[i].max);
    }
@@ -1050,15 +1050,15 @@ static void bAddAnchorPoint(Context *c) {
       for (pst=sc->possub; pst != NULL && pst->type != pst_ligature;
 	   pst=pst->next);
       type =
-	t->type==act_mark ? at_basechar : t->type ==
-	act_mkmk ? at_basemark : at_centry;
-      if (val < -1 && t->type==act_mkmk)
-	type=val==-2 ? at_basemark : at_mark;
+	t->type==act_mark?at_basechar:t->type ==
+	act_mkmk?at_basemark:at_centry;
+      if (val<-1 && t->type==act_mkmk)
+	type=val==-2?at_basemark:at_mark;
       else if (val==-2 && t->type==act_curs)
 	type=at_cexit;
       else if (val==-3 || t->type==act_curs)
 	type=at_centry;
-      else if ((sc->unicodeenc != -1 && sc->unicodeenc < 0x10000 &&
+      else if ((sc->unicodeenc != -1 && sc->unicodeenc<0x10000 &&
 		iscombining(sc->unicodeenc)) || sc->width==0
 	       || sc->glyph_class==2 /* base class+1 */ )
 	type=at_mark;
@@ -1110,10 +1110,10 @@ static void bAddAnchorPoint(Context *c) {
    ap->anchor=t;
    ap->me.x =
      (c->a.vals[3].type ==
-	 v_int) ? c->a.vals[3].u.ival : rint(c->a.vals[3].u.fval);
+	 v_int)?c->a.vals[3].u.ival:rint(c->a.vals[3].u.fval);
    ap->me.y =
      (c->a.vals[4].type ==
-	 v_int) ? c->a.vals[4].u.ival : rint(c->a.vals[4].u.fval);
+	 v_int)?c->a.vals[4].u.ival:rint(c->a.vals[4].u.fval);
    ap->type=type;
    ap->lig_index=ligindex;
    ap->next=sc->anchor;
@@ -1132,11 +1132,11 @@ static void bAddDHint(Context *c) {
    SplineChar *sc;
    DStemInfo *d;
 
-   for (i=1; i < 7; i++) {
+   for (i=1; i<7; i++) {
       if (c->a.vals[i].type==v_int)
-	 args[i - 1]=c->a.vals[i].u.ival;
+	 args[i-1]=c->a.vals[i].u.ival;
       else if (c->a.vals[1].type==v_real)
-	 args[i - 1]=c->a.vals[i].u.fval;
+	 args[i-1]=c->a.vals[i].u.fval;
       else
 	 ScriptError(c, "Bad argument type");
    }
@@ -1146,18 +1146,18 @@ static void bAddDHint(Context *c) {
       ScriptError(c, "Use AddVHint to add a vertical hint");
    else if (args[5]==0)
       ScriptError(c, "Use AddHHint to add a horizontal hint");
-   len=sqrt(pow(args[4], 2) + pow(args[5], 2));
+   len=sqrt(pow(args[4], 2)+pow(args[5], 2));
    args[4] /= len;
    args[5] /= len;
-   if (args[4] < 0) {
+   if (args[4]<0) {
       unit.x=-args[4];
       unit.y=-args[5];
    } else {
       unit.x=args[4];
       unit.y=args[5];
    }
-   width=(args[2] - args[0]) * unit.y - (args[3] - args[1]) * unit.x;
-   if (width < 0) {
+   width=(args[2]-args[0])*unit.y-(args[3]-args[1])*unit.x;
+   if (width<0) {
       left.x=args[0];
       left.y=args[1];
       right.x=args[2];
@@ -1170,7 +1170,7 @@ static void bAddDHint(Context *c) {
    }
 
    any=false;
-   for (i=0; i < map->enccount; ++i)
+   for (i=0; i<map->enccount; ++i)
       if ((gid=map->map[i]) != -1 && (sc=sf->glyphs[gid]) != NULL
 	  && fv->selected[i]) {
 	 d=chunkalloc(sizeof(DStemInfo));
@@ -1217,7 +1217,7 @@ static void _AddHint(Context *c,int ish) {
    if (width <= 0 && width != -20 && width != -21)
       ScriptError(c, "Bad hint width");
    any=false;
-   for (i=0; i < map->enccount; ++i)
+   for (i=0; i<map->enccount; ++i)
       if ((gid=map->map[i]) != -1 && (sc=sf->glyphs[gid]) != NULL
 	  && fv->selected[i]) {
 	 h=chunkalloc(sizeof(StemInfo));
@@ -1259,7 +1259,7 @@ static void SCMakeLine(SplineChar *sc) {
 
    last=ly_fore;
    if (sc->parent->multilayer)
-      last=sc->layer_cnt - 1;
+      last=sc->layer_cnt-1;
    for (ly=ly_fore; ly <= last; ++ly) {
       for (spl=sc->layers[ly].splines; spl != NULL; spl=spl->next) {
 	 for (sp=spl->first;;) {
@@ -1327,7 +1327,7 @@ static void bAddInstrs(Context *c) {
    else if (sc != NULL)
       GlyphAddInstrs(sc, replace, instrs, icnt);
    else {
-      for (i=0; i < map->enccount; ++i)
+      for (i=0; i<map->enccount; ++i)
 	 if (c->curfv->selected[i]) {
 	    int gid=map->map[i];
 
@@ -1450,7 +1450,7 @@ static void bAddLookupSubtable(Context *c) {
    if (sf->cidmaster)
       sf=sf->cidmaster;
 
-   for (isgpos=0; isgpos < 2; ++isgpos) {
+   for (isgpos=0; isgpos<2; ++isgpos) {
       for (test=sf->gsplookups[isgpos];test!=NULL;test=test->next) {
 	 for (sub=test->subtables; sub != NULL; sub=sub->next)
 	    if (strcmp(sub->subtable_name, c->a.vals[2].u.sval)==0)
@@ -1594,23 +1594,23 @@ static void bAddSizeFeature(Context *c) {
 						   v_arrfree))))
       ScriptError(c, "Bad type for argument");
    else if (c->a.vals[1].type==v_int)
-      sf->design_size=c->a.vals[1].u.ival * 10;
+      sf->design_size=c->a.vals[1].u.ival*10;
    else if (c->a.vals[1].type==v_real)
-      sf->design_size=rint(c->a.vals[1].u.fval * 10);
+      sf->design_size=rint(c->a.vals[1].u.fval*10);
 
    if (c->a.argc==6) {
       sf->design_range_bottom=c->a.vals[2].type==v_int
-	 ? c->a.vals[2].u.ival * 10 : rint(c->a.vals[2].u.fval * 10);
+	?c->a.vals[2].u.ival*10:rint(c->a.vals[2].u.fval*10);
       sf->design_range_top=c->a.vals[3].type==v_int
-	 ? c->a.vals[3].u.ival * 10 : rint(c->a.vals[3].u.fval * 10);
-      if (sf->design_size < sf->design_range_bottom ||
-	  sf->design_size > sf->design_range_top)
+	?c->a.vals[3].u.ival*10:rint(c->a.vals[3].u.fval*10);
+      if (sf->design_size<sf->design_range_bottom ||
+	  sf->design_size>sf->design_range_top)
 	 ScriptError(c, "Design size must be between design range bounds");
       sf->fontstyle_id=c->a.vals[4].u.ival;
       arr=c->a.vals[5].u.aval;
       found_english=false;
       last=NULL;
-      for (i=0; i < arr->argc; ++i) {
+      for (i=0; i<arr->argc; ++i) {
 	 if (arr->vals[i].type != v_arr && arr->vals[i].type != v_arrfree)
 	    ScriptError(c, "Array must be an array of arrays");
 	 subarr=arr->vals[i].u.aval;
@@ -1646,26 +1646,26 @@ static void FigureSplExt(SplineSet *spl,int pos,int xextrema,
 	 if (first==NULL)
 	    first=s;
 	 if ((xextrema &&
-	      pos > s->from->me.y && pos > s->from->nextcp.y &&
-	      pos > s->to->me.y && pos > s->to->prevcp.y) ||
+	      pos>s->from->me.y && pos>s->from->nextcp.y &&
+	      pos>s->to->me.y && pos>s->to->prevcp.y) ||
 	     (xextrema &&
-	      pos < s->from->me.y && pos < s->from->nextcp.y &&
-	      pos < s->to->me.y && pos < s->to->prevcp.y) ||
+	      pos<s->from->me.y && pos<s->from->nextcp.y &&
+	      pos<s->to->me.y && pos<s->to->prevcp.y) ||
 	     (!xextrema &&
-	      pos > s->from->me.x && pos > s->from->nextcp.x &&
-	      pos > s->to->me.x && pos > s->to->prevcp.x) ||
+	      pos>s->from->me.x && pos>s->from->nextcp.x &&
+	      pos>s->to->me.x && pos>s->to->prevcp.x) ||
 	     (!xextrema &&
-	      pos < s->from->me.x && pos < s->from->nextcp.x &&
-	      pos < s->to->me.x && pos < s->to->prevcp.x))
+	      pos<s->from->me.x && pos<s->from->nextcp.x &&
+	      pos<s->to->me.x && pos<s->to->prevcp.x))
 	    continue;		/* can't intersect spline */
 	 if (CubicSolve(&s->splines[xextrema], pos, ts)==-1)
 	    continue;		/* didn't intersect */
-	 for (i=0; i < 3 && ts[i] != -1; ++i) {
-	    val=((s->splines[oth].a * ts[i] + s->splines[oth].b) * ts[i] +
-		   s->splines[oth].c) * ts[i] + s->splines[oth].d;
-	    if (val < minmax[0])
+	 for (i=0; i<3 && ts[i] != -1; ++i) {
+	    val=((s->splines[oth].a * ts[i]+s->splines[oth].b)*ts[i] +
+		   s->splines[oth].c)*ts[i]+s->splines[oth].d;
+	    if (val<minmax[0])
 	       minmax[0]=val;
-	    if (val > minmax[1])
+	    if (val>minmax[1])
 	       minmax[1]=val;
 	 }
       }
@@ -1686,21 +1686,21 @@ static void FigureExtrema(Context *c,SplineChar *sc,int pos,int xextrema) {
    minmax[1]=-1e20;
    last=ly_fore;
    if (sc->parent->multilayer)
-      last=sc->layer_cnt - 1;
+      last=sc->layer_cnt-1;
    for (layer=ly_fore; layer <= last; ++layer) {
       FigureSplExt(sc->layers[layer].splines, pos, xextrema, minmax);
       for (r=sc->layers[layer].refs; r != NULL; r=r->next)
-	 for (l=0; l < r->layer_cnt; ++l)
+	 for (l=0; l<r->layer_cnt; ++l)
 	    FigureSplExt(r->layers[l].splines, pos, xextrema, minmax);
    }
 
    c->return_val.type=v_arrfree;
    c->return_val.u.aval=malloc(sizeof(Array));
    c->return_val.u.aval->argc=2;
-   c->return_val.u.aval->vals=malloc(2 * sizeof(Val));
+   c->return_val.u.aval->vals=malloc(2*sizeof(Val));
    c->return_val.u.aval->vals[0].type=v_int;
    c->return_val.u.aval->vals[1].type=v_int;
-   if (minmax[0] > 1e10) {	/* Unset. Presumably pos is outside bounding box */
+   if (minmax[0]>1e10) {	/* Unset. Presumably pos is outside bounding box */
       c->return_val.u.aval->vals[0].u.ival=1;
       c->return_val.u.aval->vals[1].u.ival=0;
    } else {
@@ -1725,27 +1725,27 @@ static void FigureProfile(Context *c,SplineChar *sc,int pos,int xextrema) {
 	 if (first==NULL)
 	    first=s;
 	 if ((xextrema &&
-	      pos > s->from->me.y && pos > s->from->nextcp.y &&
-	      pos > s->to->me.y && pos > s->to->prevcp.y) ||
+	      pos>s->from->me.y && pos>s->from->nextcp.y &&
+	      pos>s->to->me.y && pos>s->to->prevcp.y) ||
 	     (xextrema &&
-	      pos < s->from->me.y && pos < s->from->nextcp.y &&
-	      pos < s->to->me.y && pos < s->to->prevcp.y) ||
+	      pos<s->from->me.y && pos<s->from->nextcp.y &&
+	      pos<s->to->me.y && pos<s->to->prevcp.y) ||
 	     (!xextrema &&
-	      pos > s->from->me.x && pos > s->from->nextcp.x &&
-	      pos > s->to->me.x && pos > s->to->prevcp.x) ||
+	      pos>s->from->me.x && pos>s->from->nextcp.x &&
+	      pos>s->to->me.x && pos>s->to->prevcp.x) ||
 	     (!xextrema &&
-	      pos < s->from->me.x && pos < s->from->nextcp.x &&
-	      pos < s->to->me.x && pos < s->to->prevcp.x))
+	      pos<s->from->me.x && pos<s->from->nextcp.x &&
+	      pos<s->to->me.x && pos<s->to->prevcp.x))
 	    continue;		/* can't intersect spline */
 	 if (CubicSolve(&s->splines[xextrema], pos, ts)==-1)
 	    continue;		/* didn't intersect */
-	 for (i=0; i < 3 && ts[i] != -1; ++i) {
-	    temp=((s->splines[oth].a * ts[i] + s->splines[oth].b) * ts[i] +
-		    s->splines[oth].c) * ts[i] + s->splines[oth].d;
-	    for (m=0; m < j; m++)
+	 for (i=0; i<3 && ts[i] != -1; ++i) {
+	    temp=((s->splines[oth].a * ts[i]+s->splines[oth].b)*ts[i] +
+		    s->splines[oth].c)*ts[i]+s->splines[oth].d;
+	    for (m=0; m<j; m++)
 	       if (temp==val[m])
 		  goto skip1;
-	    val=(double *) realloc(val, (j + 1) * sizeof(double));
+	    val=(double *) realloc(val, (j+1)*sizeof(double));
 	    val[j]=temp;
 	    if (j >= MAXSECT)
 	       goto maxsect_reached;
@@ -1757,7 +1757,7 @@ static void FigureProfile(Context *c,SplineChar *sc,int pos,int xextrema) {
       spl=spl->next;
    }
    for (r=sc->layers[ly_fore].refs; r != NULL; r=r->next) {
-      for (l=0; l < r->layer_cnt; ++l) {
+      for (l=0; l<r->layer_cnt; ++l) {
 	 spl=r->layers[l].splines;
 	 while (spl != NULL) {
 	    first=NULL;
@@ -1766,29 +1766,29 @@ static void FigureProfile(Context *c,SplineChar *sc,int pos,int xextrema) {
 	       if (first==NULL)
 		  first=s;
 	       if ((xextrema &&
-		    pos > s->from->me.y && pos > s->from->nextcp.y &&
-		    pos > s->to->me.y && pos > s->to->prevcp.y) ||
+		    pos>s->from->me.y && pos>s->from->nextcp.y &&
+		    pos>s->to->me.y && pos>s->to->prevcp.y) ||
 		   (xextrema &&
-		    pos < s->from->me.y && pos < s->from->nextcp.y &&
-		    pos < s->to->me.y && pos < s->to->prevcp.y) ||
+		    pos<s->from->me.y && pos<s->from->nextcp.y &&
+		    pos<s->to->me.y && pos<s->to->prevcp.y) ||
 		   (!xextrema &&
-		    pos > s->from->me.x && pos > s->from->nextcp.x &&
-		    pos > s->to->me.x && pos > s->to->prevcp.x) ||
+		    pos>s->from->me.x && pos>s->from->nextcp.x &&
+		    pos>s->to->me.x && pos>s->to->prevcp.x) ||
 		   (!xextrema &&
-		    pos < s->from->me.x && pos < s->from->nextcp.x &&
-		    pos < s->to->me.x && pos < s->to->prevcp.x))
+		    pos<s->from->me.x && pos<s->from->nextcp.x &&
+		    pos<s->to->me.x && pos<s->to->prevcp.x))
 		  continue;	/* can't intersect spline */
 	       if (CubicSolve(&s->splines[xextrema], pos, ts)==-1)
 		  continue;	/* didn't intersect */
-	       for (i=0; i < 3 && ts[i] != -1; ++i) {
+	       for (i=0; i<3 && ts[i] != -1; ++i) {
 		  temp =
 		     ((s->splines[oth].a * ts[i] +
-		       s->splines[oth].b) * ts[i] +
-		      s->splines[oth].c) * ts[i] + s->splines[oth].d;
-		  for (m=0; m < j; m++)
+		       s->splines[oth].b)*ts[i] +
+		      s->splines[oth].c)*ts[i]+s->splines[oth].d;
+		  for (m=0; m<j; m++)
 		     if (temp==val[m])
 			goto skip2;
-		  val=(double *) realloc(val, (j + 1) * sizeof(double));
+		  val=(double *) realloc(val, (j+1)*sizeof(double));
 		  val[j]=temp;
 		  if (j >= MAXSECT)
 		     goto maxsect_reached;
@@ -1803,9 +1803,9 @@ static void FigureProfile(Context *c,SplineChar *sc,int pos,int xextrema) {
    }
  maxsect_reached:
 /* Sort the array */
-   for (i=0; i < j; i++)
-      for (l=i + 1; l < j; l++)
-	 if (val[i] > val[l]) {
+   for (i=0; i<j; i++)
+      for (l=i+1; l<j; l++)
+	 if (val[i]>val[l]) {
 	    temp=val[l];
 	    val[l]=val[i];
 	    val[i]=temp;
@@ -1815,7 +1815,7 @@ static void FigureProfile(Context *c,SplineChar *sc,int pos,int xextrema) {
    c->return_val.u.aval=malloc(sizeof(Array));
    c->return_val.u.aval->argc=j;
    c->return_val.u.aval->vals=malloc(j * sizeof(Val));
-   for (i=0; i < j; i++) {
+   for (i=0; i<j; i++) {
       c->return_val.u.aval->vals[i].type=v_real;
       c->return_val.u.aval->vals[i].u.fval=val[i];
    }
@@ -1862,8 +1862,8 @@ static void bApplySubstitution(Context *c) {
    if (c->a.vals[1].type != v_str || c->a.vals[2].type != v_str ||
        c->a.vals[3].type != v_str)
      ScriptError(c, "Bad argument type");
-   for (i=0; i < 3; ++i) {
-      char *str=c->a.vals[i + 1].u.sval;
+   for (i=0; i<3; ++i) {
+      char *str=c->a.vals[i+1].u.sval;
       char temp[4];
 
       memset(temp, ' ', 4);
@@ -1882,7 +1882,7 @@ static void bApplySubstitution(Context *c) {
 	    }
 	 }
       }
-      tags[i]=(temp[0] << 24) | (temp[1] << 16) | (temp[2] << 8) | temp[3];
+      tags[i]=(temp[0] << 24)|(temp[1] << 16)|(temp[2] << 8)|temp[3];
    }
    FVApplySubstitution(c->curfv, tags[0], tags[1], tags[2]);
 }
@@ -1898,7 +1898,7 @@ static void bArray(Context *c) {
    c->return_val.u.aval=malloc(sizeof(Array));
    c->return_val.u.aval->argc=c->a.vals[1].u.ival;
    c->return_val.u.aval->vals=malloc(c->a.vals[1].u.ival * sizeof(Val));
-   for (i=0; i < c->a.vals[1].u.ival; ++i)
+   for (i=0; i<c->a.vals[1].u.ival; ++i)
       c->return_val.u.aval->vals[i].type=v_void;
 }
 
@@ -1975,7 +1975,7 @@ static void bAutoKern(Context *c) {
       ScriptErrorString(c, "Unknown lookup subtable", c->a.vals[3].u.sval);
 
    if (!AutoKernScript(c->curfv, c->a.vals[1].u.ival, c->a.vals[2].u.ival,
-		       sub, c->a.argc==5 ? c->a.vals[4].u.sval : NULL))
+		       sub, c->a.argc==5?c->a.vals[4].u.sval:NULL))
       ScriptError(c, "No characters selected.");
 }
 
@@ -1985,12 +1985,12 @@ static void bAutoWidth(Context *c) {
    if (c->a.vals[1].type != v_int)
       ScriptError(c, "Bad argument type in AutoWidth");
    sep=c->a.vals[1].u.ival;
-   max=2 * sep;
-   if (c->a.argc > 2) {
+   max=2*sep;
+   if (c->a.argc>2) {
       if (c->a.vals[2].type != v_int)
 	 ScriptError(c, "Bad argument type in AutoWidth");
       min=c->a.vals[2].u.ival;
-      if (c->a.argc > 3) {
+      if (c->a.argc>3) {
 	 if (c->a.vals[3].type != v_int)
 	    ScriptError(c, "Bad argument type in AutoWidth");
 	 max=c->a.vals[3].u.ival;
@@ -2050,7 +2050,7 @@ static void bCIDChangeSubFont(Context *c) {
       ScriptError(c, "Bad argument type");
    if (sf->cidmaster==NULL)
       ScriptErrorString(c, "Not a cid-keyed font", sf->fontname);
-   for (i=0; i < sf->cidmaster->subfontcnt; ++i)
+   for (i=0; i<sf->cidmaster->subfontcnt; ++i)
       if (strcmp(sf->cidmaster->subfonts[i]->fontname, c->a.vals[1].u.sval) ==
 	  0)
 	 break;
@@ -2059,17 +2059,17 @@ static void bCIDChangeSubFont(Context *c) {
 			c->a.vals[1].u.sval);
    newsf=sf->cidmaster->subfonts[i];
 
-   if (newsf->glyphcnt > sf->glyphcnt) {
+   if (newsf->glyphcnt>sf->glyphcnt) {
       free(c->curfv->selected);
       c->curfv->selected=calloc(newsf->glyphcnt, sizeof(char));
-      if (newsf->glyphcnt > map->encmax)
+      if (newsf->glyphcnt>map->encmax)
 	 map->map =
-	    realloc(map->map, (map->encmax=newsf->glyphcnt) * sizeof(int32_t));
-      if (newsf->glyphcnt > map->backmax)
+	    realloc(map->map, (map->encmax=newsf->glyphcnt)*sizeof(int32_t));
+      if (newsf->glyphcnt>map->backmax)
 	 map->backmap =
 	    realloc(map->backmap,
-		    (map->backmax=newsf->glyphcnt) * sizeof(int32_t));
-      for (i=0; i < newsf->glyphcnt; ++i)
+		    (map->backmax=newsf->glyphcnt)*sizeof(int32_t));
+      for (i=0; i<newsf->glyphcnt; ++i)
 	 map->map[i]=map->backmap[i]=i;
       map->enccount=newsf->glyphcnt;
    }
@@ -2118,7 +2118,7 @@ static void bCanonicalContours(Context *c) {
    SplineFont *sf=fv->sf;
    int i, gid;
 
-   for (i=0; i < map->enccount; ++i)
+   for (i=0; i<map->enccount; ++i)
       if ((gid=map->map[i]) != -1 && sf->glyphs[gid] != NULL
 	  && fv->selected[i])
 	 CanonicalContours(sf->glyphs[gid], ly_fore);
@@ -2130,7 +2130,7 @@ static void bCanonicalStart(Context *c) {
    SplineFont *sf=fv->sf;
    int i, gid;
 
-   for (i=0; i < map->enccount; ++i)
+   for (i=0; i<map->enccount; ++i)
       if ((gid=map->map[i]) != -1 && sf->glyphs[gid] != NULL
 	  && fv->selected[i])
 	 SPLsStartToLeftmost(sf->glyphs[gid], ly_fore);
@@ -2166,7 +2166,7 @@ static int ParseCharIdent(Context *c,Val *val,int signal_error) {
       else
 	 return (-1);
    }
-   if (bottom < 0 || bottom >= map->enccount) {
+   if (bottom<0 || bottom >= map->enccount) {
       if (signal_error) {
 	 char buffer[40], *name=buffer;
 
@@ -2213,12 +2213,12 @@ static void _SetKern(Context *c,int isv) {
       sc2=SFMakeChar(sf, map, ch2);
    else {
       gid=map->map[ch2];
-      sc2=gid==-1 ? NULL : sf->glyphs[gid];
+      sc2=gid==-1?NULL:sf->glyphs[gid];
       if (sc2==NULL)
 	 return;		/* It already has a kern==0 with everything */
    }
 
-   for (i=0; i < map->enccount; ++i)
+   for (i=0; i<map->enccount; ++i)
       if (c->curfv->selected[i]) {
 	 struct lookup_subtable *local_sub=sub;
 
@@ -2229,14 +2229,14 @@ static void _SetKern(Context *c,int isv) {
 	    if (gid==-1 || (sc1=sf->glyphs[gid])==NULL)
 	       continue;
 	 }
-	 for (kp=isv ? sc1->vkerns : sc1->kerns;
+	 for (kp=isv?sc1->vkerns:sc1->kerns;
 	      kp != NULL && kp->sc != sc2; kp=kp->next);
 	 if (local_sub==NULL && kp != NULL)
 	    local_sub=kp->subtable;
 	 if (local_sub==NULL)
 	    local_sub =
 	       SFSubTableFindOrMake(sf,
-				    isv ? CHR('v', 'k', 'r', 'n') : CHR('k',
+				    isv?CHR('v', 'k', 'r', 'n'):CHR('k',
 									'e',
 									'r',
 									'n'),
@@ -2244,7 +2244,7 @@ static void _SetKern(Context *c,int isv) {
 	 if (kp==NULL && kern==0)
 	    continue;
 	 if (!isv)
-	    MMKern(sc1->parent, sc1, sc2, kp==NULL ? kern : kern - kp->off,
+	    MMKern(sc1->parent, sc1, sc2, kp==NULL?kern:kern-kp->off,
 		   local_sub, kp);
 	 if (kp != NULL) {
 	    kp->off=kern;
@@ -2308,7 +2308,7 @@ static int RefMatchesNamesUni(RefChar *ref,char **refnames,int *refunis,
 			      int refcnt) {
    int i;
 
-   for (i=0; i < refcnt; ++i) {
+   for (i=0; i<refcnt; ++i) {
       if (refunis[i] != -1 && refunis[i]==ref->unicode_enc)
 	 return (true);
       else if (refnames[i] != NULL && strcmp(refnames[i], ref->sc->name)==0)
@@ -2352,16 +2352,16 @@ static void _bMoveReference(Context *c,int position) {
    else
       ScriptError(c, "Bad argument type");
 
-   refcnt=c->a.argc - 3;
+   refcnt=c->a.argc-3;
    refnames=calloc(refcnt, sizeof(char *));
    refunis=malloc(refcnt * sizeof(int));
    memset(refunis, -1, refcnt * sizeof(int));
-   for (i=0; i < refcnt; ++i) {
-      if (c->a.vals[3 + i].type==v_str)
-	 refnames[i]=c->a.vals[3 + i].u.sval;
-      else if (c->a.vals[3 + i].type==v_int
-	       || c->a.vals[3 + i].type==v_unicode)
-	 refunis[i]=c->a.vals[3 + i].u.ival;
+   for (i=0; i<refcnt; ++i) {
+      if (c->a.vals[3+i].type==v_str)
+	 refnames[i]=c->a.vals[3+i].u.sval;
+      else if (c->a.vals[3+i].type==v_int
+	       || c->a.vals[3+i].type==v_unicode)
+	 refunis[i]=c->a.vals[3+i].u.ival;
       else
 	 ScriptError(c, "Bad argument type");
    }
@@ -2373,7 +2373,7 @@ static void _bMoveReference(Context *c,int position) {
    t[1]=t[2]=0;
    t[4]=translate[0];
    t[5]=translate[1];
-   for (i=0; i < map->enccount; ++i)
+   for (i=0; i<map->enccount; ++i)
       if (fv->selected[i]) {
 	 if ((gid=map->map[i])==-1 || (sc=sf->glyphs[gid])==NULL ||
 	     (ref=FindFirstRef(sc, refnames, refunis, refcnt))==NULL) {
@@ -2392,12 +2392,12 @@ static void _bMoveReference(Context *c,int position) {
 	    for (ref=sc->layers[ly_fore].refs; ref != NULL; ref=ref->next) {
 	       if (RefMatchesNamesUni(ref, refnames, refunis, refcnt)) {
 		  if (position) {
-		     t[4]=translate[0] - ref->transform[4];
-		     t[5]=translate[1] - ref->transform[5];
+		     t[4]=translate[0]-ref->transform[4];
+		     t[5]=translate[1]-ref->transform[5];
 		  }
 		  ref->transform[4] += t[4];
 		  ref->transform[5] += t[5];
-		  for (j=0; j < ref->layer_cnt; ++j)
+		  for (j=0; j<ref->layer_cnt; ++j)
 		     SplinePointListTransform(ref->layers[j].splines, t,
 					      tpt_AllPoints);
 		  ref->bb.minx += t[4];
@@ -2431,7 +2431,7 @@ static void bCharInfo(Context *c) {
 
    found=GetOneSelCharIndex(c);
    gid=map->map[found];
-   sc=gid==-1 ? NULL : sf->glyphs[gid];
+   sc=gid==-1?NULL:sf->glyphs[gid];
    if (sc==NULL)
       sc=SCBuildDummy(&dummy, sf, map, found);
 
@@ -2455,7 +2455,7 @@ static void bCharInfo(Context *c) {
 	 return;
       }
       ch2=ParseCharIdent(c, &c->a.vals[2], true);
-      gid2=ch2==-1 ? -1 : map->map[ch2];
+      gid2=ch2==-1?-1:map->map[ch2];
       if (gid2==-1)
 	 /* Do Nothing */ ;
       else if (strmatch(c->a.vals[1].u.sval, "Kern")==0) {
@@ -2528,7 +2528,7 @@ static void bCharInfo(Context *c) {
       else if (strmatch(c->a.vals[1].u.sval, "ValidationState")==0)
 	 c->return_val.u.ival=sc->layers[ly_fore].validation_state;
       else if (strmatch(c->a.vals[1].u.sval, "RefCount")==0) {
-	 for (i=0, layer=0; layer < sc->layer_cnt; ++layer)
+	 for (i=0, layer=0; layer<sc->layer_cnt; ++layer)
 	    for (ref=sc->layers[layer].refs; ref != NULL;
 		 ref=ref->next, ++i);
 	 c->return_val.u.ival=i;
@@ -2559,14 +2559,14 @@ static void bCharInfo(Context *c) {
 	 }
       } else if (strmatch(c->a.vals[1].u.sval, "RefName")==0 ||
 		 strmatch(c->a.vals[1].u.sval, "RefNames")==0) {
-	 for (i=0, layer=0; layer < sc->layer_cnt; ++layer)
+	 for (i=0, layer=0; layer<sc->layer_cnt; ++layer)
 	    for (ref=sc->layers[layer].refs; ref != NULL;
 		 ref=ref->next, ++i);
 	 c->return_val.type=v_arrfree;
 	 c->return_val.u.aval=malloc(sizeof(Array));
 	 c->return_val.u.aval->argc=i;
 	 c->return_val.u.aval->vals=malloc(i * sizeof(Val));
-	 for (i=0, layer=0; layer < sc->layer_cnt; ++layer) {
+	 for (i=0, layer=0; layer<sc->layer_cnt; ++layer) {
 	    for (ref=sc->layers[layer].refs; ref != NULL;
 		 ref=ref->next, ++i) {
 	       c->return_val.u.aval->vals[i].u.sval=fastrdup(ref->sc->name);
@@ -2574,22 +2574,22 @@ static void bCharInfo(Context *c) {
 	    }
 	 }
       } else if (strmatch(c->a.vals[1].u.sval, "RefTransform")==0) {
-	 for (i=0, layer=0; layer < sc->layer_cnt; ++layer)
+	 for (i=0, layer=0; layer<sc->layer_cnt; ++layer)
 	    for (ref=sc->layers[layer].refs; ref != NULL;
 		 ref=ref->next, ++i);
 	 c->return_val.type=v_arrfree;
 	 c->return_val.u.aval=malloc(sizeof(Array));
 	 c->return_val.u.aval->argc=i;
 	 c->return_val.u.aval->vals=malloc(i * sizeof(Val));
-	 for (i=0, layer=0; layer < sc->layer_cnt; ++layer) {
+	 for (i=0, layer=0; layer<sc->layer_cnt; ++layer) {
 	    for (ref=sc->layers[layer].refs; ref != NULL;
 		 ref=ref->next, ++i) {
 	       c->return_val.u.aval->vals[i].type=v_arr;
 	       c->return_val.u.aval->vals[i].u.aval=malloc(sizeof(Array));
 	       c->return_val.u.aval->vals[i].u.aval->argc=6;
 	       c->return_val.u.aval->vals[i].u.aval->vals =
-		  malloc(6 * sizeof(Val));
-	       for (j=0; j < 6; ++j) {
+		  malloc(6*sizeof(Val));
+	       for (j=0; j<6; ++j) {
 		  c->return_val.u.aval->vals[i].u.aval->vals[j].type=v_real;
 		  c->return_val.u.aval->vals[i].u.aval->vals[j].u.fval =
 		     ref->transform[j];
@@ -2598,21 +2598,21 @@ static void bCharInfo(Context *c) {
 	 }
       } else if (strmatch(c->a.vals[1].u.sval, "Comment")==0) {
 	 c->return_val.type=v_str;
-	 c->return_val.u.sval=sc->comment ? fastrdup(sc->comment) : fastrdup("");
+	 c->return_val.u.sval=sc->comment?fastrdup(sc->comment):fastrdup("");
       } else {
 	 SplineCharFindBounds(sc, &b);
 	 if (strmatch(c->a.vals[1].u.sval, "LBearing")==0)
 	    c->return_val.u.ival=b.minx;
 	 else if (strmatch(c->a.vals[1].u.sval, "RBearing")==0)
-	    c->return_val.u.ival=sc->width - b.maxx;
+	    c->return_val.u.ival=sc->width-b.maxx;
 	 else if (strmatch(c->a.vals[1].u.sval, "BBox")==0 ||
 		  strmatch(c->a.vals[1].u.sval, "BoundingBox")==0 ||
 		  strmatch(c->a.vals[1].u.sval, "BB")==0) {
 	    c->return_val.type=v_arrfree;
 	    c->return_val.u.aval=malloc(sizeof(Array));
 	    c->return_val.u.aval->argc=4;
-	    c->return_val.u.aval->vals=malloc(4 * sizeof(Val));
-	    for (i=0; i < 4; ++i)
+	    c->return_val.u.aval->vals=malloc(4*sizeof(Val));
+	    for (i=0; i<4; ++i)
 	       c->return_val.u.aval->vals[i].type=v_real;
 	    c->return_val.u.aval->vals[0].u.fval=b.minx;
 	    c->return_val.u.aval->vals[1].u.fval=b.miny;
@@ -2657,7 +2657,7 @@ static void bChr(Context *c) {
    int i;
 
    if (c->a.vals[1].type==v_int) {
-      if (c->a.vals[1].u.ival < -128 || c->a.vals[1].u.ival > 255)
+      if (c->a.vals[1].u.ival<-128 || c->a.vals[1].u.ival>255)
 	 ScriptError(c, "Bad value for argument");
       buf[0]=c->a.vals[1].u.ival;
       buf[1]=0;
@@ -2666,11 +2666,11 @@ static void bChr(Context *c) {
    } else if (c->a.vals[1].type==v_arr || c->a.vals[1].type==v_arrfree) {
       Array *arr=c->a.vals[1].u.aval;
 
-      temp=malloc((arr->argc + 1) * sizeof(char));
-      for (i=0; i < arr->argc; ++i) {
+      temp=malloc((arr->argc+1)*sizeof(char));
+      for (i=0; i<arr->argc; ++i) {
 	 if (arr->vals[i].type != v_int)
 	    ScriptError(c, "Bad type for argument");
-	 else if (arr->vals[i].u.ival < -128 || arr->vals[i].u.ival > 255)
+	 else if (arr->vals[i].u.ival<-128 || arr->vals[i].u.ival>255)
 	    ScriptError(c, "Bad value for argument");
 	 temp[i]=arr->vals[i].u.ival;
       }
@@ -2727,7 +2727,7 @@ static void bClearHints(Context *c) {
 	 ScriptError(c,
 		     "Argument must be a string and must be \"Horizontal\", \"Vertical\" or \"Diagonal\".");
 
-      for (i=0; i < fv->map->enccount; ++i)
+      for (i=0; i<fv->map->enccount; ++i)
 	 if (fv->selected[i] &&
 	     (gid=fv->map->map[i]) != -1
 	     && SCWorthOutputting(fv->sf->glyphs[gid])) {
@@ -2771,7 +2771,7 @@ static void bClearTable(Context *c) {
 
    if (c->a.vals[1].type != v_str)
       ScriptError(c, "Bad argument type");
-   if (strlen(c->a.vals[1].u.sval) > 4 || *c->a.vals[1].u.sval=='\0')
+   if (strlen(c->a.vals[1].u.sval)>4 || *c->a.vals[1].u.sval=='\0')
       ScriptError(c, "Table tag must be a 4 character ASCII string");
    _tag[0]=c->a.vals[1].u.sval[0];
    _tag[1]=_tag[2]=_tag[3]=' ';
@@ -2783,7 +2783,7 @@ static void bClearTable(Context *c) {
 	    _tag[3]=c->a.vals[1].u.sval[3];
       }
    }
-   tag=(_tag[0] << 24) | (_tag[1] << 16) | (_tag[2] << 8) | _tag[3];
+   tag=(_tag[0] << 24)|(_tag[1] << 16)|(_tag[2] << 8)|_tag[3];
 
    prev=NULL;
    for (table=sf->ttf_tables; table != NULL;
@@ -2867,7 +2867,7 @@ static void bCompareFonts(Context *c) {
 static void bCompareGlyphs(Context *c) {
    /* Compare selected glyphs against the contents of the clipboard    */
    /* Three comparisons:                                               */
-   /*  1) Compare the points (base & control) of all contours          */
+   /*  1) Compare the points (base&control) of all contours          */
    /*  2) Compare that the splines themselves don't get too far appart */
    /*  3) Compare bitmaps                                              */
    /*  4) Compare hints/hintmasks                                      */
@@ -3017,15 +3017,15 @@ static void bCorrectDirection(Context *c) {
       ScriptError(c, "Bad argument type");
    else if (c->a.argc==2)
       checkrefs=c->a.vals[1].u.ival;
-   for (i=0; i < map->enccount; ++i)
+   for (i=0; i<map->enccount; ++i)
       if ((gid=map->map[i]) != -1 && (sc=sf->glyphs[gid]) != NULL
 	  && fv->selected[i]) {
 	 changed=refchanged=false;
 	 if (checkrefs) {
 	    for (ref=sc->layers[ly_fore].refs; ref != NULL; ref=ref->next) {
-	       if (ref->transform[0] * ref->transform[3] < 0 ||
+	       if (ref->transform[0] * ref->transform[3]<0 ||
 		   (ref->transform[0]==0
-		    && ref->transform[1] * ref->transform[2] > 0)) {
+		    && ref->transform[1] * ref->transform[2]>0)) {
 		  if (!refchanged) {
 		     refchanged=true;
 		     SCPreserveState(sc, false);
@@ -3079,7 +3079,7 @@ static void bDefaultRoundToGrid(Context *c) {
    SplineFont *sf=fv->sf;
    EncMap *map=fv->map;
 
-   for (i=0; i < map->enccount; ++i)
+   for (i=0; i<map->enccount; ++i)
       if ((gid=map->map[i]) != -1 && sf->glyphs[gid] != NULL
 	  && fv->selected[i]) {
 	 SplineChar *sc=sf->glyphs[gid];
@@ -3105,7 +3105,7 @@ static void bDefaultUseMyMetrics(Context *c) {
    SplineFont *sf=fv->sf;
    EncMap *map=fv->map;
 
-   for (i=0; i < map->enccount; ++i)
+   for (i=0; i<map->enccount; ++i)
       if ((gid=map->map[i]) != -1 && sf->glyphs[gid] != NULL
 	  && fv->selected[i]) {
 	 SplineChar *sc=sf->glyphs[gid];
@@ -3123,7 +3123,7 @@ static void bDefaultUseMyMetrics(Context *c) {
 		  match=r;
 	       /* I shan't bother checking for multiple matches */
 	       /* I think the transform check is strict enough. */
-	       if (r->unicode_enc >= 0 && r->unicode_enc < 0x10000 &&
+	       if (r->unicode_enc >= 0 && r->unicode_enc<0x10000 &&
 		   isalpha(r->unicode_enc)) {
 		  if (goodmatch==NULL) {
 		     goodmatch=r;
@@ -3168,8 +3168,8 @@ static void bDrawsSomething(Context *c) {
    if (c->a.argc==1) {
       gid=map->map[GetOneSelCharIndex(c)];
    } else if (c->a.vals[1].type==v_int) {
-      gid=c->a.vals[1].u.ival >= 0 && c->a.vals[1].u.ival < map->enccount ?
-	 map->map[c->a.vals[1].u.ival] : -1;
+      gid=c->a.vals[1].u.ival >= 0 && c->a.vals[1].u.ival<map->enccount ?
+	 map->map[c->a.vals[1].u.ival]:-1;
    } else if (c->a.vals[1].type==v_unicode || c->a.vals[1].type==v_str) {
       int enc;
 
@@ -3178,7 +3178,7 @@ static void bDrawsSomething(Context *c) {
       else {
 	 enc=NameToEncoding(sf, map, c->a.vals[1].u.sval);
       }
-      gid=enc==-1 ? -1 : map->map[enc];
+      gid=enc==-1?-1:map->map[enc];
    } else
       ScriptError(c, "Bad type of argument");
    c->return_val.u.ival=gid != -1 && SCDrawsSomething(sf->glyphs[gid]);
@@ -3217,7 +3217,7 @@ static void bExpandStroke(Context *c) {
       7 => stroke width, caligraphic angle, thickness-numerator, thickness-denom, 0, knaou's flags
     */
 
-   for (i=1; i < c->a.argc; ++i) {
+   for (i=1; i<c->a.argc; ++i) {
       if (c->a.vals[i].type==v_int)
 	 args[i]=c->a.vals[i].u.ival;
       else if (c->a.vals[i].type==v_real)
@@ -3226,7 +3226,7 @@ static void bExpandStroke(Context *c) {
 	 ScriptError(c, "Bad argument type");
    }
    memset(&si, 0, sizeof(si));
-   si.radius=args[1] / 2.;
+   si.radius=args[1]/2.;
    si.minorradius=si.radius;
    si.stroke_type=si_std;
    if (c->a.argc==2) {
@@ -3242,27 +3242,27 @@ static void bExpandStroke(Context *c) {
 	 ScriptError(c, "If 5 arguments are given, the fourth must be zero");
       else if (c->a.vals[5].type != v_int)
 	 ScriptError(c, "Bad argument type");
-      if (c->a.vals[5].u.ival & 1)
+      if (c->a.vals[5].u.ival&1)
 	 si.removeinternal=true;
-      else if (c->a.vals[5].u.ival & 2)
+      else if (c->a.vals[5].u.ival&2)
 	 si.removeexternal=true;
       /*if (c->a.vals[5].u.ival&4 )
          si.removeoverlapifneeded=true; */ /* Obsolete */
    } else if (c->a.argc==5) {
       si.stroke_type=si_caligraphic;
-      si.penangle=M_PI * args[2] / 180;
-      si.minorradius=si.radius * args[3] / (double) args[4];
+      si.penangle=M_PI * args[2]/180;
+      si.minorradius=si.radius * args[3]/(double) args[4];
    } else {
       si.stroke_type=si_caligraphic;
-      si.penangle=M_PI * args[2] / 180;
-      si.minorradius=si.radius * args[3] / (double) args[4];
+      si.penangle=M_PI * args[2]/180;
+      si.minorradius=si.radius * args[3]/(double) args[4];
       if (c->a.vals[5].type != v_int || c->a.vals[5].u.ival != 0)
 	 ScriptError(c, "If 6 arguments are given, the fifth must be zero");
       else if (c->a.vals[6].type != v_int)
 	 ScriptError(c, "Bad argument type");
-      if (c->a.vals[6].u.ival & 1)
+      if (c->a.vals[6].u.ival&1)
 	 si.removeinternal=true;
-      else if (c->a.vals[6].u.ival & 2)
+      else if (c->a.vals[6].u.ival&2)
 	 si.removeexternal=true;
       /* if (c->a.vals[6].u.ival&4 )
          si.removeoverlapifneeded=true; */ /* Obsolete */
@@ -3288,7 +3288,7 @@ static void bExport(Context *c) {
    format_spec=buffer;
    if (strrchr(pt, '.') != NULL) {
       format_spec=pt;
-      pt=strrchr(pt, '.') + 1;
+      pt=strrchr(pt, '.')+1;
    }
    if (strmatch(pt, "eps")==0)
       format=0;
@@ -3315,19 +3315,19 @@ static void bExport(Context *c) {
    else
       ScriptError(c, "Bad format (first arg must be eps/fig/xbm/bmp)");
 #   endif
-   if ((format > 4 && c->a.argc != 3) || (format <= 4 && c->a.argc==3))
+   if ((format>4 && c->a.argc != 3) || (format <= 4 && c->a.argc==3))
       ScriptError(c, "Wrong number of arguments");
    bdf=NULL;
-   if (format > 4) {
+   if (format>4) {
       for (bdf=c->curfv->sf->bitmaps; bdf != NULL; bdf=bdf->next)
 	 if ((BDFDepth(bdf)==1 && bdf->pixelsize==c->a.vals[2].u.ival) ||
-	     (bdf->pixelsize != (c->a.vals[2].u.ival & 0xffff) &&
+	     (bdf->pixelsize != (c->a.vals[2].u.ival&0xffff) &&
 	      BDFDepth(bdf)==(c->a.vals[2].u.ival >> 16)))
 	    break;
       if (bdf==NULL)
 	 ScriptError(c, "No bitmap font matches the specified size");
    }
-   for (i=0; i < c->curfv->map->enccount; ++i)
+   for (i=0; i<c->curfv->map->enccount; ++i)
       if (c->curfv->selected[i] && (gid=c->curfv->map->map[i]) != -1 &&
 	  SCWorthOutputting(c->curfv->sf->glyphs[gid]))
 	 ScriptExport(c->curfv->sf, bdf, format, gid, format_spec,
@@ -3345,7 +3345,7 @@ static void bFileAccess(Context *c) {
    c->return_val.type=v_int;
    c->return_val.u.ival =
       access(c->a.vals[1].u.sval,
-	     c->a.argc==3 ? c->a.vals[2].u.ival : R_OK);
+	     c->a.argc==3?c->a.vals[2].u.ival:R_OK);
 }
 
 static void bFindIntersections(Context *c) {
@@ -3402,7 +3402,7 @@ static void bFontImage(Context *c) {
       height=c->a.vals[4].u.ival;
 
    arr=c->a.vals[2].u.aval;
-   if ((arr->argc & 1) && arr->argc >= 2)
+   if ((arr->argc&1) && arr->argc >= 2)
       ScriptError(c,
 		  "Second argument must be an array with an even number of entries");
    if (arr->argc==1) {
@@ -3410,11 +3410,11 @@ static void bFontImage(Context *c) {
 	 ScriptError(c,
 		     "Second argument must be an array where each even numbered entry is an integer pixelsize");
    } else
-      for (i=0; i < arr->argc; i += 2) {
+      for (i=0; i<arr->argc; i += 2) {
 	 if (arr->vals[i].type != v_int)
 	    ScriptError(c,
 			"Second argument must be an array where each even numbered entry is an integer pixelsize");
-	 if (arr->vals[i + 1].type != v_str)
+	 if (arr->vals[i+1].type != v_str)
 	    ScriptError(c,
 			"Second argument must be an array where each odd numbered entry is a string");
       }
@@ -3444,7 +3444,7 @@ static void bFontsInFile(Context *c) {
    c->return_val.type=v_arrfree;
    c->return_val.u.aval=malloc(sizeof(Array));
    c->return_val.u.aval->argc=cnt;
-   c->return_val.u.aval->vals=malloc((cnt==0 ? 1 : cnt) * sizeof(Val));
+   c->return_val.u.aval->vals=malloc((cnt==0?1:cnt)*sizeof(Val));
    if (ret != NULL)
       for (cnt=0; ret[cnt] != NULL; ++cnt) {
 	 c->return_val.u.aval->vals[cnt].type=v_str;
@@ -3488,7 +3488,7 @@ static void bGenerate(Context *c) {
    locfilename=fastrdup(t);
    if (!GenerateScript
        (sf, locfilename, bitmaptype, fmflags, res, subfontdirectory, NULL,
-	c->curfv->normal==NULL ? c->curfv->map : c->curfv->normal,
+	c->curfv->normal==NULL?c->curfv->map:c->curfv->normal,
 	rename_to, ly_fore))
       ScriptError(c, "Save failed");
    free(t);
@@ -3498,13 +3498,13 @@ static void bGenerate(Context *c) {
 static int strtailcmp(char *needle,char *haystack) {
    int nlen=strlen(needle), hlen=strlen(haystack);
 
-   if (nlen > hlen)
+   if (nlen>hlen)
       return (-1);
 
    if (*needle=='/')
       return (strcmp(needle, haystack));
 
-   return (strcmp(needle, haystack + hlen - nlen));
+   return (strcmp(needle, haystack+hlen-nlen));
 }
 
 typedef SplineFont *SFArray[48];
@@ -3523,7 +3523,7 @@ static void bGenerateFamily(Context *c) {
    char *t;
    char *locfilename;
 
-   familysfs=malloc((fondmax=10) * sizeof(SFArray));
+   familysfs=malloc((fondmax=10)*sizeof(SFArray));
 
    if (c->a.vals[1].type != v_str || c->a.vals[2].type != v_str ||
        c->a.vals[3].type != v_int || c->a.vals[4].type != v_arr)
@@ -3532,7 +3532,7 @@ static void bGenerateFamily(Context *c) {
    fmflags=c->a.vals[3].u.ival;
 
    fonts=c->a.vals[4].u.aval;
-   for (i=0; i < fonts->argc; ++i) {
+   for (i=0; i<fonts->argc; ++i) {
       if (fonts->vals[i].type != v_str)
 	 ScriptError(c, "Values in the fontname array must be strings");
       for (fv=FontViewFirst(); fv != NULL; fv=fv->next)
@@ -3562,8 +3562,8 @@ static void bGenerateFamily(Context *c) {
       }
       added=false;
       if (fv->sf->fondname==NULL) {
-	 if (fondcnt > 0) {
-	    for (j=0; j < 48; ++j)
+	 if (fondcnt>0) {
+	    for (j=0; j<48; ++j)
 	       if (familysfs[0][j] != NULL)
 		  break;
 	    if (familysfs[0][j]->fondname==NULL) {
@@ -3576,8 +3576,8 @@ static void bGenerateFamily(Context *c) {
 	    }
 	 }
       } else {
-	 for (fc=0; fc < fondcnt; ++fc) {
-	    for (j=0; j < 48; ++j)
+	 for (fc=0; fc<fondcnt; ++fc) {
+	    for (j=0; j<48; ++j)
 	       if (familysfs[fc][j] != NULL)
 		  break;
 	    if (familysfs[fc][j]->fondname != NULL &&
@@ -3599,7 +3599,7 @@ static void bGenerateFamily(Context *c) {
       }
       if (!added) {
 	 if (fondcnt >= fondmax)
-	    familysfs=realloc(familysfs, (fondmax += 10) * sizeof(SFArray));
+	    familysfs=realloc(familysfs, (fondmax += 10)*sizeof(SFArray));
 	 memset(familysfs[fondcnt], 0, sizeof(SFArray));
 	 familysfs[fondcnt++][psstyle]=fv->sf;
       }
@@ -3613,8 +3613,8 @@ static void bGenerateFamily(Context *c) {
 		     "At least one of the specified fonts must have a plain style");
    }
    sfs=lastsfs=NULL;
-   for (fc=0; fc < fondcnt; ++fc) {
-      for (j=0; j < 48; ++j)
+   for (fc=0; fc<fondcnt; ++fc) {
+      for (j=0; j<48; ++j)
 	 if (familysfs[fc][j] != NULL) {
 	    cur=chunkalloc(sizeof(struct sflist));
 	    if (sfs==NULL)
@@ -3632,7 +3632,7 @@ static void bGenerateFamily(Context *c) {
    locfilename=fastrdup(t);
    if (!GenerateScript(sf, locfilename, bitmaptype, fmflags, -1, NULL, sfs,
 		       c->curfv->normal ==
-		       NULL ? c->curfv->map : c->curfv->normal, NULL,
+		       NULL?c->curfv->map:c->curfv->normal, NULL,
 		       ly_fore))
       ScriptError(c, "Save failed");
    free(t);
@@ -3732,11 +3732,11 @@ static void bGetCvtAt(Context *c) {
       ScriptError(c, "Bad argument type");
    for (tab=sf->ttf_tables;
 	tab != NULL && tab->tag != CHR('c', 'v', 't', ' '); tab=tab->next);
-   if (tab==NULL || c->a.vals[1].u.ival >= tab->len / 2)
+   if (tab==NULL || c->a.vals[1].u.ival >= tab->len/2)
       ScriptError(c, "Cvt table is either not present or too short");
    c->return_val.type=v_int;
    c->return_val.u.ival=memushort(tab->data, tab->len,
-				    sizeof(uint16_t) * c->a.vals[1].u.ival);
+				    sizeof(uint16_t)*c->a.vals[1].u.ival);
 }
 
 static void bGetEnv(Context *c) {
@@ -3759,8 +3759,8 @@ static void bGetFontBoundingBox(Context *c) {
    c->return_val.type=v_arrfree;
    c->return_val.u.aval=malloc(sizeof(Array));
    c->return_val.u.aval->argc=4;
-   c->return_val.u.aval->vals=malloc(4 * sizeof(Val));
-   for (i=0; i < 4; ++i)
+   c->return_val.u.aval->vals=malloc(4*sizeof(Val));
+   for (i=0; i<4; ++i)
       c->return_val.u.aval->vals[i].type=v_real;
    c->return_val.u.aval->vals[0].u.fval=b.minx;
    c->return_val.u.aval->vals[1].u.fval=b.miny;
@@ -3784,28 +3784,28 @@ static void bGetLookupInfo(Context *c) {
    c->return_val.type=v_arrfree;
    c->return_val.u.aval=malloc(sizeof(Array));
    c->return_val.u.aval->argc=3;
-   c->return_val.u.aval->vals=malloc(3 * sizeof(Val));
+   c->return_val.u.aval->vals=malloc(3*sizeof(Val));
    c->return_val.u.aval->vals[0].type=v_str;
    c->return_val.u.aval->vals[0].u.sval =
       fastrdup(otl->lookup_type ==
-	   gpos_single ? "GPOS_single" : otl->lookup_type ==
-	   gpos_pair ? "GPOS_pair" : otl->lookup_type ==
-	   gpos_cursive ? "GPOS_cursive" : otl->lookup_type ==
-	   gpos_mark2base ? "GPOS_marktobase" : otl->lookup_type ==
-	   gpos_mark2ligature ? "GPOS_marktoligature" : otl->lookup_type ==
-	   gpos_mark2mark ? "GPOS_marktomark" : otl->lookup_type ==
-	   gpos_context ? "GPOS_context" : otl->lookup_type ==
-	   gpos_contextchain ? "GPOS_contextchain" : otl->lookup_type ==
-	   kern_statemachine ? "kern_statemachine" : otl->lookup_type ==
-	   gsub_single ? "GSUB_single" : otl->lookup_type ==
-	   gsub_multiple ? "GSUB_multiple" : otl->lookup_type ==
-	   gsub_alternate ? "GSUB_alternate" : otl->lookup_type ==
-	   gsub_ligature ? "GSUB_ligature" : otl->lookup_type ==
-	   gsub_context ? "GSUB_context" : otl->lookup_type ==
-	   gsub_contextchain ? "GSUB_contextchain" : otl->lookup_type ==
-	   gsub_reversecchain ? "GSUB_reversecchain" : otl->lookup_type ==
-	   morx_indic ? "morx_indic" : otl->lookup_type ==
-	   morx_context ? "morx_context" : "morx_insert");
+	   gpos_single?"GPOS_single":otl->lookup_type ==
+	   gpos_pair?"GPOS_pair":otl->lookup_type ==
+	   gpos_cursive?"GPOS_cursive":otl->lookup_type ==
+	   gpos_mark2base?"GPOS_marktobase":otl->lookup_type ==
+	   gpos_mark2ligature?"GPOS_marktoligature":otl->lookup_type ==
+	   gpos_mark2mark?"GPOS_marktomark":otl->lookup_type ==
+	   gpos_context?"GPOS_context":otl->lookup_type ==
+	   gpos_contextchain?"GPOS_contextchain":otl->lookup_type ==
+	   kern_statemachine?"kern_statemachine":otl->lookup_type ==
+	   gsub_single?"GSUB_single":otl->lookup_type ==
+	   gsub_multiple?"GSUB_multiple":otl->lookup_type ==
+	   gsub_alternate?"GSUB_alternate":otl->lookup_type ==
+	   gsub_ligature?"GSUB_ligature":otl->lookup_type ==
+	   gsub_context?"GSUB_context":otl->lookup_type ==
+	   gsub_contextchain?"GSUB_contextchain":otl->lookup_type ==
+	   gsub_reversecchain?"GSUB_reversecchain":otl->lookup_type ==
+	   morx_indic?"morx_indic":otl->lookup_type ==
+	   morx_context?"morx_context":"morx_insert");
    c->return_val.u.aval->vals[1].type=v_int;
    c->return_val.u.aval->vals[1].u.ival=otl->lookup_flags;
    c->return_val.u.aval->vals[2].type=v_arrfree;
@@ -3817,7 +3817,7 @@ static void bGetLookupInfo(Context *c) {
       farray->vals[fcnt].type=v_arrfree;
       farray->vals[fcnt].u.aval=malloc(sizeof(Array));
       farray->vals[fcnt].u.aval->argc=2;
-      farray->vals[fcnt].u.aval->vals=malloc(2 * sizeof(Val));
+      farray->vals[fcnt].u.aval->vals=malloc(2*sizeof(Val));
       farray->vals[fcnt].u.aval->vals[0].type=v_str;
       farray->vals[fcnt].u.aval->vals[0].u.sval =
 	 Tag2Str(fl->featuretag, fl->ismac);
@@ -3831,7 +3831,7 @@ static void bGetLookupInfo(Context *c) {
 	 sarray->vals[scnt].type=v_arrfree;
 	 sarray->vals[scnt].u.aval=malloc(sizeof(Array));
 	 sarray->vals[scnt].u.aval->argc=2;
-	 sarray->vals[scnt].u.aval->vals=malloc(2 * sizeof(Val));
+	 sarray->vals[scnt].u.aval->vals=malloc(2*sizeof(Val));
 	 sarray->vals[scnt].u.aval->vals[0].type=v_str;
 	 sarray->vals[scnt].u.aval->vals[0].u.sval =
 	    Tag2Str(sl->script, false);
@@ -3840,11 +3840,11 @@ static void bGetLookupInfo(Context *c) {
 	    malloc(sizeof(Array));
 	 larray->argc=sl->lang_cnt;
 	 larray->vals=malloc(sl->lang_cnt * sizeof(Val));
-	 for (l=0; l < sl->lang_cnt; ++l) {
+	 for (l=0; l<sl->lang_cnt; ++l) {
 	    larray->vals[l].type=v_str;
 	    larray->vals[l].u.sval =
 	       Tag2Str(l <
-		       MAX_LANG ? sl->langs[l] : sl->morelangs[l - MAX_LANG],
+		       MAX_LANG?sl->langs[l]:sl->morelangs[l-MAX_LANG],
 		       false);
 	 }
       }
@@ -3929,7 +3929,7 @@ static void bGetMaxpValue(Context *c) {
    tab=SFFindTable(sf, CHR('m', 'a', 'x', 'p'));
    if (tab==NULL)
       data=dummy;
-   else if (tab->len < 32) {
+   else if (tab->len<32) {
       memcpy(dummy, tab->data, tab->len);
       data=dummy;
    } else
@@ -3937,17 +3937,17 @@ static void bGetMaxpValue(Context *c) {
 
    c->return_val.type=v_int;
    if (strmatch(c->a.vals[1].u.sval, "Zones")==0)
-      c->return_val.u.ival=memushort(data, 32, 7 * sizeof(uint16_t));
+      c->return_val.u.ival=memushort(data, 32, 7*sizeof(uint16_t));
    else if (strmatch(c->a.vals[1].u.sval, "TwilightPntCnt")==0)
-      c->return_val.u.ival=memushort(data, 32, 8 * sizeof(uint16_t));
+      c->return_val.u.ival=memushort(data, 32, 8*sizeof(uint16_t));
    else if (strmatch(c->a.vals[1].u.sval, "StorageCnt")==0)
-      c->return_val.u.ival=memushort(data, 32, 9 * sizeof(uint16_t));
+      c->return_val.u.ival=memushort(data, 32, 9*sizeof(uint16_t));
    else if (strmatch(c->a.vals[1].u.sval, "MaxStackDepth")==0)
-      c->return_val.u.ival=memushort(data, 32, 12 * sizeof(uint16_t));
+      c->return_val.u.ival=memushort(data, 32, 12*sizeof(uint16_t));
    else if (strmatch(c->a.vals[1].u.sval, "FDEFs")==0)
-      c->return_val.u.ival=memushort(data, 32, 10 * sizeof(uint16_t));
+      c->return_val.u.ival=memushort(data, 32, 10*sizeof(uint16_t));
    else if (strmatch(c->a.vals[1].u.sval, "IDEFs")==0)
-      c->return_val.u.ival=memushort(data, 32, 11 * sizeof(uint16_t));
+      c->return_val.u.ival=memushort(data, 32, 11*sizeof(uint16_t));
    else
       ScriptErrorString(c, "Unknown 'maxp' field: ", c->a.vals[1].u.sval);
 }
@@ -4006,8 +4006,8 @@ static void bGetOS2Value(Context *c) {
       c->return_val.type=v_arrfree;
       c->return_val.u.aval=malloc(sizeof(Array));
       c->return_val.u.aval->argc=10;
-      c->return_val.u.aval->vals=malloc((10 + 1) * sizeof(Val));
-      for (i=0; i < 10; ++i) {
+      c->return_val.u.aval->vals=malloc((10+1)*sizeof(Val));
+      for (i=0; i<10; ++i) {
 	 c->return_val.u.aval->vals[i].type=v_int;
 	 c->return_val.u.aval->vals[i].u.ival=sf->pfminfo.panose[i];
       }
@@ -4050,7 +4050,7 @@ static void bGetPosSub(Context *c) {
 
    found=GetOneSelCharIndex(c);
    gid=map->map[found];
-   sc=gid==-1 ? NULL : sf->glyphs[gid];
+   sc=gid==-1?NULL:sf->glyphs[gid];
    if (sc==NULL)
       sc=SCBuildDummy(&dummy, sf, map, found);
 
@@ -4064,7 +4064,7 @@ if (c->a.vals[1].type != v_str)
 	 ScriptErrorString(c, "Unknown lookup subtable", c->a.vals[1].u.sval);
    }
 
-   for (i=0; i < 2; ++i) {
+   for (i=0; i<2; ++i) {
       cnt=0;
       for (pst=sc->possub; pst != NULL; pst=pst->next) {
 	 if (pst->type==pst_lcaret)
@@ -4086,9 +4086,9 @@ if (c->a.vals[1].type != v_str)
 		    temp->argc=6;
 		    temp->vals=calloc(7, sizeof(Val));
 		    temp->vals[1].u.sval=fastrdup("Position");
-		    for (k=2; k < 6; ++k) {
+		    for (k=2; k<6; ++k) {
 		       temp->vals[k].type=v_int;
-		       temp->vals[k].u.ival=(&pst->u.pos.xoff)[(k - 2)];
+		       temp->vals[k].u.ival=(&pst->u.pos.xoff)[(k-2)];
 		    }
 		    break;
 		 case pst_pair:
@@ -4097,10 +4097,10 @@ if (c->a.vals[1].type != v_str)
 		    temp->vals[1].u.sval=fastrdup("Pair");
 		    temp->vals[2].type=v_str;
 		    temp->vals[2].u.sval=fastrdup(pst->u.pair.paired);
-		    for (k=3; k < 11; ++k) {
+		    for (k=3; k<11; ++k) {
 		       temp->vals[k].type=v_int;
 		       temp->vals[k].u.ival =
-			  (&pst->u.pair.vr[(k - 3) / 4].xoff)[(k - 3) & 3];
+			  (&pst->u.pair.vr[(k-3)/4].xoff)[(k-3)&3];
 		    }
 		    break;
 		 case pst_substitution:
@@ -4120,12 +4120,12 @@ if (c->a.vals[1].type != v_str)
 			     ++pt;
 		       }
 		    }
-		    temp->argc=2 + subcnt;
-		    temp->vals=calloc(2 + subcnt, sizeof(Val));
+		    temp->argc=2+subcnt;
+		    temp->vals=calloc(2+subcnt, sizeof(Val));
 		    temp->vals[1].u.sval =
 		       fastrdup(pst->type ==
-			    pst_alternate ? "AltSubs" : pst->type ==
-			    pst_multiple ? "MultSubs" : "Ligature");
+			    pst_alternate?"AltSubs":pst->type ==
+			    pst_multiple?"MultSubs":"Ligature");
 		    for (pt=pst->u.mult.components, subcnt=0; *pt;) {
 		       while (*pt==' ')
 			  ++pt;
@@ -4134,9 +4134,9 @@ if (c->a.vals[1].type != v_str)
 		       start=pt;
 		       while (*pt != ' ' && *pt != '\0')
 			  ++pt;
-		       temp->vals[2 + subcnt].type=v_str;
-		       temp->vals[2 + subcnt].u.sval =
-			  copyn(start, pt - start);
+		       temp->vals[2+subcnt].type=v_str;
+		       temp->vals[2+subcnt].u.sval =
+			  copyn(start, pt-start);
 		       ++subcnt;
 		    }
 		    break;
@@ -4150,9 +4150,9 @@ if (c->a.vals[1].type != v_str)
 	    ++cnt;
 	 }
       }
-      for (j=0; j < 2; ++j) {
+      for (j=0; j<2; ++j) {
 	 if (sub==NULL || sub->lookup->lookup_type==gpos_pair) {
-	    for (kp=(j==0 ? sc->kerns : sc->vkerns); kp != NULL;
+	    for (kp=(j==0?sc->kerns:sc->vkerns); kp != NULL;
 		 kp=kp->next) {
 	       if (sub==NULL || sub==kp->subtable) {
 		  if (i) {
@@ -4166,7 +4166,7 @@ if (c->a.vals[1].type != v_str)
 		     temp->vals[1].u.sval=fastrdup("Pair");
 		     temp->vals[2].type=v_str;
 		     temp->vals[2].u.sval=fastrdup(kp->sc->name);
-		     for (k=3; k < 11; ++k) {
+		     for (k=3; k<11; ++k) {
 			temp->vals[k].type=v_int;
 			temp->vals[k].u.ival=0;
 		     }
@@ -4230,7 +4230,7 @@ if (c->a.vals[1].type != v_str)
       ScriptErrorString(c, "Unknown anchor class", c->a.vals[1].u.sval);
    c->return_val.type=v_str;
    c->return_val.u.sval =
-      fastrdup(ac->subtable ? ac->subtable->subtable_name : "");
+      fastrdup(ac->subtable?ac->subtable->subtable_name:"");
 }
 
 static void bGetTTFName(Context *c) {
@@ -4244,9 +4244,9 @@ static void bGetTTFName(Context *c) {
 
    lang=c->a.vals[1].u.ival;
    strid=c->a.vals[2].u.ival;
-   if (lang < 0 || lang > 0xffff)
+   if (lang<0 || lang>0xffff)
       ScriptError(c, "Bad value for language");
-   else if (strid < 0 || strid >= ttf_namemax)
+   else if (strid<0 || strid >= ttf_namemax)
       ScriptError(c, "Bad value for string id");
 
    c->return_val.type=v_str;
@@ -4263,7 +4263,7 @@ static void bGetTeXParam(Context *c) {
 
    if (c->a.vals[1].type != v_int)
       ScriptError(c, "Bad argument type");
-   else if (c->a.vals[1].u.ival < -1 || c->a.vals[1].u.ival >= 24)
+   else if (c->a.vals[1].u.ival<-1 || c->a.vals[1].u.ival >= 24)
       ScriptError(c, "Bad argument value (must be >=-1 <=24)");
    c->return_val.type=v_int;
    if (sf->texdata.type==tex_unset)
@@ -4288,9 +4288,9 @@ static void bHFlip(Context *c) {
       if (c->a.vals[1].type != v_int && c->a.vals[1].type != v_real)
 	 ScriptError(c, "Bad argument type in HFlip");
       if (c->a.vals[1].type==v_int)
-	 trans[4]=2 * c->a.vals[1].u.ival;
+	 trans[4]=2*c->a.vals[1].u.ival;
       else
-	 trans[4]=2 * c->a.vals[1].u.fval;
+	 trans[4]=2*c->a.vals[1].u.fval;
       otype=0;
    }
    bvts[0].func=bvt_fliph;
@@ -4308,13 +4308,13 @@ static void bHasPreservedTable(Context *c) {
       ScriptError(c, "Bad argument type");
 
    tstr=c->a.vals[1].u.sval;
-   end=tstr + strlen(tstr);
-   if (*tstr=='\0' || end - tstr > 4)
+   end=tstr+strlen(tstr);
+   if (*tstr=='\0' || end-tstr>4)
       ScriptError(c, "Bad tag");
    tag=*tstr << 24;
-   tag |= (tstr + 1 < end ? tstr[1] : ' ') << 16;
-   tag |= (tstr + 2 < end ? tstr[2] : ' ') << 8;
-   tag |= (tstr + 3 < end ? tstr[3] : ' ');
+   tag |= (tstr+1<end?tstr[1]:' ') << 16;
+   tag |= (tstr+2<end?tstr[2]:' ') << 8;
+   tag |= (tstr+3<end?tstr[3]:' ');
 
    for (tab=sf->ttf_tab_saved; tab != NULL && tab->tag != tag;
 	tab=tab->next);
@@ -4354,15 +4354,15 @@ static void bImport(Context *c) {
    if (ext==NULL) {
       int len=strlen(filename);
 
-      ext=filename + len - 2;
+      ext=filename+len-2;
       if (ext[0] != 'p' || ext[1] != 'k')
 	 ScriptErrorString(c, "No extension in", filename);
    }
    back=0;
    flags=-1;
-   if (strmatch(ext, ".bdf")==0 || strmatch(ext - 4, ".bdf.gz")==0)
+   if (strmatch(ext, ".bdf")==0 || strmatch(ext-4, ".bdf.gz")==0)
       format=fv_bdf;
-   else if (strmatch(ext, ".pcf")==0 || strmatch(ext - 4, ".pcf.gz")==0)
+   else if (strmatch(ext, ".pcf")==0 || strmatch(ext-4, ".pcf.gz")==0)
       format=fv_pcf;
    else if (strmatch(ext, ".ttf")==0 || strmatch(ext, ".otf")==0
 	    || strmatch(ext, ".otb")==0)
@@ -4422,7 +4422,7 @@ static void bInFont(Context *c) {
    c->return_val.type=v_int;
    if (c->a.vals[1].type==v_int)
       c->return_val.u.ival=c->a.vals[1].u.ival >= 0
-	 && c->a.vals[1].u.ival < map->enccount;
+	 && c->a.vals[1].u.ival<map->enccount;
    else if (c->a.vals[1].type==v_unicode || c->a.vals[1].type==v_str) {
       int enc;
 
@@ -4485,7 +4485,7 @@ static void bInterpolateFonts(Context *c) {
    c->curfv =
       FVAppend(_FontViewCreate
 	       (InterpolateFont
-		(c->curfv->sf, sf, percent / 100.0, c->curfv->map->enc)));
+		(c->curfv->sf, sf, percent/100.0, c->curfv->map->enc)));
 }
 
 static void bIsFinite(Context *c) {
@@ -4506,7 +4506,7 @@ static void bItalic(Context *c) {
    double pct=1.0;
    int i;
 
-   for (i=1; i < c->a.argc; ++i) {
+   for (i=1; i<c->a.argc; ++i) {
       switch (i) {
 	case 1:
 	   /* Argument 1: italic angle */
@@ -4535,27 +4535,27 @@ static void bItalic(Context *c) {
 
 	      if (flags >= 0) {
 		 default_ii.transform_bottom_serifs =
-		    (flags & 0x0001) ? 1 : 0;
+		    (flags&0x0001)?1:0;
 		 default_ii.transform_top_xh_serifs =
-		    (flags & 0x0002) ? 1 : 0;
+		    (flags&0x0002)?1:0;
 		 default_ii.transform_top_as_serifs =
-		    (flags & 0x0004) ? 1 : 0;
+		    (flags&0x0004)?1:0;
 		 default_ii.transform_diagon_serifs =
-		    (flags & 0x0008) ? 1 : 0;
+		    (flags&0x0008)?1:0;
 
-		 default_ii.a_from_d=(flags & 0x0010) ? 1 : 0;
-		 default_ii.f_long_tail=(flags & 0x0020) ? 1 : 0;
-		 default_ii.f_rotate_top=(flags & 0x0040) ? 1 : 0;
-		 default_ii.pq_deserif=(flags & 0x0080) ? 1 : 0;
+		 default_ii.a_from_d=(flags&0x0010)?1:0;
+		 default_ii.f_long_tail=(flags&0x0020)?1:0;
+		 default_ii.f_rotate_top=(flags&0x0040)?1:0;
+		 default_ii.pq_deserif=(flags&0x0080)?1:0;
 
-		 default_ii.cyrl_phi=(flags & 0x0100) ? 1 : 0;
-		 default_ii.cyrl_i=(flags & 0x0200) ? 1 : 0;
-		 default_ii.cyrl_pi=(flags & 0x0400) ? 1 : 0;
-		 default_ii.cyrl_te=(flags & 0x0800) ? 1 : 0;
+		 default_ii.cyrl_phi=(flags&0x0100)?1:0;
+		 default_ii.cyrl_i=(flags&0x0200)?1:0;
+		 default_ii.cyrl_pi=(flags&0x0400)?1:0;
+		 default_ii.cyrl_te=(flags&0x0800)?1:0;
 
-		 default_ii.cyrl_sha=(flags & 0x1000) ? 1 : 0;
-		 default_ii.cyrl_dje=(flags & 0x2000) ? 1 : 0;
-		 default_ii.cyrl_dzhe=(flags & 0x4000) ? 1 : 0;
+		 default_ii.cyrl_sha=(flags&0x1000)?1:0;
+		 default_ii.cyrl_dje=(flags&0x2000)?1:0;
+		 default_ii.cyrl_dzhe=(flags&0x4000)?1:0;
 	      }
 	      continue;
 	   }
@@ -4670,7 +4670,7 @@ static void bLoadEncodingFile(Context *c) {
    t=script2utf8_copy(c->a.vals[1].u.sval);
    locfilename=fastrdup(t);
    ParseEncodingFile(locfilename,
-		     (c->a.argc >= 3 ? c->a.vals[2].u.sval : NULL));
+		     (c->a.argc >= 3?c->a.vals[2].u.sval:NULL));
    free(locfilename);
    free(t);
 }
@@ -4695,7 +4695,7 @@ static void bLoadFileToString(Context *c) {
       afseek(f, 0, SEEK_END);
       len=aftell(f);
       afseek(f,0,SEEK_SET);
-      c->return_val.u.sval=malloc(len + 1);
+      c->return_val.u.sval=malloc(len+1);
       len=afread(c->return_val.u.sval, 1, len, f);
       c->return_val.u.sval[len]='\0';
       afclose(f);
@@ -4734,7 +4734,7 @@ static char **GetFontNames(char *filename) {
 
    if (GFileIsDir(filename)) {
       char *temp =
-	 malloc(strlen(filename) + strlen("/glyphs/contents.plist") + 1);
+	 malloc(strlen(filename)+strlen("/glyphs/contents.plist")+1);
       strcpy(temp, filename);
       strcat(temp, "/glyphs/contents.plist");
       if (GFileExists(temp))
@@ -4799,13 +4799,13 @@ static void bLoadTableFromFile(Context *c) {
       ScriptError(c, "Bad argument type");
 
    tstr=c->a.vals[1].u.sval;
-   end=tstr + strlen(tstr);
-   if (*tstr=='\0' || end - tstr > 4)
+   end=tstr+strlen(tstr);
+   if (*tstr=='\0' || end-tstr>4)
       ScriptError(c, "Bad tag");
    tag=*tstr << 24;
-   tag |= (tstr + 1 < end ? tstr[1] : ' ') << 16;
-   tag |= (tstr + 2 < end ? tstr[2] : ' ') << 8;
-   tag |= (tstr + 3 < end ? tstr[3] : ' ');
+   tag |= (tstr+1<end?tstr[1]:' ') << 16;
+   tag |= (tstr+2<end?tstr[2]:' ') << 8;
+   tag |= (tstr+3<end?tstr[3]:' ');
 
    t=script2utf8_copy(c->a.vals[2].u.sval);
    locfilename=fastrdup(t);
@@ -4866,19 +4866,19 @@ if (c->a.vals[1].type != v_int)
       ScriptError(c, "Bad type of argument");
    else if (mm==NULL)
       ScriptError(c, "Not a multiple master font");
-   else if (c->a.vals[1].u.ival < 0 || c->a.vals[1].u.ival >= mm->axis_count)
+   else if (c->a.vals[1].u.ival<0 || c->a.vals[1].u.ival >= mm->axis_count)
       ScriptError(c, "Axis out of range");
    axis=c->a.vals[1].u.ival;
 
    c->return_val.type=v_arrfree;
    c->return_val.u.aval=malloc(sizeof(Array));
    c->return_val.u.aval->argc=mm->axis_count;
-   c->return_val.u.aval->vals=malloc(3 * sizeof(Val));
-   for (i=0; i < 3; ++i)
+   c->return_val.u.aval->vals=malloc(3*sizeof(Val));
+   for (i=0; i<3; ++i)
       c->return_val.u.aval->vals[i].type=v_int;
-   c->return_val.u.aval->vals[0].u.ival=mm->axismaps[axis].min * 65536;
-   c->return_val.u.aval->vals[1].u.ival=mm->axismaps[axis].def * 65536;
-   c->return_val.u.aval->vals[2].u.ival=mm->axismaps[axis].max * 65536;
+   c->return_val.u.aval->vals[0].u.ival=mm->axismaps[axis].min*65536;
+   c->return_val.u.aval->vals[1].u.ival=mm->axismaps[axis].def*65536;
+   c->return_val.u.aval->vals[2].u.ival=mm->axismaps[axis].max*65536;
 }
 
 static void bMMAxisNames(Context *c) {
@@ -4892,7 +4892,7 @@ if (mm==NULL)
    c->return_val.u.aval=malloc(sizeof(Array));
    c->return_val.u.aval->argc=mm->axis_count;
    c->return_val.u.aval->vals=malloc(mm->axis_count * sizeof(Val));
-   for (i=0; i < mm->axis_count; ++i) {
+   for (i=0; i<mm->axis_count; ++i) {
       c->return_val.u.aval->vals[i].type=v_str;
       c->return_val.u.aval->vals[i].u.sval=fastrdup(mm->axes[i]);
    }
@@ -4911,7 +4911,7 @@ if (mm==NULL)
    else if (c->a.vals[1].type==v_int) {
       if (c->a.vals[1].u.ival==-1)
 	 c->curfv->sf=mm->normal;
-      else if (c->a.vals[1].u.ival < mm->instance_count)
+      else if (c->a.vals[1].u.ival<mm->instance_count)
 	 c->curfv->sf=mm->instances[c->a.vals[1].u.ival];
       else
 	 ScriptError(c, "Mutilple Master instance index out of bounds");
@@ -4919,7 +4919,7 @@ if (mm==NULL)
       if (strcmp(mm->normal->fontname, c->a.vals[1].u.sval)==0)
 	 c->curfv->sf=mm->normal;
       else {
-	 for (i=0; i < mm->instance_count; ++i)
+	 for (i=0; i<mm->instance_count; ++i)
 	    if (strcmp(mm->instances[i]->fontname, c->a.vals[1].u.sval)==0) {
 	       c->curfv->sf=mm->instances[i];
 	       break;
@@ -4946,7 +4946,7 @@ if (mm==NULL)
    c->return_val.u.aval=malloc(sizeof(Array));
    c->return_val.u.aval->argc=mm->instance_count;
    c->return_val.u.aval->vals=malloc(mm->instance_count * sizeof(Val));
-   for (i=0; i < mm->instance_count; ++i) {
+   for (i=0; i<mm->instance_count; ++i) {
       c->return_val.u.aval->vals[i].type=v_str;
       c->return_val.u.aval->vals[i].u.sval=fastrdup(mm->instances[i]->fontname);
    }
@@ -4968,7 +4968,7 @@ static void bMakeLine(Context *c) {
    SplineFont *sf=fv->sf;
    EncMap *map=fv->map;
 
-   for (i=0; i < map->enccount; ++i)
+   for (i=0; i<map->enccount; ++i)
       if ((gid=map->map[i]) != -1 && sf->glyphs[gid] != NULL
 	  && fv->selected[i]) {
 	 SplineChar *sc=sf->glyphs[gid];
@@ -5105,7 +5105,7 @@ static void bMultipleEncodingsToReferences(Context *c) {
    struct altuni *alt, *next, *prev;
    int uni, enc;
 
-   for (i=0; i < map->enccount; ++i) {
+   for (i=0; i<map->enccount; ++i) {
       if ((gid=map->map[i]) != -1 && fv->selected[i] &&
 	  (orig=sf->glyphs[gid]) != NULL && orig->altuni != NULL) {
 	 prev=NULL;
@@ -5132,8 +5132,8 @@ static void bMultipleEncodingsToReferences(Context *c) {
    }
    /* Now suppose we had a duplicate encoding of a glyph with no unicode */
    /*  so there will be no altuni to mark it */
-   for (gid=0; gid < sf->glyphcnt; ++gid) {
-      for (i=0; i < map->enccount; ++i) {
+   for (gid=0; gid<sf->glyphcnt; ++gid) {
+      for (i=0; i<map->enccount; ++i) {
 	 if (map->map[i]==gid && map->backmap[gid] != i &&
 	     (fv->selected[i]
 	      || (map->backmap[gid] != -1
@@ -5156,12 +5156,12 @@ static int bDoSelect(Context *c,int signal_error,int select,int by_ranges) {
        && (c->a.vals[1].type==v_arr || c->a.vals[1].type==v_arrfree)) {
       struct array *arr=c->a.vals[1].u.aval;
 
-      for (i=0; i < arr->argc && i < c->curfv->map->enccount; ++i) {
+      for (i=0; i<arr->argc && i<c->curfv->map->enccount; ++i) {
 	 if (arr->vals[i].type != v_int) {
 	    if (signal_error)
 	       ScriptError(c, "Bad type within selection array");
 	    else
-	       return (any ? -1 : -2);
+	       return (any?-1:-2);
 	 } else {
 	    c->curfv->selected[i]=(arr->vals[i].u.ival != 0);
 	    ++any;
@@ -5170,17 +5170,17 @@ static int bDoSelect(Context *c,int signal_error,int select,int by_ranges) {
       return (any);
    }
 
-   for (i=1; i < c->a.argc; i += 1 + by_ranges) {
+   for (i=1; i<c->a.argc; i += 1+by_ranges) {
       bottom=ParseCharIdent(c, &c->a.vals[i], signal_error);
-      if (i + 1==c->a.argc || !by_ranges)
+      if (i+1==c->a.argc || !by_ranges)
 	 top=bottom;
       else {
-	 top=ParseCharIdent(c, &c->a.vals[i + 1], signal_error);
+	 top=ParseCharIdent(c, &c->a.vals[i+1], signal_error);
       }
       if (bottom==-1 || top==-1)	/* an error occurred in parsing */
-	 return (any ? -1 : -2);
+	 return (any?-1:-2);
 
-      if (top < bottom) {
+      if (top<bottom) {
 	 j=top;
 	 top=bottom;
 	 bottom=j;
@@ -5231,20 +5231,20 @@ static void bNearlyHvCps(Context *c) {
    double err=.1;
    int gid;
 
-   if (c->a.argc > 1) {
+   if (c->a.argc>1) {
       if (c->a.vals[1].type==v_int)
 	 err=c->a.vals[1].u.ival;
       else if (c->a.vals[1].type==v_real)
 	 err=c->a.vals[1].u.fval;
       else
 	 ScriptError(c, "Bad type for argument");
-      if (c->a.argc > 2) {
+      if (c->a.argc>2) {
 	 if (c->a.vals[2].type != v_int)
 	    ScriptError(c, "Bad type for argument");
 	 err /= (double) c->a.vals[2].u.ival;
       }
    }
-   for (i=0; i < map->enccount; ++i)
+   for (i=0; i<map->enccount; ++i)
       if ((gid=map->map[i]) != -1 && sf->glyphs[gid] != NULL
 	  && fv->selected[i]) {
 	 SplineChar *sc=sf->glyphs[gid];
@@ -5252,7 +5252,7 @@ static void bNearlyHvCps(Context *c) {
 	 SCPreserveState(sc, false);
 	 last=ly_fore;
 	 if (sc->parent->multilayer)
-	    last=sc->layer_cnt - 1;
+	    last=sc->layer_cnt-1;
 	 for (layer=ly_fore; layer <= last; ++layer) {
 	    for (spl=sc->layers[layer].splines; spl != NULL;
 		 spl=spl->next)
@@ -5268,20 +5268,20 @@ static void bNearlyHvLines(Context *c) {
    SplineFont *sf=fv->sf;
    double err=.1;
 
-   if (c->a.argc > 1) {
+   if (c->a.argc>1) {
       if (c->a.vals[1].type==v_int)
 	 err=c->a.vals[1].u.ival;
       else if (c->a.vals[1].type==v_real)
 	 err=c->a.vals[1].u.fval;
       else
 	 ScriptError(c, "Bad type for argument");
-      if (c->a.argc > 2) {
+      if (c->a.argc>2) {
 	 if (c->a.vals[2].type != v_int)
 	    ScriptError(c, "Bad type for argument");
 	 err /= (double) c->a.vals[2].u.ival;
       }
    }
-   for (i=0; i < c->curfv->map->enccount; ++i)
+   for (i=0; i<c->curfv->map->enccount; ++i)
       if ((gid=c->curfv->map->map[i]) != -1 && sf->glyphs[gid] != NULL
 	  && fv->selected[i]) {
 	 SplineChar *sc=sf->glyphs[gid];
@@ -5289,7 +5289,7 @@ static void bNearlyHvLines(Context *c) {
 	 SCPreserveState(sc, false);
 	 last=ly_fore;
 	 if (sc->parent->multilayer)
-	    last=sc->layer_cnt - 1;
+	    last=sc->layer_cnt-1;
 	 for (layer=ly_fore; layer <= last; ++layer) {
 	    for (spl=sc->layers[layer].splines; spl != NULL;
 		 spl=spl->next)
@@ -5305,7 +5305,7 @@ static void bNearlyLines(Context *c) {
    SplineFont *sf=fv->sf;
    double err=1;
 
-   if (c->a.argc > 1) {
+   if (c->a.argc>1) {
       if (c->a.vals[1].type==v_int)
 	 err=c->a.vals[1].u.ival;
       else if (c->a.vals[1].type==v_real)
@@ -5313,7 +5313,7 @@ static void bNearlyLines(Context *c) {
       else
 	 ScriptError(c, "Bad type for argument");
    }
-   for (i=0; i < c->curfv->map->enccount; ++i)
+   for (i=0; i<c->curfv->map->enccount; ++i)
       if ((gid=c->curfv->map->map[i]) != -1 && sf->glyphs[gid] != NULL
 	  && fv->selected[i]) {
 	 SplineChar *sc=sf->glyphs[gid];
@@ -5322,7 +5322,7 @@ static void bNearlyLines(Context *c) {
 	 SCPreserveState(sc, false);
 	 last=ly_fore;
 	 if (sc->parent->multilayer)
-	    last=sc->layer_cnt - 1;
+	    last=sc->layer_cnt-1;
 	 for (layer=ly_fore; layer <= last; ++layer) {
 	    for (spl=sc->layers[layer].splines; spl != NULL;
 		 spl=spl->next)
@@ -5380,8 +5380,8 @@ static void bOrd(Context *c) {
 	    || (c->a.argc==3 && c->a.vals[2].type != v_int))
       ScriptError(c, "Bad type for argument");
    if (c->a.argc==3) {
-      if (c->a.vals[2].u.ival < 0
-	  || c->a.vals[2].u.ival > strlen(c->a.vals[1].u.sval))
+      if (c->a.vals[2].u.ival<0
+	  || c->a.vals[2].u.ival>strlen(c->a.vals[1].u.sval))
 	 ScriptError(c, "Bad value for argument");
       c->return_val.type=v_int;
       c->return_val.u.ival=(uint8_t) c->a.vals[1].u.sval[c->a.vals[2].u.ival];
@@ -5392,7 +5392,7 @@ static void bOrd(Context *c) {
       c->return_val.u.aval=malloc(sizeof(Array));
       c->return_val.u.aval->argc=len;
       c->return_val.u.aval->vals=malloc(len * sizeof(Val));
-      for (i=0; i < len; ++i) {
+      for (i=0; i<len; ++i) {
 	 c->return_val.u.aval->vals[i].type=v_int;
 	 c->return_val.u.aval->vals[i].u.ival =
 	    (uint8_t) c->a.vals[1].u.sval[i];
@@ -5488,7 +5488,7 @@ static void bPreloadCidmap(Context *c) {
 static void bPrint(Context *c) {
    int i;
 
-   for (i=1; i < c->a.argc; ++i)
+   for (i=1; i<c->a.argc; ++i)
       PrintVal(&c->a.vals[i]);
    printf("\n");
    fflush(stdout);
@@ -5519,7 +5519,7 @@ if (c->a.vals[1].type != v_str)
 }
 
 static void bQuit(Context *c) {
-   if (verbose > 0)
+   if (verbose>0)
       putchar('\n');
    if (c->a.argc==1)
       exit(0);
@@ -5621,15 +5621,15 @@ static void bRemoveDetachedGlyphs(Context *c) {
    int flags=-1;
    int changed=false;
 
-   for (gid=0; gid < sf->glyphcnt; ++gid)
+   for (gid=0; gid<sf->glyphcnt; ++gid)
       if (sf->glyphs[gid] != NULL)
 	 sf->glyphs[gid]->ticked=false;
 
-   for (i=0; i < map->enccount; ++i)
+   for (i=0; i<map->enccount; ++i)
       if ((gid=map->map[i]) != -1)
 	 sf->glyphs[gid]->ticked=true;
 
-   for (gid=0; gid < sf->glyphcnt; ++gid)
+   for (gid=0; gid<sf->glyphcnt; ++gid)
       if ((sc=sf->glyphs[gid]) != NULL && !sc->ticked) {
 	 SFRemoveGlyph(sf, sc, &flags);
 	 changed=true;
@@ -5650,7 +5650,7 @@ static void bRemoveLookup(Context *c) {
    if (otl==NULL)
       ScriptErrorString(c, "Unknown lookup", c->a.vals[1].u.sval);
    SFRemoveLookup(c->curfv->sf, otl,
-		  c->a.argc==3 ? c->a.vals[2].u.ival : 1);
+		  c->a.argc==3?c->a.vals[2].u.ival:1);
 }
 
 static void bRemoveLookupSubtable(Context *c) {
@@ -5664,7 +5664,7 @@ static void bRemoveLookupSubtable(Context *c) {
    if (sub==NULL)
       ScriptErrorString(c, "Unknown lookup subtable", c->a.vals[1].u.sval);
    SFRemoveLookupSubTable(c->curfv->sf, sub,
-			  c->a.argc==3 ? c->a.vals[2].u.ival : 1);
+			  c->a.argc==3?c->a.vals[2].u.ival:1);
 }
 
 static void bRemoveOverlap(Context *c) {
@@ -5695,7 +5695,7 @@ if (c->a.vals[1].type != v_str)
 	 ScriptErrorString(c, "Unknown lookup subtable", c->a.vals[1].u.sval);
    }
 
-   for (i=0; i < c->curfv->map->enccount; ++i) {
+   for (i=0; i<c->curfv->map->enccount; ++i) {
       if (c->curfv->selected[i] && (gid=map->map[i]) != -1 &&
 	  SCWorthOutputting(sc=sf->glyphs[gid])) {
 	 for (prev=NULL, pst=sc->possub; pst != NULL; pst=next) {
@@ -5714,8 +5714,8 @@ if (c->a.vals[1].type != v_str)
 	    } else
 	       prev=pst;
 	 }
-	 for (is_v=0; is_v < 2; ++is_v) {
-	    for (kpprev=NULL, kp=is_v ? sc->vkerns : sc->kerns;
+	 for (is_v=0; is_v<2; ++is_v) {
+	    for (kpprev=NULL, kp=is_v?sc->vkerns:sc->kerns;
 		 kp != NULL; kp=kpnext) {
 	       kpnext=kp->next;
 	       if (kp->subtable==sub || sub==NULL) {
@@ -5745,13 +5745,13 @@ static void bRemovePreservedTable(Context *c) {
       ScriptError(c, "Bad argument type");
 
    tstr=c->a.vals[1].u.sval;
-   end=tstr + strlen(tstr);
-   if (*tstr=='\0' || end - tstr > 4)
+   end=tstr+strlen(tstr);
+   if (*tstr=='\0' || end-tstr>4)
       ScriptError(c, "Bad tag");
    tag=*tstr << 24;
-   tag |= (tstr + 1 < end ? tstr[1] : ' ') << 16;
-   tag |= (tstr + 2 < end ? tstr[2] : ' ') << 8;
-   tag |= (tstr + 3 < end ? tstr[3] : ' ');
+   tag |= (tstr+1<end?tstr[1]:' ') << 16;
+   tag |= (tstr+2<end?tstr[2]:' ') << 8;
+   tag |= (tstr+3<end?tstr[3]:' ');
 
    for (tab=sf->ttf_tab_saved, prev=NULL; tab != NULL && tab->tag != tag;
 	prev=tab, tab=tab->next);
@@ -5787,13 +5787,13 @@ if (c->a.vals[1].type != v_arr)
    arr=c->a.vals[1].u.aval;
    cnt=arr->argc;
    cm=calloc(cnt, sizeof(HintMask));
-   for (i=0; i < cnt; ++i) {
-      if (arr->vals[i].type != v_arr || arr->vals[i].u.aval->argc > 12)
+   for (i=0; i<cnt; ++i) {
+      if (arr->vals[i].type != v_arr || arr->vals[i].u.aval->argc>12)
 	 ScriptError(c, "Argument must be array of array[12] of integers");
-      for (j=0; j < arr->vals[i].u.aval->argc; ++j) {
+      for (j=0; j<arr->vals[i].u.aval->argc; ++j) {
 	 if (arr->vals[i].u.aval->vals[j].type != v_int)
 	    ScriptError(c, "Argument must be array of array[12] of integers");
-	 cm[i][j]=arr->vals[i].u.aval->vals[j].u.ival & 0xff;
+	 cm[i][j]=arr->vals[i].u.aval->vals[j].u.ival&0xff;
       }
    }
 
@@ -5811,9 +5811,9 @@ static void bReplaceCvtAt(Context *c) {
       ScriptError(c, "Bad argument type");
    for (tab=sf->ttf_tables;
 	tab != NULL && tab->tag != CHR('c', 'v', 't', ' '); tab=tab->next);
-   if (tab==NULL || c->a.vals[1].u.ival >= tab->len / 2)
+   if (tab==NULL || c->a.vals[1].u.ival >= tab->len/2)
       ScriptError(c, "Cvt table is either not present or too short");
-   memputshort(tab->data, sizeof(uint16_t) * c->a.vals[1].u.ival,
+   memputshort(tab->data, sizeof(uint16_t)*c->a.vals[1].u.ival,
 	       c->a.vals[2].u.ival);
 }
 
@@ -5830,7 +5830,7 @@ static void bReplaceOutlineWithReference(Context *c) {
       if (c->a.vals[1].type != v_int || c->a.vals[2].type != v_int ||
 	  c->a.vals[2].u.ival==0)
 	 ScriptError(c, "Bad argument type");
-      fudge=c->a.vals[1].u.ival / (double) c->a.vals[2].u.ival;
+      fudge=c->a.vals[1].u.ival/(double) c->a.vals[2].u.ival;
    }
    FVBReplaceOutlineWithReference(c->curfv, fudge);
 }
@@ -5849,7 +5849,7 @@ static void bRotate(Context *c) {
    BVTFunc bvts[2];
    double a, ox, oy;
 
-/* bRotatec->a.argc==1 || c->a.argc==3 || c->a.argc > 4 */
+/* bRotatec->a.argc==1 || c->a.argc==3 || c->a.argc>4 */
    if ((c->a.vals[1].type != v_int && c->a.vals[1].type != v_real)
        || (c->a.argc==4
 	   && ((c->a.vals[2].type != v_int && c->a.vals[2].type != v_real)
@@ -5861,9 +5861,9 @@ static void bRotate(Context *c) {
    else
       a=c->a.vals[1].u.fval;
    a=fmod(a, 360.0);
-   if (a < 0)
+   if (a<0)
       a += 360;
-   a *= M_PI / 180.;
+   a *= M_PI/180.;
    trans[0]=trans[3]=cos(a);
    trans[2]=-(trans[1]=sin(a));
    trans[4]=trans[5]=0;
@@ -5877,8 +5877,8 @@ static void bRotate(Context *c) {
       else
 	 oy=c->a.vals[3].u.fval;
 
-      trans[4]=ox - (trans[0] * ox + trans[2] * oy);
-      trans[5]=oy - (trans[1] * ox + trans[3] * oy);
+      trans[4]=ox-(trans[0] * ox+trans[2] * oy);
+      trans[5]=oy-(trans[1] * ox+trans[3] * oy);
       otype=0;
    }
    bvts[0].func=bvt_none;
@@ -5911,20 +5911,20 @@ static char *ToString(Val *val) {
 
       results=malloc(val->u.aval->argc * sizeof(char *));
       len=0;
-      for (j=0; j < val->u.aval->argc; ++j) {
+      for (j=0; j<val->u.aval->argc; ++j) {
 	 results[j]=ToString(&val->u.aval->vals[j]);
-	 len += strlen(results[j]) + 2;
+	 len += strlen(results[j])+2;
       }
-      ret=pt=malloc(len + 20);
+      ret=pt=malloc(len+20);
       *pt++='[';
-      if (val->u.aval->argc > 0) {
+      if (val->u.aval->argc>0) {
 	 strcpy(pt, results[0]);
 	 pt += strlen(pt);
 	 free(results[0]);
-	 for (j=1; j < val->u.aval->argc; ++j) {
+	 for (j=1; j<val->u.aval->argc; ++j) {
 	    *pt++=',';
-	    if (val->u.aval->vals[j - 1].type==v_arr
-		|| val->u.aval->vals[j - 1].type==v_arrfree)
+	    if (val->u.aval->vals[j-1].type==v_arr
+		|| val->u.aval->vals[j-1].type==v_arrfree)
 	       *pt++='\n';
 	    strcpy(pt, results[j]);
 	    pt += strlen(pt);
@@ -5962,7 +5962,7 @@ static void bRoundToCluster(Context *c) {
 	 within=c->a.vals[1].u.fval;
       else
 	 ScriptError(c, "Bad type for argument");
-      max=4 * within;
+      max=4*within;
       if (c->a.argc >= 3) {
 	 if (c->a.vals[2].type==v_int)
 	    max=c->a.vals[2].u.ival;
@@ -5973,7 +5973,7 @@ static void bRoundToCluster(Context *c) {
 	 max *= within;
       }
    }
-   for (i=0; i < map->enccount; ++i)
+   for (i=0; i<map->enccount; ++i)
       if ((gid=map->map[i]) != -1 && sf->glyphs[gid] != NULL
 	  && fv->selected[i]) {
 	 SplineChar *sc=sf->glyphs[gid];
@@ -5997,7 +5997,7 @@ static void bRoundToInt(Context *c) {
       else
 	 ScriptError(c, "Bad type for argument");
    }
-   for (i=0; i < map->enccount; ++i)
+   for (i=0; i<map->enccount; ++i)
       if ((gid=map->map[i]) != -1 && sf->glyphs[gid] != NULL
 	  && fv->selected[i]) {
 	 SplineChar *sc=sf->glyphs[gid];
@@ -6074,13 +6074,13 @@ static void bSaveTableToFile(Context *c) {
       ScriptError(c, "Bad argument type");
 
    tstr=c->a.vals[1].u.sval;
-   end=tstr + strlen(tstr);
-   if (*tstr=='\0' || end - tstr > 4)
+   end=tstr+strlen(tstr);
+   if (*tstr=='\0' || end-tstr>4)
       ScriptError(c, "Bad tag");
    tag=*tstr << 24;
-   tag |= (tstr + 1 < end ? tstr[1] : ' ') << 16;
-   tag |= (tstr + 2 < end ? tstr[2] : ' ') << 8;
-   tag |= (tstr + 3 < end ? tstr[3] : ' ');
+   tag |= (tstr+1<end?tstr[1]:' ') << 16;
+   tag |= (tstr+2<end?tstr[2]:' ') << 8;
+   tag |= (tstr+3<end?tstr[3]:' ');
 
    t=script2utf8_copy(c->a.vals[2].u.sval);
    locfilename=fastrdup(t);
@@ -6114,7 +6114,7 @@ static void bScale(Context *c) {
       4 => different scale factors for each direction, origin last two args
     */
 
-   for (i=1; i < c->a.argc; ++i) {
+   for (i=1; i<c->a.argc; ++i) {
       if (c->a.vals[i].type==v_int)
 	 args[i]=c->a.vals[i].u.ival;
       else if (c->a.vals[i].type==v_real)
@@ -6123,21 +6123,21 @@ static void bScale(Context *c) {
 	 ScriptError(c, "Bad argument type");
    }
    i=1;
-   if (c->a.argc & 1) {
-      xfact=args[1] / 100.;
-      yfact=args[2] / 100.;
+   if (c->a.argc&1) {
+      xfact=args[1]/100.;
+      yfact=args[2]/100.;
       i=3;
    } else {
-      xfact=yfact=args[1] / 100.;
+      xfact=yfact=args[1]/100.;
       i=2;
    }
    trans[0]=xfact;
    trans[3]=yfact;
    trans[2]=trans[1]=0;
    trans[4]=trans[5]=0;
-   if (c->a.argc > i) {
-      trans[4]=args[i] - (trans[0] * args[i]);
-      trans[5]=args[i + 1] - (trans[3] * args[i + 1]);
+   if (c->a.argc>i) {
+      trans[4]=args[i]-(trans[0] * args[i]);
+      trans[5]=args[i+1]-(trans[3] * args[i+1]);
       otype=0;
    }
    bvts[0].func=bvt_none;
@@ -6148,17 +6148,17 @@ static void bScaleToEm(Context *c) {
    int i;
    int ascent, descent;
 
-   for (i=1; i < c->a.argc; ++i)
-      if (c->a.vals[i].type != v_int || c->a.vals[i].u.ival < 0
-	  || c->a.vals[i].u.ival > 16384)
+   for (i=1; i<c->a.argc; ++i)
+      if (c->a.vals[i].type != v_int || c->a.vals[i].u.ival<0
+	  || c->a.vals[i].u.ival>16384)
 	 ScriptError(c, "Bad argument type");
    if (c->a.argc==3) {
       ascent=c->a.vals[1].u.ival;
       descent=c->a.vals[2].u.ival;
    } else {
       ascent=rint(c->a.vals[1].u.ival * ((double) c->curfv->sf->ascent) /
-		    (c->curfv->sf->ascent + c->curfv->sf->descent));
-      descent=c->a.vals[1].u.ival - ascent;
+		    (c->curfv->sf->ascent+c->curfv->sf->descent));
+      descent=c->a.vals[1].u.ival-ascent;
    }
    SFScaleToEm(c->curfv->sf, ascent, descent);
 }
@@ -6181,11 +6181,11 @@ static void bSelectAllInstancesOf(Context *c) {
    struct altuni *alt;
 
    memset(fv->selected, 0, map->enccount);
-   for (i=1; i < c->a.argc; ++i) {
+   for (i=1; i<c->a.argc; ++i) {
       if (c->a.vals[i].type==v_unicode) {
 	 int uni=c->a.vals[i].u.ival;
 
-	 for (j=0; j < map->enccount; ++j)
+	 for (j=0; j<map->enccount; ++j)
 	    if ((gid=map->map[j]) != -1 && (sc=sf->glyphs[gid]) != NULL) {
 	       for (alt=sc->altuni; alt != NULL && alt->unienc != uni;
 		    alt=alt->next);
@@ -6195,7 +6195,7 @@ static void bSelectAllInstancesOf(Context *c) {
       } else if (c->a.vals[i].type==v_str) {
 	 char *name=c->a.vals[i].u.sval;
 
-	 for (j=0; j < map->enccount; ++j)
+	 for (j=0; j<map->enccount; ++j)
 	    if ((gid=map->map[j]) != -1 && (sc=sf->glyphs[gid]) != NULL) {
 	       if (strcmp(sc->name, name)==0)
 		  fv->selected[j]=true;
@@ -6218,7 +6218,7 @@ static void bSelectBitmap(Context *c) {
       depth=size >> 16;
       if (depth==0)
 	 depth=1;
-      size=size & 0xffff;
+      size=size&0xffff;
       for (bdf=c->curfv->sf->bitmaps; bdf != NULL; bdf=bdf->next)
 	 if (size==bdf->pixelsize && depth==BDFDepth(bdf))
 	    break;
@@ -6259,13 +6259,13 @@ if (c->a.vals[1].type != v_str && c->a.vals[1].type != v_int)
 	 ScriptErrorString(c, "Unknown color", c->a.vals[1].u.sval);
    }
 
-   for (i=0; i < map->enccount; ++i) {
+   for (i=0; i<map->enccount; ++i) {
       int gid=map->map[i];
 
       if (gid != -1) {
 	 sccol =
 	    (sf->glyphs[gid] ==
-	     NULL) ? COLOR_DEFAULT : sf->glyphs[gid]->color;
+	     NULL)?COLOR_DEFAULT:sf->glyphs[gid]->color;
 	 if (c->curfv->selected[i] != (sccol==col)) {
 	    c->curfv->selected[i]=!c->curfv->selected[i];
 	    if (c->curfv->selected[i])
@@ -6281,7 +6281,7 @@ static void bSelectByPosSub(Context *c) {
 
 if (c->a.vals[1].type != v_str || c->a.vals[2].type != v_int)
       ScriptError(c, "Bad argument type");
-   else if (c->a.vals[2].u.ival < 1 || c->a.vals[2].u.ival > 3)
+   else if (c->a.vals[2].u.ival<1 || c->a.vals[2].u.ival>3)
       ScriptError(c, "Bad argument value");
 
    sub=SFFindLookupSubtable(c->curfv->sf, c->a.vals[1].u.sval);
@@ -6307,12 +6307,12 @@ static void bSelectChanged(Context *c) {
    }
 
    if (add) {
-      for (i=0; i < map->enccount; ++i)
+      for (i=0; i<map->enccount; ++i)
 	 fv->selected[i] |= ((gid=map->map[i]) != -1
 			     && sf->glyphs[gid] != NULL
 			     && sf->glyphs[gid]->changed);
    } else {
-      for (i=0; i < map->enccount; ++i)
+      for (i=0; i<map->enccount; ++i)
 	 fv->selected[i]=((gid=map->map[i]) != -1
 			    && sf->glyphs[gid] != NULL
 			    && sf->glyphs[gid]->changed);
@@ -6344,14 +6344,14 @@ static void bSelectGlyphsBoth(Context *c) {
    }
 
    if (add) {
-      for (i=0; i < map->enccount; ++i)
+      for (i=0; i<map->enccount; ++i)
 	 fv->selected[i] |= ((gid=map->map[i]) != -1
 			     && sf->glyphs[gid] != NULL
 			     && sf->glyphs[gid]->layers[layer].refs != NULL
 			     && sf->glyphs[gid]->layers[layer].splines !=
 			     NULL);
    } else {
-      for (i=0; i < map->enccount; ++i)
+      for (i=0; i<map->enccount; ++i)
 	 fv->selected[i]=((gid=map->map[i]) != -1
 			    && sf->glyphs[gid] != NULL
 			    && sf->glyphs[gid]->layers[layer].refs != NULL
@@ -6375,12 +6375,12 @@ static void bSelectGlyphsReferences(Context *c) {
    }
 
    if (add) {
-      for (i=0; i < map->enccount; ++i)
+      for (i=0; i<map->enccount; ++i)
 	 fv->selected[i] |= ((gid=map->map[i]) != -1
 			     && sf->glyphs[gid] != NULL
 			     && sf->glyphs[gid]->layers[layer].refs != NULL);
    } else {
-      for (i=0; i < map->enccount; ++i)
+      for (i=0; i<map->enccount; ++i)
 	 fv->selected[i]=((gid=map->map[i]) != -1
 			    && sf->glyphs[gid] != NULL
 			    && sf->glyphs[gid]->layers[layer].refs != NULL);
@@ -6402,13 +6402,13 @@ static void bSelectGlyphsSplines(Context *c) {
    }
 
    if (add) {
-      for (i=0; i < map->enccount; ++i)
+      for (i=0; i<map->enccount; ++i)
 	 fv->selected[i] |= ((gid=map->map[i]) != -1
 			     && sf->glyphs[gid] != NULL
 			     && sf->glyphs[gid]->layers[layer].splines !=
 			     NULL);
    } else {
-      for (i=0; i < map->enccount; ++i)
+      for (i=0; i<map->enccount; ++i)
 	 fv->selected[i]=((gid=map->map[i]) != -1
 			    && sf->glyphs[gid] != NULL
 			    && sf->glyphs[gid]->layers[layer].splines !=
@@ -6431,7 +6431,7 @@ static void bSelectHintingNeeded(Context *c) {
    }
 
    if (add) {
-      for (i=0; i < map->enccount; ++i)
+      for (i=0; i<map->enccount; ++i)
 	 fv->selected[i] |= ((gid=map->map[i]) != -1
 			     && sf->glyphs[gid] != NULL
 			     &&
@@ -6442,7 +6442,7 @@ static void bSelectHintingNeeded(Context *c) {
 				  splines != NULL
 				  && sf->glyphs[gid]->ttf_instrs_len <= 0)));
    } else {
-      for (i=0; i < map->enccount; ++i)
+      for (i=0; i<map->enccount; ++i)
 	 fv->selected[i]=((gid=map->map[i]) != -1
 			    && sf->glyphs[gid] != NULL
 			    &&
@@ -6464,7 +6464,7 @@ static void bSelectIf(Context *c) {
 static void bSelectInvert(Context *c) {
    int i;
 
-   for (i=0; i < c->curfv->map->enccount; ++i)
+   for (i=0; i<c->curfv->map->enccount; ++i)
       c->curfv->selected[i]=!c->curfv->selected[i];
 }
 
@@ -6515,12 +6515,12 @@ static void bSelectWorthOutputting(Context *c) {
    }
 
    if (add) {
-      for (i=0; i < map->enccount; ++i)
+      for (i=0; i<map->enccount; ++i)
 	 fv->selected[i] |= ((gid=map->map[i]) != -1
 			     && sf->glyphs[gid] != NULL
 			     && SCWorthOutputting(sf->glyphs[gid]));
    } else {
-      for (i=0; i < map->enccount; ++i)
+      for (i=0; i<map->enccount; ++i)
 	 fv->selected[i]=((gid=map->map[i]) != -1
 			    && sf->glyphs[gid] != NULL
 			    && SCWorthOutputting(sf->glyphs[gid]));
@@ -6533,23 +6533,23 @@ static void bSetCharCnt(Context *c) {
 
 if (c->a.vals[1].type != v_int)
       ScriptError(c, "Bad argument type");
-   else if (c->a.vals[1].u.ival <= 0 && c->a.vals[1].u.ival > 10 * 65536)
+   else if (c->a.vals[1].u.ival <= 0 && c->a.vals[1].u.ival>10*65536)
       ScriptError(c, "Argument out of bounds");
 
    newcnt=c->a.vals[1].u.ival;
    if (map->enccount==newcnt)
       return;
-   if (newcnt < map->enc->char_cnt) {
+   if (newcnt<map->enc->char_cnt) {
       map->enc=&custom;
    } else {
       c->curfv->selected=realloc(c->curfv->selected, newcnt);
-      if (newcnt > map->encmax) {
-	 memset(c->curfv->selected + map->enccount, 0,
-		newcnt - map->enccount);
+      if (newcnt>map->encmax) {
+	 memset(c->curfv->selected+map->enccount, 0,
+		newcnt-map->enccount);
 	 map->map =
-	    realloc(map->map, (map->encmax=newcnt + 10) * sizeof(int32_t));
-	 memset(map->map + map->enccount, -1,
-		(newcnt - map->enccount) * sizeof(int32_t));
+	    realloc(map->map, (map->encmax=newcnt+10)*sizeof(int32_t));
+	 memset(map->map+map->enccount, -1,
+		(newcnt-map->enccount)*sizeof(int32_t));
       }
    }
    map->enccount=newcnt;
@@ -6565,7 +6565,7 @@ static void bSetCharColor(Context *c) {
 
 if (c->a.vals[1].type != v_int)
       ScriptError(c, "Bad argument type");
-   for (i=0; i < map->enccount; ++i)
+   for (i=0; i<map->enccount; ++i)
       if (c->curfv->selected[i]) {
 	 sc=SFMakeChar(sf, map, i);
 	 sc->color=c->a.vals[1].u.ival;
@@ -6581,7 +6581,7 @@ if (c->a.vals[1].type != v_str)
    sc=GetOneSelChar(c);
    sc->comment =
       *c->a.vals[1].u.sval ==
-      '\0' ? NULL : script2utf8_copy(c->a.vals[1].u.sval);
+      '\0'?NULL:script2utf8_copy(c->a.vals[1].u.sval);
    c->curfv->sf->changed=true;
 }
 
@@ -6590,31 +6590,31 @@ static void bSetCharCounterMask(Context *c) {
    int i;
    HintMask *cm;
 
-   for (i=1; i < c->a.argc; ++i)
+   for (i=1; i<c->a.argc; ++i)
       if (c->a.vals[i].type != v_int)
 	 ScriptError(c, "Bad argument type");
-      else if (c->a.vals[i].u.ival < 0 || c->a.vals[i].u.ival >= HntMax)
+      else if (c->a.vals[i].u.ival<0 || c->a.vals[i].u.ival >= HntMax)
 	 ScriptError(c, "Bad argument value (must be between [0,96) )");
    sc=GetOneSelChar(c);
    if (c->a.vals[1].u.ival >= sc->countermask_cnt) {
       if (sc->countermask_cnt==0) {
 	 sc->countermasks =
-	    calloc(c->a.vals[1].u.ival + 10, sizeof(HintMask));
-	 sc->countermask_cnt=c->a.vals[1].u.ival + 1;
+	    calloc(c->a.vals[1].u.ival+10, sizeof(HintMask));
+	 sc->countermask_cnt=c->a.vals[1].u.ival+1;
       } else {
 	 sc->countermasks=realloc(sc->countermasks,
 				    (c->a.vals[1].u.ival +
-				     1) * sizeof(HintMask));
-	 memset(sc->countermasks + sc->countermask_cnt, 0,
-		(c->a.vals[1].u.ival + 1 -
-		 sc->countermask_cnt) * sizeof(HintMask));
-	 sc->countermask_cnt=c->a.vals[1].u.ival + 1;
+				     1)*sizeof(HintMask));
+	 memset(sc->countermasks+sc->countermask_cnt, 0,
+		(c->a.vals[1].u.ival+1 -
+		 sc->countermask_cnt)*sizeof(HintMask));
+	 sc->countermask_cnt=c->a.vals[1].u.ival+1;
       }
    }
    cm=&sc->countermasks[c->a.vals[1].u.ival];
    memset(cm, 0, sizeof(HintMask));
-   for (i=2; i < c->a.argc; ++i)
-      (*cm)[c->a.vals[i].u.ival >> 3] |= (0x80 >> (c->a.vals[i].u.ival & 7));
+   for (i=2; i<c->a.argc; ++i)
+      (*cm)[c->a.vals[i].u.ival >> 3] |= (0x80 >> (c->a.vals[i].u.ival&7));
 }
 
 static void bSetCharName(Context *c) {
@@ -6688,9 +6688,9 @@ static void bSetFontOrder(Context *c) {
       ScriptError(c, "Order must be 2 or 3");
 
    c->return_val.type=v_int;
-   c->return_val.u.ival=c->curfv->sf->layers[ly_fore].order2 ? 2 : 3;
+   c->return_val.u.ival=c->curfv->sf->layers[ly_fore].order2?2:3;
 
-   if (c->a.vals[1].u.ival==(c->curfv->sf->layers[ly_fore].order2 ? 2 : 3))
+   if (c->a.vals[1].u.ival==(c->curfv->sf->layers[ly_fore].order2?2:3))
       /* No Op */ ;
    else {
       if (c->a.vals[1].u.ival==2) {
@@ -6708,39 +6708,39 @@ static void bSetGasp(Context *c) {
    if (c->a.argc==2
        && (c->a.vals[1].type==v_arr || c->a.vals[1].type==v_arrfree)) {
       arr=c->a.vals[1].u.aval;
-      if (arr->argc & 1)
+      if (arr->argc&1)
 	 ScriptError(c, "Bad array size");
       base=0;
-   } else if ((c->a.argc & 1)==0)
+   } else if ((c->a.argc&1)==0)
       ScriptError(c, "Wrong number of arguments");
    else {
       arr=&c->a;
       base=1;
    }
-   for (i=base; i < arr->argc; i += 2) {
-      if (arr->vals[i].type != v_int || arr->vals[i + 1].type != v_int)
+   for (i=base; i<arr->argc; i += 2) {
+      if (arr->vals[i].type != v_int || arr->vals[i+1].type != v_int)
 	 ScriptError(c, "Bad argument type");
-      if (arr->vals[i].u.ival <= 0 || arr->vals[i].u.ival > 65535)
+      if (arr->vals[i].u.ival <= 0 || arr->vals[i].u.ival>65535)
 	 ScriptError(c, "'gasp' Pixel size out of range");
-      if (i != base && arr->vals[i].u.ival <= arr->vals[i - 2].u.ival)
+      if (i != base && arr->vals[i].u.ival <= arr->vals[i-2].u.ival)
 	 ScriptError(c, "'gasp' Pixel size out of order");
-      if (arr->vals[i + 1].u.ival < 0 || arr->vals[i + 1].u.ival > 15)
+      if (arr->vals[i+1].u.ival<0 || arr->vals[i+1].u.ival>15)
 	 ScriptError(c, "'gasp' flag out of range");
       if (arr->vals[i+1].u.ival>3)
 	 sf->gasp_version=1;
    }
-   if (arr->argc >= 2 && arr->vals[arr->argc - 2].u.ival != 65535)
+   if (arr->argc >= 2 && arr->vals[arr->argc-2].u.ival != 65535)
       ScriptError(c, "'gasp' Final pixel size must be 65535");
 
    free(sf->gasp);
-   sf->gasp_cnt=(arr->argc - base) / 2;
+   sf->gasp_cnt=(arr->argc-base)/2;
    if (sf->gasp_cnt != 0) {
       sf->gasp=calloc(sf->gasp_cnt, sizeof(struct gasp));
-      for (i=base; i < arr->argc; i += 2) {
-	 int g=(i - base) / 2;
+      for (i=base; i<arr->argc; i += 2) {
+	 int g=(i-base)/2;
 
 	 sf->gasp[g].ppem=arr->vals[i].u.ival;
-	 sf->gasp[g].flags=arr->vals[i + 1].u.ival;
+	 sf->gasp[g].flags=arr->vals[i+1].u.ival;
       }
    } else
       sf->gasp=NULL;
@@ -6755,9 +6755,9 @@ static void bSetGlyphChanged(Context *c) {
 
    if (c->a.vals[1].type != v_int)
       ScriptError(c, "Bad argument type");
-   changed_or_not=c->a.vals[1].u.ival ? true : false;
+   changed_or_not=c->a.vals[1].u.ival?true:false;
 
-   for (i=0; i < map->enccount; ++i) {
+   for (i=0; i<map->enccount; ++i) {
       gid=map->map[i];
       if (gid != -1 && sf->glyphs[gid] != NULL) {
 	 if (fv->selected[i]) {
@@ -6795,7 +6795,7 @@ if (c->a.vals[1].type != v_str)
    else
       ScriptErrorString(c, "Unknown glyph class: ", c->a.vals[1].u.sval);
 
-   for (i=0; i < c->curfv->map->enccount; ++i) {
+   for (i=0; i<c->curfv->map->enccount; ++i) {
       if (c->curfv->selected[i] && (gid=c->curfv->map->map[i]) != -1 &&
 	  (sc=c->curfv->sf->glyphs[gid]) != NULL)
 	 sc->glyph_class=class;
@@ -6840,7 +6840,7 @@ static void bSetItalicAngle(Context *c) {
       num=c->a.vals[1].u.ival;
    else
       ScriptError(c, "Bad argument type");
-   c->curfv->sf->italicangle=num / denom;
+   c->curfv->sf->italicangle=num/denom;
 }
 
 static void bSetKern(Context *c) {
@@ -6882,24 +6882,24 @@ static void bSetMaxpValue(Context *c) {
       sf->ttf_tables=tab;
       tab->tag=CHR('m', 'a', 'x', 'p');
    }
-   if (tab->len < 32) {
+   if (tab->len<32) {
       tab->data=realloc(tab->data, 32);
-      memset(tab->data + tab->len, 0, 32 - tab->len);
+      memset(tab->data+tab->len, 0, 32-tab->len);
       tab->data[15]=2;	/* Default zones to 2 */
       tab->len=tab->maxlen=32;
    }
    if (strmatch(c->a.vals[1].u.sval, "Zones")==0)
-      memputshort(tab->data, 7 * sizeof(uint16_t), c->a.vals[2].u.ival);
+      memputshort(tab->data, 7*sizeof(uint16_t), c->a.vals[2].u.ival);
    else if (strmatch(c->a.vals[1].u.sval, "TwilightPntCnt")==0)
-      memputshort(tab->data, 8 * sizeof(uint16_t), c->a.vals[2].u.ival);
+      memputshort(tab->data, 8*sizeof(uint16_t), c->a.vals[2].u.ival);
    else if (strmatch(c->a.vals[1].u.sval, "StorageCnt")==0)
-      memputshort(tab->data, 9 * sizeof(uint16_t), c->a.vals[2].u.ival);
+      memputshort(tab->data, 9*sizeof(uint16_t), c->a.vals[2].u.ival);
    else if (strmatch(c->a.vals[1].u.sval, "MaxStackDepth")==0)
-      memputshort(tab->data, 12 * sizeof(uint16_t), c->a.vals[2].u.ival);
+      memputshort(tab->data, 12*sizeof(uint16_t), c->a.vals[2].u.ival);
    else if (strmatch(c->a.vals[1].u.sval, "FDEFs")==0)
-      memputshort(tab->data, 10 * sizeof(uint16_t), c->a.vals[2].u.ival);
+      memputshort(tab->data, 10*sizeof(uint16_t), c->a.vals[2].u.ival);
    else if (strmatch(c->a.vals[1].u.sval, "IDEFs")==0)
-      memputshort(tab->data, 11 * sizeof(uint16_t), c->a.vals[2].u.ival);
+      memputshort(tab->data, 11*sizeof(uint16_t), c->a.vals[2].u.ival);
    else
       ScriptErrorString(c, "Unknown 'maxp' field: ", c->a.vals[1].u.sval);
 }
@@ -6924,7 +6924,7 @@ static void bSetOS2Value(Context *c) {
 
       if (c->a.vals[2].type != v_str)
 	 ScriptError(c, "Bad argument type");
-      else if (strlen(c->a.vals[2].u.sval) > 4)
+      else if (strlen(c->a.vals[2].u.sval)>4)
 	 ScriptError(c, "VendorID string limited to 4 (ASCII) characters");
       pt1=c->a.vals[2].u.sval;
       pt2=sf->pfminfo.os2_vendor;
@@ -6982,7 +6982,7 @@ static void bSetOS2Value(Context *c) {
 	 ScriptError(c, "Wrong size of array");
       if (c->a.vals[2].u.aval->vals[0].type != v_int)
 	 ScriptError(c, "Bad argument sub-type");
-      for (i=0; i < 10; ++i) {
+      for (i=0; i<10; ++i) {
 	 if (c->a.vals[2].u.aval->vals[i].type != v_int)
 	    ScriptError(c, "Bad argument sub-type");
 	 sf->pfminfo.panose[i]=c->a.vals[2].u.aval->vals[i].u.ival;
@@ -7027,7 +7027,7 @@ static void bSetPanose(Context *c) {
 	 ScriptError(c, "Bad argument sub-type");
       SFDefaultOS2Info(&c->curfv->sf->pfminfo, c->curfv->sf,
 		       c->curfv->sf->fontname);
-      for (i=0; i < 10; ++i) {
+      for (i=0; i<10; ++i) {
 	 if (c->a.vals[1].u.aval->vals[i].type != v_int)
 	    ScriptError(c, "Bad argument sub-type");
 	 c->curfv->sf->pfminfo.panose[i] =
@@ -7036,7 +7036,7 @@ static void bSetPanose(Context *c) {
    } else if (c->a.argc==3) {
       if (c->a.vals[1].type != v_int || c->a.vals[2].type != v_int)
 	 ScriptError(c, "Bad argument type");
-      if (c->a.vals[1].u.ival < 0 || c->a.vals[1].u.ival >= 10)
+      if (c->a.vals[1].u.ival<0 || c->a.vals[1].u.ival >= 10)
 	 ScriptError(c, "Bad argument value must be between [0,9]");
       SFDefaultOS2Info(&c->curfv->sf->pfminfo, c->curfv->sf,
 		       c->curfv->sf->fontname);
@@ -7055,7 +7055,7 @@ static void bSetPrefs(Context *c) {
      ScriptError(c, "Bad type for argument");
    if ((ret =
 	SetPrefs(c->a.vals[1].u.sval, &c->a.vals[2],
-		 c->a.argc==4 ? &c->a.vals[3] : NULL))==0)
+		 c->a.argc==4?&c->a.vals[3]:NULL))==0)
       ScriptErrorString(c, "Unknown Preference variable",
 			c->a.vals[1].u.sval);
    else if (ret==-1)
@@ -7088,9 +7088,9 @@ if (c->a.vals[1].type != v_int || c->a.vals[2].type != v_int ||
 
    lang=c->a.vals[1].u.ival;
    strid=c->a.vals[2].u.ival;
-   if (lang < 0 || lang > 0xffff)
+   if (lang<0 || lang>0xffff)
       ScriptError(c, "Bad value for language");
-   else if (strid < 0 || strid >= ttf_namemax)
+   else if (strid<0 || strid >= ttf_namemax)
       ScriptError(c, "Bad value for string id");
 
    u=fastrdup(c->a.vals[3].u.sval);
@@ -7103,7 +7103,7 @@ if (c->a.vals[1].type != v_int || c->a.vals[2].type != v_int ||
    if (ln==NULL) {
       if (u==NULL)
 	 return;
-      for (prev=NULL, ln=sf->names; ln != NULL && ln->lang < lang;
+      for (prev=NULL, ln=sf->names; ln != NULL && ln->lang<lang;
 	   prev=ln, ln=ln->next);
       ln=chunkalloc(sizeof(struct ttflangname));
       ln->lang=lang;
@@ -7122,7 +7122,7 @@ if (c->a.vals[1].type != v_int || c->a.vals[2].type != v_int ||
 static void bSetTeXParams(Context *c) {
    int i;
 
-   for (i=1; i < c->a.argc; ++i)
+   for (i=1; i<c->a.argc; ++i)
       if (c->a.vals[i].type != v_int)
 	 ScriptError(c, "Bad argument type");
    switch (c->a.vals[1].u.ival) {
@@ -7143,14 +7143,14 @@ static void bSetTeXParams(Context *c) {
 	break;
    }
    c->curfv->sf->texdata.type=c->a.vals[1].u.ival;
-   c->curfv->sf->design_size=c->a.vals[2].u.ival * 10;
+   c->curfv->sf->design_size=c->a.vals[2].u.ival*10;
    /* slant is a percentage */
    c->curfv->sf->texdata.params[0] =
-      ((double) c->a.vals[3].u.ival) * (1 << 20) / 100.0;
-   for (i=1; i < c->a.argc - 3; ++i)
+      ((double) c->a.vals[3].u.ival)*(1 << 20)/100.0;
+   for (i=1; i<c->a.argc-3; ++i)
       c->curfv->sf->texdata.params[i] =
-	 ((double) c->a.vals[3 + i].u.ival) * (1 << 20) /
-	 (c->curfv->sf->ascent + c->curfv->sf->descent);
+	 ((double) c->a.vals[3+i].u.ival)*(1 << 20) /
+	 (c->curfv->sf->ascent+c->curfv->sf->descent);
 }
 
 static void bSetUnicodeValue(Context *c) {
@@ -7223,7 +7223,7 @@ static void bShadow(Context *c) {
       a=c->a.vals[1].u.ival;
    else
       a=c->a.vals[1].u.fval;
-   FVShadow(c->curfv, a * M_PI / 180.0,
+   FVShadow(c->curfv, a * M_PI/180.0,
 	    c->a.vals[2].u.ival, c->a.vals[3].u.ival, false);
 }
 
@@ -7251,16 +7251,16 @@ static void bSimplify(Context *c) {
 	 smpl.err=c->a.vals[2].u.fval;
       if (c->a.argc >= 4) {
 	 if (c->a.vals[3].type==v_int)
-	    smpl.tan_bounds=c->a.vals[3].u.ival / 100.0;
+	    smpl.tan_bounds=c->a.vals[3].u.ival/100.0;
 	 else if (c->a.vals[3].type==v_real)
-	    smpl.tan_bounds=c->a.vals[3].u.fval / 100.0;
+	    smpl.tan_bounds=c->a.vals[3].u.fval/100.0;
 	 else
 	    ScriptError(c, "Bad type for argument");
 	 if (c->a.argc >= 5) {
 	    if (c->a.vals[4].type==v_int)
-	       smpl.linefixup=c->a.vals[4].u.ival / 100.0;
+	       smpl.linefixup=c->a.vals[4].u.ival/100.0;
 	    else if (c->a.vals[4].type==v_real)
-	       smpl.linefixup=c->a.vals[4].u.fval / 100.0;
+	       smpl.linefixup=c->a.vals[4].u.fval/100.0;
 	    else
 	       ScriptError(c, "Bad type for argument");
 	    if (c->a.argc >= 6) {
@@ -7319,7 +7319,7 @@ static void bSkew(Context *c) {
    BVTFunc bvts[2];
    double a;
 
-   for (i=1; i < c->a.argc; ++i) {
+   for (i=1; i<c->a.argc; ++i) {
       if (c->a.vals[i].type==v_int)
 	 args[i]=c->a.vals[i].u.ival;
       else if (c->a.vals[i].type==v_real)
@@ -7328,25 +7328,25 @@ static void bSkew(Context *c) {
 	 ScriptError(c, "Bad argument type");
    }
    if (c->a.argc==3 || c->a.argc==5)
-      a=args[1] / args[2];
+      a=args[1]/args[2];
    else
       a=args[1];
    a=fmod(a, 360.0);
-   if (a < 0)
+   if (a<0)
       a += 360;
-   a=a * M_PI / 180.;
+   a=a * M_PI/180.;
    trans[0]=trans[3]=1;
    trans[1]=0;
    trans[2]=tan(a);
    trans[4]=trans[5]=0;
    if (c->a.argc==4) {
-      trans[4]=args[2] - (trans[0] * args[2] + trans[2] * args[3]);
-      trans[5]=args[3] - (trans[1] * args[2] + trans[3] * args[3]);
+      trans[4]=args[2]-(trans[0] * args[2]+trans[2] * args[3]);
+      trans[5]=args[3]-(trans[1] * args[2]+trans[3] * args[3]);
       otype=0;
    }
    if (c->a.argc==5) {
-      trans[4]=args[3] - (trans[0] * args[3] + trans[2] * args[4]);
-      trans[5]=args[4] - (trans[1] * args[3] + trans[3] * args[4]);
+      trans[4]=args[3]-(trans[0] * args[3]+trans[2] * args[4]);
+      trans[5]=args[4]-(trans[1] * args[3]+trans[3] * args[4]);
       otype=0;
    }
    skewselect(&bvts[0], trans[2]);
@@ -7382,7 +7382,7 @@ static void bSmallCaps(Context *c) {
 
    SmallCapsFindConstants(&small, c->curfv->sf, c->curfv->active_layer);
 
-   if (c->a.argc > 1) {
+   if (c->a.argc>1) {
       if (c->a.vals[1].type==v_real)
 	 v_scale=c->a.vals[1].u.fval;
       else if (c->a.vals[1].type==v_int)
@@ -7391,7 +7391,7 @@ static void bSmallCaps(Context *c) {
 	 ScriptError(c, "Bad argument 1 type in SmallCaps");
    }
    small.vscale=small.hscale=genchange.v_scale=h_scale=v_scale;
-   if (c->a.argc > 2 && c->a.vals[2].u.ival != 0) {
+   if (c->a.argc>2 && c->a.vals[2].u.ival != 0) {
       if (c->a.vals[2].type==v_real)
 	 h_scale=c->a.vals[2].u.fval;
       else if (c->a.vals[2].type==v_int)
@@ -7402,7 +7402,7 @@ static void bSmallCaps(Context *c) {
    genchange.hcounter_scale=genchange.lsb_scale=genchange.rsb_scale =
       h_scale;
 
-   if (c->a.argc > 3) {
+   if (c->a.argc>3) {
       if (c->a.vals[3].type==v_real)
 	 stem_w=c->a.vals[3].u.fval;
       else if (c->a.vals[3].type==v_int)
@@ -7412,7 +7412,7 @@ static void bSmallCaps(Context *c) {
    }
    stem_h=stem_w;
 
-   if (c->a.argc > 4 && c->a.vals[4].u.ival != 0) {
+   if (c->a.argc>4 && c->a.vals[4].u.ival != 0) {
       if (c->a.vals[4].type==v_real)
 	 stem_h=c->a.vals[4].u.fval;
       else if (c->a.vals[4].type==v_int)
@@ -7455,20 +7455,20 @@ static void bStrJoin(Context *c) {
    str2=c->a.vals[2].u.sval;
    len2=strlen(str2);
 
-   for (k=0; k < 2; ++k) {
+   for (k=0; k<2; ++k) {
       len=0;
-      for (i=0; i < arr->argc; ++i) {
+      for (i=0; i<arr->argc; ++i) {
 	 if (arr->vals[i].type != v_str)
 	    ScriptError(c, "Bad type for array element");
 	 if (k) {
-	    strcpy(c->return_val.u.sval + len, arr->vals[i].u.sval);
-	    strcat(c->return_val.u.sval + len, str2);
+	    strcpy(c->return_val.u.sval+len, arr->vals[i].u.sval);
+	    strcat(c->return_val.u.sval+len, str2);
 	 }
-	 len += strlen(arr->vals[i].u.sval) + len2;
+	 len += strlen(arr->vals[i].u.sval)+len2;
       }
       if (!k) {
 	 c->return_val.type=v_str;
-	 c->return_val.u.sval=malloc(len + 1);
+	 c->return_val.u.sval=malloc(len+1);
       }
    }
 }
@@ -7535,7 +7535,7 @@ static void bStrcasestr(Context *c) {
 
    c->return_val.type=v_int;
    pt=strstrmatch(c->a.vals[1].u.sval, c->a.vals[2].u.sval);
-   c->return_val.u.ival=pt==NULL ? -1 : pt - c->a.vals[1].u.sval;
+   c->return_val.u.ival=pt==NULL?-1:pt-c->a.vals[1].u.sval;
 }
 
 static void bStrftime(Context *c) {
@@ -7590,10 +7590,10 @@ static void bStrrstr(Context *c) {
    haystack=c->a.vals[1].u.sval;
    needle=c->a.vals[2].u.sval;
    nlen=strlen(needle);
-   for (pt=haystack + strlen(haystack) - nlen; pt >= haystack; --pt)
+   for (pt=haystack+strlen(haystack)-nlen; pt >= haystack; --pt)
       if (strncmp(pt, needle, nlen)==0)
 	 break;
-   c->return_val.u.ival=pt - haystack;
+   c->return_val.u.ival=pt-haystack;
 }
 
 static void bStrskipint(Context *c) {
@@ -7605,13 +7605,13 @@ static void bStrskipint(Context *c) {
       ScriptError(c, "Bad type for argument");
    else if (c->a.argc==3) {
       base=c->a.vals[2].u.ival;
-      if (base < 0 || base==1 || base > 36)
+      if (base<0 || base==1 || base>36)
 	 ScriptError(c, "Argument out of bounds");
    }
 
    c->return_val.type=v_int;
    strtol(c->a.vals[1].u.sval, &end, base);
-   c->return_val.u.ival=end - c->a.vals[1].u.sval;
+   c->return_val.u.ival=end-c->a.vals[1].u.sval;
 }
 
 static void bStrstr(Context *c) {
@@ -7622,7 +7622,7 @@ static void bStrstr(Context *c) {
 
    c->return_val.type=v_int;
    pt=strstr(c->a.vals[1].u.sval, c->a.vals[2].u.sval);
-   c->return_val.u.ival=pt==NULL ? -1 : pt - c->a.vals[1].u.sval;
+   c->return_val.u.ival=pt==NULL?-1:pt-c->a.vals[1].u.sval;
 }
 
 static void bStrsub(Context *c) {
@@ -7635,11 +7635,11 @@ static void bStrsub(Context *c) {
 
    str=c->a.vals[1].u.sval;
    start=c->a.vals[2].u.ival;
-   end=c->a.argc==4 ? c->a.vals[3].u.ival : strlen(str);
-   if (start < 0 || start > strlen(str) || end < start || end > strlen(str))
+   end=c->a.argc==4?c->a.vals[3].u.ival:strlen(str);
+   if (start<0 || start>strlen(str) || end<start || end>strlen(str))
       ScriptError(c, "Arguments out of bounds");
    c->return_val.type=v_str;
-   c->return_val.u.sval=copyn(str + start, end - start);
+   c->return_val.u.sval=copyn(str+start, end-start);
 }
 
 static void bStrtod(Context *c) {
@@ -7658,7 +7658,7 @@ static void bStrtol(Context *c) {
      ScriptError(c, "Bad type for argument");
    else if (c->a.argc==3) {
       base=c->a.vals[2].u.ival;
-      if (base < 0 || base==1 || base > 36)
+      if (base<0 || base==1 || base>36)
 	 ScriptError(c, "Argument out of bounds");
    }
 
@@ -7693,11 +7693,11 @@ static void bTransform(Context *c) {
    BVTFunc bvts[1];
    int i;
 
-   for (i=1; i < 7; ++i) {
+   for (i=1; i<7; ++i) {
       if (c->a.vals[i].type==v_real)
-	 trans[i - 1]=c->a.vals[i].u.fval / 100.;
+	 trans[i-1]=c->a.vals[i].u.fval/100.;
       else if (c->a.vals[i].type==v_int)
-	 trans[i - 1]=c->a.vals[i].u.ival / 100.;
+	 trans[i-1]=c->a.vals[i].u.ival/100.;
       else
 	 ScriptError(c, "Bad argument type in Transform");
    }
@@ -7724,7 +7724,7 @@ static void bUCS4(Context *c) {
       c->return_val.u.aval=malloc(sizeof(Array));
       c->return_val.u.aval->argc=len;
       c->return_val.u.aval->vals=malloc(len * sizeof(Val));
-      for (i=0; i < len; ++i) {
+      for (i=0; i<len; ++i) {
 	 c->return_val.u.aval->vals[i].type=v_int;
 	 c->return_val.u.aval->vals[i].u.ival=utf8_ildb(&pt);
       }
@@ -7750,7 +7750,7 @@ if (c->a.vals[1].type != v_int && c->a.vals[1].type != v_unicode)
    c->return_val.type=v_str;
 
    if ((temp=unicode_annot(c->a.vals[1].u.ival))==NULL) {
-      temp=malloc(1 * sizeof(char));
+      temp=malloc(1*sizeof(char));
       *temp='\0';
    }
    c->return_val.u.sval=temp;
@@ -7777,7 +7777,7 @@ static void bUnicodeBlockNameFromLib(Context *c) {
    c->return_val.type=v_str;
    
    if ((temp=unicode_blocks_lookup(c->a.vals[1].u.ival))==NULL) {
-      c->return_val.u.sval=malloc(1 * sizeof(char));
+      c->return_val.u.sval=malloc(1*sizeof(char));
       *(c->return_val.u.sval)='\0';
    } else
      c->return_val.u.sval=fastrdup(temp->name);
@@ -7812,7 +7812,7 @@ if (c->a.vals[1].type != v_int && c->a.vals[1].type != v_unicode)
    c->return_val.type=v_str;
 
    if ((temp=unicode_name(c->a.vals[1].u.ival))==NULL) {
-      temp=malloc(1 * sizeof(char));
+      temp=malloc(1*sizeof(char));
       *temp='\0';
    }
    c->return_val.u.sval=temp;
@@ -7833,7 +7833,7 @@ static void bUtf8(Context *c) {
    uint32_t *temp;
 
    if (c->a.vals[1].type==v_int) {
-      if (c->a.vals[1].u.ival < 0 || c->a.vals[1].u.ival > 0x10ffff)
+      if (c->a.vals[1].u.ival<0 || c->a.vals[1].u.ival>0x10ffff)
 	 ScriptError(c, "Bad value for argument");
       buf[0]=c->a.vals[1].u.ival;
       buf[1]=0;
@@ -7842,11 +7842,11 @@ static void bUtf8(Context *c) {
    } else if (c->a.vals[1].type==v_arr || c->a.vals[1].type==v_arrfree) {
       Array *arr=c->a.vals[1].u.aval;
 
-      temp=malloc((arr->argc + 1) * sizeof(int32_t));
-      for (i=0; i < arr->argc; ++i) {
+      temp=malloc((arr->argc+1)*sizeof(int32_t));
+      for (i=0; i<arr->argc; ++i) {
 	 if (arr->vals[i].type != v_int)
 	    ScriptError(c, "Bad type for argument");
-	 else if (arr->vals[i].u.ival < 0 || arr->vals[i].u.ival > 0x10ffff)
+	 else if (arr->vals[i].u.ival<0 || arr->vals[i].u.ival>0x10ffff)
 	    ScriptError(c, "Bad value for argument");
 	 temp[i]=arr->vals[i].u.ival;
       }
@@ -7873,9 +7873,9 @@ static void bVFlip(Context *c) {
 	  (c->a.argc==3 && c->a.vals[2].type != v_int))
 	 ScriptError(c, "Bad argument type in VFlip");
       if (c->a.vals[1].type==v_int)
-	 trans[5]=2 * c->a.vals[1].u.ival;
+	 trans[5]=2*c->a.vals[1].u.ival;
       else
-	 trans[5]=2 * c->a.vals[1].u.fval;
+	 trans[5]=2*c->a.vals[1].u.fval;
       otype=0;
    }
    bvts[0].func=bvt_flipv;
@@ -7914,7 +7914,7 @@ static void bWireframe(Context *c) {
       a=c->a.vals[1].u.ival;
    else
       a=c->a.vals[1].u.fval;
-   FVShadow(c->curfv, a * M_PI / 360.,
+   FVShadow(c->curfv, a * M_PI/360.,
 	    c->a.vals[2].u.ival, c->a.vals[3].u.ival, true);
 }
 
@@ -7927,8 +7927,8 @@ static void bWorthOutputting(Context *c) {
    if (c->a.argc==1) {
       gid=map->map[GetOneSelCharIndex(c)];
    } else if (c->a.vals[1].type==v_int) {
-      gid=c->a.vals[1].u.ival >= 0 && c->a.vals[1].u.ival < map->enccount ?
-	 map->map[c->a.vals[1].u.ival] : -1;
+      gid=c->a.vals[1].u.ival >= 0 && c->a.vals[1].u.ival<map->enccount ?
+	 map->map[c->a.vals[1].u.ival]:-1;
    } else if (c->a.vals[1].type==v_unicode || c->a.vals[1].type==v_str) {
       int enc;
 
@@ -7937,7 +7937,7 @@ static void bWorthOutputting(Context *c) {
       else {
 	 enc=NameToEncoding(sf, map, c->a.vals[1].u.sval);
       }
-      gid=enc==-1 ? -1 : map->map[enc];
+      gid=enc==-1?-1:map->map[enc];
    } else
       ScriptError(c, "Bad type of argument");
    c->return_val.u.ival=gid != -1 && SCWorthOutputting(sf->glyphs[gid]);
@@ -7973,7 +7973,7 @@ static void bWriteStringToFile(Context *c) {
    _name=script2utf8_copy(c->a.vals[2].u.sval);
    name=fastrdup(_name);
    free(_name);
-   f=afopen(name, append ? "ab" : "wb");
+   f=afopen(name, append?"ab":"wb");
    free(name);
    c->return_val.type=v_int;
    if (f==NULL)
@@ -7993,7 +7993,7 @@ static void bisalnum(Context *c) {
    if (c->a.vals[1].type==v_str) {
       pt=c->a.vals[1].u.sval;
       ch=utf8_ildb(&pt);
-      c->return_val.u.ival=ch >= 0 && ch < 0x10000 ? isalnum(ch) : 0;
+      c->return_val.u.ival=ch >= 0 && ch<0x10000?isalnum(ch):0;
    } else if (c->a.vals[1].type==v_int || c->a.vals[1].type==v_unicode)
       c->return_val.u.ival=isalnum(c->a.vals[1].u.ival);
    else
@@ -8008,7 +8008,7 @@ static void bisalpha(Context *c) {
    if (c->a.vals[1].type==v_str) {
       pt=c->a.vals[1].u.sval;
       ch=utf8_ildb(&pt);
-      c->return_val.u.ival=ch >= 0 && ch < 0x10000 ? isalpha(ch) : 0;
+      c->return_val.u.ival=ch >= 0 && ch<0x10000?isalpha(ch):0;
    } else if (c->a.vals[1].type==v_int || c->a.vals[1].type==v_unicode)
       c->return_val.u.ival=isalpha(c->a.vals[1].u.ival);
    else
@@ -8023,7 +8023,7 @@ static void bisdigit(Context *c) {
    if (c->a.vals[1].type==v_str) {
       pt=c->a.vals[1].u.sval;
       ch=utf8_ildb(&pt);
-      c->return_val.u.ival=ch >= 0 && ch < 0x10000 ? isdigit(ch) : 0;
+      c->return_val.u.ival=ch >= 0 && ch<0x10000?isdigit(ch):0;
    } else if (c->a.vals[1].type==v_int || c->a.vals[1].type==v_unicode)
       c->return_val.u.ival=isdigit(c->a.vals[1].u.ival);
    else
@@ -8038,7 +8038,7 @@ static void bishexdigit(Context *c) {
    if (c->a.vals[1].type==v_str) {
       pt=c->a.vals[1].u.sval;
       ch=utf8_ildb(&pt);
-      c->return_val.u.ival=ch >= 0 && ch < 0x10000 ? ishexdigit(ch) : 0;
+      c->return_val.u.ival=ch >= 0 && ch<0x10000?ishexdigit(ch):0;
    } else if (c->a.vals[1].type==v_int || c->a.vals[1].type==v_unicode)
       c->return_val.u.ival=ishexdigit(c->a.vals[1].u.ival);
    else
@@ -8053,7 +8053,7 @@ static void bislower(Context *c) {
    if (c->a.vals[1].type==v_str) {
       pt=c->a.vals[1].u.sval;
       ch=utf8_ildb(&pt);
-      c->return_val.u.ival=ch >= 0 && ch < 0x10000 ? islower(ch) : 0;
+      c->return_val.u.ival=ch >= 0 && ch<0x10000?islower(ch):0;
    } else if (c->a.vals[1].type==v_int || c->a.vals[1].type==v_unicode)
       c->return_val.u.ival=islower(c->a.vals[1].u.ival);
    else
@@ -8068,7 +8068,7 @@ static void bisspace(Context *c) {
    if (c->a.vals[1].type==v_str) {
       pt=c->a.vals[1].u.sval;
       ch=utf8_ildb(&pt);
-      c->return_val.u.ival=ch >= 0 && ch < 0x10000 ? isspace(ch) : 0;
+      c->return_val.u.ival=ch >= 0 && ch<0x10000?isspace(ch):0;
    } else if (c->a.vals[1].type==v_int || c->a.vals[1].type==v_unicode)
       c->return_val.u.ival=isspace(c->a.vals[1].u.ival);
    else
@@ -8083,7 +8083,7 @@ static void bisupper(Context *c) {
    if (c->a.vals[1].type==v_str) {
       pt=c->a.vals[1].u.sval;
       ch=utf8_ildb(&pt);
-      c->return_val.u.ival=ch >= 0 && ch < 0x10000 ? isupper(ch) : 0;
+      c->return_val.u.ival=ch >= 0 && ch<0x10000?isupper(ch):0;
    } else if (c->a.vals[1].type==v_int || c->a.vals[1].type==v_unicode)
       c->return_val.u.ival=isupper(c->a.vals[1].u.ival);
    else
@@ -8102,7 +8102,7 @@ static void btolower(Context *c) {
 	 ch=utf8_ildb(&ipt);
 	 if (ch==-1)
 	    break;
-	 if (ch < 0x10000)
+	 if (ch<0x10000)
 	    ch=tolower(ch);
 	 pt=utf8_idpb(pt, ch, UTF8IDPB_NOZERO);
       }
@@ -8111,7 +8111,7 @@ static void btolower(Context *c) {
       c->return_val.type=v_int;
       c->return_val.u.ival =
 	 c->a.vals[1].u.ival <
-	 0x10000 ? tolower(c->a.vals[1].u.ival) : c->a.vals[1].u.ival;
+	 0x10000?tolower(c->a.vals[1].u.ival):c->a.vals[1].u.ival;
    } else
       ScriptError(c, "Bad type for argument");
 }
@@ -8128,7 +8128,7 @@ static void btomirror(Context *c) {
 	 ch=utf8_ildb(&ipt);
 	 if (ch==-1)
 	    break;
-	 if (ch < 0x10000)
+	 if (ch<0x10000)
 	    ch=tomirror(ch);
 	 pt=utf8_idpb(pt, ch, UTF8IDPB_NOZERO);
       }
@@ -8137,7 +8137,7 @@ static void btomirror(Context *c) {
       c->return_val.type=v_int;
       c->return_val.u.ival =
 	 c->a.vals[1].u.ival <
-	 0x10000 ? tomirror(c->a.vals[1].u.ival) : c->a.vals[1].u.ival;
+	 0x10000?tomirror(c->a.vals[1].u.ival):c->a.vals[1].u.ival;
    } else
       ScriptError(c, "Bad type for argument");
 }
@@ -8154,7 +8154,7 @@ static void btoupper(Context *c) {
 	 ch=utf8_ildb(&ipt);
 	 if (ch==-1)
 	    break;
-	 if (ch < 0x10000)
+	 if (ch<0x10000)
 	    ch=toupper(ch);
 	 pt=utf8_idpb(pt, ch, UTF8IDPB_NOZERO);
       }
@@ -8163,7 +8163,7 @@ static void btoupper(Context *c) {
       c->return_val.type=v_int;
       c->return_val.u.ival =
 	 c->a.vals[1].u.ival <
-	 0x10000 ? toupper(c->a.vals[1].u.ival) : c->a.vals[1].u.ival;
+	 0x10000?toupper(c->a.vals[1].u.ival):c->a.vals[1].u.ival;
    } else
       ScriptError(c, "Bad type for argument");
 }
@@ -8556,7 +8556,7 @@ static void docall(Context *c,char *name,Val *val) {
       sub.curfv=c->curfv;
       sub.trace=c->trace;
       sub.dontfree=dontfree;
-      for (i=0; i < sub.a.argc; ++i) {
+      for (i=0; i<sub.a.argc; ++i) {
 	 dereflvalif(&args[i]);
 	 if (args[i].type==v_arrfree)
 	    args[i].type=v_arr;
@@ -8567,7 +8567,7 @@ static void docall(Context *c,char *name,Val *val) {
       if (c->trace.u.ival) {
 	 printf("%s:%d Calling %s(", GFileNameTail(c->filename), c->lineno,
 		name);
-	 for (i=1; i < sub.a.argc; ++i) {
+	 for (i=1; i<sub.a.argc; ++i) {
 	    if (i != 1)
 	       putchar(',');
 	    if (args[i].type==v_int)
@@ -8593,7 +8593,7 @@ static void docall(Context *c,char *name,Val *val) {
 	    break;
 	 }
       if (found != NULL) {
-	 if (verbose > 0)
+	 if (verbose>0)
 	    fflush(stdout);
 	 if (sub.curfv==NULL && !found->nofontok)
 	    ScriptError(&sub, "This command requires an active font");
@@ -8607,20 +8607,20 @@ static void docall(Context *c,char *name,Val *val) {
 	 if (strchr(name, '/')==NULL && strchr(c->filename, '/') != NULL) {
 	    char *pt;
 
-	    sub.filename=malloc(strlen(c->filename) + strlen(name) + 4);
+	    sub.filename=malloc(strlen(c->filename)+strlen(name)+4);
 	    strcpy(sub.filename, c->filename);
 	    pt=strrchr(sub.filename, '/');
-	    strcpy(pt + 1, name);
+	    strcpy(pt+1, name);
 	 }
 	 sub.script=afopen(sub.filename, "r");
 	 if (sub.script==NULL) {
 	    char *pt;
 
 	    if (sub.filename==name) {
-	       sub.filename=malloc(strlen(name) + 4);
+	       sub.filename=malloc(strlen(name)+4);
 	       strcpy(sub.filename, name);
 	    }
-	    pt=sub.filename + strlen(sub.filename);
+	    pt=sub.filename+strlen(sub.filename);
 	    strcpy(pt, ".ff");
 	    sub.script=afopen(sub.filename, "r");
 	    if (sub.script==NULL) {
@@ -8672,7 +8672,7 @@ static void buildarray(Context *c,Val *val) {
       body=NULL;
       for (cnt=0; tok != tt_rbracket; ++cnt) {
 	 if (cnt >= max)
-	    body=realloc(body, (max += 20) * sizeof(Val));
+	    body=realloc(body, (max += 20)*sizeof(Val));
 	 expr(c, &body[cnt]);
 	 dereflvalif(&body[cnt]);
 	 tok=ff_NextToken(c);
@@ -8692,7 +8692,7 @@ static void buildarray(Context *c,Val *val) {
 }
 
 static void handlename(Context *c,Val *val) {
-   char name[TOK_MAX + 1];
+   char name[TOK_MAX+1];
    enum token_type tok;
    int temp;
    char *pt;
@@ -8709,9 +8709,9 @@ static void handlename(Context *c,Val *val) {
       if (*name=='$') {
 	 if (isdigit(name[1])) {
 	    temp=0;
-	    for (pt=name + 1; isdigit(*pt); ++pt)
-	       temp=10 * temp + *pt - '0';
-	    if (*pt=='\0' && temp < c->a.argc) {
+	    for (pt=name+1; isdigit(*pt); ++pt)
+	       temp=10*temp+*pt-'0';
+	    if (*pt=='\0' && temp<c->a.argc) {
 	       val->type=v_lval;
 	       val->u.lval=&c->a.vals[temp];
 	    }
@@ -8744,9 +8744,9 @@ static void handlename(Context *c,Val *val) {
 	       }
 	    }
 	    val->type=v_str;
-	    t=fastrdup(sf==NULL ? "" :
+	    t=fastrdup(sf==NULL?"" :
 			      sf->filename !=
-			      NULL ? sf->filename : sf->origname);
+			      NULL?sf->filename:sf->origname);
 	    val->u.sval=utf82script_copy(t);
 	    free(t);
 	 } else if (strcmp(name, "$mmcount")==0) {
@@ -8766,9 +8766,9 @@ static void handlename(Context *c,Val *val) {
 	    if (strcmp(name, "$macstyle")==0)
 	       val->u.ival=c->curfv->sf->macstyle;
 	    else if (strcmp(name, "$order")==0)
-	       val->u.ival=c->curfv->sf->layers[ly_fore].order2 ? 2 : 3;
+	       val->u.ival=c->curfv->sf->layers[ly_fore].order2?2:3;
 	    else if (strcmp(name, "$em")==0)
-	       val->u.ival=c->curfv->sf->ascent + c->curfv->sf->descent;
+	       val->u.ival=c->curfv->sf->ascent+c->curfv->sf->descent;
 	    else if (strcmp(name, "$ascent")==0)
 	       val->u.ival=c->curfv->sf->ascent;
 	    else		/* if (strcmp(name,"$descent")==0 ) */
@@ -8788,16 +8788,16 @@ static void handlename(Context *c,Val *val) {
 	       if (strcmp(name, "$nextcid")==0) {
 		  int i;
 
-		  for (i=0; i < sf->cidmaster->subfontcnt &&
+		  for (i=0; i<sf->cidmaster->subfontcnt &&
 		       sf->cidmaster->subfonts[i] != sf; ++i);
-		  if (i >= sf->cidmaster->subfontcnt - 1)
+		  if (i >= sf->cidmaster->subfontcnt-1)
 		     sf=NULL;	/* No next */
 		  else
-		     sf=sf->cidmaster->subfonts[i + 1];
+		     sf=sf->cidmaster->subfonts[i+1];
 	       }
 	    }
 	    val->type=v_str;
-	    val->u.sval=fastrdup(sf==NULL ? "" : sf->fontname);
+	    val->u.sval=fastrdup(sf==NULL?"":sf->fontname);
 	 } else if (strcmp(name, "$fontname")==0
 		    || strcmp(name, "$familyname")==0
 		    || strcmp(name, "$fullname")==0
@@ -8811,13 +8811,13 @@ static void handlename(Context *c,Val *val) {
 	    if (c->curfv==NULL)
 	       ScriptError(c, "No current font");
 	    val->type=v_str;
-	    t=fastrdup(strcmp(name, "$fontname")==0 ? c->curfv->sf->fontname :
-		     name[2]=='a' ? c->curfv->sf->familyname :
-		     name[2]=='u' ? c->curfv->sf->fullname :
-		     name[2]=='e' ? c->curfv->sf->weight :
-		     name[2]=='i' ? c->curfv->sf->origname :
-		     strcmp(name, "$fondname")==0 ? c->curfv->sf->fondname :
-		     name[3]=='p' ? c->curfv->sf->copyright :
+	    t=fastrdup(strcmp(name, "$fontname")==0?c->curfv->sf->fontname :
+		     name[2]=='a'?c->curfv->sf->familyname :
+		     name[2]=='u'?c->curfv->sf->fullname :
+		     name[2]=='e'?c->curfv->sf->weight :
+		     name[2]=='i'?c->curfv->sf->origname :
+		     strcmp(name, "$fondname")==0?c->curfv->sf->fondname :
+		     name[3]=='p'?c->curfv->sf->copyright :
 		     c->curfv->sf->version);
 	    val->u.sval=utf82script_copy(t);
 	    if (val->u.sval==NULL)
@@ -8843,10 +8843,10 @@ static void handlename(Context *c,Val *val) {
 	    else {
 	       SplineFont *sf=c->curfv->sf->cidmaster;
 
-	       t=fastrdup(strcmp(name, "$cidfontname")==0 ? sf->fontname :
-			name[5]=='a' ? sf->familyname :
-			name[5]=='u' ? sf->fullname :
-			name[5]=='e' ? sf->weight : sf->copyright);
+	       t=fastrdup(strcmp(name, "$cidfontname")==0?sf->fontname :
+			name[5]=='a'?sf->familyname :
+			name[5]=='u'?sf->fullname :
+			name[5]=='e'?sf->weight:sf->copyright);
 	       val->u.sval=utf82script_copy(t);
 	       free(t);
 	    }
@@ -8885,7 +8885,7 @@ static void handlename(Context *c,Val *val) {
 	    val->type=v_arrfree;
 	    val->u.aval=malloc(sizeof(Array));
 	    val->u.aval->argc=cnt;
-	    val->u.aval->vals=malloc((cnt + 1) * sizeof(Val));
+	    val->u.aval->vals=malloc((cnt+1)*sizeof(Val));
 	    for (cnt=0, bdf=sf->bitmaps; bdf != NULL;
 		 bdf=bdf->next, ++cnt) {
 	       val->u.aval->vals[cnt].type=v_int;
@@ -8906,9 +8906,9 @@ static void handlename(Context *c,Val *val) {
 	    val->type=v_arrfree;
 	    val->u.aval=malloc(sizeof(Array));
 	    val->u.aval->argc=10;
-	    val->u.aval->vals=malloc((10 + 1) * sizeof(Val));
+	    val->u.aval->vals=malloc((10+1)*sizeof(Val));
 	    SFDefaultOS2Info(&pfminfo, sf, sf->fontname);
-	    for (cnt=0; cnt < 10; ++cnt) {
+	    for (cnt=0; cnt<10; ++cnt) {
 	       val->u.aval->vals[cnt].type=v_int;
 	       val->u.aval->vals[cnt].u.ival=pfminfo.panose[cnt];
 	    }
@@ -8922,8 +8922,8 @@ static void handlename(Context *c,Val *val) {
 	    val->type=v_arrfree;
 	    val->u.aval=malloc(sizeof(Array));
 	    val->u.aval->argc=map->enccount;
-	    val->u.aval->vals=malloc((map->enccount + 1) * sizeof(Val));
-	    for (i=0; i < map->enccount; ++i) {
+	    val->u.aval->vals=malloc((map->enccount+1)*sizeof(Val));
+	    for (i=0; i<map->enccount; ++i) {
 	       val->u.aval->vals[i].type=v_int;
 	       val->u.aval->vals[i].u.ival=c->curfv->selected[i];
 	    }
@@ -8937,7 +8937,7 @@ static void handlename(Context *c,Val *val) {
 	 } else if (strcmp(name, "$haspython")==0) {
 	    val->type=v_int;
 	    val->u.ival=0;
-	 } else if (GetPrefs(name + 1, val)) {
+	 } else if (GetPrefs(name+1, val)) {
 	    /* Done */
 	 }
       } else if (*name=='@') {
@@ -9050,7 +9050,7 @@ static void term(Context *c,Val *val) {
 	       } else if (strcmp(c->tok_text, "t")==0) {
 		  pt=strrchr(val->u.sval, '/');
 		  if (pt != NULL) {
-		     char *ret=fastrdup(pt + 1);
+		     char *ret=fastrdup(pt+1);
 
 		     free(val->u.sval);
 		     val->u.sval=ret;
@@ -9068,7 +9068,7 @@ static void term(Context *c,Val *val) {
 		     pt=val->u.sval;
 		  ept=strrchr(pt, '.');
 		  if (ept != NULL) {
-		     char *ret=fastrdup(ept + 1);
+		     char *ret=fastrdup(ept+1);
 
 		     free(val->u.sval);
 		     val->u.sval=ret;
@@ -9103,7 +9103,7 @@ static void term(Context *c,Val *val) {
 	       ScriptError(c, "Array required");
 	    if (temp.type != v_int)
 	       ScriptError(c, "Integer expression required in array");
-	    else if (temp.u.ival < 0 || temp.u.ival >= val->u.aval->argc)
+	    else if (temp.u.ival<0 || temp.u.ival >= val->u.aval->argc)
 	       ScriptError(c, "Integer expression out of bounds in array");
 	    else if (val->type==v_arrfree) {
 	       temp=val->u.aval->vals[temp.u.ival];
@@ -9211,7 +9211,7 @@ static void add(Context *c,Val *val) {
 	       temp=buffer;
 	    } else
 	       temp=other.u.sval;
-	    ret=malloc(strlen(val->u.sval) + strlen(temp) + 1);
+	    ret=malloc(strlen(val->u.sval)+strlen(temp)+1);
 	    strcpy(ret, val->u.sval);
 	    strcat(ret, temp);
 	    if (other.type==v_str)
@@ -9224,7 +9224,7 @@ static void add(Context *c,Val *val) {
 	    arr=malloc(sizeof(Array));
 	    arr->argc=val->u.aval->argc +
 	       ((other.type==v_arr || other.type==v_arrfree) ?
-		other.u.aval->argc : 1);
+		other.u.aval->argc:1);
 	    arr->vals=malloc(arr->argc * sizeof(Val));
 	    array_copy_into(arr, 0, val->u.aval);
 	    if (other.type==v_arr || other.type==v_arrfree) {
@@ -9286,16 +9286,16 @@ static void comp(Context *c,Val *val) {
 	    free(other.u.sval);
 	 } else if ((val->type==v_int || val->type==v_unicode) &&
 		    (other.type==v_int || other.type==v_unicode)) {
-	    cmp=val->u.ival - other.u.ival;
+	    cmp=val->u.ival-other.u.ival;
 	 } else if ((val->type==v_real || val->type==v_int) &&
 		    (other.type==v_real || other.type==v_int)) {
 	    if (val->type==v_int)
 	       val->u.fval=val->u.ival;
 	    if (other.type==v_int)
 	       other.u.fval=other.u.ival;
-	    if (val->u.fval > other.u.fval)
+	    if (val->u.fval>other.u.fval)
 	       cmp=1;
-	    else if (val->u.fval < other.u.fval)
+	    else if (val->u.fval<other.u.fval)
 	       cmp=-1;
 	    else
 	       cmp=0;
@@ -9307,9 +9307,9 @@ static void comp(Context *c,Val *val) {
 	 else if (tok==tt_ne)
 	    val->u.ival=(cmp != 0);
 	 else if (tok==tt_gt)
-	    val->u.ival=(cmp > 0);
+	    val->u.ival=(cmp>0);
 	 else if (tok==tt_lt)
-	    val->u.ival=(cmp < 0);
+	    val->u.ival=(cmp<0);
 	 else if (tok==tt_ge)
 	    val->u.ival=(cmp >= 0);
 	 else if (tok==tt_le)
@@ -9410,9 +9410,9 @@ static void assign(Context *c,Val *val) {
 	       val->u.lval->u.aval=arraycopy(other.u.aval);
 	    else if (other.type==v_arrfree)
 	       val->u.lval->type=v_arr;
-	    argi=val->u.lval - c->a.vals;
+	    argi=val->u.lval-c->a.vals;
 	    /* Have to free things after we copy them */
-	    if (argi >= 0 && argi < c->a.argc && temp.type==v_arr &&
+	    if (argi >= 0 && argi<c->a.argc && temp.type==v_arr &&
 		temp.u.aval==c->dontfree[argi])
 	       c->dontfree[argi]=NULL;	/* Don't free it */
 	    else if (temp.type==v_arr)
@@ -9467,7 +9467,7 @@ static void assign(Context *c,Val *val) {
 	       temp=buffer;
 	    } else
 	       temp=other.u.sval;
-	    ret=malloc(strlen(val->u.lval->u.sval) + strlen(temp) + 1);
+	    ret=malloc(strlen(val->u.lval->u.sval)+strlen(temp)+1);
 	    strcpy(ret, val->u.lval->u.sval);
 	    strcat(ret, temp);
 	    if (other.type==v_str)
@@ -9507,7 +9507,7 @@ static void doforeach(Context *c) {
       if (c->returned || c->broken)
 	 break;
       if (!c->donteval)		/* On a dry run go through loop once */
-	 while (i < selsize && i < c->curfv->map->enccount && !sel[i])
+	 while (i<selsize && i<c->curfv->map->enccount && !sel[i])
 	    ++i;
       if (i >= selsize || i >= c->curfv->map->enccount)
 	 break;
@@ -9529,7 +9529,7 @@ static void doforeach(Context *c) {
    c->broken=false;
 
    nest=0;
-   while ((tok=ff_NextToken(c)) != tt_endloop || nest > 0) {
+   while ((tok=ff_NextToken(c)) != tt_endloop || nest>0) {
       if (tok==tt_eof)
 	 ScriptError(c, "End of file found in foreach loop");
       else if (tok==tt_while)
@@ -9583,7 +9583,7 @@ static void dowhile(Context *c) {
    c->broken=false;
 
    nest=0;
-   while ((tok=ff_NextToken(c)) != tt_endloop || nest > 0) {
+   while ((tok=ff_NextToken(c)) != tt_endloop || nest>0) {
       if (tok==tt_eof)
 	 ScriptError(c, "End of file found in while loop");
       else if (tok==tt_while)
@@ -9624,7 +9624,7 @@ static void doif(Context *c) {
       } else {
 	 nest=0;
 	 while (((tok=ff_NextToken(c)) != tt_endif && tok != tt_else
-		 && tok != tt_elseif) || nest > 0) {
+		 && tok != tt_elseif) || nest>0) {
 	    if (tok==tt_eof)
 	       ScriptError(c, "End of file found in if ff_statement");
 	    else if (tok==tt_if)
@@ -9647,7 +9647,7 @@ static void doif(Context *c) {
       return;
    if (tok != tt_endif && tok != tt_eof) {
       nest=0;
-      while ((tok=ff_NextToken(c)) != tt_endif || nest > 0) {
+      while ((tok=ff_NextToken(c)) != tt_endif || nest>0) {
 	 if (tok==tt_eof)
 	    return;
 	 else if (tok==tt_if)
@@ -9670,9 +9670,9 @@ static void doshift(Context *c) {
    if (c->a.vals[1].type==v_arr && c->a.vals[1].u.aval != c->dontfree[1])
       arrayfree(c->a.vals[1].u.aval);
    --c->a.argc;
-   for (i=1; i < c->a.argc; ++i) {
-      c->a.vals[i]=c->a.vals[i + 1];
-      c->dontfree[i]=c->dontfree[i + 1];
+   for (i=1; i<c->a.argc; ++i) {
+      c->a.vals[i]=c->a.vals[i+1];
+      c->dontfree[i]=c->dontfree[i+1];
    }
 }
 

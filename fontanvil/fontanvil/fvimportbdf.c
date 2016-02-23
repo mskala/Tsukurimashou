@@ -1,4 +1,4 @@
-/* $Id: fvimportbdf.c 4525 2015-12-20 19:51:59Z mskala $ */
+/* $Id: fvimportbdf.c 4532 2015-12-22 13:18:53Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -46,13 +46,13 @@ static char *cleancopy(char *name) {
    if (!isalpha(*(unsigned char *) fpt) && fpt[0] >= ' ' &&	/* fpt[0]<=0x7f && */
        fpt[1]=='\0')
       return (fastrdup(StdGlyphName
-	       (buf, *(unsigned char *) fpt, ui_none, (NameList *) - 1)));
+	       (buf, *(unsigned char *) fpt, ui_none, (NameList *)-1)));
    if (isdigit(*fpt)) {
-      tpt=temp=malloc(strlen(name) + 2);
+      tpt=temp=malloc(strlen(name)+2);
       *tpt++='$';
    }
    for (; *fpt; ++fpt) {
-      if (*fpt > ' ' && *fpt < 127 &&
+      if (*fpt>' ' && *fpt<127 &&
 	  *fpt != '(' &&
 	  *fpt != ')' &&
 	  *fpt != '[' &&
@@ -112,23 +112,23 @@ from The Open Group.
 void SFDefaultAscent(SplineFont *sf) {
    if (sf->onlybitmaps) {
       double scaled_sum=0, cnt=0;
-      int em=sf->ascent + sf->descent;
+      int em=sf->ascent+sf->descent;
       BDFFont *b;
 
       for (b=sf->bitmaps; b != NULL; b=b->next) {
-	 scaled_sum += (double) (em * b->ascent) / b->pixelsize;
+	 scaled_sum += (double) (em * b->ascent)/b->pixelsize;
 	 ++cnt;
       }
       if (cnt != 0)
-	 sf->ascent=scaled_sum / cnt;
-      sf->descent=em - sf->ascent;
+	 sf->ascent=scaled_sum/cnt;
+      sf->descent=em-sf->ascent;
    }
 }
 
 /* ******************************** BDF ************************************* */
 
 static int gettoken(AFILE *bdf,char *tokbuf,int size) {
-   char *pt=tokbuf, *end=tokbuf + size - 2;
+   char *pt=tokbuf, *end=tokbuf+size-2;
    int ch;
 
    while (isspace(ch=agetc(bdf)));
@@ -136,7 +136,7 @@ static int gettoken(AFILE *bdf,char *tokbuf,int size) {
 	  && !isspace(ch)
 	  /* && ch!='[' && ch!=']' && ch!='{' && ch!='}' && ch!='<' && ch!='%' */
 	  ) {
-      if (pt < end)
+      if (pt<end)
 	 *pt++=ch;
       ch=agetc(bdf);
    }
@@ -145,7 +145,7 @@ static int gettoken(AFILE *bdf,char *tokbuf,int size) {
    else
       aungetc(ch, bdf);
    *pt='\0';
-   return (pt != tokbuf ? 1 : ch==EOF ? -1 : 0);
+   return (pt != tokbuf?1:ch==EOF?-1:0);
 }
 
 static void ExtendSF(SplineFont *sf,EncMap *map,int enc,int set) {
@@ -155,10 +155,10 @@ static void ExtendSF(SplineFont *sf,EncMap *map,int enc,int set) {
       int n=enc;
 
       if (enc >= map->encmax)
-	 map->map=realloc(map->map, (map->encmax=n + 100) * sizeof(int));
-      memset(map->map + map->enccount, -1,
-	     (enc - map->enccount + 1) * sizeof(int));
-      map->enccount=n + 1;
+	 map->map=realloc(map->map, (map->encmax=n+100)*sizeof(int));
+      memset(map->map+map->enccount, -1,
+	     (enc-map->enccount+1)*sizeof(int));
+      map->enccount=n+1;
       if (sf->fv != NULL) {
 	 for (fvs=sf->fv; fvs != NULL; fvs=fvs->nextsame) {
 	    free(fvs->selected);
@@ -191,7 +191,7 @@ static int figureProperEncoding(SplineFont *sf,EncMap *map,BDFFont *b,
    int i=-1, gid;
 
    if (strcmp(name, ".notdef")==0) {
-      gid=(enc >= map->enccount || enc < 0) ? -1 : map->map[enc];
+      gid=(enc >= map->enccount || enc<0)?-1:map->map[enc];
       if (gid==-1 || sf->glyphs[gid]==NULL
 	  || strcmp(sf->glyphs[gid]->name, name) != 0) {
 	 SplineChar *sc;
@@ -237,15 +237,15 @@ static int figureProperEncoding(SplineFont *sf,EncMap *map,BDFFont *b,
       int j;
       int encmax=map->enc->char_cnt;
 
-      for (j=map->enccount - 1; j >= encmax &&
+      for (j=map->enccount-1; j >= encmax &&
 	   ((gid=map->map[j])==-1 || sf->glyphs[gid]==NULL); --j);
       ++j;
-      if (i < j)
+      if (i<j)
 	 i=j;
       MakeEncChar(sf, map, i, name);
    }
 
-   if (i != -1 && i < map->enccount
+   if (i != -1 && i<map->enccount
        && ((gid=map->map[i])==-1 || sf->glyphs[gid]==NULL)) {
       SplineChar *sc=SFMakeChar(sf, map, i);
 
@@ -272,10 +272,10 @@ static int figureProperEncoding(SplineFont *sf,EncMap *map,BDFFont *b,
 	 if (gid >= b->glyphmax)
 	    b->glyphs =
 	       realloc(b->glyphs,
-		       (b->glyphmax=sf->glyphmax) * sizeof(BDFChar *));
-	 memset(b->glyphs + b->glyphcnt, 0,
-		(gid + 1 - b->glyphcnt) * sizeof(BDFChar *));
-	 b->glyphcnt=gid + 1;
+		       (b->glyphmax=sf->glyphmax)*sizeof(BDFChar *));
+	 memset(b->glyphs+b->glyphcnt, 0,
+		(gid+1-b->glyphcnt)*sizeof(BDFChar *));
+	 b->glyphcnt=gid+1;
       }
    }
    return (i);
@@ -313,7 +313,7 @@ static void AddBDFChar(AFILE *bdf,SplineFont *sf,BDFFont *b,EncMap *map,
 	    else
 	       aungetc(ch, bdf);
 	 }
-	 if (enc < -1)
+	 if (enc<-1)
 	    enc=-1;
       } else if (strcmp(tok, "DWIDTH")==0)
 	 afscanf(bdf, "%d %*d", &width);
@@ -325,15 +325,15 @@ static void AddBDFChar(AFILE *bdf,SplineFont *sf,BDFFont *b,EncMap *map,
 	 afscanf(bdf, "%d %*d", &swidth1);
       else if (strcmp(tok, "BBX")==0) {
 	 afscanf(bdf, "%d %d %d %d", &hsz, &vsz, &xmin, &ymin);
-	 xmax=hsz + xmin - 1;
-	 ymax=vsz + ymin - 1;
+	 xmax=hsz+xmin-1;
+	 ymax=vsz+ymin-1;
       } else if (strcmp(tok, "BITMAP")==0)
 	 break;
    }
-   if ((xmax + 1==xmin && (ymax + 1==ymin || ymax==ymin)) ||
-       ((xmax + 1==xmin || xmax==xmin) && ymax + 1==ymin))
+   if ((xmax+1==xmin && (ymax+1==ymin || ymax==ymin)) ||
+       ((xmax+1==xmin || xmax==xmin) && ymax+1==ymin))
       /* Empty glyph */ ;
-   else if (xmax < xmin || ymax < ymin) {
+   else if (xmax<xmin || ymax<ymin) {
       ErrorMsg(2,"Bad bounding box for %s.\n",name);
       return;
    }
@@ -357,58 +357,58 @@ static void AddBDFChar(AFILE *bdf,SplineFont *sf,BDFFont *b,EncMap *map,
       bc->width=width;
       bc->vwidth=vwidth;
       if (depth==1) {
-	 bc->bytes_per_line=((xmax - xmin) >> 3) + 1;
+	 bc->bytes_per_line=((xmax-xmin) >> 3)+1;
 	 bc->byte_data=false;
       } else {
-	 bc->bytes_per_line=xmax - xmin + 1;
+	 bc->bytes_per_line=xmax-xmin+1;
 	 bc->byte_data=true;
       }
       bc->depth=depth;
-      bc->bitmap=malloc(bc->bytes_per_line * (ymax - ymin + 1));
+      bc->bitmap=malloc(bc->bytes_per_line * (ymax-ymin+1));
 
       pt=bc->bitmap;
-      end=pt + bc->bytes_per_line * (ymax - ymin + 1);
-      eol=pt + bc->bytes_per_line;
-      while (pt < end) {
+      end=pt+bc->bytes_per_line * (ymax-ymin+1);
+      eol=pt+bc->bytes_per_line;
+      while (pt<end) {
 	 int ch1, ch2, val;
 
 	 while (isspace(ch1=agetc(bdf)));
 	 ch2=agetc(bdf);
 	 val=0;
 	 if (ch1 >= '0' && ch1 <= '9')
-	    val=(ch1 - '0') << 4;
+	    val=(ch1-'0') << 4;
 	 else if (ch1 >= 'a' && ch1 <= 'f')
-	    val=(ch1 - 'a' + 10) << 4;
+	    val=(ch1-'a'+10) << 4;
 	 else if (ch1 >= 'A' && ch1 <= 'F')
-	    val=(ch1 - 'A' + 10) << 4;
+	    val=(ch1-'A'+10) << 4;
 	 if (ch2 >= '0' && ch2 <= '9')
-	    val |= (ch2 - '0');
+	    val |= (ch2-'0');
 	 else if (ch2 >= 'a' && ch2 <= 'f')
-	    val |= (ch2 - 'a' + 10);
+	    val |= (ch2-'a'+10);
 	 else if (ch2 >= 'A' && ch2 <= 'F')
-	    val |= (ch2 - 'A' + 10);
+	    val |= (ch2-'A'+10);
 	 if (depth==1 || depth==8)
 	    *pt++=val;
 	 else if (depth==2) {	/* Internal representation is unpacked, one byte per pixel */
 	    *pt++=(val >> 6);
-	    if (pt < eol)
-	       *pt++=(val >> 4) & 3;
-	    if (pt < eol)
-	       *pt++=(val >> 2) & 3;
-	    if (pt < eol)
-	       *pt++=val & 3;
+	    if (pt<eol)
+	       *pt++=(val >> 4)&3;
+	    if (pt<eol)
+	       *pt++=(val >> 2)&3;
+	    if (pt<eol)
+	       *pt++=val&3;
 	 } else if (depth==4) {
 	    *pt++=(val >> 4);
-	    if (pt < eol)
-	       *pt++=val & 0xf;
+	    if (pt<eol)
+	       *pt++=val&0xf;
 	 } else if (depth==16 || depth==32) {
 	    int i, j;
 
 	    *pt++=val;
 	    /* I only deal with 8 bit pixels, so if they give me more */
 	    /*  just ignore the low order bits */
-	    j=depth==16 ? 2 : 6;
-	    for (i=0; i < j; ++j)
+	    j=depth==16?2:6;
+	    for (i=0; i<j; ++j)
 	       ch2=agetc(bdf);
 	 }
 	 if (pt >= eol) {
@@ -423,18 +423,18 @@ static void AddBDFChar(AFILE *bdf,SplineFont *sf,BDFFont *b,EncMap *map,
       int cnt;
 
       if (depth==1)
-	 cnt=2 * (((xmax - xmin) >> 3) + 1) * (ymax - ymin + 1);
+	 cnt=2*(((xmax-xmin) >> 3)+1)*(ymax-ymin+1);
       else if (depth==2)
-	 cnt=2 * (((xmax - xmin) >> 2) + 1) * (ymax - ymin + 1);
+	 cnt=2*(((xmax-xmin) >> 2)+1)*(ymax-ymin+1);
       else if (depth==4)
-	 cnt=(xmax - xmin + 1) * (ymax - ymin + 1);
+	 cnt=(xmax-xmin+1)*(ymax-ymin+1);
       else if (depth==8)
-	 cnt=2 * (xmax - xmin + 1) * (ymax - ymin + 1);
+	 cnt=2*(xmax-xmin+1)*(ymax-ymin+1);
       else if (depth==16)
-	 cnt=4 * (xmax - xmin + 1) * (ymax - ymin + 1);
+	 cnt=4*(xmax-xmin+1)*(ymax-ymin+1);
       else
-	 cnt=8 * (xmax - xmin + 1) * (ymax - ymin + 1);
-      for (i=0; i < cnt; ++i) {
+	 cnt=8*(xmax-xmin+1)*(ymax-ymin+1);
+      for (i=0; i<cnt; ++i) {
 	 while (isspace(agetc(bdf)));
 	 agetc(bdf);
       }
@@ -469,56 +469,56 @@ static int default_ascent_descent(int *_as,int *_ds,int ascent,int descent,
 				  int point_size, int res, char *filename) {
 
    if (pixelsize != -1 && pixel_size2 != -1 && ascent != -1 && descent != -1) {
-      if (pixelsize != pixel_size2 || pixelsize != ascent + descent) {
+      if (pixelsize != pixel_size2 || pixelsize != ascent+descent) {
 	 if (pixelsize==pixel_size2)
-	    descent=pixelsize - ascent;
-	 else if (pixel_size2==ascent + descent)
+	    descent=pixelsize-ascent;
+	 else if (pixel_size2==ascent+descent)
 	    pixelsize=pixel_size2;
-	 else if (pixelsize==ascent + descent);
+	 else if (pixelsize==ascent+descent);
 	 else {
 	    pixelsize =
-	       rint((pixelsize + pixel_size2 + ascent + descent) / 3.0);
-	    descent=pixelsize - ascent;
+	       rint((pixelsize+pixel_size2+ascent+descent)/3.0);
+	    descent=pixelsize-ascent;
 	 }
 	 ErrorMsg(2,"Various specifications of PIXEL_SIZE do not match in %s\n",
 		  filename);
       }
    } else if (pixelsize != -1 && ascent != -1 && descent != -1) {
-      if (pixelsize != ascent + descent) {
-	 ascent=8 * pixelsize / 10;
-	 descent=pixelsize - ascent;
+      if (pixelsize != ascent+descent) {
+	 ascent=8*pixelsize/10;
+	 descent=pixelsize-ascent;
       }
    } else {
       if (pixelsize==-1)
 	 pixelsize=pixel_size2;
-      if ((ascent==-1) + (descent==-1) + (pixelsize==-1) >= 2 &&
+      if ((ascent==-1)+(descent==-1)+(pixelsize==-1) >= 2 &&
 	  res != -1 && point_size != -1)
-	 pixelsize=rint(point_size * res / 720.0);
+	 pixelsize=rint(point_size * res/720.0);
       if (pixelsize==-1 && ascent != -1 && descent != -1)
-	 pixelsize=ascent + descent;
+	 pixelsize=ascent+descent;
       else if (pixelsize != -1) {
 	 if (ascent==-1 && descent != -1)
-	    ascent=pixelsize - descent;
+	    ascent=pixelsize-descent;
 	 else if (ascent != -1)
-	    descent=pixelsize - ascent;
+	    descent=pixelsize-ascent;
       }
       if (ascent != -1 && descent != -1 && pixelsize != -1) {
-	 if (pixelsize != ascent + descent)
+	 if (pixelsize != ascent+descent)
 	    ErrorMsg(2,"Pixel size does not match sum of Font ascent+descent in %s\n",
 		     filename);
       } else if (pixelsize != -1) {
-	 ascent=rint((8 * pixelsize) / 10.0);
-	 descent=pixelsize - ascent;
+	 ascent=rint((8*pixelsize)/10.0);
+	 descent=pixelsize-ascent;
       } else if (ascent != -1) {
 	 ErrorMsg(2,"Guessing pixel size based on font ascent in %s\n",
 		  filename);
-	 descent=ascent / 4;
-	 pixelsize=ascent + descent;
+	 descent=ascent/4;
+	 pixelsize=ascent+descent;
       } else if (descent != -1) {
 	 ErrorMsg(2,"Guessing pixel size based on font descent in %s\n",
 		  filename);
-	 ascent=4 * descent;
-	 pixelsize=ascent + descent;
+	 ascent=4*descent;
+	 pixelsize=ascent+descent;
       } else {
 	 /* No info at all. We'll ask the user later */
       }
@@ -559,10 +559,10 @@ static int slurp_header(AFILE *bdf,int *_as,int *_ds,Encoding ** _enc,
 
 	 inprops=true;
 	 afscanf(bdf, "%d", &cnt);
-	 if (pcnt + cnt >= pmax)
+	 if (pcnt+cnt >= pmax)
 	    dummy->props =
 	       realloc(dummy->props,
-		       (pmax=pcnt + cnt) * sizeof(BDFProperties));
+		       (pmax=pcnt+cnt)*sizeof(BDFProperties));
 	 /* But it isn't a property itself */
 	 continue;
       } else if (strcmp(tok, "ENDPROPERTIES")==0) {
@@ -578,18 +578,18 @@ static int slurp_header(AFILE *bdf,int *_as,int *_ds,Encoding ** _enc,
 	 if (pcnt >= pmax)
 	    dummy->props =
 	       realloc(dummy->props,
-		       (pmax=pcnt + 10) * sizeof(BDFProperties));
+		       (pmax=pcnt+10)*sizeof(BDFProperties));
 	 dummy->props[pcnt].name=fastrdup(tok);
 	 while (*buf==' ' || *buf=='\t')
 	    ++buf;
-	 for (eol=buf + strlen(buf) - 1; eol >= buf && isspace(*eol);
+	 for (eol=buf+strlen(buf)-1; eol >= buf && isspace(*eol);
 	      --eol);
 	 eol[1]='\0';
 	 val=strtol(buf, &end, 10);
 	 if (*end=='\0' && buf <= eol) {
 	    dummy->props[pcnt].u.val=val;
 	    dummy->props[pcnt].type =
-	       IsUnsignedBDFKey(tok) ? prt_uint : prt_int;
+	       IsUnsignedBDFKey(tok)?prt_uint:prt_int;
 	 } else if (*buf=='"') {
 	    ++buf;
 	    if (*eol=='"')
@@ -612,26 +612,26 @@ static int slurp_header(AFILE *bdf,int *_as,int *_ds,Encoding ** _enc,
 	    char *pt=buf;
 	    int dcnt=0;
 
-	    while (*pt=='-' && dcnt < 7) {
+	    while (*pt=='-' && dcnt<7) {
 	       ++pt;
 	       ++dcnt;
 	    }
-	    while (*pt != '-' && *pt != '\n' && *pt != '\0' && dcnt < 7) {
+	    while (*pt != '-' && *pt != '\n' && *pt != '\0' && dcnt<7) {
 	       while (*pt != '-' && *pt != '\n' && *pt != '\0')
 		  ++pt;
-	       while (*pt=='-' && dcnt < 7) {
+	       while (*pt=='-' && dcnt<7) {
 		  ++pt;
 		  ++dcnt;
 	       }
 	    }
 	    sscanf(pt, "%d", &pixelsize);
-	    if (pixelsize < 0)
-	       pixelsize=-pixelsize;	/* An extra - screwed things up once... */
+	    if (pixelsize<0)
+	       pixelsize=-pixelsize;	/* An extra-screwed things up once... */
 	    while (*pt != '-' && *pt != '\n' && *pt != '\0')
 	       ++pt;
 	    if (*pt=='-') {
 	       sscanf(++pt, "%d", &point_size);
-	       if (point_size < 0)
+	       if (point_size<0)
 		  point_size=-point_size;
 	    }
 	 } else {
@@ -643,7 +643,7 @@ static int slurp_header(AFILE *bdf,int *_as,int *_ds,Encoding ** _enc,
 
 	 sscanf(buf, "%d %d %d %d", &point_size, &junk, &defs->res, depth);
 	 if (pixelsize==-1)
-	    pixelsize=rint(point_size * defs->res / 72.0);
+	    pixelsize=rint(point_size * defs->res/72.0);
       } else if (strcmp(tok, "BITSPERPIXEL")==0 ||
 		 strcmp(tok, "BITS_PER_PIXEL")==0) {
 	 sscanf(buf, "%d", depth);
@@ -708,10 +708,10 @@ static int slurp_header(AFILE *bdf,int *_as,int *_ds,Encoding ** _enc,
 	 comments[999]='\0';
 	 found_copyright=true;
       } else if (strcmp(tok, "COMMENT")==0 && !found_copyright) {
-	 char *pt=comments + strlen(comments);
-	 char *eoc=comments + 1000 - 1;	/* ...here */
+	 char *pt=comments+strlen(comments);
+	 char *eoc=comments+1000-1;	/* ...here */
 
-	 strncpy(pt, buf, eoc - pt);
+	 strncpy(pt, buf, eoc-pt);
 	 *eoc='\0';
       }
    }
@@ -730,8 +730,8 @@ static int slurp_header(AFILE *bdf,int *_as,int *_ds,Encoding ** _enc,
    else if (strmatch(italic, "R")==0)
       strcpy(italic, "");	/* Ignore roman */
    sprintf(mods, "%s%s", weight, italic);
-   if (comments[0] != '\0' && comments[strlen(comments) - 1]=='\n')
-      comments[strlen(comments) - 1]='\0';
+   if (comments[0] != '\0' && comments[strlen(comments)-1]=='\n')
+      comments[strlen(comments)-1]='\0';
 
    if (*depth != 1 && *depth != 2 && *depth != 4 && *depth != 8
        && *depth != 16 && *depth != 32)
@@ -773,7 +773,7 @@ enum gf_cmd { gf_paint_0=0, gf_paint_1=1, gf_paint_63=63,
 /*  the fifth is vertical pixels per point<<16 */
 /*  the sixth..ninth give the font bounding box */
 /* Then a bunch of char_locs (with back pointers to the characters and advance width info) */
-/* Then a post_post with a back pointer to start of postamble + gf_version */
+/* Then a post_post with a back pointer to start of postamble+gf_version */
 /* Then 4-7 bytes of 0xdf */
 
 static BDFChar *SFGrowTo(SplineFont *sf,BDFFont *b,int cc,EncMap *map) {
@@ -783,16 +783,16 @@ static BDFChar *SFGrowTo(SplineFont *sf,BDFFont *b,int cc,EncMap *map) {
 
    if (cc >= map->enccount) {
       if (cc >= map->encmax) {
-	 int new=((map->enccount + 256) >> 8) << 8;
+	 int new=((map->enccount+256) >> 8) << 8;
 
-	 if (new < cc + 1)
-	    new=cc + 1;
+	 if (new<cc+1)
+	    new=cc+1;
 	 map->map=realloc(map->map, new * sizeof(int));
 	 map->encmax=new;
       }
-      memset(map->map + map->enccount, -1,
-	     (cc + 1 - map->enccount) * sizeof(int));
-      map->enccount=cc + 1;
+      memset(map->map+map->enccount, -1,
+	     (cc+1-map->enccount)*sizeof(int));
+      map->enccount=cc+1;
    }
    if ((gid=map->map[cc])==-1 || sf->glyphs[gid]==NULL)
       gid=SFMakeChar(sf, map, cc)->orig_pos;
@@ -803,13 +803,13 @@ static BDFChar *SFGrowTo(SplineFont *sf,BDFFont *b,int cc,EncMap *map) {
       sf->glyphs[gid]->name=cleancopy(buf);
       sf->glyphs[gid]->unicodeenc=-1;
    }
-   if (b->glyphcnt < sf->glyphcnt) {
-      if (b->glyphmax < sf->glyphcnt)
+   if (b->glyphcnt<sf->glyphcnt) {
+      if (b->glyphmax<sf->glyphcnt)
 	 b->glyphs =
 	    realloc(b->glyphs,
-		    (b->glyphmax=sf->glyphmax) * sizeof(BDFChar *));
-      memset(b->glyphs + b->glyphcnt, 0,
-	     (sf->glyphcnt - b->glyphcnt) * sizeof(BDFChar *));
+		    (b->glyphmax=sf->glyphmax)*sizeof(BDFChar *));
+      memset(b->glyphs+b->glyphcnt, 0,
+	     (sf->glyphcnt-b->glyphcnt)*sizeof(BDFChar *));
       b->glyphcnt=sf->glyphcnt;
    }
    if ((bc=b->glyphs[gid]) != NULL) {
@@ -846,11 +846,11 @@ static void gf_skip_noops(AFILE *gf,char *char_name) {
 	   break;
 	case gf_xxx1:
 	   val=agetc(gf);
-	   for (i=0; i < val; ++i)
+	   for (i=0; i<val; ++i)
 	      buffer[i]=agetc(gf);
 	   buffer[i]=0;
 	   if (strncmp(buffer, "title", 5)==0 && char_name != NULL) {
-	      char *pt=buffer + 6, *to=char_name;
+	      char *pt=buffer+6, *to=char_name;
 
 	      while (*pt) {
 		 if (*pt=='(') {
@@ -870,20 +870,20 @@ static void gf_skip_noops(AFILE *gf,char *char_name) {
 	   break;
 	case gf_xxx2:
 	   val=agetc(gf);
-	   val=(val << 8) | agetc(gf);
-	   for (i=0; i < val; ++i)
+	   val=(val << 8)|agetc(gf);
+	   for (i=0; i<val; ++i)
 	      agetc(gf);
 	   break;
 	case gf_xxx3:
 	   val=agetc(gf);
-	   val=(val << 8) | agetc(gf);
-	   val=(val << 8) | agetc(gf);
-	   for (i=0; i < val; ++i)
+	   val=(val << 8)|agetc(gf);
+	   val=(val << 8)|agetc(gf);
+	   for (i=0; i<val; ++i)
 	      agetc(gf);
 	   break;
 	case gf_xxx4:
 	   val=aget_int32_be(gf);
-	   for (i=0; i < val; ++i)
+	   for (i=0; i<val; ++i)
 	      agetc(gf);
 	   break;
 	default:
@@ -933,9 +933,9 @@ static int gf_postamble(AFILE *gf,int *_as,int *_ds,Encoding ** _enc,
    /* max_row=*/ aget_int32_be(gf);
 
    size =
-      (pixels_per_point / (double) (0x10000)) * (design_size /
+      (pixels_per_point/(double) (0x10000))*(design_size /
 						 (double) (0x100000));
-   pixelsize=size + .5;
+   pixelsize=size+.5;
    *_enc=&custom;
    *_as=*_ds=-1;
    *mods='\0';
@@ -968,12 +968,12 @@ static int gf_char(AFILE *gf,SplineFont *sf,BDFFont *b,EncMap *map) {
       enc=agetc(gf);
       dx=aget_int32_be(gf) >> 16;
       dy=aget_int32_be(gf) >> 16;
-      aw=(aget_int32_be(gf) * (sf->ascent + sf->descent)) >> 20;
+      aw=(aget_int32_be(gf)*(sf->ascent+sf->descent)) >> 20;
       to=aget_int32_be(gf);
    } else if (ch==gf_char_loc0) {
       enc=agetc(gf);
       dx=agetc(gf);
-      aw=(aget_int32_be(gf) * (sf->ascent + sf->descent)) >> 20;
+      aw=(aget_int32_be(gf)*(sf->ascent+sf->descent)) >> 20;
       to=aget_int32_be(gf);
    } else
       return (false);
@@ -993,10 +993,10 @@ static int gf_char(AFILE *gf,SplineFont *sf,BDFFont *b,EncMap *map) {
       /* encoding=*/ agetc(gf);
       w=agetc(gf);
       max_c=agetc(gf);
-      min_c=max_c - w + 1;
+      min_c=max_c-w+1;
       w=agetc(gf);
       max_r=agetc(gf);
-      min_r=max_r - w + 1;
+      min_r=max_r-w+1;
    } else
       return (false);
 
@@ -1010,13 +1010,13 @@ static int gf_char(AFILE *gf,SplineFont *sf,BDFFont *b,EncMap *map) {
       sf->glyphs[gid]->unicodeenc=-1;
    }
    bc->xmin=min_c;
-   bc->xmax=max_c > min_c ? max_c : min_c;
+   bc->xmax=max_c>min_c?max_c:min_c;
    bc->ymin=min_r;
-   bc->ymax=max_r > min_r ? max_r : min_r;
+   bc->ymax=max_r>min_r?max_r:min_r;
    bc->width=dx;
    bc->vwidth=b->pixelsize;
-   bc->bytes_per_line=((bc->xmax - bc->xmin + 8) >> 3);
-   bc->bitmap=calloc(bc->bytes_per_line * (bc->ymax - bc->ymin + 1), 1);
+   bc->bytes_per_line=((bc->xmax-bc->xmin+8) >> 3);
+   bc->bitmap=calloc(bc->bytes_per_line * (bc->ymax-bc->ymin+1), 1);
 
    if (sf->glyphs[gid]->layers[ly_fore].splines==NULL
        && sf->glyphs[gid]->layers[ly_fore].refs==NULL
@@ -1032,7 +1032,7 @@ static int gf_char(AFILE *gf,SplineFont *sf,BDFFont *b,EncMap *map) {
 	 break;
       if (ch >= gf_paint_0 && ch <= gf_paint3b) {
 	 if (ch >= gf_paint_0 && ch <= gf_paint_63)
-	    cnt=ch - gf_paint_0;
+	    cnt=ch-gf_paint_0;
 	 else if (ch==gf_paint1b)
 	    cnt=agetc(gf);
 	 else if (ch==gf_paint2b)
@@ -1040,10 +1040,10 @@ static int gf_char(AFILE *gf,SplineFont *sf,BDFFont *b,EncMap *map) {
 	 else
 	    cnt=aget_uint24_be(gf);
 	 if (col) {
-	    for (i=0; i < cnt && c <= max_c; ++i) {
-	       bc->bitmap[(r - min_r) * bc->bytes_per_line +
-			  ((c - min_c) >> 3)]
-		  |= (0x80 >> ((c - min_c) & 7));
+	    for (i=0; i<cnt && c <= max_c; ++i) {
+	       bc->bitmap[(r-min_r)*bc->bytes_per_line +
+			  ((c-min_c) >> 3)]
+		  |= (0x80 >> ((c-min_c)&7));
 	       ++c;
 	       /*if (c>max_c ) { c-=max_c-min_c; ++r; } */
 	    }
@@ -1054,7 +1054,7 @@ static int gf_char(AFILE *gf,SplineFont *sf,BDFFont *b,EncMap *map) {
 	 col=!col;
       } else if (ch >= gf_newrow_0 && ch <= gf_newrow_164) {
 	 ++r;
-	 c=min_c + ch - gf_newrow_0;
+	 c=min_c+ch-gf_newrow_0;
 	 col=1;
       } else if (ch >= gf_skip0 && ch <= gf_skip3) {
 	 col=0;
@@ -1062,11 +1062,11 @@ static int gf_char(AFILE *gf,SplineFont *sf,BDFFont *b,EncMap *map) {
 	 if (ch==gf_skip0)
 	    ++r;
 	 else if (ch==gf_skip1)
-	    r += agetc(gf) + 1;
+	    r += agetc(gf)+1;
 	 else if (ch==gf_skip2)
-	    r += aget_uint16_be(gf) + 1;
+	    r += aget_uint16_be(gf)+1;
 	 else
-	    r += aget_uint24_be(gf) + 1;
+	    r += aget_uint24_be(gf)+1;
       } else if (ch==EOF) {
 	 ErrorMsg(2,"Unexpected EOF in gf\n");
 	 break;
@@ -1103,28 +1103,28 @@ static void pk_skip_noops(AFILE *pk) {
 	   break;
 	case pk_rrr1:
 	   val=agetc(pk);
-	   for (i=0; i < val; ++i)
+	   for (i=0; i<val; ++i)
 	      agetc(pk);
 	   break;
 	case pk_rrr2:
 	   val=agetc(pk);
-	   val=(val << 8) | agetc(pk);
-	   for (i=0; i < val; ++i)
+	   val=(val << 8)|agetc(pk);
+	   for (i=0; i<val; ++i)
 	      agetc(pk);
 	   break;
 	case pk_rrr3:
 	   val=agetc(pk);
-	   val=(val << 8) | agetc(pk);
-	   val=(val << 8) | agetc(pk);
-	   for (i=0; i < val; ++i)
+	   val=(val << 8)|agetc(pk);
+	   val=(val << 8)|agetc(pk);
+	   for (i=0; i<val; ++i)
 	      agetc(pk);
 	   break;
 	case pk_rrr4:
 	   val=agetc(pk);
-	   val=(val << 8) | agetc(pk);
-	   val=(val << 8) | agetc(pk);
-	   val=(val << 8) | agetc(pk);
-	   for (i=0; i < val; ++i)
+	   val=(val << 8)|agetc(pk);
+	   val=(val << 8)|agetc(pk);
+	   val=(val << 8)|agetc(pk);
+	   for (i=0; i<val; ++i)
 	      agetc(pk);
 	   break;
 	default:
@@ -1150,15 +1150,15 @@ static int pk_header(AFILE *pk,int *_as,int *_ds,Encoding ** _enc,
    if (ch != pk_version_number)
       return (-2);
    ch=agetc(pk);
-   for (i=0; i < ch; ++i)
+   for (i=0; i<ch; ++i)
       agetc(pk);			/* Skip comment. Perhaps that should be the family? */
    design_size=aget_int32_be(pk);
    /* checksum=*/ aget_int32_be(pk);
    pixels_per_point=aget_int32_be(pk);
    /* vert pixels per point=*/ aget_int32_be(pk);
 
-   size=(pixels_per_point / 65536.0) * (design_size / (double) (0x100000));
-   pixelsize=size + .5;
+   size=(pixels_per_point/65536.0)*(design_size/(double) (0x100000));
+   pixelsize=size+.5;
    *_enc=&custom;
    *_as=*_ds=-1;
    *mods='\0';
@@ -1195,15 +1195,15 @@ static int pkgetcount(AFILE *pk,struct pkstate *st) {
 	    ++j;
 	    i=getnibble(pk, st);
 	 }
-	 while (j > 0) {
+	 while (j>0) {
 	    --j;
-	    i=(i << 4) + getnibble(pk, st);
+	    i=(i << 4)+getnibble(pk, st);
 	 }
-	 return (i - 15 + (13 - st->dyn_f) * 16 + st->dyn_f);
+	 return (i-15+(13-st->dyn_f)*16+st->dyn_f);
       } else if (i <= st->dyn_f) {
 	 return (i);
-      } else if (i < 14) {
-	 return ((i - st->dyn_f - 1) * 16 + getnibble(pk, st) + st->dyn_f +
+      } else if (i<14) {
+	 return ((i-st->dyn_f-1)*16+getnibble(pk, st)+st->dyn_f +
 		 1);
       } else {
 	 if (st->rpt != 0)
@@ -1236,13 +1236,13 @@ static int pk_char(AFILE *pk,SplineFont *sf,BDFFont *b,EncMap *map) {
       aungetc(flag, pk);
       return (0);
    }
-   black=flag & 8 ? 1 : 0;
-   size_is_2=flag & 4 ? 1 : 0;
+   black=flag&8?1:0;
+   size_is_2=flag&4?1:0;
 
-   if ((flag & 7)==7) {	/* long preamble, 4 byte sizes */
+   if ((flag&7)==7) {	/* long preamble, 4 byte sizes */
       pl=aget_int32_be(pk);
       cc=aget_int32_be(pk);
-      char_end=aftell(pk) + pl;
+      char_end=aftell(pk)+pl;
       tfm=aget_int32_be(pk);
       dx=aget_int32_be(pk) >> 16;
       dy=aget_int32_be(pk) >> 16;
@@ -1250,10 +1250,10 @@ static int pk_char(AFILE *pk,SplineFont *sf,BDFFont *b,EncMap *map) {
       h=aget_int32_be(pk);
       hoff=aget_int32_be(pk);
       voff=aget_int32_be(pk);
-   } else if (flag & 4) {	/* extended preamble, 2 byte sizes */
-      pl=aget_uint16_be(pk) + ((flag & 3) << 16);
+   } else if (flag&4) {	/* extended preamble, 2 byte sizes */
+      pl=aget_uint16_be(pk)+((flag&3) << 16);
       cc=agetc(pk);
-      char_end=aftell(pk) + pl;
+      char_end=aftell(pk)+pl;
       tfm=aget_uint24_be(pk);
       dm=aget_uint16_be(pk);
       dx=dm;
@@ -1263,9 +1263,9 @@ static int pk_char(AFILE *pk,SplineFont *sf,BDFFont *b,EncMap *map) {
       hoff=(short) aget_uint16_be(pk);
       voff=(short) aget_uint16_be(pk);
    } else {			/* short, 1 byte sizes */
-      pl=agetc(pk) + ((flag & 3) << 8);
+      pl=agetc(pk)+((flag&3) << 8);
       cc=agetc(pk);
-      char_end=aftell(pk) + pl;
+      char_end=aftell(pk)+pl;
       tfm=aget_uint24_be(pk);
       dm=agetc(pk);
       dx=dm;
@@ -1288,18 +1288,18 @@ static int pk_char(AFILE *pk,SplineFont *sf,BDFFont *b,EncMap *map) {
 
    bc->xmin=-hoff;
    bc->ymax=voff;
-   bc->xmax=w - 1 - hoff;
-   bc->ymin=voff - h + 1;
+   bc->xmax=w-1-hoff;
+   bc->ymin=voff-h+1;
    bc->width=dx;
    bc->vwidth=b->pixelsize;
-   bc->bytes_per_line=((w + 7) >> 3);
+   bc->bytes_per_line=((w+7) >> 3);
    bc->bitmap=calloc(bc->bytes_per_line * h, 1);
 
    if (sf->glyphs[gid]->layers[ly_fore].splines==NULL
        && sf->glyphs[gid]->layers[ly_fore].refs==NULL
        && !sf->glyphs[gid]->widthset) {
       sf->glyphs[gid]->width =
-	 (sf->ascent + sf->descent) * (double) tfm / (0x100000);
+	 (sf->ascent+sf->descent)*(double) tfm/(0x100000);
       sf->glyphs[gid]->widthset=true;
    }
 
@@ -1307,47 +1307,47 @@ static int pk_char(AFILE *pk,SplineFont *sf,BDFFont *b,EncMap *map) {
       /* Nothing */ ;
    else if (st.dyn_f==14) {
       /* We've got raster data in the file */
-      for (i=0; i < ((w * h + 7) >> 3); ++i) {
+      for (i=0; i<((w * h+7) >> 3); ++i) {
 	 ch=agetc(pk);
-	 for (j=0; j < 8; ++j) {
-	    r=((i << 3) + j) / w;
-	    c=((i << 3) + j) % w;
-	    if (r < h && (ch & (1 << (7 - j))))
-	       bc->bitmap[r * bc->bytes_per_line + (c >> 3)] |=
-		  (1 << (7 - (c & 7)));
+	 for (j=0; j<8; ++j) {
+	    r=((i << 3)+j)/w;
+	    c=((i << 3)+j)%w;
+	    if (r<h && (ch&(1 << (7-j))))
+	       bc->bitmap[r * bc->bytes_per_line+(c >> 3)] |=
+		  (1 << (7-(c&7)));
 	 }
-	 if (aftell(pk) > char_end)
+	 if (aftell(pk)>char_end)
 	    break;
       }
    } else {
       /* We've got run-length encoded data */
       r=c=0;
-      while (r < h) {
+      while (r<h) {
 	 cnt=pkgetcount(pk, &st);
 	 /* if (black ) printf("%d", cnt ); else printf("(%d)", cnt ); */
-	 if (c + cnt >= w && st.rpt != 0) {
+	 if (c+cnt >= w && st.rpt != 0) {
 	    if (black) {
-	       while (c < w) {
-		  bc->bitmap[r * bc->bytes_per_line + (c >> 3)] |=
-		     (1 << (7 - (c & 7)));
+	       while (c<w) {
+		  bc->bitmap[r * bc->bytes_per_line+(c >> 3)] |=
+		     (1 << (7-(c&7)));
 		  --cnt;
 		  ++c;
 	       }
 	    } else
-	       cnt -= (w - c);
-	    for (i=0; i < st.rpt && r + i + 1 < h; ++i)
-	       memcpy(bc->bitmap + (r + i + 1) * bc->bytes_per_line,
-		      bc->bitmap + r * bc->bytes_per_line,
+	       cnt -= (w-c);
+	    for (i=0; i<st.rpt && r+i+1<h; ++i)
+	       memcpy(bc->bitmap+(r+i+1)*bc->bytes_per_line,
+		      bc->bitmap+r * bc->bytes_per_line,
 		      bc->bytes_per_line);
-	    r += st.rpt + 1;
+	    r += st.rpt+1;
 	    c=0;
 	    st.rpt=0;
 	 }
-	 while (cnt > 0 && r < h) {
-	    while (c < w && cnt > 0) {
+	 while (cnt>0 && r<h) {
+	    while (c<w && cnt>0) {
 	       if (black)
-		  bc->bitmap[r * bc->bytes_per_line + (c >> 3)] |=
-		     (1 << (7 - (c & 7)));
+		  bc->bitmap[r * bc->bytes_per_line+(c >> 3)] |=
+		     (1 << (7-(c&7)));
 	       --cnt;
 	       ++c;
 	    }
@@ -1357,13 +1357,13 @@ static int pk_char(AFILE *pk,SplineFont *sf,BDFFont *b,EncMap *map) {
 	    }
 	 }
 	 black=!black;
-	 if (aftell(pk) > char_end)
+	 if (aftell(pk)>char_end)
 	    break;
       }
    }
    if (aftell(pk) != char_end) {
       ErrorMsg(2,"The character, %d, was not read properly (or pk file is in bad format)\n At %ld should be %d, off by %ld\n",
-	       cc, aftell(pk), char_end, aftell(pk) - char_end);
+	       cc, aftell(pk), char_end, aftell(pk)-char_end);
       afseek(pk, char_end, SEEK_SET);
    }
    /* printf("\n" ); */
@@ -1409,11 +1409,11 @@ struct toc {
 #define MSBFirst	1
 #define LSBFirst	0
 
-#define PCF_BYTE_ORDER(f)	(((f) & PCF_BYTE_MASK)?MSBFirst:LSBFirst)
-#define PCF_BIT_ORDER(f)	(((f) & PCF_BIT_MASK)?MSBFirst:LSBFirst)
-#define PCF_GLYPH_PAD_INDEX(f)	((f) & PCF_GLYPH_PAD_MASK)
+#define PCF_BYTE_ORDER(f)	(((f)&PCF_BYTE_MASK)?MSBFirst:LSBFirst)
+#define PCF_BIT_ORDER(f)	(((f)&PCF_BIT_MASK)?MSBFirst:LSBFirst)
+#define PCF_GLYPH_PAD_INDEX(f)	((f)&PCF_GLYPH_PAD_MASK)
 #define PCF_GLYPH_PAD(f)	(1<<PCF_GLYPH_PAD_INDEX(f))
-#define PCF_SCAN_UNIT_INDEX(f)	(((f) & PCF_SCAN_UNIT_MASK) >> 4)
+#define PCF_SCAN_UNIT_INDEX(f)	(((f)&PCF_SCAN_UNIT_MASK) >> 4)
 #define PCF_SCAN_UNIT(f)	(1<<PCF_SCAN_UNIT_INDEX(f))
 
 #define GLYPHPADOPTIONS	4
@@ -1461,8 +1461,8 @@ static struct toc *pcfReadTOC(AFILE *file) {
    if (aget_int32_le(file) != PCF_FILE_VERSION)
       return (NULL);
    cnt=aget_int32_le(file);
-   toc=calloc(cnt + 1, sizeof(struct toc));
-   for (i=0; i < cnt; ++i) {
+   toc=calloc(cnt+1, sizeof(struct toc));
+   for (i=0; i<cnt; ++i) {
       toc[i].type=aget_int32_le(file);
       toc[i].format=aget_int32_le(file);
       toc[i].size=aget_int32_le(file);
@@ -1485,11 +1485,11 @@ static int pcfSeekToType(AFILE *file,struct toc *toc,int type) {
 static void pcfGetMetrics(AFILE *file,int compressed,int format,
 			  struct pcfmetrics *metric) {
    if (compressed) {
-      metric->lsb=agetc(file) - 0x80;
-      metric->rsb=agetc(file) - 0x80;
-      metric->width=agetc(file) - 0x80;
-      metric->ascent=agetc(file) - 0x80;
-      metric->descent=agetc(file) - 0x80;
+      metric->lsb=agetc(file)-0x80;
+      metric->rsb=agetc(file)-0x80;
+      metric->width=agetc(file)-0x80;
+      metric->ascent=agetc(file)-0x80;
+      metric->descent=agetc(file)-0x80;
       metric->attrs=0;
    } else {
       metric->lsb=getformint16(file, format);
@@ -1508,8 +1508,8 @@ static int pcfGetAccel(AFILE *file,struct toc *toc,int which,
    if (!pcfSeekToType(file, toc, which))
       return (false);
    format=aget_int32_le(file);
-   if ((format & PCF_FORMAT_MASK) != PCF_DEFAULT_FORMAT &&
-       (format & PCF_FORMAT_MASK) != PCF_ACCEL_W_INKBOUNDS)
+   if ((format&PCF_FORMAT_MASK) != PCF_DEFAULT_FORMAT &&
+       (format&PCF_FORMAT_MASK) != PCF_ACCEL_W_INKBOUNDS)
       return (false);
    accel->noOverlap=agetc(file);
    accel->constantMetrics=agetc(file);
@@ -1524,7 +1524,7 @@ static int pcfGetAccel(AFILE *file,struct toc *toc,int which,
    accel->maxOverlap=getformint32(file, format);
    pcfGetMetrics(file, false, format, &accel->minbounds);
    pcfGetMetrics(file, false, format, &accel->maxbounds);
-   if ((format & PCF_FORMAT_MASK)==PCF_ACCEL_W_INKBOUNDS) {
+   if ((format&PCF_FORMAT_MASK)==PCF_ACCEL_W_INKBOUNDS) {
       pcfGetMetrics(file, false, format, &accel->ink_minbounds);
       pcfGetMetrics(file, false, format, &accel->ink_maxbounds);
    } else {
@@ -1558,25 +1558,25 @@ static int pcf_properties(AFILE *file,struct toc *toc,int *_as,int *_ds,
    if (!pcfSeekToType(file, toc, PCF_PROPERTIES))
       return (-2);
    format=aget_int32_le(file);
-   if ((format & PCF_FORMAT_MASK) != PCF_DEFAULT_FORMAT)
+   if ((format&PCF_FORMAT_MASK) != PCF_DEFAULT_FORMAT)
       return (-2);
    cnt=getformint32(file, format);
    props=malloc(cnt * sizeof(struct props));
-   for (i=0; i < cnt; ++i) {
+   for (i=0; i<cnt; ++i) {
       props[i].name_offset=getformint32(file, format);
       props[i].isStr=agetc(file);
       props[i].val=getformint32(file, format);
    }
-   if (cnt & 3)
-      afseek(file, 4 - (cnt & 3), SEEK_CUR);
+   if (cnt&3)
+      afseek(file, 4-(cnt&3), SEEK_CUR);
    strl=getformint32(file, format);
-   strs=malloc(strl + 1);
+   strs=malloc(strl+1);
    strs[strl]=0;
    afread(strs, 1, strl, file);
-   for (i=0; i < cnt; ++i) {
-      props[i].name=strs + props[i].name_offset;
+   for (i=0; i<cnt; ++i) {
+      props[i].name=strs+props[i].name_offset;
       if (props[i].isStr)
-	 props[i].value=strs + props[i].val;
+	 props[i].value=strs+props[i].val;
       else
 	 props[i].value=NULL;
    }
@@ -1587,28 +1587,28 @@ static int pcf_properties(AFILE *file,struct toc *toc,int *_as,int *_ds,
    dummy->prop_cnt=cnt;
    dummy->props=malloc(cnt * sizeof(BDFProperties));
 
-   for (i=0; i < cnt; ++i) {
+   for (i=0; i<cnt; ++i) {
       dummy->props[i].name=fastrdup(props[i].name);
       if (props[i].isStr) {
 	 dummy->props[i].u.str=fastrdup(props[i].value);
-	 dummy->props[i].type=prt_string | prt_property;
+	 dummy->props[i].type=prt_string|prt_property;
 	 if (strcmp(props[i].name, "FAMILY_NAME")==0)
 	    strcpy(family, props[i].value);
 	 else if (strcmp(props[i].name, "WEIGHT_NAME")==0)
-	    strncpy(weight, props[i].value, sizeof(weight) - 1);
+	    strncpy(weight, props[i].value, sizeof(weight)-1);
 	 else if (strcmp(props[i].name, "FULL_NAME")==0)
 	    strcpy(full, props[i].value);
 	 else if (strcmp(props[i].name, "SLANT")==0)
-	    strncpy(italic, props[i].value, sizeof(italic) - 1);
+	    strncpy(italic, props[i].value, sizeof(italic)-1);
 	 else if (strcmp(props[i].name, "CHARSET_REGISTRY")==0)
-	    strncpy(encname, props[i].value, sizeof(encname) - 1);
+	    strncpy(encname, props[i].value, sizeof(encname)-1);
 	 else if (strcmp(props[i].name, "CHARSET_ENCODING")==0)
 	    enc=strtol(props[i].value, NULL, 10);
 	 else if (strcmp(props[i].name, "FONT")==0) {
 	    dummy->props[i].type=prt_atom;
 	    if (sscanf(props[i].value, "-%*[^-]-%[^-]-%[^-]-%[^-]-%*[^-]-",
 		       family, weight, italic) != 0) {
-	       for (pt=props[i].value, dash_cnt=0; *pt && dash_cnt < 7;
+	       for (pt=props[i].value, dash_cnt=0; *pt && dash_cnt<7;
 		    ++pt)
 		  if (*pt=='-')
 		     ++dash_cnt;
@@ -1619,7 +1619,7 @@ static int pcf_properties(AFILE *file,struct toc *toc,int *_as,int *_ds,
       } else {
 	 dummy->props[i].u.val=props[i].val;
 	 dummy->props[i].type =
-	    (IsUnsignedBDFKey(dummy->props[i].name) ? prt_uint : prt_int) |
+	    (IsUnsignedBDFKey(dummy->props[i].name)?prt_uint:prt_int) |
 	    prt_property;
 	 if (strcmp(props[i].name, "PIXEL_SIZE")==0
 	     || (pixelsize==-1 && strcmp(props[i].name, "QUAD_WIDTH")==0))
@@ -1644,7 +1644,7 @@ static int pcf_properties(AFILE *file,struct toc *toc,int *_as,int *_ds,
 	 ascent=accel.ascent;
 	 descent=accel.descent;
 	 if (pixelsize==-1)
-	    pixelsize=ascent + descent;
+	    pixelsize=ascent+descent;
       }
    }
    pixelsize=default_ascent_descent(_as, _ds, ascent, descent, pixelsize,
@@ -1680,18 +1680,18 @@ static struct pcfmetrics *pcfGetMetricsTable(AFILE *file,struct toc *toc,
    if (!pcfSeekToType(file, toc, which))
       return (NULL);
    format=aget_int32_le(file);
-   if ((format & PCF_FORMAT_MASK) != PCF_DEFAULT_FORMAT &&
-       (format & PCF_FORMAT_MASK) != PCF_COMPRESSED_METRICS)
+   if ((format&PCF_FORMAT_MASK) != PCF_DEFAULT_FORMAT &&
+       (format&PCF_FORMAT_MASK) != PCF_COMPRESSED_METRICS)
       return (NULL);
-   if ((format & PCF_FORMAT_MASK)==PCF_COMPRESSED_METRICS) {
+   if ((format&PCF_FORMAT_MASK)==PCF_COMPRESSED_METRICS) {
       cnt=getformint16(file, format);
       metrics=malloc(cnt * sizeof(struct pcfmetrics));
-      for (i=0; i < cnt; ++i)
+      for (i=0; i<cnt; ++i)
 	 pcfGetMetrics(file, true, format, &metrics[i]);
    } else {
       cnt=getformint32(file, format);
       metrics=malloc(cnt * sizeof(struct pcfmetrics));
-      for (i=0; i < cnt; ++i)
+      for (i=0; i<cnt; ++i)
 	 pcfGetMetrics(file, false, format, &metrics[i]);
    }
    *metrics_cnt=cnt;
@@ -1736,30 +1736,30 @@ static uint8_t bitinvert[]={
 static void BitOrderInvert(uint8_t *bitmap,int sizebitmaps) {
    int i;
 
-   for (i=0; i < sizebitmaps; ++i)
+   for (i=0; i<sizebitmaps; ++i)
       bitmap[i]=bitinvert[bitmap[i]];
 }
 
 static void TwoByteSwap(uint8_t *bitmap,int sizebitmaps) {
    int i, t;
 
-   for (i=0; i < sizebitmaps - 1; i += 2) {
+   for (i=0; i<sizebitmaps-1; i += 2) {
       t=bitmap[i];
-      bitmap[i]=bitmap[i + 1];
-      bitmap[i + 1]=t;
+      bitmap[i]=bitmap[i+1];
+      bitmap[i+1]=t;
    }
 }
 
 static void FourByteSwap(uint8_t *bitmap,int sizebitmaps) {
    int i, t;
 
-   for (i=0; i < sizebitmaps - 1; i += 2) {
+   for (i=0; i<sizebitmaps-1; i += 2) {
       t=bitmap[i];
-      bitmap[i]=bitmap[i + 3];
-      bitmap[i + 3]=t;
-      t=bitmap[i + 1];
-      bitmap[i + 1]=bitmap[i + 2];
-      bitmap[i + 2]=t;
+      bitmap[i]=bitmap[i+3];
+      bitmap[i+3]=t;
+      t=bitmap[i+1];
+      bitmap[i+1]=bitmap[i+2];
+      bitmap[i+2]=t;
    }
 }
 
@@ -1772,19 +1772,19 @@ static int PcfReadBitmaps(AFILE *file,struct toc *toc,BDFFont *b) {
    if (!pcfSeekToType(file, toc, PCF_BITMAPS))
       return (false);
    format=aget_int32_le(file);
-   if ((format & PCF_FORMAT_MASK) != PCF_DEFAULT_FORMAT)
+   if ((format&PCF_FORMAT_MASK) != PCF_DEFAULT_FORMAT)
       return (false);
 
    cnt=getformint32(file, format);
    if (cnt != b->glyphcnt)
       return (false);
    offsets=malloc(cnt * sizeof(int));
-   for (i=0; i < cnt; ++i)
+   for (i=0; i<cnt; ++i)
       offsets[i]=getformint32(file, format);
-   for (i=0; i < GLYPHPADOPTIONS; ++i)
+   for (i=0; i<GLYPHPADOPTIONS; ++i)
       bitmapSizes[i]=getformint32(file, format);
    sizebitmaps=bitmapSizes[PCF_GLYPH_PAD_INDEX(format)];
-   bitmap=malloc(sizebitmaps==0 ? 1 : sizebitmaps);
+   bitmap=malloc(sizebitmaps==0?1:sizebitmaps);
    afread(bitmap, 1, sizebitmaps, file);
    if (PCF_BIT_ORDER(format) != MSBFirst)
       BitOrderInvert(bitmap, sizebitmaps);
@@ -1797,26 +1797,26 @@ static int PcfReadBitmaps(AFILE *file,struct toc *toc,BDFFont *b) {
    else if (PCF_SCAN_UNIT(format)==2)
       FourByteSwap(bitmap, sizebitmaps);
    if (PCF_GLYPH_PAD(format)==1) {
-      for (i=0; i < cnt; ++i) {
+      for (i=0; i<cnt; ++i) {
 	 BDFChar *bc=b->glyphs[i];
 
-	 if (i < cnt - 1
-	     && offsets[i + 1] - offsets[i] !=
-	     bc->bytes_per_line * (bc->ymax - bc->ymin + 1))
+	 if (i<cnt-1
+	     && offsets[i+1]-offsets[i] !=
+	     bc->bytes_per_line * (bc->ymax-bc->ymin+1))
 	    ErrorMsg(2,"Bad PCF glyph bitmap size\n");
-	 memcpy(bc->bitmap, bitmap + offsets[i],
-		bc->bytes_per_line * (bc->ymax - bc->ymin + 1));
+	 memcpy(bc->bitmap, bitmap+offsets[i],
+		bc->bytes_per_line * (bc->ymax-bc->ymin+1));
       }
    } else {
       int pad=PCF_GLYPH_PAD(format);
 
-      for (i=0; i < cnt; ++i) {
+      for (i=0; i<cnt; ++i) {
 	 BDFChar *bc=b->glyphs[i];
-	 int bpl=((bc->bytes_per_line + pad - 1) / pad) * pad;
+	 int bpl=((bc->bytes_per_line+pad-1)/pad)*pad;
 
 	 for (j=bc->ymin; j <= bc->ymax; ++j)
-	    memcpy(bc->bitmap + (j - bc->ymin) * bc->bytes_per_line,
-		   bitmap + offsets[i] + (j - bc->ymin) * bpl,
+	    memcpy(bc->bitmap+(j-bc->ymin)*bc->bytes_per_line,
+		   bitmap+offsets[i]+(j-bc->ymin)*bpl,
 		   bc->bytes_per_line);
       }
    }
@@ -1837,17 +1837,17 @@ static void PcfReadEncodingsNames(AFILE *file,struct toc *toc,
    memset(encs, -1, b->glyphcnt * sizeof(int));
 
    if (pcfSeekToType(file, toc, PCF_GLYPH_NAMES) &&
-       ((format=aget_int32_le(file)) & PCF_FORMAT_MASK)==PCF_DEFAULT_FORMAT &&
+       ((format=aget_int32_le(file))&PCF_FORMAT_MASK)==PCF_DEFAULT_FORMAT &&
        (cnt=getformint32(file, format))==b->glyphcnt) {
       offsets=malloc(cnt * sizeof(int));
-      for (i=0; i < cnt; ++i)
+      for (i=0; i<cnt; ++i)
 	 offsets[i]=getformint32(file, format);
       stringsize=getformint32(file, format);
       string=malloc(stringsize);
       afread(string, 1, stringsize, file);
    }
    if (pcfSeekToType(file, toc, PCF_BDF_ENCODINGS) &&
-       ((format=aget_int32_le(file)) & PCF_FORMAT_MASK)==PCF_DEFAULT_FORMAT) {
+       ((format=aget_int32_le(file))&PCF_FORMAT_MASK)==PCF_DEFAULT_FORMAT) {
       int min2, max2, min1, max1, tot, def, glyph;
 
       min2=getformint16(file, format);
@@ -1855,21 +1855,21 @@ static void PcfReadEncodingsNames(AFILE *file,struct toc *toc,
       min1=getformint16(file, format);
       max1=getformint16(file, format);
       def=getformint16(file, format);
-      tot=(max2 - min2 + 1) * (max1 - min1 + 1);
-      for (i=0; i < tot; ++i) {
+      tot=(max2-min2+1)*(max1-min1+1);
+      for (i=0; i<tot; ++i) {
 	 glyph=getformint16(file, format);
-	 if (glyph != 0xffff && glyph < b->glyphcnt) {
-	    encs[glyph]=(i / (max2 - min2 + 1) + min2) * 256 +
-	       (i % (max2 - min2 + 1) + min1);
+	 if (glyph != 0xffff && glyph<b->glyphcnt) {
+	    encs[glyph]=(i/(max2-min2+1)+min2)*256 +
+	       (i%(max2-min2+1)+min1);
 	 }
       }
    }
    cnt=b->glyphcnt;
-   for (i=0; i < cnt; ++i) {
+   for (i=0; i<cnt; ++i) {
       char *name;
 
       if (string != NULL)
-	 name=string + offsets[i];
+	 name=string+offsets[i];
       else
 	 name=".notdef";
       encs[i] =
@@ -1894,13 +1894,13 @@ static int PcfReadSWidths(AFILE *file,struct toc *toc,BDFFont *b) {
    if (!pcfSeekToType(file, toc, PCF_SWIDTHS))
       return (false);
    format=aget_int32_le(file);
-   if ((format & PCF_FORMAT_MASK) != PCF_DEFAULT_FORMAT)
+   if ((format&PCF_FORMAT_MASK) != PCF_DEFAULT_FORMAT)
       return (false);
 
    cnt=getformint32(file, format);
-   if (cnt > b->glyphcnt)
+   if (cnt>b->glyphcnt)
       return (false);
-   for (i=0; i < cnt; ++i) {
+   for (i=0; i<cnt; ++i) {
       int swidth=getformint32(file, format);
 
       if (b->glyphs[i]->sc != NULL) {
@@ -1925,25 +1925,25 @@ static int PcfParse(AFILE *file,struct toc *toc,SplineFont *sf,
    b->glyphcnt=b->glyphmax=mcnt;
    free(b->glyphs);
    b->glyphs=calloc(mcnt, sizeof(BDFChar *));
-   for (i=0; i < mcnt; ++i) {
+   for (i=0; i<mcnt; ++i) {
       BDFChar *bc=b->glyphs[i]=chunkalloc(sizeof(BDFChar));
 
       memset(bc, '\0', sizeof(BDFChar));
       bc->xmin=metrics[i].lsb;
-      bc->xmax=metrics[i].rsb - 1;
+      bc->xmax=metrics[i].rsb-1;
       if (metrics[i].rsb==0)
 	 bc->xmax=0;
       bc->ymin=-metrics[i].descent;
-      bc->ymax=metrics[i].ascent - 1;
-      if (bc->ymax < bc->ymin || bc->xmax < bc->xmin) {
-	 bc->ymax=bc->ymin - 1;
-	 bc->xmax=bc->xmin - 1;
+      bc->ymax=metrics[i].ascent-1;
+      if (bc->ymax<bc->ymin || bc->xmax<bc->xmin) {
+	 bc->ymax=bc->ymin-1;
+	 bc->xmax=bc->xmin-1;
       }
       /*if (metrics[i].ascent==0 ) bc->ymax=0; */ /* ?? */
       bc->width=metrics[i].width;
       bc->vwidth=b->pixelsize;	/* pcf doesn't support vmetrics */
-      bc->bytes_per_line=((bc->xmax - bc->xmin) >> 3) + 1;
-      bc->bitmap=malloc(bc->bytes_per_line * (bc->ymax - bc->ymin + 1));
+      bc->bytes_per_line=((bc->xmax-bc->xmin) >> 3)+1;
+      bc->bitmap=malloc(bc->bytes_per_line * (bc->ymax-bc->ymin+1));
       bc->orig_pos=-1;
    }
    free(metrics);
@@ -1954,9 +1954,9 @@ static int PcfParse(AFILE *file,struct toc *toc,SplineFont *sf,
    if (sf->onlybitmaps)
       PcfReadSWidths(file, toc, b);
    new=calloc(sf->glyphcnt, sizeof(BDFChar *));
-   mult=calloc(mcnt + 1, sizeof(BDFChar *));
+   mult=calloc(mcnt+1, sizeof(BDFChar *));
    multcnt=0;
-   for (i=0; i < mcnt; ++i) {
+   for (i=0; i<mcnt; ++i) {
       BDFChar *bc=b->glyphs[i];
 
       if (bc->orig_pos==-1 || bc->orig_pos >= sf->glyphcnt)
@@ -1968,7 +1968,7 @@ static int PcfParse(AFILE *file,struct toc *toc,SplineFont *sf,
    }
    if (multcnt != 0) {
       for (multcnt=0; mult[multcnt] != NULL; multcnt++) {
-	 for (i=0; i < sf->glyphcnt; ++i)
+	 for (i=0; i<sf->glyphcnt; ++i)
 	    if (new[i]==NULL) {
 	       new[i]=mult[multcnt];
 	       break;
@@ -2034,18 +2034,18 @@ static void BDFForceEnc(SplineFont *sf,EncMap *map) {
    char *fn, *pt;
    Encoding *enc;
 
-   for (i=0; i < bdf->prop_cnt; ++i)
+   for (i=0; i<bdf->prop_cnt; ++i)
       if (strcmp("FONT", bdf->props[i].name)==0)
 	 break;
-   if (i==bdf->prop_cnt || (bdf->props[i].type & ~prt_property)==prt_int
-       || (bdf->props[i].type & ~prt_property)==prt_uint)
+   if (i==bdf->prop_cnt || (bdf->props[i].type&~prt_property)==prt_int
+       || (bdf->props[i].type&~prt_property)==prt_uint)
       return;
    fn=bdf->props[i].u.str;
-   for (pt=fn + strlen(fn) - 1; pt > fn && *pt != '-'; --pt);
-   for (--pt; pt > fn && *pt != '-'; --pt);
+   for (pt=fn+strlen(fn)-1; pt>fn && *pt != '-'; --pt);
+   for (--pt; pt>fn && *pt != '-'; --pt);
    enc=NULL;
-   if (pt > fn)
-      enc=FindOrMakeEncoding(pt + 1);
+   if (pt>fn)
+      enc=FindOrMakeEncoding(pt+1);
    if (enc==NULL) {
       for (i=0; bdf_2_ff_enc[i].bdf != NULL; ++i)
 	 if (strstrmatch(fn, bdf_2_ff_enc[i].bdf) != NULL) {
@@ -2062,7 +2062,7 @@ void SFSetFontName(SplineFont *sf, char *family, char *mods, char *fullname) {
    char *n;
    char *pt, *tpt;
 
-   n=malloc(strlen(family) + strlen(mods) + 2);
+   n=malloc(strlen(family)+strlen(mods)+2);
    strcpy(n, family);
    strcat(n, " ");
    strcat(n, mods);
@@ -2175,7 +2175,7 @@ static BDFFont *SFImportBDF(SplineFont *sf,char *filename,int ispk,
    fontname[0]='\0';
    comments[0]='\0';
 
-   if (ispk==1 && strcmp(filename + strlen(filename) - 2, "gf")==0)
+   if (ispk==1 && strcmp(filename+strlen(filename)-2, "gf")==0)
       ispk=3;
    bdf=afopen(filename, "rb");
    if (bdf==NULL) {
@@ -2272,27 +2272,27 @@ static BDFFont *SFImportBDF(SplineFont *sf,char *filename,int ispk,
 	 afclose(bdf);
 	 free(toc);
 	 BDFPropsFree(&dummy);
-	 return ((BDFFont *) - 1);
+	 return ((BDFFont *)-1);
       }
    }
    if (b==NULL) {
       if (ascent==-1 && descent==-1)
 	 ascent =
-	    rint(pixelsize * sf->ascent / (double) (sf->ascent + sf->descent));
+	    rint(pixelsize * sf->ascent/(double) (sf->ascent+sf->descent));
       if (ascent==-1 && descent != -1)
-	 ascent=pixelsize - descent;
+	 ascent=pixelsize-descent;
       else if (ascent != -1)
-	 descent=pixelsize - ascent;
+	 descent=pixelsize-ascent;
       b=calloc(1, sizeof(BDFFont));
       b->sf=sf;
       b->glyphcnt=b->glyphmax=sf->glyphcnt;
       b->pixelsize=pixelsize;
       b->glyphs=calloc(sf->glyphcnt, sizeof(BDFChar *));
       b->ascent=ascent;
-      b->descent=pixelsize - b->ascent;
+      b->descent=pixelsize-b->ascent;
       b->res=defs.res;
       if (depth != 1)
-	 BDFClut(b, (1 << (depth / 2)));
+	 BDFClut(b, (1 << (depth/2)));
       if (!toback) {
 	 b->next=sf->bitmaps;
 	 sf->bitmaps=b;
@@ -2303,7 +2303,7 @@ static BDFFont *SFImportBDF(SplineFont *sf,char *filename,int ispk,
    b->prop_cnt=dummy.prop_cnt;
    b->props=dummy.props;
    free(b->foundry);
-   b->foundry=(foundry[0]=='\0') ? NULL : fastrdup(foundry);
+   b->foundry=(foundry[0]=='\0')?NULL:fastrdup(foundry);
    if (ispk==1) {
       while (pk_char(bdf, sf, b, map));
    } else if (ispk==3) {
@@ -2331,7 +2331,7 @@ static BDFFont *SFImportBDF(SplineFont *sf,char *filename,int ispk,
    afclose(bdf);
    free(toc);
    sf->changed=true;
-   if (sf->bitmaps != NULL && sf->bitmaps->next==NULL && dummy.prop_cnt > 0
+   if (sf->bitmaps != NULL && sf->bitmaps->next==NULL && dummy.prop_cnt>0
        && map->enc==&custom)
       BDFForceEnc(sf, map);
    return (b);
@@ -2348,7 +2348,7 @@ static BDFFont *_SFImportBDF(SplineFont *sf,char *filename,int ispk,
    i=-1;
    if (pt != NULL)
       for (i=0; compressors[i].ext != NULL; ++i)
-	 if (strcmp(compressors[i].ext, pt + 1)==0)
+	 if (strcmp(compressors[i].ext, pt+1)==0)
 	    break;
    if (i==-1 || compressors[i].ext==NULL)
       i=-1;
@@ -2362,7 +2362,7 @@ static BDFFont *_SFImportBDF(SplineFont *sf,char *filename,int ispk,
 
 	 if (dir==NULL)
 	    dir=P_tmpdir;
-	 temp=malloc(strlen(dir) + strlen(GFileNameTail(filename)) + 2);
+	 temp=malloc(strlen(dir)+strlen(GFileNameTail(filename))+2);
 	 strcpy(temp, dir);
 	 strcat(temp, "/");
 	 strcat(temp, GFileNameTail(filename));
@@ -2393,9 +2393,9 @@ static void SFSetupBitmap(SplineFont *sf,BDFFont *strike,EncMap *map) {
    SplineChar *sc;
 
    strike->sf=sf;
-   if (strike->glyphcnt > sf->glyphcnt)
+   if (strike->glyphcnt>sf->glyphcnt)
       ExtendSF(sf, map, strike->glyphcnt, true);
-   for (i=0; i < strike->glyphcnt; ++i)
+   for (i=0; i<strike->glyphcnt; ++i)
       if (strike->glyphs[i] != NULL) {
 	 if (i >= sf->glyphcnt || sf->glyphs[i]==NULL) {
 	    int enc=-1;
@@ -2417,7 +2417,7 @@ static void SFSetupBitmap(SplineFont *sf,BDFFont *strike,EncMap *map) {
 	    sc->widthset=true;
 	    sc->width =
 	       strike->glyphs[i]->width * (sf->ascent +
-					   sf->descent) / strike->pixelsize;
+					   sf->descent)/strike->pixelsize;
 	 }
       }
 }
@@ -2464,7 +2464,7 @@ int FVImportBDF(FontViewBase * fv, char *filename, int ispk, int toback) {
    eod=strrchr(filename, '/');
    *eod='\0';
    fcnt=1;
-   fpt=eod + 1;
+   fpt=eod+1;
    while ((fpt=strstr(fpt, "; ")) != NULL) {
       ++fcnt;
       fpt += 2;
@@ -2472,12 +2472,12 @@ int FVImportBDF(FontViewBase * fv, char *filename, int ispk, int toback) {
 
    sprintf(buf, "Loading font from %.100s", filename);
 
-   file=eod + 1;
+   file=eod+1;
    do {
       fpt=strstr(file, "; ");
       if (fpt != NULL)
 	 *fpt='\0';
-      full=malloc(strlen(filename) + 1 + strlen(file) + 1);
+      full=malloc(strlen(filename)+1+strlen(file)+1);
       strcpy(full, filename);
       strcat(full, "/");
       strcat(full, file);
@@ -2488,7 +2488,7 @@ int FVImportBDF(FontViewBase * fv, char *filename, int ispk, int toback) {
 	 anyb=b;
 	 any=true;
       }
-      file=fpt + 2;
+      file=fpt+2;
    } while (fpt != NULL);
    if (oldenccnt != fv->map->enccount) {
       FontViewBase *fvs;
@@ -2514,10 +2514,10 @@ static void SFAddToBackground(SplineFont *sf,BDFFont *bdf) {
    SplineChar *sc;
    BDFChar *bdfc;
    double scale =
-      (sf->ascent + sf->descent) / (double) (bdf->ascent + bdf->descent);
-   double yoff=sf->ascent - bdf->ascent * scale;
+      (sf->ascent+sf->descent)/(double) (bdf->ascent+bdf->descent);
+   double yoff=sf->ascent-bdf->ascent * scale;
 
-   for (i=0; i < sf->glyphcnt && i < bdf->glyphcnt; ++i) {
+   for (i=0; i<sf->glyphcnt && i<bdf->glyphcnt; ++i) {
       if (bdf->glyphs[i] != NULL) {
 	 if ((sc=sf->glyphs[i])==NULL) {
 	    sc=sf->glyphs[i]=SplineCharCreate(2);
@@ -2531,8 +2531,8 @@ static void SFAddToBackground(SplineFont *sf,BDFFont *bdf) {
 	 base->image_type=it_mono;
 	 base->data=bdfc->bitmap;
 	 base->bytes_per_line=bdfc->bytes_per_line;
-	 base->width=bdfc->xmax - bdfc->xmin + 1;
-	 base->height=bdfc->ymax - bdfc->ymin + 1;
+	 base->width=bdfc->xmax-bdfc->xmin+1;
+	 base->height=bdfc->ymax-bdfc->ymin+1;
 	 bdfc->bitmap=NULL;
 
 	 clut=calloc(1, sizeof(GClut));
@@ -2546,7 +2546,7 @@ static void SFAddToBackground(SplineFont *sf,BDFFont *bdf) {
 	 img=calloc(1, sizeof(GImage));
 	 img->u.image=base;
 
-	 SCInsertImage(sc, img, scale, yoff + (bdfc->ymax + 1) * scale,
+	 SCInsertImage(sc, img, scale, yoff+(bdfc->ymax+1)*scale,
 		       bdfc->xmin * scale, ly_back);
       }
    }
@@ -2563,7 +2563,7 @@ int FVImportMult(FontViewBase * fv, char *filename, int toback, int bf) {
    if (bf==bf_ttf)
       strikeholder =
 	 SFReadTTF(filename,
-		   toback ? ttf_onlyonestrike | ttf_onlystrikes :
+		   toback?ttf_onlyonestrike|ttf_onlystrikes :
 		   ttf_onlystrikes, 0);
    else if (bf==bf_fon)
       strikeholder=SFReadWinFON(filename, toback);
@@ -2572,7 +2572,7 @@ int FVImportMult(FontViewBase * fv, char *filename, int toback, int bf) {
    else
       strikeholder =
 	 SFReadMacBinary(filename,
-			 toback ? ttf_onlyonestrike | ttf_onlystrikes :
+			 toback?ttf_onlyonestrike|ttf_onlystrikes :
 			 ttf_onlystrikes, 0);
 
    if (strikeholder==NULL || (strikes=strikeholder->bitmaps)==NULL) {
@@ -2598,7 +2598,7 @@ SplineFont *SFFromBDF(char *filename, int ispk, int toback) {
    sf->onlybitmaps=true;
    bdf=SFImportBDF(sf, filename, ispk, toback, map);
    sf->map=map;
-   if (bdf==(BDFFont *) - 1)
+   if (bdf==(BDFFont *)-1)
       /* Do Nothing: User cancelled a load of a duplicate pixelsize */ ;
    else if (toback && bdf != NULL)
       SFAddToBackground(sf, bdf);
@@ -2624,7 +2624,7 @@ void SFCheckPSBitmap(SplineFont *sf) {
    if (!sf->multilayer)
       return;
 
-   for (i=0; i < sf->glyphcnt; ++i)
+   for (i=0; i<sf->glyphcnt; ++i)
       if ((sc=sf->glyphs[i]) != NULL) {
 	 if (sc->layer_cnt != 2)
 	    return;
@@ -2634,7 +2634,7 @@ void SFCheckPSBitmap(SplineFont *sf) {
 	 if ((il=sc->layers[ly_fore].images) != NULL) {
 	    base =
 	       il->image->list_len ==
-	       0 ? il->image->u.image : il->image->u.images[0];
+	       0?il->image->u.image:il->image->u.images[0];
 	    if (il->next != NULL)
 	       return;
 	    if (base->image_type != it_mono)
@@ -2659,37 +2659,37 @@ void SFCheckPSBitmap(SplineFont *sf) {
    bdf=chunkalloc(sizeof(BDFFont));
    bdf->sf=sf;
    sf->bitmaps=bdf;
-   bdf->pixelsize=(sf->ascent + sf->descent) / scale;
-   bdf->ascent=rint(sf->ascent / scale);
-   bdf->descent=bdf->pixelsize - bdf->ascent;
+   bdf->pixelsize=(sf->ascent+sf->descent)/scale;
+   bdf->ascent=rint(sf->ascent/scale);
+   bdf->descent=bdf->pixelsize-bdf->ascent;
    bdf->res=-1;
    bdf->glyphcnt=bdf->glyphmax=sf->glyphcnt;
    bdf->glyphs=calloc(sf->glyphcnt, sizeof(BDFChar *));
 
-   for (i=0; i < sf->glyphcnt; ++i)
+   for (i=0; i<sf->glyphcnt; ++i)
       if ((sc=sf->glyphs[i]) != NULL) {
 	 bdf->glyphs[i]=bdfc=chunkalloc(sizeof(BDFChar));
 	 memset(bdfc, '\0', sizeof(BDFChar));
 	 bdfc->sc=sc;
 	 bdfc->orig_pos=i;
 	 bdfc->depth=1;
-	 bdfc->width=rint(sc->width / scale);
-	 bdfc->vwidth=rint(sc->vwidth / scale);
+	 bdfc->width=rint(sc->width/scale);
+	 bdfc->vwidth=rint(sc->vwidth/scale);
 	 if ((il=sc->layers[ly_fore].images)==NULL)
 	    bdfc->bitmap=malloc(1);
 	 else {
 	    base =
 	       il->image->list_len ==
-	       0 ? il->image->u.image : il->image->u.images[0];
-	    bdfc->xmin=rint(il->xoff / scale);
-	    bdfc->ymax=rint(il->yoff / scale);
-	    bdfc->xmax=bdfc->xmin + base->width - 1;
-	    bdfc->ymin=bdfc->ymax - base->height + 1;
+	       0?il->image->u.image:il->image->u.images[0];
+	    bdfc->xmin=rint(il->xoff/scale);
+	    bdfc->ymax=rint(il->yoff/scale);
+	    bdfc->xmax=bdfc->xmin+base->width-1;
+	    bdfc->ymin=bdfc->ymax-base->height+1;
 	    bdfc->bytes_per_line=base->bytes_per_line;
 	    bdfc->bitmap=malloc(bdfc->bytes_per_line * base->height);
 	    memcpy(bdfc->bitmap, base->data,
 		   bdfc->bytes_per_line * base->height);
-	    for (j=0; j < bdfc->bytes_per_line * base->height; ++j)
+	    for (j=0; j<bdfc->bytes_per_line * base->height; ++j)
 	       bdfc->bitmap[j] ^= 0xff;
 	 }
       }

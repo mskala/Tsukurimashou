@@ -1,4 +1,4 @@
-/* $Id: parsepfa.c 4494 2015-12-12 08:13:24Z mskala $ */
+/* $Id: parsepfa.c 4532 2015-12-22 13:18:53Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -73,7 +73,7 @@ struct fontparse {
 static void copyenc(char *encoding[256],char *std[256]) {
    int i;
 
-   for (i=0; i < 256; ++i)
+   for (i=0; i<256; ++i)
       encoding[i]=fastrdup(std[i]);
 }
 
@@ -888,8 +888,8 @@ static char *myfgets(char *str,int len,AFILE *file) {
    char *pt, *end;
    int ch=0;
 
-   for (pt=str, end=str + len - 1;
-	pt < end && (ch=agetc(file)) != EOF && ch != '\r' && ch != '\n';
+   for (pt=str, end=str+len-1;
+	pt<end && (ch=agetc(file)) != EOF && ch != '\r' && ch != '\n';
 	*pt++=ch);
    if (ch=='\n')
       *pt++='\n';
@@ -910,8 +910,8 @@ static char *myfgetsNoNulls(char *str,int len,AFILE *file) {
    char *pt, *end;
    int ch=0;
 
-   for (pt=str, end=str + len - 1;
-	pt < end && (ch=agetc(file)) != EOF && ch != '\r' && ch != '\n';) {
+   for (pt=str, end=str+len-1;
+	pt<end && (ch=agetc(file)) != EOF && ch != '\r' && ch != '\n';) {
       if (ch != '\0')
 	 *pt++=ch;
    }
@@ -949,7 +949,7 @@ static char *getstring(char *start,AFILE *in) {
    ret=NULL;
    len=1;
    while (1) {
-      for (end=start; *end != '\0' && (*end != ')' || parencnt > 0); ++end) {
+      for (end=start; *end != '\0' && (*end != ')' || parencnt>0); ++end) {
 	 if (*end=='\\' && (end[1]=='(' || end[1]==')'))
 	    ++end;
 	 else if (*end=='(')
@@ -957,14 +957,14 @@ static char *getstring(char *start,AFILE *in) {
 	 else if (*end==')')
 	    --parencnt;
       }
-      if (end > start) {
+      if (end>start) {
 	 if (ret==NULL)
-	    ret=malloc(end - start + 1);
+	    ret=malloc(end-start+1);
 	 else
-	    ret=realloc(ret, len + end - start);
-	 strncpy(ret + len - 1, start, end - start);
-	 len += end - start;
-	 ret[len - 1]='\0';
+	    ret=realloc(ret, len+end-start);
+	 strncpy(ret+len-1, start, end-start);
+	 len += end-start;
+	 ret[len-1]='\0';
       }
       if (*end != '\0')
 	 break;
@@ -985,10 +985,10 @@ static char *gettoken(char *start) {
    for (end=start;
 	*end != '\0' && !isspace(*end) && *end != '[' && *end != '/'
 	&& *end != '{' && *end != '(' && *end != ')'; ++end);
-   ret=malloc(end - start + 1);
-   if (end > start)
-      strncpy(ret, start, end - start);
-   ret[end - start]='\0';
+   ret=malloc(end-start+1);
+   if (end>start)
+      strncpy(ret, start, end-start);
+   ret[end-start]='\0';
    return (ret);
 }
 
@@ -1009,7 +1009,7 @@ static void fillintarray(int *array,char *start,int maxentries) {
       ++start;
    if (*start=='[' || *start=='{')
       ++start;
-   for (i=0; i < maxentries && *start != ']' && *start != '}'; ++i) {
+   for (i=0; i<maxentries && *start != ']' && *start != '}'; ++i) {
       array[i]=(int) strtod(start, &end);
       if (start==end)
 	 return;
@@ -1027,16 +1027,16 @@ static void fillrealarray(double *array,char *start,int maxentries) {
       ++start;
    if (*start=='[' || *start=='{')
       ++start;
-   for (i=0; i < maxentries && *start != ']' && *start != '}'; ++i) {
+   for (i=0; i<maxentries && *start != ']' && *start != '}'; ++i) {
       while (isspace(*start))
 	 ++start;
       if (isdigit(*start) || *start=='-' || *start=='.')
 	 array[i]=strtod(start, &end);
       else if (strncmp(start, "div", 3)==0 && i >= 2) {
 	 /* Some of Luc Devroye's fonts have a "div" in the FontMatrix */
-	 array[i - 2] /= array[i - 1];
+	 array[i-2] /= array[i-1];
 	 i -= 2;
-	 end=start + 3;
+	 end=start+3;
       } else
 	 return;
       if (start==end)
@@ -1053,12 +1053,12 @@ static void InitDict(struct psdict *dict,char *line) {
    while (!isspace(*line) && *line != '\0')
       ++line;
    dict->cnt += strtol(line, NULL, 10);
-   if (dict->next > 0) {
+   if (dict->next>0) {
       int i;			/* Shouldn't happen, but did in a bad file */
 
       dict->keys=realloc(dict->keys, dict->cnt * sizeof(char *));
       dict->values=realloc(dict->values, dict->cnt * sizeof(char *));
-      for (i=dict->next; i < dict->cnt; ++i) {
+      for (i=dict->next; i<dict->cnt; ++i) {
 	 dict->keys[i]=NULL;
 	 dict->values[i]=NULL;
       }
@@ -1074,7 +1074,7 @@ static void InitChars(struct pschars *chars,char *line) {
    while (!isspace(*line) && *line != '\0')
       ++line;
    chars->cnt=strtol(line, NULL, 10);
-   if (chars->cnt > 0) {
+   if (chars->cnt>0) {
       chars->keys=calloc(chars->cnt, sizeof(char *));
       chars->values=calloc(chars->cnt, sizeof(char *));
       chars->lens=calloc(chars->cnt, sizeof(int));
@@ -1087,20 +1087,20 @@ static void InitCharProcs(struct charprocs *cp,char *line) {
    while (!isspace(*line) && *line != '\0')
       ++line;
    cp->cnt=strtol(line, NULL, 10);
-   if (cp->cnt > 0) {
+   if (cp->cnt>0) {
       cp->keys=calloc(cp->cnt, sizeof(char *));
       cp->values=calloc(cp->cnt, sizeof(SplineChar *));
    }
 }
 
 static int mycmp(char *str,char *within,char *end) {
-   while (within < end) {
+   while (within<end) {
       if (*str != *within)
-	 return (*str - *within);
+	 return (*str-*within);
       ++str;
       ++within;
    }
-   return (*str=='\0' ? 0 : 1);
+   return (*str=='\0'?0:1);
 }
 
 static void ContinueValue(struct fontparse *fp,struct psdict *dict,
@@ -1112,16 +1112,16 @@ static void ContinueValue(struct fontparse *fp,struct psdict *dict,
 	  (strncmp(line, "def", 3)==0 ||
 	   strncmp(line, "|-", 2)==0 || strncmp(line, "ND", 2)==0)) {
 	 while (1) {
-	    while (fp->vpt > fp->vbuf + 1 && isspace(fp->vpt[-1]))
+	    while (fp->vpt>fp->vbuf+1 && isspace(fp->vpt[-1]))
 	       --fp->vpt;
-	    if (fp->vpt > fp->vbuf + 8
-		&& strncmp(fp->vpt - 8, "noaccess", 8)==0)
+	    if (fp->vpt>fp->vbuf+8
+		&& strncmp(fp->vpt-8, "noaccess", 8)==0)
 	       fp->vpt -= 8;
-	    else if (fp->vpt > fp->vbuf + 8
-		     && strncmp(fp->vpt - 8, "readonly", 8)==0)
+	    else if (fp->vpt>fp->vbuf+8
+		     && strncmp(fp->vpt-8, "readonly", 8)==0)
 	       fp->vpt -= 8;
-	    else if (fp->vpt > fp->vbuf + 4
-		     && strncmp(fp->vpt - 4, "bind", 4)==0)
+	    else if (fp->vpt>fp->vbuf+4
+		     && strncmp(fp->vpt-4, "bind", 4)==0)
 	       fp->vpt -= 4;
 	    else
 	       break;
@@ -1131,10 +1131,10 @@ static void ContinueValue(struct fontparse *fp,struct psdict *dict,
 	 /*  converts itself into an array. We could just truncate to the */
 	 /*  default array, but I don't see any reason to do so */
 	 if (fp->pending_parse != NULL) {
-	    *fp->pending_parse=copyn(fp->vbuf, fp->vpt - fp->vbuf);
+	    *fp->pending_parse=copyn(fp->vbuf, fp->vpt-fp->vbuf);
 	    fp->pending_parse=NULL;
 	 } else {
-	    dict->values[dict->next]=copyn(fp->vbuf, fp->vpt - fp->vbuf);
+	    dict->values[dict->next]=copyn(fp->vbuf, fp->vpt-fp->vbuf);
 	    ++dict->next;
 	 }
 	 fp->vpt=fp->vbuf;
@@ -1142,11 +1142,11 @@ static void ContinueValue(struct fontparse *fp,struct psdict *dict,
 	 return;
       }
       if (fp->vpt >= fp->vmax) {
-	 int len=fp->vmax - fp->vbuf + 1000, off=fp->vpt - fp->vbuf;
+	 int len=fp->vmax-fp->vbuf+1000, off=fp->vpt-fp->vbuf;
 
 	 fp->vbuf=realloc(fp->vbuf, len);
-	 fp->vpt=fp->vbuf + off;
-	 fp->vmax=fp->vbuf + len;
+	 fp->vpt=fp->vbuf+off;
+	 fp->vmax=fp->vbuf+len;
       }
       if (fp->instring) {
 	 if (*line==')')
@@ -1175,17 +1175,17 @@ static void AddValue(struct fontparse *fp,struct psdict *dict,char *line,
 	 dict->keys=realloc(dict->keys, dict->cnt * sizeof(char *));
 	 dict->values=realloc(dict->values, dict->cnt * sizeof(char *));
       }
-      dict->keys[dict->next]=copyn(line + 1, endtok - (line + 1));
+      dict->keys[dict->next]=copyn(line+1, endtok-(line+1));
    }
-   pt=line + strlen(line) - 1;
+   pt=line+strlen(line)-1;
    while (isspace(*endtok))
       ++endtok;
-   while (pt > endtok && isspace(*pt))
+   while (pt>endtok && isspace(*pt))
       --pt;
    ++pt;
-   if (strncmp(pt - 3, "def", 3)==0)
+   if (strncmp(pt-3, "def", 3)==0)
       pt -= 3;
-   else if (strncmp(pt - 2, "|-", 2)==0 || strncmp(pt - 2, "ND", 2)==0)
+   else if (strncmp(pt-2, "|-", 2)==0 || strncmp(pt-2, "ND", 2)==0)
       pt -= 2;
    else {
       fp->multiline=true;
@@ -1193,22 +1193,22 @@ static void AddValue(struct fontparse *fp,struct psdict *dict,char *line,
       return;
    }
    while (1) {
-      while (pt - 1 > endtok && isspace(pt[-1]))
+      while (pt-1>endtok && isspace(pt[-1]))
 	 --pt;
-      if (pt - 8 > endtok && strncmp(pt - 8, "noaccess", 8)==0)
+      if (pt-8>endtok && strncmp(pt-8, "noaccess", 8)==0)
 	 pt -= 8;
-      else if (pt - 8 > endtok && strncmp(pt - 8, "readonly", 8)==0)
+      else if (pt-8>endtok && strncmp(pt-8, "readonly", 8)==0)
 	 pt -= 8;
-      else if (pt - 4 > endtok && strncmp(pt - 4, "bind", 4)==0)
+      else if (pt-4>endtok && strncmp(pt-4, "bind", 4)==0)
 	 pt -= 4;
       else
 	 break;
    }
    if (dict != NULL) {
-      dict->values[dict->next]=copyn(endtok, pt - endtok);
+      dict->values[dict->next]=copyn(endtok, pt-endtok);
       ++dict->next;
    } else {
-      *fp->pending_parse=copyn(endtok, pt - endtok);
+      *fp->pending_parse=copyn(endtok, pt-endtok);
       fp->pending_parse=NULL;
    }
 }
@@ -1219,22 +1219,22 @@ static int hex(int ch1,int ch2) {
    if (ch1 >= '0' && ch1 <= '9')
       ch1 -= '0';
    else if (ch1 >= 'A' && ch1 <= 'F')
-      ch1 -= ('A' - 10);
+      ch1 -= ('A'-10);
    else if (ch1 >= 'a' && ch1 <= 'f')
-      ch1 -= ('a' - 10);
+      ch1 -= ('a'-10);
    else
       return (-1);
 
    if (ch2 >= '0' && ch2 <= '9')
       ch2 -= '0';
    else if (ch2 >= 'A' && ch2 <= 'F')
-      ch2 -= ('A' - 10);
+      ch2 -= ('A'-10);
    else if (ch2 >= 'a' && ch2 <= 'f')
-      ch2 -= ('a' - 10);
+      ch2 -= ('a'-10);
    else
       return (-1);
 
-   return ((ch1 << 4) | ch2);
+   return ((ch1 << 4)|ch2);
 }
 
 unsigned short r;
@@ -1249,7 +1249,7 @@ static void initcode(void) {
 static int decode(unsigned char cypher) {
    unsigned char plain=(cypher ^ (r >> 8));
 
-   r=(cypher + r) * c1 + c2;
+   r=(cypher+r)*c1+c2;
    return (plain);
 }
 
@@ -1262,17 +1262,17 @@ static void decodestr(unsigned char *str,int len) {
    unsigned short r=4330;
    unsigned char plain, cypher;
 
-   while (len-- > 0) {
+   while (len-->0) {
       cypher=*str;
       plain=(cypher ^ (r >> 8));
-      r=(cypher + r) * c1 + c2;
+      r=(cypher+r)*c1+c2;
       *str++=plain;
    }
 }
 
 static void findstring(struct fontparse *fp,struct pschars *subrs,int index,
 		       char *nametok, char *str) {
-   char buffer[1024], *bpt, *bs, *end=buffer + sizeof(buffer) - 1;
+   char buffer[1024], *bpt, *bs, *end=buffer+sizeof(buffer)-1;
    int val;
 
    while (isspace(*str))
@@ -1285,28 +1285,28 @@ static void findstring(struct fontparse *fp,struct pschars *subrs,int index,
 	    val=*str++;
 	 else {
 	    if (isdigit(*++str)) {
-	       val=*str++ - '0';
+	       val=*str++-'0';
 	       if (isdigit(*str)) {
-		  val=(val << 3) | (*str++ - '0');
+		  val=(val << 3)|(*str++-'0');
 		  if (isdigit(*str))
-		     val=(val << 3) | (*str++ - '0');
+		     val=(val << 3)|(*str++-'0');
 	       }
 	    } else
 	       val=*str++;
 	 }
-	 if (bpt < end)
+	 if (bpt<end)
 	    *bpt++=val;
       }
-      decodestr((unsigned char *) buffer, bpt - buffer);
-      bs=buffer + fp->fd->private->leniv;
-      if (bpt < bs)
+      decodestr((unsigned char *) buffer, bpt-buffer);
+      bs=buffer+fp->fd->private->leniv;
+      if (bpt<bs)
 	 bs=bpt;		/* garbage */
-      subrs->lens[index]=bpt - bs;
+      subrs->lens[index]=bpt-bs;
       subrs->keys[index]=fastrdup(nametok);
-      subrs->values[index]=malloc(bpt - bs);
-      memcpy(subrs->values[index], bs, bpt - bs);
+      subrs->values[index]=malloc(bpt-bs);
+      memcpy(subrs->values[index], bs, bpt-bs);
       if (index >= subrs->next)
-	 subrs->next=index + 1;
+	 subrs->next=index+1;
    }
 }
 
@@ -1335,7 +1335,7 @@ static void findnumbers(struct fontparse *fp,struct pschars *chars,
       chars->lens[index]=0;
       chars->keys[index]=fastrdup(namestrt);
       chars->values[index]=(void *) (intptr_t) val;
-      chars->next=index + 1;
+      chars->next=index+1;
       str=end;
       while (isspace(*str))
 	 ++str;
@@ -1348,8 +1348,8 @@ static char *rmbinary(char *line) {
    char *pt;
 
    for (pt=line; *pt; ++pt) {
-      if ((*pt < ' ' || *pt >= 0x7f) && *pt != '\n') {
-	 if (strlen(pt) > 5) {
+      if ((*pt<' ' || *pt >= 0x7f) && *pt != '\n') {
+	 if (strlen(pt)>5) {
 	    pt[0]='.';
 	    pt[1]='.';
 	    pt[2]='.';
@@ -1371,11 +1371,11 @@ static char *rmbinary(char *line) {
 /* go see "Re: [Fontanvil-devel] stuck in infinite loop", 2012August22	*/
 static int matchFromBack(const char *pt,const char *str,int n) {
    int i, num_to_check=strlen(str);
-   const char *strpt=str + num_to_check - 1;
+   const char *strpt=str+num_to_check-1;
 
-   if (n < num_to_check)
+   if (n<num_to_check)
       num_to_check=n;
-   for (i=0; i < num_to_check; i++) {
+   for (i=0; i<num_to_check; i++) {
       if (*pt-- != *strpt--)
 	 return (0);
    }
@@ -1394,15 +1394,15 @@ static void putBack(struct fontparse *fp,AFILE *f,const char *str,
 
    if (last) {
       (*pt)--;
-      if (aungetc(last, f) < 0) {
+      if (aungetc(last, f)<0) {
 	 fp->alreadycomplained=1;
 	 ErrorMsg(2,"Internal Err: Unable to put data back into file\n");
 	 return;
       }
    }
 
-   for (backpt=str + strlen(str) - 1; backpt >= str; backpt--) {
-      if (aungetc(*backpt, f) < 0) {
+   for (backpt=str+strlen(str)-1; backpt >= str; backpt--) {
+      if (aungetc(*backpt, f)<0) {
 	 fp->alreadycomplained=1;
 	 ErrorMsg(2,"Internal Err: Unable to put data back into file\n");
 	 break;
@@ -1429,11 +1429,11 @@ static void sfnts2tempfile(struct fontparse *fp,AFILE *in,char *line) {
 	 if (isspace(*pt))
 	    continue;
 	 if (isdigit(*pt))
-	    nibble=*pt - '0';
+	    nibble=*pt-'0';
 	 else if (*pt >= 'a' && *pt <= 'f')
-	    nibble=*pt - 'a' + 10;
+	    nibble=*pt-'a'+10;
 	 else if (*pt >= 'A' && *pt <= 'F')
-	    nibble=*pt - 'A' + 10;
+	    nibble=*pt-'A'+10;
 	 else {
 	    if (!complained) {
 	       ErrorMsg(2,"Invalid hex digit in sfnts array\n");
@@ -1446,13 +1446,13 @@ static void sfnts2tempfile(struct fontparse *fp,AFILE *in,char *line) {
 	    sofar=nibble << 4;
 	    firstnibble=false;
 	 } else {
-	    aputc(sofar | nibble, fp->sfnts);
+	    aputc(sofar|nibble, fp->sfnts);
 	    sofar=0;
 	    firstnibble=true;
 	 }
       }
       if (*pt=='>') {
-	 if (aftell(fp->sfnts) & 1) {	/* Strings must be contain an even number of bytes */
+	 if (aftell(fp->sfnts)&1) {	/* Strings must be contain an even number of bytes */
 	    /* But may be padded with a trailing NUL */
 	    afseek(fp->sfnts, -1, SEEK_CUR);
 	 }
@@ -1477,18 +1477,18 @@ static void sfnts2tempfile(struct fontparse *fp,AFILE *in,char *line) {
 	    complained=true;
 	 }
       } else if (instring && ch=='>') {
-	 if (aftell(fp->sfnts) & 1) {	/* Strings must be contain an even number of bytes */
+	 if (aftell(fp->sfnts)&1) {	/* Strings must be contain an even number of bytes */
 	    /* But may be padded with a trailing NUL */
 	    afseek(fp->sfnts, -1, SEEK_CUR);
 	 }
 	 instring=false;
       } else {
 	 if (isdigit(ch))
-	    nibble=ch - '0';
+	    nibble=ch-'0';
 	 else if (ch >= 'a' && ch <= 'f')
-	    nibble=ch - 'a' + 10;
+	    nibble=ch-'a'+10;
 	 else if (ch >= 'A' && ch <= 'F')
-	    nibble=ch - 'A' + 10;
+	    nibble=ch-'A'+10;
 	 else {
 	    if (!complained) {
 	       ErrorMsg(2,"Invalid hex digit in sfnts array\n");
@@ -1500,7 +1500,7 @@ static void sfnts2tempfile(struct fontparse *fp,AFILE *in,char *line) {
 	    sofar=nibble << 4;
 	    firstnibble=false;
 	 } else {
-	    aputc(sofar | nibble, fp->sfnts);
+	    aputc(sofar|nibble, fp->sfnts);
 	    sofar=0;
 	    firstnibble=true;
 	 }
@@ -1530,13 +1530,13 @@ static void ParseSimpleEncoding(struct fontparse *fp,char *line) {
       for (pt=tok;
 	   !isspace(*line) && *line != '\0' && *line != '/'
 	   && *line != ']';) {
-	 if (pt < tok + sizeof(tok) - 2)
+	 if (pt<tok+sizeof(tok)-2)
 	    *pt++=*line++;
 	 else
 	    ++line;
       }
       *pt='\0';
-      if (fp->simple_enc_pos < 256)
+      if (fp->simple_enc_pos<256)
 	 fp->fd->encoding[fp->simple_enc_pos++]=fastrdup(tok);
    }
    if (*line==']') {
@@ -1558,14 +1558,14 @@ static void parseline(struct fontparse *fp,char *line,AFILE *in) {
       return;
    } else if ((fp->inencoding && strncmp(line, "dup", 3)==0) ||
 	      (strncmp(line, "dup ", 4)==0 && isdigit(line[4]) &&
-	       strstr(line + strlen(line) - 6, " put") != NULL
+	       strstr(line+strlen(line)-6, " put") != NULL
 	       && strchr(line, '/') != NULL)) {
       /* Fontographer's type3 fonts claim to be standard, but then aren't */
       fp->fd->encoding_name=&custom;
       /* Metamorphasis has multiple entries on a line */
       while (strncmp(line, "dup", 3)==0) {
 	 char *end;
-	 int pos=strtol(line + 3, &end, 10);
+	 int pos=strtol(line+3, &end, 10);
 
 	 line=end;
 	 while (isspace(*line))
@@ -1574,7 +1574,7 @@ static void parseline(struct fontparse *fp,char *line,AFILE *in) {
 	    ++line;
 	 for (pt=buffer; !isspace(*line); *pt++=*line++);
 	 *pt='\0';
-	 if (pos >= 0 && pos < 256) {
+	 if (pos >= 0 && pos<256) {
 	    free(fp->fd->encoding[pos]);
 	    fp->fd->encoding[pos]=fastrdup(buffer);
 	 }
@@ -1593,7 +1593,7 @@ static void parseline(struct fontparse *fp,char *line,AFILE *in) {
       /* 0 1 31 { 1 index exch /.notdef put } bind for */
       int i;
 
-      for (i=0; i < 256; ++i)
+      for (i=0; i<256; ++i)
 	 if (fp->fd->encoding[i]==NULL)
 	    fp->fd->encoding[i]=fastrdup(".notdef");
       return;
@@ -1615,7 +1615,7 @@ static void parseline(struct fontparse *fp,char *line,AFILE *in) {
 	    ++line;
 	    for (pt=buffer; !isspace(*line); *pt++=*line++);
 	    *pt='\0';
-	    if (pos >= 0 && pos < 256)
+	    if (pos >= 0 && pos<256)
 	       fp->fd->encoding[pos]=fastrdup(buffer);
 	 }
       }
@@ -1633,7 +1633,7 @@ static void parseline(struct fontparse *fp,char *line,AFILE *in) {
 	 i=strtol(line, &ept, 10);
 	 if (fp->ignore)
 	    /* Do Nothing */ ;
-	 else if (i < subrs->cnt) {
+	 else if (i<subrs->cnt) {
 	    findstring(fp, subrs, i, NULL, ept);
 	 } else if (!fp->alreadycomplained) {
 	    ErrorMsg(2,"Index too big (must be <%d) \"%s\n", subrs->cnt,
@@ -1680,7 +1680,7 @@ static void parseline(struct fontparse *fp,char *line,AFILE *in) {
 	 while (isalnum(*line) || *line=='.')
 	    ++line;
 	 *line='\0';
-	 findstring(fp, chars, i, namestrt, line + 1);
+	 findstring(fp, chars, i, namestrt, line+1);
       }
       return;
    }
@@ -1690,7 +1690,7 @@ static void parseline(struct fontparse *fp,char *line,AFILE *in) {
       ++line;
    endtok=NULL;
    if (*line=='/')
-      for (endtok=line + 1;
+      for (endtok=line+1;
 	   !isspace(*endtok) && *endtok != '(' && *endtok != '/'
 	   && *endtok != '{' && *endtok != '[' && *endtok != '\0'; ++endtok);
 
@@ -1701,7 +1701,7 @@ static void parseline(struct fontparse *fp,char *line,AFILE *in) {
       return;
    }
 
-   if (mycmp("Encoding", line + 1, endtok)==0 && !fp->doneencoding) {
+   if (mycmp("Encoding", line+1, endtok)==0 && !fp->doneencoding) {
       if (strstr(endtok, "StandardEncoding") != NULL) {
 	 fp->fd->encoding_name=FindOrMakeEncoding("AdobeStandard");
 	 setStdEnc(fp->fd->encoding);
@@ -1722,13 +1722,13 @@ static void parseline(struct fontparse *fp,char *line,AFILE *in) {
       if (*endtok=='[') {	/* It's a literal array */
 	 fp->simpleencoding=true;
 	 fp->simple_enc_pos=0;
-	 ParseSimpleEncoding(fp, endtok + 1);
+	 ParseSimpleEncoding(fp, endtok+1);
       }
-   } else if (mycmp("BoundingBoxes", line + 1, endtok)==0) {
+   } else if (mycmp("BoundingBoxes", line+1, endtok)==0) {
       fp->infi=fp->inprivate=fp->inencoding=fp->inmetrics =
 	 fp->inmetrics2=false;
       fp->inbb=true;
-   } else if (mycmp("Metrics", line + 1, endtok)==0) {
+   } else if (mycmp("Metrics", line+1, endtok)==0) {
       fp->infi=fp->inprivate=fp->inbb=fp->inencoding=fp->inmetrics2 =
 	 false;
       fp->inmetrics=true;
@@ -1763,49 +1763,49 @@ static void parseline(struct fontparse *fp,char *line,AFILE *in) {
 	 return;
       } else if (endtok==NULL)
 	 return;
-      if (mycmp("version", line + 1, endtok)==0) {
+      if (mycmp("version", line+1, endtok)==0) {
 	 free(fp->fd->fontinfo->version);
 	 fp->fd->fontinfo->version=getstring(endtok, in);
-      } else if (mycmp("Notice", line + 1, endtok)==0) {
+      } else if (mycmp("Notice", line+1, endtok)==0) {
 	 free(fp->fd->fontinfo->notice);
 	 fp->fd->fontinfo->notice=getstring(endtok, in);
-      } else if (mycmp("Copyright", line + 1, endtok)==0) {	/* cff spec allows for copyright and notice */
+      } else if (mycmp("Copyright", line+1, endtok)==0) {	/* cff spec allows for copyright and notice */
 	 free(fp->fd->fontinfo->notice);
 	 fp->fd->fontinfo->notice=getstring(endtok, in);
-      } else if (mycmp("FullName", line + 1, endtok)==0) {
+      } else if (mycmp("FullName", line+1, endtok)==0) {
 	 if (fp->fd->fontinfo->fullname==NULL)
 	    fp->fd->fontinfo->fullname=getstring(endtok, in);
 	 else
 	    free(getstring(endtok, in));
-      } else if (mycmp("FamilyName", line + 1, endtok)==0) {
+      } else if (mycmp("FamilyName", line+1, endtok)==0) {
 	 free(fp->fd->fontinfo->familyname);
 	 fp->fd->fontinfo->familyname=getstring(endtok, in);
-      } else if (mycmp("Weight", line + 1, endtok)==0) {
+      } else if (mycmp("Weight", line+1, endtok)==0) {
 	 free(fp->fd->fontinfo->weight);
 	 fp->fd->fontinfo->weight=getstring(endtok, in);
-      } else if (mycmp("ItalicAngle", line + 1, endtok)==0)
+      } else if (mycmp("ItalicAngle", line+1, endtok)==0)
 	 fp->fd->fontinfo->italicangle=strtod(endtok, NULL);
-      else if (mycmp("UnderlinePosition", line + 1, endtok)==0)
+      else if (mycmp("UnderlinePosition", line+1, endtok)==0)
 	 fp->fd->fontinfo->underlineposition=strtod(endtok, NULL);
-      else if (mycmp("UnderlineThickness", line + 1, endtok)==0)
+      else if (mycmp("UnderlineThickness", line+1, endtok)==0)
 	 fp->fd->fontinfo->underlinethickness=strtod(endtok, NULL);
-      else if (mycmp("isFixedPitch", line + 1, endtok)==0)
+      else if (mycmp("isFixedPitch", line+1, endtok)==0)
 	 fp->fd->fontinfo->isfixedpitch=getbool(endtok);
-      else if (mycmp("em", line + 1, endtok)==0)
+      else if (mycmp("em", line+1, endtok)==0)
 	 fp->fd->fontinfo->em=strtol(endtok, NULL, 10);
-      else if (mycmp("ascent", line + 1, endtok)==0)
+      else if (mycmp("ascent", line+1, endtok)==0)
 	 fp->fd->fontinfo->ascent=strtol(endtok, NULL, 10);
-      else if (mycmp("descent", line + 1, endtok)==0)
+      else if (mycmp("descent", line+1, endtok)==0)
 	 fp->fd->fontinfo->descent=strtol(endtok, NULL, 10);
-      else if (mycmp("FSType", line + 1, endtok)==0)
+      else if (mycmp("FSType", line+1, endtok)==0)
 	 fp->fd->fontinfo->fstype=strtol(endtok, NULL, 10);
-      else if (mycmp("BlendDesignPositions", line + 1, endtok)==0) {
+      else if (mycmp("BlendDesignPositions", line+1, endtok)==0) {
 	 fp->pending_parse=&fp->fd->fontinfo->blenddesignpositions;
 	 AddValue(fp, NULL, line, endtok);
-      } else if (mycmp("BlendDesignMap", line + 1, endtok)==0) {
+      } else if (mycmp("BlendDesignMap", line+1, endtok)==0) {
 	 fp->pending_parse=&fp->fd->fontinfo->blenddesignmap;
 	 AddValue(fp, NULL, line, endtok);
-      } else if (mycmp("BlendAxisTypes", line + 1, endtok)==0) {
+      } else if (mycmp("BlendAxisTypes", line+1, endtok)==0) {
 	 fp->pending_parse=&fp->fd->fontinfo->blendaxistypes;
 	 AddValue(fp, NULL, line, endtok);
       } else if (!fp->alreadycomplained) {
@@ -1821,7 +1821,7 @@ static void parseline(struct fontparse *fp,char *line,AFILE *in) {
       /* Ignore anything in the blend dict defn */
    } else if (fp->inblendprivate || fp->inblendfi) {
       struct psdict *subdict =
-	 fp->inblendfi ? fp->fd->blendfontinfo : fp->fd->blendprivate;
+	 fp->inblendfi?fp->fd->blendfontinfo:fp->fd->blendprivate;
       if (fp->multiline) {
 	 ContinueValue(fp, subdict, line);
 	 return;
@@ -1847,7 +1847,7 @@ static void parseline(struct fontparse *fp,char *line,AFILE *in) {
 	 fp->insubs=0;
 	 return;
       } else if (strstr(line, "/Subrs") != NULL) {
-	 if (fp->fd->private->subrs->next > 0) {
+	 if (fp->fd->private->subrs->next>0) {
 	    fp->ignore=true;
 	    ErrorMsg(2,"Ignoring duplicate /Subrs entry\n");
 	 } else {
@@ -1874,20 +1874,20 @@ static void parseline(struct fontparse *fp,char *line,AFILE *in) {
 	    }
 	 return;
       }
-      if (mycmp("ND", line + 1, endtok)==0
-	  || mycmp("|-", line + 1, endtok)==0
-	  || mycmp("NP", line + 1, endtok)==0
-	  || mycmp("|", line + 1, endtok)==0
-	  || mycmp("RD", line + 1, endtok)==0
-	  || mycmp("-|", line + 1, endtok)==0
-	  || mycmp("password", line + 1, endtok)==0
-	  || mycmp("MinFeature", line + 1, endtok)==0)
+      if (mycmp("ND", line+1, endtok)==0
+	  || mycmp("|-", line+1, endtok)==0
+	  || mycmp("NP", line+1, endtok)==0
+	  || mycmp("|", line+1, endtok)==0
+	  || mycmp("RD", line+1, endtok)==0
+	  || mycmp("-|", line+1, endtok)==0
+	  || mycmp("password", line+1, endtok)==0
+	  || mycmp("MinFeature", line+1, endtok)==0)
 	 /* These conveigh no information, but are required */ ;
-      else if (mycmp("UniqueID", line + 1, endtok)==0) {
+      else if (mycmp("UniqueID", line+1, endtok)==0) {
 	 if (fp->fd->uniqueid==0)
 	    fp->fd->uniqueid=strtol(endtok, NULL, 10);
       } else {
-	 if (mycmp("lenIV", line + 1, endtok)==0)
+	 if (mycmp("lenIV", line+1, endtok)==0)
 	    fp->fd->private->leniv=strtol(endtok, NULL, 10);	/* We need this value */
 	 AddValue(fp, fp->fd->private->private, line, endtok);
       }
@@ -1897,13 +1897,13 @@ static void parseline(struct fontparse *fp,char *line,AFILE *in) {
 	 return;
       } else if (endtok==NULL)
 	 return;
-      if (mycmp("Registry", line + 1, endtok)==0) {
+      if (mycmp("Registry", line+1, endtok)==0) {
 	 free(fp->fd->registry);
 	 fp->fd->registry=getstring(endtok, in);
-      } else if (mycmp("Ordering", line + 1, endtok)==0) {
+      } else if (mycmp("Ordering", line+1, endtok)==0) {
 	 free(fp->fd->ordering);
 	 fp->fd->ordering=getstring(endtok, in);
-      } else if (mycmp("Supplement", line + 1, endtok)==0)	/* cff spec allows for copyright and notice */
+      } else if (mycmp("Supplement", line+1, endtok)==0)	/* cff spec allows for copyright and notice */
 	 fp->fd->supplement=strtol(endtok, NULL, 0);
    } else {
       if (strstr(line, "/Private") != NULL
@@ -1990,16 +1990,16 @@ static void parseline(struct fontparse *fp,char *line,AFILE *in) {
 	 }
 	 return;
       }
-      if (mycmp("FontName", line + 1, endtok)==0) {
+      if (mycmp("FontName", line+1, endtok)==0) {
 	 if (fp->fd->fontname==NULL)
 	    fp->fd->fontname=gettoken(endtok);
 	 else
 	    free(gettoken(endtok));	/* skip it */
-      } else if (mycmp("PaintType", line + 1, endtok)==0)
+      } else if (mycmp("PaintType", line+1, endtok)==0)
 	 fp->fd->painttype=strtol(endtok, NULL, 10);
-      else if (mycmp("FontType", line + 1, endtok)==0)
+      else if (mycmp("FontType", line+1, endtok)==0)
 	 fp->fd->fonttype=strtol(endtok, NULL, 10);
-      else if (mycmp("FontMatrix", line + 1, endtok)==0) {
+      else if (mycmp("FontMatrix", line+1, endtok)==0) {
 	 if (fp->fd->fontmatrix[0]==0)
 	    fillrealarray(fp->fd->fontmatrix, endtok, 6);
 	 else {
@@ -2007,30 +2007,30 @@ static void parseline(struct fontparse *fp,char *line,AFILE *in) {
 
 	    fillrealarray(temp, endtok, 6);
 	 }
-      } else if (mycmp("LanguageLevel", line + 1, endtok)==0)
+      } else if (mycmp("LanguageLevel", line+1, endtok)==0)
 	 fp->fd->languagelevel=strtol(endtok, NULL, 10);
-      else if (mycmp("WMode", line + 1, endtok)==0)
+      else if (mycmp("WMode", line+1, endtok)==0)
 	 fp->fd->wmode=strtol(endtok, NULL, 10);
-      else if (mycmp("FontBBox", line + 1, endtok)==0)
+      else if (mycmp("FontBBox", line+1, endtok)==0)
 	 fillrealarray(fp->fd->fontbb, endtok, 4);
-      else if (mycmp("UniqueID", line + 1, endtok)==0) {
+      else if (mycmp("UniqueID", line+1, endtok)==0) {
 	 if (fp->fd->uniqueid==0)
 	    fp->fd->uniqueid=strtol(endtok, NULL, 10);
-      } else if (mycmp("UniqueId", line + 1, endtok)==0) {
+      } else if (mycmp("UniqueId", line+1, endtok)==0) {
 	 ErrorMsg(2,"This font contains a \"UniqueId\" variable, but the correct name for it is\n\t\"UniqueID\" (postscript is case concious)\n");
 	 if (fp->fd->uniqueid==0)
 	    fp->fd->uniqueid=strtol(endtok, NULL, 10);
-      } else if (mycmp("XUID", line + 1, endtok)==0) {
+      } else if (mycmp("XUID", line+1, endtok)==0) {
 	 if (fp->fd->xuid[0]==0)
 	    fillintarray(fp->fd->xuid, endtok, 20);
-      } else if (mycmp("StrokeWidth", line + 1, endtok)==0)
+      } else if (mycmp("StrokeWidth", line+1, endtok)==0)
 	 fp->fd->strokewidth=strtod(endtok, NULL);
-      else if (mycmp("WeightVector", line + 1, endtok)==0) {
+      else if (mycmp("WeightVector", line+1, endtok)==0) {
 	 if (fp->fd->weightvector==NULL) {
 	    fp->pending_parse=&fp->fd->weightvector;
 	    AddValue(fp, NULL, line, endtok);
 	 }
-      } else if (mycmp("$Blend", line + 1, endtok)==0) {
+      } else if (mycmp("$Blend", line+1, endtok)==0) {
 	 fp->pending_parse=&fp->fd->blendfunc;
 	 AddValue(fp, NULL, line, endtok);
       } else if (strstr(line, "/NormalizeDesignVector") != NULL) {
@@ -2039,41 +2039,41 @@ static void parseline(struct fontparse *fp,char *line,AFILE *in) {
       } else if (strstr(line, "/ConvertDesignVector") != NULL) {
 	 fp->pending_parse=&fp->fd->cdv;
 	 AddValue(fp, NULL, line, endtok);
-      } else if (mycmp("BuildChar", line + 1, endtok)==0)
+      } else if (mycmp("BuildChar", line+1, endtok)==0)
 	 /* Do Nothing */ ;
-      else if (mycmp("BuildGlyph", line + 1, endtok)==0)
+      else if (mycmp("BuildGlyph", line+1, endtok)==0)
 	 /* Do Nothing */ ;
-      else if (mycmp("CIDFontName", line + 1, endtok)==0) {
+      else if (mycmp("CIDFontName", line+1, endtok)==0) {
 	 free(fp->fd->cidfontname);
 	 fp->fd->cidfontname=gettoken(endtok);
-      } else if (mycmp("CIDFontVersion", line + 1, endtok)==0) {
+      } else if (mycmp("CIDFontVersion", line+1, endtok)==0) {
 	 fp->fd->cidversion=strtod(endtok, NULL);
-      } else if (mycmp("CIDFontType", line + 1, endtok)==0)
+      } else if (mycmp("CIDFontType", line+1, endtok)==0)
 	 fp->fd->cidfonttype=strtol(endtok, NULL, 10);
-      else if (mycmp("UIDBase", line + 1, endtok)==0)
+      else if (mycmp("UIDBase", line+1, endtok)==0)
 	 fp->fd->uniqueid=strtol(endtok, NULL, 10);
-      else if (mycmp("CIDMapOffset", line + 1, endtok)==0)
+      else if (mycmp("CIDMapOffset", line+1, endtok)==0)
 	 fp->fd->mapoffset=strtol(endtok, NULL, 10);
-      else if (mycmp("FDBytes", line + 1, endtok)==0)
+      else if (mycmp("FDBytes", line+1, endtok)==0)
 	 fp->fd->fdbytes=strtol(endtok, NULL, 10);
-      else if (mycmp("GDBytes", line + 1, endtok)==0)
+      else if (mycmp("GDBytes", line+1, endtok)==0)
 	 fp->fd->gdbytes=strtol(endtok, NULL, 10);
-      else if (mycmp("CIDCount", line + 1, endtok)==0)
+      else if (mycmp("CIDCount", line+1, endtok)==0)
 	 fp->fd->cidcnt=strtol(endtok, NULL, 10);
-      else if (mycmp("FDArray", line + 1, endtok)==0) {
+      else if (mycmp("FDArray", line+1, endtok)==0) {
 	 int i;
 
 	 fp->mainfd=fp->fd;
 	 fp->fd->fdcnt=strtol(endtok, NULL, 10);
 	 fp->fd->fds=calloc(fp->fd->fdcnt, sizeof(struct fontdict *));
-	 for (i=0; i < fp->fd->fdcnt; ++i)
+	 for (i=0; i<fp->fd->fdcnt; ++i)
 	    fp->fd->fds[i]=MakeEmptyFont();
 	 fp->fdindex=0;
 	 fp->fd=fp->fd->fds[0];
-      } else if (mycmp("FontSetInit", line + 1, endtok)==0) {
+      } else if (mycmp("FontSetInit", line+1, endtok)==0) {
 	 fp->iscff=true;
 	 fp->iscid=false;
-      } else if (mycmp("CIDInit", line + 1, endtok)==0) {
+      } else if (mycmp("CIDInit", line+1, endtok)==0) {
 	 fp->iscid=true;
 	 fp->iscff=false;
       } else if (fp->skipping_mbf) {	/* Skip over the makeblendedfont defn in a multimaster font */
@@ -2093,7 +2093,7 @@ static void addinfo(struct fontparse *fp,char *line,char *tok,
    decodestr((unsigned char *) binstart, binlen);
    binstart += fp->fd->private->leniv;
    binlen -= fp->fd->private->leniv;
-   if (binlen < 0) {
+   if (binlen<0) {
       ErrorMsg(2,"Bad CharString. Does not include lenIV bytes.\n");
       return;
    }
@@ -2101,23 +2101,23 @@ static void addinfo(struct fontparse *fp,char *line,char *tok,
  retry:
    if (fp->insubs) {
       struct pschars *chars =
-	 /*fp->insubs ? */
+	 /*fp->insubs?*/
 	 fp->fd->private->subrs /*: fp->fd->private->othersubrs */ ;
       while (isspace(*line))
 	 ++line;
       if (strncmp(line, "dup ", 4)==0) {
-	 int i=strtol(line + 4, NULL, 10);
+	 int i=strtol(line+4, NULL, 10);
 
 	 if (fp->ignore)
 	    /* Do Nothing */ ;
-	 else if (i < chars->cnt) {
+	 else if (i<chars->cnt) {
 	    if (chars->values[i] != NULL)
 	       ErrorMsg(2,"Duplicate definition of subroutine %d\n", i);
 	    chars->lens[i]=binlen;
 	    chars->values[i]=malloc(binlen);
 	    memcpy(chars->values[i], binstart, binlen);
 	    if (i >= chars->next)
-	       chars->next=i + 1;
+	       chars->next=i+1;
 	 } else if (!fp->alreadycomplained) {
 	    ErrorMsg(2,"Index too big (must be <%d) \"%s\n", chars->cnt,
 		     rmbinary(line));
@@ -2152,7 +2152,7 @@ static void addinfo(struct fontparse *fp,char *line,char *tok,
       /* Special hacks for known badly formatted fonts */
       if (strstr(line, "/CharStrings") != NULL) {
 	 for (pt=line; *pt != '/'; ++pt);
-	 pt=strchr(pt + 1, '/');
+	 pt=strchr(pt+1, '/');
 	 if (pt != NULL)
 	    *pt='\0';
 	 parseline(fp, line, in);
@@ -2171,7 +2171,7 @@ static void addinfo(struct fontparse *fp,char *line,char *tok,
 	 while (--pt >= line)
 	    if (!strncmp("dup", pt, 3))
 	       break;
-	 if (pt < line)
+	 if (pt<line)
 	    pt=NULL;
 	 if (pt != NULL)
 	    *pt='\0';
@@ -2227,7 +2227,7 @@ static int glorpline(struct fontparse *fp,AFILE *temp,char *rdtok) {
 
    if (buffer==NULL) {
       buffer=malloc(3000);
-      end=buffer + 3000;
+      end=buffer+3000;
    }
    innum=inr=0;
    wasspace=0;
@@ -2244,20 +2244,20 @@ static int glorpline(struct fontparse *fp,AFILE *temp,char *rdtok) {
    while ((ch=agetc(temp)) != EOF) {
       if (pt >= end) {
 	 char *old=buffer;
-	 int len=(end - buffer) + 2000;
+	 int len=(end-buffer)+2000;
 
 	 buffer=realloc(buffer, len);
-	 end=buffer + len;
-	 pt=buffer + (pt - old);
+	 end=buffer+len;
+	 pt=buffer+(pt-old);
 	 if (binstart != NULL)
-	    binstart=buffer + (binstart - old);
+	    binstart=buffer+(binstart-old);
       }
       *pt++=ch;
       isminus=ch=='-' && wasspace;
       nownum=nowspace=nowr=0;
-      if (rpt != NULL && ch != *rpt && ch=='h' && rpt - rdline > 25
-	  && rpt - rdline < 30 && rdline2[rpt - rdline]=='h') {
-	 rpt=rdline2 + (rpt - rdline);
+      if (rpt != NULL && ch != *rpt && ch=='h' && rpt-rdline>25
+	  && rpt-rdline<30 && rdline2[rpt-rdline]=='h') {
+	 rpt=rdline2+(rpt-rdline);
 	 willbehex=true;
       }
       if (inbinary) {
@@ -2268,16 +2268,16 @@ static int glorpline(struct fontparse *fp,AFILE *temp,char *rdtok) {
 	    int h;
 
 	    if (isdigit(ch))
-	       h=ch - '0';
+	       h=ch-'0';
 	    else if (ch >= 'a' && ch <= 'f')
-	       h=ch - 'a' + 10;
+	       h=ch-'a'+10;
 	    else
-	       h=ch - 'A' + 10;
+	       h=ch-'A'+10;
 	    if (firstnibble) {
 	       nibble=h;
 	       --pt;
 	    } else {
-	       pt[-1]=(nibble << 4) | h;
+	       pt[-1]=(nibble << 4)|h;
 	       if (--cnt==0)
 		  inbinary=inhex=0;
 	    }
@@ -2293,7 +2293,7 @@ static int glorpline(struct fontparse *fp,AFILE *temp,char *rdtok) {
 	 *tokpt++=ch;
       } else if ((intok || sptok) && (ch=='{' || ch=='[')) {
 	 *tokpt='\0';
-	 rpt=rdline + 1;
+	 rpt=rdline+1;
 	 intok=sptok=0;
       } else if (intok) {
 	 *tokpt='\0';
@@ -2341,19 +2341,19 @@ static int glorpline(struct fontparse *fp,AFILE *temp,char *rdtok) {
 	 sptok=0;
 	 nownum=1;
 	 if (innum)
-	    val=10 * val + ch - '0';
+	    val=10*val+ch-'0';
 	 else
-	    val=ch - '0';
+	    val=ch-'0';
       } else if (isspace(ch)) {
 	 nowspace=1;
 	 if (ch=='\n' || ch=='\r')
 	    break;
-	 if (inSubrs && matchFromBack(pt - 2, "array", pt - buffer - 1))
+	 if (inSubrs && matchFromBack(pt-2, "array", pt-buffer-1))
 	    break;		/* Subrs may be on same line with first RD def -- seperate them */
       } else if (wasspace && ch==*rdtok) {
 	 nowr=1;
 	 fp->useshexstrings=willbehex;
-	 rdpt=rdtok + 1;
+	 rdpt=rdtok+1;
       } else if (wasspace && ch=='-') {	/* fonts produced by type1fix seem to define both "RD" and "-|" which confused me. so just respond to either */
 	 nowr=1;
 	 fp->useshexstrings=false;
@@ -2405,13 +2405,13 @@ static int nrandombytes[4];
 
 #define EODMARKLEN	16
 
-#define bgetc(extra,in)	(*(extra)=='\0' ? agetc(in) : (unsigned char ) *(extra)++ )
+#define bgetc(extra,in)	(*(extra)=='\0'?agetc(in):(unsigned char ) *(extra)++ )
 
 static void decrypteexec(AFILE *in,AFILE *temp,int hassectionheads,
 			 char *extra) {
    int ch1, ch2, ch3, ch4, binary;
    int zcnt;
-   unsigned char zeros[EODMARKLEN + 6 + 1];
+   unsigned char zeros[EODMARKLEN+6+1];
    int sect_len=0x7fffffff;
 
    if (extra==(void *) 5)
@@ -2436,17 +2436,17 @@ static void decrypteexec(AFILE *in,AFILE *temp,int hassectionheads,
    ch3=bgetc(extra, in);
    ch4=bgetc(extra, in);
    binary=0;
-   if (ch1 < '0' || (ch1 > '9' && ch1 < 'A') || (ch1 > 'F' && ch1 < 'a')
-       || (ch1 > 'f') || ch2 < '0' || (ch2 > '9' && ch2 < 'A') || (ch2 > 'F'
+   if (ch1<'0' || (ch1>'9' && ch1<'A') || (ch1>'F' && ch1<'a')
+       || (ch1>'f') || ch2<'0' || (ch2>'9' && ch2<'A') || (ch2>'F'
 								   && ch2 <
 								   'a')
-       || (ch2 > 'f') || ch3 < '0' || (ch3 > '9' && ch3 < 'A') || (ch3 > 'F'
+       || (ch2>'f') || ch3<'0' || (ch3>'9' && ch3<'A') || (ch3>'F'
 								   && ch3 <
 								   'a')
-       || (ch3 > 'f') || ch4 < '0' || (ch4 > '9' && ch4 < 'A') || (ch4 > 'F'
+       || (ch3>'f') || ch4<'0' || (ch4>'9' && ch4<'A') || (ch4>'F'
 								   && ch4 <
 								   'a')
-       || (ch4 > 'f'))
+       || (ch4>'f'))
       binary=1;
    if (ch1==EOF || ch2==EOF || ch3==EOF || ch4==EOF) {
       return;
@@ -2483,12 +2483,12 @@ static void decrypteexec(AFILE *in,AFILE *temp,int hassectionheads,
 	       dumpzeros(temp, zeros, zcnt);
 	       zcnt=0;
 	    }
-	    if (zcnt > EODMARKLEN)
+	    if (zcnt>EODMARKLEN)
 	       break;
 	    if (zcnt==0)
 	       aputc(decode(ch1), temp);
 	    else
-	       zeros[zcnt - 1]=decode(ch1);
+	       zeros[zcnt-1]=decode(ch1);
 	 }
       }
    } else {
@@ -2511,12 +2511,12 @@ static void decrypteexec(AFILE *in,AFILE *temp,int hassectionheads,
 	    dumpzeros(temp, zeros, zcnt);
 	    zcnt=0;
 	 }
-	 if (zcnt > EODMARKLEN)
+	 if (zcnt>EODMARKLEN)
 	    break;
 	 if (zcnt==0)
 	    aputc(decode(hex(ch1, ch2)), temp);
 	 else
-	    zeros[zcnt - 1]=decode(hex(ch1, ch2));
+	    zeros[zcnt-1]=decode(hex(ch1, ch2));
       }
    }
    while ((ch1=bgetc(extra, in))=='0' || isspace(ch1));
@@ -2544,21 +2544,21 @@ static unsigned char *readt1str(AFILE *temp,int offset,int len,int leniv) {
    /* I'm told (by Ian Kemmish) that leniv==-1 => no eexec encryption */
 
    afseek(temp, offset, SEEK_SET);
-   if (leniv < 0) {
-      str=pt=malloc(len + 1);
-      for (i=0; i < len; ++i)
+   if (leniv<0) {
+      str=pt=malloc(len+1);
+      for (i=0; i<len; ++i)
 	 *pt++=agetc(temp);
    } else {
-      for (i=0; i < leniv; ++i) {
+      for (i=0; i<leniv; ++i) {
 	 cypher=agetc(temp);
 	 plain=(cypher ^ (r >> 8));
-	 r=(cypher + r) * c1 + c2;
+	 r=(cypher+r)*c1+c2;
       }
-      str=pt=malloc(len - leniv + 1);
-      for (; i < len; ++i) {
+      str=pt=malloc(len-leniv+1);
+      for (; i<len; ++i) {
 	 cypher=agetc(temp);
 	 plain=(cypher ^ (r >> 8));
-	 r=(cypher + r) * c1 + c2;
+	 r=(cypher+r)*c1+c2;
 	 *pt++=plain;
       }
    }
@@ -2577,31 +2577,31 @@ static void figurecids(struct fontparse *fp,AFILE *temp) {
 
    fd->cidstrs=malloc(cidcnt * sizeof(uint8_t *));
    fd->cidlens=malloc(cidcnt * sizeof(int16_t));
-   fd->cidfds=malloc((cidcnt + 1) * sizeof(int16_t));
-   offsets=malloc((cidcnt + 1) * sizeof(int));
+   fd->cidfds=malloc((cidcnt+1)*sizeof(int16_t));
+   offsets=malloc((cidcnt+1)*sizeof(int));
 
    afseek(temp, fd->mapoffset, SEEK_SET);
    for (i=0; i <= fd->cidcnt; ++i) {
-      for (j=val=0; j < fd->fdbytes; ++j)
-	 val=(val << 8) + agetc(temp);
+      for (j=val=0; j<fd->fdbytes; ++j)
+	 val=(val << 8)+agetc(temp);
       if (val >= fd->fdcnt && val != 255) {	/* 255 is a special mark */
 	 ErrorMsg(2,"Invalid FD (%d) assigned to CID %d.\n", val, i);
 	 val=0;
       }
       fd->cidfds[i]=val;
-      for (j=val=0; j < fd->gdbytes; ++j)
-	 val=(val << 8) + agetc(temp);
+      for (j=val=0; j<fd->gdbytes; ++j)
+	 val=(val << 8)+agetc(temp);
       offsets[i]=val;
       if (i != 0) {
-	 fd->cidlens[i - 1]=offsets[i] - offsets[i - 1];
-	 if (fd->cidlens[i - 1] < 0) {
-	    ErrorMsg(2,"Bad CID offset for CID %d\n", i - 1);
-	    fd->cidlens[i - 1]=0;
+	 fd->cidlens[i-1]=offsets[i]-offsets[i-1];
+	 if (fd->cidlens[i-1]<0) {
+	    ErrorMsg(2,"Bad CID offset for CID %d\n", i-1);
+	    fd->cidlens[i-1]=0;
 	 }
       }
    }
 
-   for (i=0; i < fd->cidcnt; ++i) {
+   for (i=0; i<fd->cidcnt; ++i) {
       if (fd->cidlens[i]==0)
 	 fd->cidstrs[i]=NULL;
       else {
@@ -2612,7 +2612,7 @@ static void figurecids(struct fontparse *fp,AFILE *temp) {
    }
    free(offsets);
 
-   for (k=0; k < fd->fdcnt; ++k) {
+   for (k=0; k<fd->fdcnt; ++k) {
       struct private *private=fd->fds[k]->private;
       char *ssubroff=PSDictHasEntry(private->private, "SubrMapOffset");
       char *ssdbytes=PSDictHasEntry(private->private, "SDBytes");
@@ -2621,22 +2621,22 @@ static void figurecids(struct fontparse *fp,AFILE *temp) {
 
       if (ssubroff != NULL && ssdbytes != NULL && ssubrcnt != NULL &&
 	  (subroff=strtol(ssubroff, NULL, 10)) >= 0 &&
-	  (sdbytes=strtol(ssdbytes, NULL, 10)) > 0 &&
-	  (subrcnt=strtol(ssubrcnt, NULL, 10)) > 0) {
+	  (sdbytes=strtol(ssdbytes, NULL, 10))>0 &&
+	  (subrcnt=strtol(ssubrcnt, NULL, 10))>0) {
 	 private->subrs->cnt=subrcnt;
 	 private->subrs->values=calloc(subrcnt, sizeof(char *));
 	 private->subrs->lens=calloc(subrcnt, sizeof(int));
 	 leniv=private->leniv;
-	 offsets=malloc((subrcnt + 1) * sizeof(int));
+	 offsets=malloc((subrcnt+1)*sizeof(int));
 	 afseek(temp, subroff, SEEK_SET);
 	 for (i=0; i <= subrcnt; ++i) {
-	    for (j=val=0; j < sdbytes; ++j)
-	       val=(val << 8) + agetc(temp);
+	    for (j=val=0; j<sdbytes; ++j)
+	       val=(val << 8)+agetc(temp);
 	    offsets[i]=val;
 	    if (i != 0)
-	       private->subrs->lens[i - 1]=offsets[i] - offsets[i - 1];
+	       private->subrs->lens[i-1]=offsets[i]-offsets[i-1];
 	 }
-	 for (i=0; i < subrcnt; ++i) {
+	 for (i=0; i<subrcnt; ++i) {
 	    private->subrs->values[i]=readt1str(temp, offsets[i],
 						  private->subrs->lens[i],
 						  leniv);
@@ -2662,7 +2662,7 @@ static void dodata(struct fontparse *fp,AFILE *in,AFILE *temp) {
       /* Why can't they use the same format for routines with the same name? */
       binary=true;
       for (pt=fontsetname; (ch=agetc(in)) != ' ' && ch != EOF;)
-	 if (pt < fontsetname + sizeof(fontsetname) - 1)
+	 if (pt<fontsetname+sizeof(fontsetname)-1)
 	    *pt++=ch;
       *pt='\0';
    } else {
@@ -2687,13 +2687,13 @@ static void dodata(struct fontparse *fp,AFILE *in,AFILE *temp) {
    for (pt="StartData "; *pt; ++pt)
       agetc(in);			/* And if it didn't match, what could I do about it? */
    if (binary) {
-      while (cnt > 0) {
+      while (cnt>0) {
 	 ch=agetc(in);
 	 aputc(ch, temp);
 	 --cnt;
       }
    } else {
-      while (cnt > 0) {
+      while (cnt>0) {
 	 /* Hex data are allowed to contain whitespace */
 	 while (isspace(ch=agetc(in)));
 	 while (isspace(ch2=agetc(in)));
@@ -2733,12 +2733,12 @@ static void realdecrypt(struct fontparse *fp,AFILE *in,AFILE *temp) {
 	 fp->fd->wasbinary=true;
 	 /* if there were a newline in the section header (in the length word) */
 	 /*  we would stop at it, and not read the full header */
-	 if (len < 6)		/* eat the header */
-	    while (len < 6) {
+	 if (len<6)		/* eat the header */
+	    while (len<6) {
 	       agetc(in);
 	       ++len;
 	 } else			/* Otherwise parse anything else on the line */
-	    parseline(fp, buffer + 6, in);
+	    parseline(fp, buffer+6, in);
       } else if (strstr(buffer, "CharProcs") != NULL
 		 && strstr(buffer, "begin") != NULL) {
 	 parsetype3(fp, in);
@@ -2794,7 +2794,7 @@ static void realdecrypt(struct fontparse *fp,AFILE *in,AFILE *temp) {
       /* used by both CID fonts and CFF fonts (and chameleons, whatever they are) */
       dodata(fp, in, temp);
    } else if (strstr(buffer, "eexec") != NULL) {
-      decrypteexec(in, temp, hassectionheads, strstr(buffer, "eexec") + 5);
+      decrypteexec(in, temp, hassectionheads, strstr(buffer, "eexec")+5);
       afseek(temp,0,SEEK_SET);
       decryptagain(fp, temp, rdtok);
       while (myfgets(buffer, sizeof(buffer), in) != NULL) {
@@ -2849,7 +2849,7 @@ void PSCharsFree(struct pschars *chrs) {
 
    if (chrs==NULL)
       return;
-   for (i=0; i < chrs->next; ++i) {
+   for (i=0; i<chrs->next; ++i) {
       if (chrs->keys != NULL)
 	 free(chrs->keys[i]);
       free(chrs->values[i]);
@@ -2865,7 +2865,7 @@ void PSDictFree(struct psdict *dict) {
 
    if (dict==NULL)
       return;
-   for (i=0; i < dict->next; ++i) {
+   for (i=0; i<dict->next; ++i) {
       if (dict->keys != NULL)
 	 free(dict->keys[i]);
       free(dict->values[i]);
@@ -2897,7 +2897,7 @@ void PSFontFree(FontDict * fd) {
    int i;
 
    if (fd->encoding != NULL)
-      for (i=0; i < 256; ++i)
+      for (i=0; i<256; ++i)
 	 free(fd->encoding[i]);
    free(fd->fontname);
    free(fd->cidfontname);
@@ -2907,21 +2907,21 @@ void PSFontFree(FontDict * fd) {
    PSCharsFree(fd->chars);
    PrivateFree(fd->private);
    if (fd->charprocs != NULL) {
-      for (i=0; i < fd->charprocs->cnt; ++i)
+      for (i=0; i<fd->charprocs->cnt; ++i)
 	 free(fd->charprocs->keys[i]);
       free(fd->charprocs->keys);
       free(fd->charprocs->values);
       free(fd->charprocs);
    }
    if (fd->cidstrs != NULL) {
-      for (i=0; i < fd->cidcnt; ++i)
+      for (i=0; i<fd->cidcnt; ++i)
 	 free(fd->cidstrs[i]);
       free(fd->cidstrs);
    }
    free(fd->cidlens);
    free(fd->cidfds);
    if (fd->fds != NULL) {
-      for (i=0; i < fd->fdcnt; ++i)
+      for (i=0; i<fd->fdcnt; ++i)
 	 PSFontFree(fd->fds[i]);
       free(fd->fds);
    }
@@ -2951,8 +2951,8 @@ char **_NamesReadPostScript(AFILE *ps) {
 	    if (*pt=='/')
 	       ++pt;
 	    for (end=pt; *end != '\0' && !isspace(*end); ++end);
-	    ret=malloc(2 * sizeof(char *));
-	    ret[0]=copyn(pt, end - pt);
+	    ret=malloc(2*sizeof(char *));
+	    ret[0]=copyn(pt, end-pt);
 	    ret[1]=NULL;
 	    break;
 	 } else if (strstr(buffer, "currentfile") != NULL

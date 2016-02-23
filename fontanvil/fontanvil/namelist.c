@@ -1,4 +1,4 @@
-/* $Id: namelist.c 4302 2015-10-24 15:00:46Z mskala $ */
+/* $Id: namelist.c 4532 2015-12-22 13:18:53Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -77,14 +77,14 @@ static void psaddbucket(const char *name,int uni) {
 static void NameListHash(NameList *nl) {
    int i, j, k;
 
-   for (i=0; i < 17; ++i)
+   for (i=0; i<17; ++i)
       if (nl->unicode[i] != NULL) {
-	 for (j=0; j < 256; ++j)
+	 for (j=0; j<256; ++j)
 	    if (nl->unicode[i][j] != NULL) {
-	       for (k=0; k < 256; ++k)
+	       for (k=0; k<256; ++k)
 		  if (nl->unicode[i][j][k] != NULL)
 		     psaddbucket(nl->unicode[i][j][k],
-				 (i << 16) | (j << 8) | k);
+				 (i << 16)|(j << 8)|k);
 	    }
       }
 }
@@ -115,7 +115,7 @@ static void psreinitnames(void) {
    struct psbucket *cur, *prev;
    NameList *nl;
 
-   for (i=0; i < HASH_SIZE; ++i) {
+   for (i=0; i<HASH_SIZE; ++i) {
       for (cur=psbuckets[i]; cur != NULL; cur=prev) {
 	 prev=cur->prev;
 	 chunkfree(cur, sizeof(struct psbucket));
@@ -136,30 +136,30 @@ int UniFromName(const char *name, enum uni_interp interp, Encoding * encname) {
    int _recognizePUA=recognizePUA;
 
    if (strncmp(name, "uni", 3)==0) {
-      i=strtol(name + 3, &end, 16);
-      if (*end || end - name != 7)	/* uniXXXXXXXX means a ligature of uniXXXX and uniXXXX */
+      i=strtol(name+3, &end, 16);
+      if (*end || end-name != 7)	/* uniXXXXXXXX means a ligature of uniXXXX and uniXXXX */
 	 i=-1;
       _recognizePUA=true;
    } else if ((name[0]=='U' || name[0]=='u') && name[1]=='+' &&
 	      (strlen(name)==6 || strlen(name)==7)) {
       /* Unifont uses this convention */
-      i=strtol(name + 2, &end, 16);
+      i=strtol(name+2, &end, 16);
       if (*end)
 	 i=-1;
       _recognizePUA=true;
    } else if (name[0]=='u' && strlen(name) >= 5) {
-      i=strtol(name + 1, &end, 16);
+      i=strtol(name+1, &end, 16);
       if (*end)
 	 i=-1;
       else if (encname != NULL && !encname->is_unicodefull &&
 	       (interp==ui_ams || interp==ui_trad_chinese)) {
 	 int j;
 	 extern const int cns14pua[], amspua[];
-	 const int *pua=interp==ui_ams ? amspua : cns14pua;
+	 const int *pua=interp==ui_ams?amspua:cns14pua;
 
-	 for (j=0xf8ff - 0xe000; j >= 0; --j)
+	 for (j=0xf8ff-0xe000; j >= 0; --j)
 	    if (pua[j]==i) {
-	       i=j + 0xe000;
+	       i=j+0xe000;
 	       break;
 	    }
       }
@@ -189,23 +189,23 @@ const char *StdGlyphName(char *buffer, int uni, enum uni_interp interp,
 
    if (for_this_font==NULL)
       for_this_font=namelist_for_new_fonts;
-   else if (for_this_font==(NameList *) - 1)
+   else if (for_this_font==(NameList *)-1)
       for_this_font=&agl;
-   if ((uni >= 0 && uni < ' ') || (uni >= 0x7f && uni < 0xa0))
+   if ((uni >= 0 && uni<' ') || (uni >= 0x7f && uni<0xa0))
       /* standard controls */ ;
    else if (uni != -1) {
       if (uni >= 0xe000 && uni <= 0xf8ff &&
 	  (interp==ui_trad_chinese || for_this_font==&ams)) {
 	 extern const int cns14pua[], amspua[];
-	 const int *pua=interp==ui_trad_chinese ? cns14pua : amspua;
+	 const int *pua=interp==ui_trad_chinese?cns14pua:amspua;
 
-	 if (pua[uni - 0xe000] != 0)
-	    uni=pua[uni - 0xe000];
+	 if (pua[uni-0xe000] != 0)
+	    uni=pua[uni-0xe000];
       }
       up=uni >> 16;
-      ub=(uni & 0xff00) >> 8;
-      uc=(uni & 0xff);
-      if (up < 17)
+      ub=(uni&0xff00) >> 8;
+      uc=(uni&0xff);
+      if (up<17)
 	 for (nl=for_this_font; nl != NULL; nl=nl->basedon) {
 	    if (nl->unicode[up] != NULL && nl->unicode[up][ub] != NULL &&
 		(name=nl->unicode[up][ub][uc]) != NULL)
@@ -246,11 +246,11 @@ NameList *NameListByName(char *name) {
 static void NameListFreeContents(NameList *nl) {
    int np, nb, nc, i;
 
-   for (np=0; np < 17; ++np)
+   for (np=0; np<17; ++np)
       if (nl->unicode[np] != NULL) {
-	 for (nb=0; nb < 256; ++nb)
+	 for (nb=0; nb<256; ++nb)
 	    if (nl->unicode[np][nb] != NULL) {
-	       for (nc=0; nc < 256; ++nc)
+	       for (nc=0; nc<256; ++nc)
 		  if (nl->unicode[np][nb][nc] != NULL)
 		     free((char *) nl->unicode[np][nb][nc]);
 	       free((char **) nl->unicode[np][nb]);
@@ -310,12 +310,12 @@ NameList *LoadNamelist(char *filename) {
       if (buffer[0]=='#' || buffer[0]=='\n' || buffer[0]=='\r')
 	 continue;
       len=strlen(buffer);
-      if (buffer[len - 1]=='\n')
+      if (buffer[len-1]=='\n')
 	 buffer[--len]='\0';
-      if (buffer[len - 1]=='\r')
+      if (buffer[len-1]=='\r')
 	 buffer[--len]='\0';
       if (strncmp(buffer, "Based:", 6)==0) {
-	 for (pt=buffer + 6; *pt==' ' || *pt=='\t'; ++pt);
+	 for (pt=buffer+6; *pt==' ' || *pt=='\t'; ++pt);
 	 for (nl2=&agl; nl2 != NULL; nl2=nl2->next)
 	    if (strcmp(nl2->title, pt)==0)
 	       break;
@@ -331,7 +331,7 @@ NameList *LoadNamelist(char *filename) {
 	 }
 	 nl->basedon=nl2;
       } else if (strncmp(buffer, "Rename:", 7)==0) {
-	 for (pt=buffer + 7; *pt==' ' || *pt=='\t'; ++pt);
+	 for (pt=buffer+7; *pt==' ' || *pt=='\t'; ++pt);
 	 for (test=pt; *test != ' ' && *test != '\t' && *test != '\0';
 	      ++test);
 	 if (*test=='\0') {
@@ -350,9 +350,9 @@ NameList *LoadNamelist(char *filename) {
 	    NameListFree(nl);
 	    return (NULL);
 	 }
-	 if (rn_cnt >= rn_max - 1)
+	 if (rn_cnt >= rn_max-1)
 	    nl->renames =
-	       realloc(nl->renames, (rn_max += 20) * sizeof(struct renames));
+	       realloc(nl->renames, (rn_max += 20)*sizeof(struct renames));
 	 nl->renames[rn_cnt].from=fastrdup(pt);
 	 nl->renames[rn_cnt].to=fastrdup(test);
 	 nl->renames[++rn_cnt].from=NULL;	/* End mark */
@@ -363,7 +363,7 @@ NameList *LoadNamelist(char *filename) {
 	 else if ((*pt=='u' || *pt=='U') && pt[1]=='+')
 	    pt += 2;
 	 uni=strtol(pt, &end, 16);
-	 if (end==pt || uni < 0 || uni >= unicode4_size) {
+	 if (end==pt || uni<0 || uni >= unicode4_size) {
 	    ErrorMsg(2,"Bad unicode value when parsing %s\n%s\n",nl->title, buffer);
 	    NameListFree(nl);
 	    return (NULL);
@@ -387,15 +387,15 @@ NameList *LoadNamelist(char *filename) {
 	       NameListFree(nl);
 	       return (NULL);
 	    }
-	    if (*test & 0x80) {
+	    if (*test&0x80) {
 	       uses_unicode=true;
 	       if (nl->a_utf8_name==NULL)
 		  nl->a_utf8_name=fastrdup(pt);
 	    }
 	 }
 	 up=uni >> 16;
-	 ub=(uni & 0xff00) >> 8;
-	 uc=uni & 0xff;
+	 ub=(uni&0xff00) >> 8;
+	 uc=uni&0xff;
 	 if (nl->unicode[up]==NULL)
 	    nl->unicode[up]=calloc(256, sizeof(char **));
 	 if (nl->unicode[up][ub]==NULL)
@@ -479,8 +479,8 @@ const char *RenameGlyphToNamelist(char *buffer, SplineChar * sc,
 
    if (sc->unicodeenc != -1) {
       up=sc->unicodeenc >> 16;
-      ub=(sc->unicodeenc >> 8) & 0xff;
-      uc=(sc->unicodeenc & 0xff);
+      ub=(sc->unicodeenc >> 8)&0xff;
+      uc=(sc->unicodeenc&0xff);
       for (nl=new; nl != NULL; nl=nl->basedon)
 	 if (nl->unicode[up] != NULL && nl->unicode[up][ub] != NULL
 	     && nl->unicode[up][ub][uc] != NULL)
@@ -501,11 +501,11 @@ const char *RenameGlyphToNamelist(char *buffer, SplineChar * sc,
 	    if (strcmp(sc->name, new->renames[i].to)==0)
 	       return (new->renames[i].from);
       }
-      if (strlen(sc->name) > sizeof(space) - 1)
+      if (strlen(sc->name)>sizeof(space)-1)
 	 return (sc->name);
       strcpy(space, sc->name);
       opt=buffer;
-      oend=buffer + 31;
+      oend=buffer+31;
       start=space;
       /* Check for composite names f_i, A.small */
       while (*start) {
@@ -520,7 +520,7 @@ const char *RenameGlyphToNamelist(char *buffer, SplineChar * sc,
 	    newsubname =
 	       RenameGlyphToNamelist(tempbuf, tempsc, old, new, sofar);
 	 else if (sofar != NULL) {
-	    for (gid=sc->parent->glyphcnt - 1; gid >= 0; --gid)
+	    for (gid=sc->parent->glyphcnt-1; gid >= 0; --gid)
 	       if (sofar[gid] != NULL) {
 		  if (strcmp(sofar[gid], start)==0)
 		     break;
@@ -530,7 +530,7 @@ const char *RenameGlyphToNamelist(char *buffer, SplineChar * sc,
 	 }
 	 if (newsubname==NULL)
 	    return (sc->name);
-	 while (opt < oend && *newsubname)
+	 while (opt<oend && *newsubname)
 	    *opt++=*newsubname++;
 	 if (*newsubname)
 	    return (sc->name);
@@ -540,7 +540,7 @@ const char *RenameGlyphToNamelist(char *buffer, SplineChar * sc,
 	 } else if (ch=='.') {
 	    /* don't attempt to translate anything after a '.' just copy that litterally */
 	    *pt=ch;
-	    while (opt < oend && *pt)
+	    while (opt<oend && *pt)
 	       *opt++=*pt++;
 	    if (*pt)
 	       return (sc->name);
@@ -548,7 +548,7 @@ const char *RenameGlyphToNamelist(char *buffer, SplineChar * sc,
 	    return (buffer);
 	 } else {		/* _ */
 	    *opt++='_';
-	    start=pt + 1;
+	    start=pt+1;
 	 }
       }
       *opt='\0';
@@ -563,7 +563,7 @@ static void BuildHash(struct glyphnamehash *hash,SplineFont *sf,
    struct glyphnamebucket *new;
 
    memset(hash, 0, sizeof(*hash));
-   for (gid=0; gid < sf->glyphcnt; ++gid) {
+   for (gid=0; gid<sf->glyphcnt; ++gid) {
       if ((sc=sf->glyphs[gid]) != NULL && oldnames[gid] != NULL) {
 	 new=chunkalloc(sizeof(struct glyphnamebucket));
 	 new->sc=sf->glyphs[gid];
@@ -604,30 +604,30 @@ static char *DoReplacements(struct bits *bits,int bc,char **_src,
    int diff,i,off,allsmall=1,len;
    char *ret,*last,*last_orig;
 
-   for (diff=i=0; i < bc; ++i) {
-      off=strlen(bits[i].rpl->name) - (bits[i].end - bits[i].start);
+   for (diff=i=0; i<bc; ++i) {
+      off=strlen(bits[i].rpl->name)-(bits[i].end-bits[i].start);
       diff += off;
-      if (diff > 0)
+      if (diff>0)
 	 allsmall=0;
    }
    if (allsmall) {
       diff=0;
-      for (i=0; i < bc; ++i) {
+      for (i=0; i<bc; ++i) {
 	 len=strlen(bits[i].rpl->name);
-	 memcpy(bits[i].start + diff, bits[i].rpl->name, len);
-	 if (len < (bits[i].end - bits[i].start))
-	    safestrcpy(bits[i].start + len + diff, bits[i].end + diff);
-	 diff += len - (bits[i].end - bits[i].start);
+	 memcpy(bits[i].start+diff, bits[i].rpl->name, len);
+	 if (len<(bits[i].end-bits[i].start))
+	    safestrcpy(bits[i].start+len+diff, bits[i].end+diff);
+	 diff += len-(bits[i].end-bits[i].start);
       }
    } else {
       int totlen=strlen(*_src);
 
-      last=ret=malloc(totlen + diff + 1);
+      last=ret=malloc(totlen+diff+1);
       last_orig=*_src;
-      for (i=0; i < bc; ++i) {
-	 if (last_orig < bits[i].start) {
-	    memcpy(last, last_orig, bits[i].start - last_orig);
-	    last += bits[i].start - last_orig;
+      for (i=0; i<bc; ++i) {
+	 if (last_orig<bits[i].start) {
+	    memcpy(last, last_orig, bits[i].start-last_orig);
+	    last += bits[i].start-last_orig;
 	 }
 	 strcpy(last, bits[i].rpl->name);
 	 last += strlen(bits[i].rpl->name);
@@ -638,7 +638,7 @@ static char *DoReplacements(struct bits *bits,int bc,char **_src,
       *_src=ret;
    }
 
-   return (*_src + offset + diff);
+   return (*_src+offset+diff);
 }
 
 static void ReplaceByHash(char **_src,struct glyphnamehash *hash) {
@@ -683,7 +683,7 @@ static void SFRenameLookupsByHash(SplineFont *sf,struct glyphnamehash *hash) {
    struct glyphvariants *gv;
    KernClass *kc;
 
-   for (gid=0; gid < sf->glyphcnt; ++gid)
+   for (gid=0; gid<sf->glyphcnt; ++gid)
       if ((sc=sf->glyphs[gid]) != NULL) {
 	 for (pst=sc->possub; pst != NULL; pst=pst->next) {
 	    switch (pst->type) {
@@ -705,12 +705,12 @@ static void SFRenameLookupsByHash(SplineFont *sf,struct glyphnamehash *hash) {
 		 break;
 	    }
 	 }
-	 for (h=0; h < 2; ++h) {
-	    gv=h ? sc->horiz_variants : sc->vert_variants;
+	 for (h=0; h<2; ++h) {
+	    gv=h?sc->horiz_variants:sc->vert_variants;
 	    if (gv==NULL)
 	       continue;
 	    ReplaceByHash(&gv->variants, hash);
-	    for (i=0; i < gv->part_cnt; ++i) {
+	    for (i=0; i<gv->part_cnt; ++i) {
 	       struct gv_part *part=&gv->parts[i];
 
 	       ReplaceByHash(&part->component, hash);
@@ -721,7 +721,7 @@ static void SFRenameLookupsByHash(SplineFont *sf,struct glyphnamehash *hash) {
    for (fpst=sf->possub; fpst != NULL; fpst=fpst->next) {
       switch (fpst->format) {
 	case pst_glyphs:
-	   for (i=0; i < fpst->rule_cnt; ++i) {
+	   for (i=0; i<fpst->rule_cnt; ++i) {
 	      struct fpst_rule *r=&fpst->rules[i];
 
 	      ReplaceByHash(&r->u.glyph.names, hash);
@@ -730,23 +730,23 @@ static void SFRenameLookupsByHash(SplineFont *sf,struct glyphnamehash *hash) {
 	   }
 	   break;
 	case pst_class:
-	   for (i=0; i < fpst->nccnt; ++i)
+	   for (i=0; i<fpst->nccnt; ++i)
 	      ReplaceByHash(&fpst->nclass[i], hash);
-	   for (i=0; i < fpst->bccnt; ++i)
+	   for (i=0; i<fpst->bccnt; ++i)
 	      ReplaceByHash(&fpst->bclass[i], hash);
-	   for (i=0; i < fpst->fccnt; ++i)
+	   for (i=0; i<fpst->fccnt; ++i)
 	      ReplaceByHash(&fpst->fclass[i], hash);
 	   break;
 	case pst_coverage:
 	case pst_reversecoverage:
-	   for (i=0; i < fpst->rule_cnt; ++i) {
+	   for (i=0; i<fpst->rule_cnt; ++i) {
 	      struct fpst_rule *r=&fpst->rules[i];
 
-	      for (j=0; j < r->u.coverage.ncnt; ++j)
+	      for (j=0; j<r->u.coverage.ncnt; ++j)
 		 ReplaceByHash(&r->u.coverage.ncovers[j], hash);
-	      for (j=0; j < r->u.coverage.bcnt; ++j)
+	      for (j=0; j<r->u.coverage.bcnt; ++j)
 		 ReplaceByHash(&r->u.coverage.bcovers[j], hash);
-	      for (j=0; j < r->u.coverage.fcnt; ++j)
+	      for (j=0; j<r->u.coverage.fcnt; ++j)
 		 ReplaceByHash(&r->u.coverage.fcovers[j], hash);
 	      if (fpst->format==pst_reversecoverage)
 		 ReplaceByHash(&r->u.rcoverage.replacements, hash);
@@ -756,15 +756,15 @@ static void SFRenameLookupsByHash(SplineFont *sf,struct glyphnamehash *hash) {
    }
 
    for (sm=sf->sm; sm != NULL; sm=sm->next) {
-      for (i=0; i < sm->class_cnt; ++i)
+      for (i=0; i<sm->class_cnt; ++i)
 	 ReplaceByHash(&sm->classes[i], hash);
    }
 
-   for (h=0; h < 2; ++h) {
-      for (kc=h ? sf->kerns : sf->vkerns; kc != NULL; kc=kc->next) {
-	 for (i=0; i < kc->first_cnt; ++i)
+   for (h=0; h<2; ++h) {
+      for (kc=h?sf->kerns:sf->vkerns; kc != NULL; kc=kc->next) {
+	 for (i=0; i<kc->first_cnt; ++i)
 	    ReplaceByHash(&kc->firsts[i], hash);
-	 for (i=0; i < kc->second_cnt; ++i)
+	 for (i=0; i<kc->second_cnt; ++i)
 	    ReplaceByHash(&kc->seconds[i], hash);
       }
    }
@@ -782,7 +782,7 @@ char **SFTemporaryRenameGlyphsToNamelist(SplineFont *sf, NameList * new) {
       return (NULL);
 
    ret=calloc(sf->glyphcnt, sizeof(char *));
-   for (gid=0; gid < sf->glyphcnt; ++gid)
+   for (gid=0; gid<sf->glyphcnt; ++gid)
       if ((sc=sf->glyphs[gid]) != NULL) {
 	 name =
 	    RenameGlyphToNamelist(buffer, sc, sf->for_new_glyphs, new, ret);
@@ -804,7 +804,7 @@ void SFTemporaryRestoreGlyphNames(SplineFont *sf, char **former) {
    SplineChar *sc;
    struct glyphnamehash hash;
 
-   for (gid=0; gid < sf->glyphcnt; ++gid)
+   for (gid=0; gid<sf->glyphcnt; ++gid)
       if ((sc=sf->glyphs[gid]) != NULL) {
 	 if (former[gid] != NULL) {
 	    char *old=sc->name;
@@ -817,7 +817,7 @@ void SFTemporaryRestoreGlyphNames(SplineFont *sf, char **former) {
    SFRenameLookupsByHash(sf, &hash);
    __GlyphHashFree(&hash);
    GlyphHashFree(sf);
-   for (gid=0; gid < sf->glyphcnt; ++gid)
+   for (gid=0; gid<sf->glyphcnt; ++gid)
       free(former[gid]);
    free(former);
 }
@@ -830,7 +830,7 @@ void SFRenameGlyphsToNamelist(SplineFont *sf, NameList * new) {
       return;
 
    ret=SFTemporaryRenameGlyphsToNamelist(sf, new);
-   for (gid=0; gid < sf->glyphcnt; ++gid)
+   for (gid=0; gid<sf->glyphcnt; ++gid)
       free(ret[gid]);
    free(ret);
 

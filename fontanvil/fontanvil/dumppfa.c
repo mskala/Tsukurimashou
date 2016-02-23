@@ -1,4 +1,4 @@
-/* $Id: dumppfa.c 4525 2015-12-20 19:51:59Z mskala $ */
+/* $Id: dumppfa.c 4532 2015-12-22 13:18:53Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -75,13 +75,13 @@ static void encodestrout(AFILE *f,unsigned char *value,int len,int leniv) {
    while (leniv>0) {
       plain=randombytes[leniv-- % 10];
       cypher=(plain ^ (r >> 8));
-      r=(cypher+r) * c1+c2;
+      r=(cypher+r)*c1+c2;
       afwrite(&cypher,1,1,f);
    }
    while (len-->0) {
       plain=*value++;
       cypher=(plain ^ (r >> 8));
-      r=(cypher+r) * c1+c2;
+      r=(cypher+r)*c1+c2;
       afwrite(&cypher,1,1,f);
    }
 }
@@ -451,7 +451,7 @@ static void dumpGradient(AFILE *f,
 	    int col;
 	    double t=grad->grad_stops[0].offset +
 	       (grad->grad_stops[grad->stop_cnt-1].offset -
-		grad->grad_stops[0].offset) * i/100.0;
+		grad->grad_stops[0].offset)*i/100.0;
 	    for (j=0; j<grad->stop_cnt; ++j)
 	       if (t <= grad->grad_stops[j].offset)
 		  break;
@@ -475,13 +475,13 @@ static void dumpGradient(AFILE *f,
 	       if (col2==COLOR_INHERITED)
 		  col2=0x000000;
 	       red =
-		  ((col1 >> 16) & 0xff) * (1-percent) +
-		  ((col2 >> 16) & 0xff) * percent;
+		  ((col1 >> 16) & 0xff)*(1-percent) +
+		  ((col2 >> 16) & 0xff)*percent;
 	       green =
-		  ((col1 >> 8) & 0xff) * (1-percent) +
-		  ((col2 >> 8) & 0xff) * percent;
+		  ((col1 >> 8) & 0xff)*(1-percent) +
+		  ((col2 >> 8) & 0xff)*percent;
 	       blue =
-		  ((col1) & 0xff) * (1-percent)+((col2) & 0xff) * percent;
+		  ((col1) & 0xff)*(1-percent)+((col2) & 0xff)*percent;
 	       col=(red << 16) | (green << 8) | blue;
 	    }
 	    if (col==COLOR_INHERITED)
@@ -675,7 +675,7 @@ static void PSDump24BinaryData(AFILE *f, struct _GImage *base) {
    register uint32_t *pt, *end;
    const int max_string=65536;
 
-   if (3 * base->width * base->height<max_string) {
+   if (3*base->width * base->height<max_string) {
       /* It all fits in one string. Easy peasy */
       afprintf(f,"{<~");
       ps=base85_afile(f);
@@ -693,7 +693,7 @@ static void PSDump24BinaryData(AFILE *f, struct _GImage *base) {
       aputc('}',f);
 
    } else {
-      cnt=(max_string-1)/(3 * base->width);
+      cnt=(max_string-1)/(3*base->width);
       if (cnt==0)
 	 cnt=1;
       group_cnt=-1;
@@ -1118,8 +1118,8 @@ static struct pschars *initsubrs(int needsflex,MMSet *mm) {
 
    sub=calloc(1, sizeof(struct pschars));
    sub->cnt=10;
-   sub->lens=malloc(10 * sizeof(int));
-   sub->values=malloc(10 * sizeof(uint8_t *));
+   sub->lens=malloc(10*sizeof(int));
+   sub->values=malloc(10*sizeof(uint8_t *));
    for (i=0; i<5; ++i) {
       ++sub->next;
       sub->values[i]=(uint8_t *) copyn((const char *) subrs[i], subrslens[i]);
@@ -1192,32 +1192,32 @@ static void dumpothersubrs(AFILE *f,
 	 /*  an example from Adobe (and they don't provide one anyway) */
 	 afprintf(f,"{ %d 1 roll $Blend } bind\n",
 	       mm->instance_count);
-	 if (2 * mm->instance_count<22)
+	 if (2*mm->instance_count<22)
 	    afprintf(f,
 		  "{ exch %d %d roll $Blend exch %d 2 roll $Blend } bind\n",
-		  2 * mm->instance_count, 1-mm->instance_count,
+		  2*mm->instance_count, 1-mm->instance_count,
 		  mm->instance_count+1);
-	 if (3 * mm->instance_count<22)
+	 if (3*mm->instance_count<22)
 	    afprintf(f,
 		  "{ 3 -1 roll %d %d roll $Blend 3 -1 roll %d %d roll $Blend 3 -1 roll %d 2 roll $Blend } bind\n",
-		  3 * mm->instance_count, 1-mm->instance_count,
-		  2 * mm->instance_count+1, 1-mm->instance_count,
+		  3*mm->instance_count, 1-mm->instance_count,
+		  2*mm->instance_count+1, 1-mm->instance_count,
 		  mm->instance_count+2);
-	 if (4 * mm->instance_count<22)
+	 if (4*mm->instance_count<22)
 	    afprintf(f,
 		  "{ 4 -1 roll %d %d roll $Blend 4 -1 roll %d %d roll $Blend 4 -1 roll %d %d roll $Blend 4 -1 roll %d 3 roll $Blend } bind\n",
-		  4 * mm->instance_count, 1-mm->instance_count,
-		  3 * mm->instance_count+1, 1-mm->instance_count,
-		  2 * mm->instance_count+2, 1-mm->instance_count,
+		  4*mm->instance_count, 1-mm->instance_count,
+		  3*mm->instance_count+1, 1-mm->instance_count,
+		  2*mm->instance_count+2, 1-mm->instance_count,
 		  mm->instance_count+3);
-	 if (6 * mm->instance_count<22)
+	 if (6*mm->instance_count<22)
 	    afprintf(f,
 		  "{ 6 -1 roll %d %d roll $Blend 6 -1 roll %d %d roll $Blend 6 -1 roll %d %d roll $Blend 6 -1 roll %d %d roll $Blend 6 -1 roll %d %d roll $Blend 6 -1 roll %d 5 roll $Blend } bind\n",
-		  6 * mm->instance_count, 1-mm->instance_count,
-		  5 * mm->instance_count+1, 1-mm->instance_count,
-		  4 * mm->instance_count+2, 1-mm->instance_count,
-		  3 * mm->instance_count+3, 1-mm->instance_count,
-		  2 * mm->instance_count+4, 1-mm->instance_count,
+		  6*mm->instance_count, 1-mm->instance_count,
+		  5*mm->instance_count+1, 1-mm->instance_count,
+		  4*mm->instance_count+2, 1-mm->instance_count,
+		  3*mm->instance_count+3, 1-mm->instance_count,
+		  2*mm->instance_count+4, 1-mm->instance_count,
 		  mm->instance_count+5);
       }
       afputs("] ",f);	/* End array */
@@ -1610,7 +1610,7 @@ static void dumpfontinfo(AFILE *f,
       /*  em is redundant, we can get that from the fontmatrix */
       /*  given em we only need one of ascent or descent */
       /*  On the off chance that fontlab objects to them let's not generate them */
-      if (sf->ascent != 8 * (sf->ascent+sf->descent)/10)
+      if (sf->ascent != 8*(sf->ascent+sf->descent)/10)
 	 ++cnt;			/* ascent */
    }
    if (format==ff_mma || format==ff_mmb)
@@ -1661,7 +1661,7 @@ static void dumpfontinfo(AFILE *f,
 	    afprintf(f," /UnderlineThickness %g def\n",
 		  (double) sf->uwidth);
       }
-      if (sf->ascent != 8 * (sf->ascent+sf->descent)/10)
+      if (sf->ascent != 8*(sf->ascent+sf->descent)/10)
 	 afprintf(f," /ascent %d def\n", sf->ascent);
    }
    if (format==ff_mma || format==ff_mmb) {
@@ -2000,7 +2000,7 @@ static void dumpfinalascii(AFILE *f,
 }
 
 static void mkheadercopyfile(AFILE *temp,AFILE *out,int headertype) {
-   char buffer[8 * 1024];
+   char buffer[8*1024];
    int len;
 
    /* output the file header */
@@ -2442,8 +2442,8 @@ static AFILE *gencidbinarydata(SplineFont *cidmaster,
 
    cidbytes->fdbytes=(cidbytes->fdcnt==1)?0 :
       (cidbytes->fdcnt<256)?1:2;
-   if ((cidbytes->cidcnt+1) * (cidbytes->fdbytes+3) +	/* size of the CID map region */
-       (subrtot+1) * 3 +	/* size of the Subr map region */
+   if ((cidbytes->cidcnt+1)*(cidbytes->fdbytes+3) +	/* size of the CID map region */
+       (subrtot+1)*3 +	/* size of the Subr map region */
        aftell(subrs) +		/* size of the subr region */
        aftell(chrs)<0x1000000)	/* size of the charstring region */
       /* Are all our offsets less than 3 bytes? */
@@ -2453,8 +2453,8 @@ static AFILE *gencidbinarydata(SplineFont *cidmaster,
 
    cidbytes->errors=aferror(chrs) || aferror(subrs);
 
-   offset=(cidbytes->cidcnt+1) * (cidbytes->fdbytes+cidbytes->gdbytes) +
-      (subrtot+1) * cidbytes->gdbytes+aftell(subrs);
+   offset=(cidbytes->cidcnt+1)*(cidbytes->fdbytes+cidbytes->gdbytes) +
+      (subrtot+1)*cidbytes->gdbytes+aftell(subrs);
    binary=atmpfile();
    for (i=0; i<cidbytes->cidcnt; ++i) {
       dump_index(binary, cidbytes->fdbytes, cidbytes->fdind[i]);
@@ -2464,11 +2464,11 @@ static AFILE *gencidbinarydata(SplineFont *cidmaster,
    dump_index(binary, cidbytes->fdbytes, -1);	/* Adobe says undefined */
    dump_index(binary, cidbytes->gdbytes, offset);
    if (aftell(binary) !=
-       (cidbytes->cidcnt+1) * (cidbytes->fdbytes+cidbytes->gdbytes))
+       (cidbytes->cidcnt+1)*(cidbytes->fdbytes+cidbytes->gdbytes))
       ErrorMsg(2,"CIDMap section the wrong length\n");
 
-   offset=(cidbytes->cidcnt+1) * (cidbytes->fdbytes+cidbytes->gdbytes) +
-      (subrtot+1) * cidbytes->gdbytes;
+   offset=(cidbytes->cidcnt+1)*(cidbytes->fdbytes+cidbytes->gdbytes) +
+      (subrtot+1)*cidbytes->gdbytes;
    for (i=0; i<cidbytes->fdcnt; ++i) {
       fd=&cidbytes->fds[i];
       fd->subrmapoff=aftell(binary);
@@ -2482,8 +2482,8 @@ static AFILE *gencidbinarydata(SplineFont *cidmaster,
    }
    dump_index(binary, cidbytes->gdbytes, offset);
    if (aftell(binary) !=
-       (cidbytes->cidcnt+1) * (cidbytes->fdbytes+cidbytes->gdbytes) +
-       (subrtot+1) * cidbytes->gdbytes)
+       (cidbytes->cidcnt+1)*(cidbytes->fdbytes+cidbytes->gdbytes) +
+       (subrtot+1)*cidbytes->gdbytes)
       ErrorMsg(2,"SubrMap section the wrong length\n");
 
    buffer=malloc(8192);
@@ -2660,8 +2660,8 @@ static void dumpimageproc(AFILE *file,BDFChar *bdfc,BDFFont *font) {
    afprintf(file, "  /%s { %d 0 %d %d %d %d setcachedevice \n",
 	   bdfc->sc->name, (int) rint(bdfc->width * scale),
 	   (int) rint(bdfc->xmin * scale), (int) rint(bdfc->ymin * scale),
-	   (int) rint((1+bdfc->xmax) * scale),
-	   (int) rint((1+bdfc->ymax) * scale));
+	   (int) rint((1+bdfc->xmax)*scale),
+	   (int) rint((1+bdfc->ymax)*scale));
    afprintf(file, "\t%g %g translate %g %g scale %d %d true [%d 0 0 %d 0 0] {<~\n", bdfc->xmin * scale, bdfc->ymax * scale,	/* tx tx Translate */
 	   width * scale, height * scale,	/* x y Scale */
 	   width, height, width, -height);

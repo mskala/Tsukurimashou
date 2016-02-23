@@ -1,4 +1,4 @@
-/* $Id: sflayout.c 4300 2015-10-24 13:03:29Z mskala $ */
+/* $Id: sflayout.c 4532 2015-12-22 13:18:53Z mskala $ */
 /* Copyright (C) 2007-2012 by George Williams */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -93,7 +93,7 @@ int LI_FDDrawChar(void *data,
    fd=((struct fontlist *) (osc->fl))->fd;
 
    x += osc->vr.xoff;
-   y -= osc->vr.yoff + osc->bsln_off;
+   y -= osc->vr.yoff+osc->bsln_off;
 
    gid=sc->orig_pos;
    if (gid != -1 && fd->bdf->glyphs[gid]==NULL)
@@ -102,16 +102,16 @@ int LI_FDDrawChar(void *data,
       if (col != -1) {
 	 GRect r;
 
-	 r.x=x + 1;
-	 r.width=osc->advance_width - 2;
-	 r.height=(2 * fd->bdf->ascent / 3);
-	 r.y=y - r.height;
+	 r.x=x+1;
+	 r.width=osc->advance_width-2;
+	 r.height=(2*fd->bdf->ascent/3);
+	 r.y=y-r.height;
 	 (drawRect) (data, &r, col);
       }
-      x += fd->bdf->ascent / 2;
+      x += fd->bdf->ascent/2;
    } else {
       bdfc=fd->fonttype==sftf_bitmap ?
-	 BDFGetMergedChar(fd->bdf->glyphs[gid]) : fd->bdf->glyphs[gid];
+	 BDFGetMergedChar(fd->bdf->glyphs[gid]):fd->bdf->glyphs[gid];
       if (col != -1) {
 	 if (!fd->antialias)
 	    fd->clut.clut[1]=col;	/* Only works for bitmaps */
@@ -121,9 +121,9 @@ int LI_FDDrawChar(void *data,
 	    fd->base.trans=0;
 	 fd->base.data=bdfc->bitmap;
 	 fd->base.bytes_per_line=bdfc->bytes_per_line;
-	 fd->base.width=bdfc->xmax - bdfc->xmin + 1;
-	 fd->base.height=bdfc->ymax - bdfc->ymin + 1;
-	 (drawImage) (data, &fd->gi, NULL, x + bdfc->xmin, y - bdfc->ymax);
+	 fd->base.width=bdfc->xmax-bdfc->xmin+1;
+	 fd->base.height=bdfc->ymax-bdfc->ymin+1;
+	 (drawImage) (data, &fd->gi, NULL, x+bdfc->xmin, y-bdfc->ymax);
 	 fd->base.clut->trans_index=-1;
       }
       x += bdfc->width;
@@ -140,7 +140,7 @@ uint32_t *LI_TagsCopy(uint32_t * tags) {
    if (tags==NULL)
       return (NULL);
    for (i=0; tags[i] != 0; ++i);
-   ret=malloc((i + 1) * sizeof(uint32_t));
+   ret=malloc((i+1)*sizeof(uint32_t));
    for (i=0; tags[i] != 0; ++i)
       ret[i]=tags[i];
    ret[i]=0;
@@ -186,29 +186,29 @@ static int LinesInPara(LayoutInfo *li,struct opentype_str **paratext,
       return (1);
    if (!li->wrap) {
       for (start=0; paratext[start] != NULL; ++start);
-      paratext[start - 1]->line_break_after=true;
+      paratext[start-1]->line_break_after=true;
       return (1);
    }
    cnt=0;
    for (start=0; paratext[start] != NULL;) {
       break_pos=start;
-      len=paratext[start]->advance_width + paratext[start]->vr.h_adv_off;
-      for (end=start + 1; paratext[end] != NULL; ++end) {
-	 len += paratext[end]->advance_width + paratext[end]->vr.h_adv_off;
-	 if (len > width && break_pos != start) {
+      len=paratext[start]->advance_width+paratext[start]->vr.h_adv_off;
+      for (end=start+1; paratext[end] != NULL; ++end) {
+	 len += paratext[end]->advance_width+paratext[end]->vr.h_adv_off;
+	 if (len>width && break_pos != start) {
 	    paratext[break_pos]->line_break_after=true;
-	    start=break_pos + 1;
+	    start=break_pos+1;
 	    break;
 	 }
 	 pos=paratext[end]->orig_index +
 	    ((struct fontlist *) (paratext[end]->fl))->start;
-	 if (((li->text[pos + 1] < 0x10000 && li->text[pos] < 0x10000 &&
-	       isbreakbetweenok(li->text[pos], li->text[pos + 1])) ||
-	      (li->text[pos]==' ' && li->text[pos + 1] >= 0x10000)))
+	 if (((li->text[pos+1]<0x10000 && li->text[pos]<0x10000 &&
+	       isbreakbetweenok(li->text[pos], li->text[pos+1])) ||
+	      (li->text[pos]==' ' && li->text[pos+1] >= 0x10000)))
 	    break_pos=end;
       }
       if (paratext[end]==NULL && end != 0) {
-	 paratext[end - 1]->line_break_after=true;
+	 paratext[end-1]->line_break_after=true;
 	 start=end;
       }
       ++cnt;
@@ -227,7 +227,7 @@ static struct opentype_str **LineFromPara(struct opentype_str **str,
    if (str[len] != NULL)
       ++len;
    *_pos += len;
-   ret=malloc((len + 1) * sizeof(struct opentype_str *));
+   ret=malloc((len+1)*sizeof(struct opentype_str *));
    for (len=0; str[len] != NULL && !str[len]->line_break_after; ++len)
       ret[len]=str[len];
    if (str[len] != NULL) {
@@ -274,7 +274,7 @@ static int BaselineOffset(struct Base *base,struct basescript *bs,
 			  uint32_t cur_bsln_tag) {
    int i;
 
-   for (i=0; i < base->baseline_cnt; ++i)
+   for (i=0; i<base->baseline_cnt; ++i)
       if (base->baseline_tags[i]==cur_bsln_tag)
 	 break;
    if (i==base->baseline_cnt)	/* No info on this baseline in this font */
@@ -307,7 +307,7 @@ static void LIFigureLineHeight(LayoutInfo *li,int l,int p) {
 	    FigureBaselineTag(line[0], li, start_base, start_base);
       if (start_bsln_tag != 0) {
 	 double scale =
-	    start_fd->pointsize * li->dpi / (72.0 *
+	    start_fd->pointsize * li->dpi/(72.0 *
 					     (start_fd->sf->ascent +
 					      start_fd->sf->descent));
 	 for (i=1; line[i] != NULL; ++i) {
@@ -332,25 +332,25 @@ static void LIFigureLineHeight(LayoutInfo *li,int l,int p) {
       BDFFont *bdf=fd->bdf;
       int off=line[i]->bsln_off;
       double scale =
-	 fd->pointsize * li->dpi / (72.0 *
-				    (fd->sf->ascent + fd->sf->descent));
+	 fd->pointsize * li->dpi/(72.0 *
+				    (fd->sf->ascent+fd->sf->descent));
       if (bdf != NULL) {
-	 if (as < bdf->ascent + off)
-	    as=bdf->ascent + off;
-	 if (ds < bdf->descent - off)
-	    ds=bdf->descent - off;
+	 if (as<bdf->ascent+off)
+	    as=bdf->ascent+off;
+	 if (ds<bdf->descent-off)
+	    ds=bdf->descent-off;
       } else {
-	 if (as < scale * fd->sf->ascent + off)
-	    as=scale * fd->sf->ascent + off;
-	 if (ds < scale * fd->sf->descent - off)
-	    ds=scale * fd->sf->descent - off;
+	 if (as<scale * fd->sf->ascent+off)
+	    as=scale * fd->sf->ascent+off;
+	 if (ds<scale * fd->sf->descent-off)
+	    ds=scale * fd->sf->descent-off;
       }
       if (fd->sf->pfminfo.pfmset
-	  && ld < scale * fd->sf->pfminfo.os2_typolinegap)
+	  && ld<scale * fd->sf->pfminfo.os2_typolinegap)
 	 ld=scale * fd->sf->pfminfo.os2_typolinegap;
-      width += line[i]->advance_width + line[i]->vr.h_adv_off;
+      width += line[i]->advance_width+line[i]->vr.h_adv_off;
    }
-   if (as + ds==0) {
+   if (as+ds==0) {
       struct fontlist *fl, *last=li->fontlist;
 
       for (fl=li->fontlist;
@@ -359,25 +359,25 @@ static void LIFigureLineHeight(LayoutInfo *li,int l,int p) {
       if (last != NULL) {
 	 FontData *fd=last->fd;
 	 double scale =
-	    fd->pointsize * li->dpi / (72.0 *
-				       (fd->sf->ascent + fd->sf->descent));
-	 if (as < scale * fd->sf->ascent)
+	    fd->pointsize * li->dpi/(72.0 *
+				       (fd->sf->ascent+fd->sf->descent));
+	 if (as<scale * fd->sf->ascent)
 	    as=scale * fd->sf->ascent;
-	 if (ds < scale * fd->sf->descent)
+	 if (ds<scale * fd->sf->descent)
 	    ds=scale * fd->sf->descent;
 	 if (fd->sf->pfminfo.pfmset
-	     && ld < scale * fd->sf->pfminfo.os2_typolinegap)
+	     && ld<scale * fd->sf->pfminfo.os2_typolinegap)
 	    ld=scale * fd->sf->pfminfo.os2_typolinegap;
       }
    }
-   li->lineheights[l].fh=as + ds + ld;
+   li->lineheights[l].fh=as+ds+ld;
    li->lineheights[l].as=as;
    li->lineheights[l].linelen=width;
    if (l==0)
       li->lineheights[l].y=0;
    else
       li->lineheights[l].y =
-	 li->lineheights[l - 1].y + li->lineheights[l - 1].fh;
+	 li->lineheights[l-1].y+li->lineheights[l-1].fh;
    li->lineheights[l].p=p;
    if (line[0]==NULL)		/* Before bidir text */
       li->lineheights[l].start_pos=li->paras[p].start_pos;
@@ -405,13 +405,13 @@ static void SFDoBiText(struct opentype_str **line) {
 	 if (inr) {
 	    end=i;
 	    inr=false;
-	    for (j=(end - start) / 2; j > 0; --j) {
-	       struct opentype_str *chr=line[start + j - 1];
+	    for (j=(end-start)/2; j>0; --j) {
+	       struct opentype_str *chr=line[start+j-1];
 
-	       line[start + j - 1]=line[end - j];
-	       line[end - j]=chr;
+	       line[start+j-1]=line[end-j];
+	       line[end-j]=chr;
 	    }
-	    for (j=start; j < end; ++j)
+	    for (j=start; j<end; ++j)
 	       line[j]->r2l=true;
 	 }
       }
@@ -419,13 +419,13 @@ static void SFDoBiText(struct opentype_str **line) {
    if (inr) {
       end=i;
       inr=false;
-      for (j=(end - start) / 2; j > 0; --j) {
-	 struct opentype_str *chr=line[start + j - 1];
+      for (j=(end-start)/2; j>0; --j) {
+	 struct opentype_str *chr=line[start+j-1];
 
-	 line[start + j - 1]=line[end - j];
-	 line[end - j]=chr;
+	 line[start+j-1]=line[end-j];
+	 line[end-j]=chr;
       }
-      for (j=start; j < end; ++j)
+      for (j=start; j<end; ++j)
 	 line[j]->r2l=true;
    }
 }
@@ -445,15 +445,15 @@ void LayoutInfoRefigureLines(LayoutInfo * li, int start_of_change,
    double scale;
 
    if (li->lines==NULL) {
-      li->lines=malloc(10 * sizeof(struct opentype_str *));
-      li->lineheights=malloc(10 * sizeof(struct lineheights));
+      li->lines=malloc(10*sizeof(struct opentype_str *));
+      li->lineheights=malloc(10*sizeof(struct lineheights));
       li->lines[0]=NULL;
       li->lmax=10;
       li->lcnt=0;
    }
 
    if (end_of_change==-1)
-      end_of_change=start_of_change + u_strlen(li->text + start_of_change);
+      end_of_change=start_of_change+u_strlen(li->text+start_of_change);
    if (li->ps==-1) {
       ps=0;
       pe=li->pcnt;
@@ -476,20 +476,20 @@ void LayoutInfoRefigureLines(LayoutInfo * li, int start_of_change,
    /*  of the change */
    pcnt=0;
    if (oldstart != NULL) {
-      for (fl=oldstart, start=start_of_change - fl->start;
+      for (fl=oldstart, start=start_of_change-fl->start;
 	   fl != NULL && fl != oldend; fl=fl->next, start=0) {
-	 if (start < 0)
+	 if (start<0)
 	    start=0;
-	 if (fl->end - fl->start >= fl->scmax)
+	 if (fl->end-fl->start >= fl->scmax)
 	    fl->sctext =
 	       realloc(fl->sctext,
 		       ((fl->scmax =
-			 fl->end - fl->start + 4) +
-			1) * sizeof(SplineChar *));
-	 for (i=j=0; i < fl->end - fl->start; ++i) {
-	    SplineChar *sc=FDMap(fl->fd, li->text[fl->start + i]);
+			 fl->end-fl->start+4) +
+			1)*sizeof(SplineChar *));
+	 for (i=j=0; i<fl->end-fl->start; ++i) {
+	    SplineChar *sc=FDMap(fl->fd, li->text[fl->start+i]);
 
-	    if (sc != NULL && sc != (SplineChar *) - 1)
+	    if (sc != NULL && sc != (SplineChar *)-1)
 	       fl->sctext[j++]=sc;
 	 }
 	 fl->sctext[j]=NULL;
@@ -500,7 +500,7 @@ void LayoutInfoRefigureLines(LayoutInfo * li, int start_of_change,
 					  rint((fl->fd->pointsize * li->dpi) /
 					       72), fl->sctext);
 	 scale =
-	    fl->fd->pointsize * li->dpi / (72.0 *
+	    fl->fd->pointsize * li->dpi/(72.0 *
 					   (fl->fd->sf->ascent +
 					    fl->fd->sf->descent));
 	 for (i=0; fl->ottext[i].sc != NULL; ++i) {
@@ -520,27 +520,27 @@ void LayoutInfoRefigureLines(LayoutInfo * li, int start_of_change,
       }
    }
 
-   if (li->pmax <= li->pcnt + pcnt - (pe - ps + 1))
+   if (li->pmax <= li->pcnt+pcnt-(pe-ps+1))
       li->paras =
 	 realloc(li->paras,
 		 (li->pmax =
-		  li->pcnt + 30 + pcnt - (pe - ps +
-					  1)) * sizeof(struct paras));
+		  li->pcnt+30+pcnt-(pe-ps +
+					  1))*sizeof(struct paras));
    /* move any old paragraphs around */
-   pdiff=pcnt - (pe - ps);
-   for (p=ps; p < pe; ++p)
+   pdiff=pcnt-(pe-ps);
+   for (p=ps; p<pe; ++p)
       free(li->paras[p].para);
-   if (pdiff < 0) {
-      for (p=pe; p < li->pcnt; ++p)
-	 li->paras[p + pdiff]=li->paras[p];
-   } else if (pdiff > 0) {
-      for (p=li->pcnt - 1; p >= pe; --p)
-	 li->paras[p + pdiff]=li->paras[p];
+   if (pdiff<0) {
+      for (p=pe; p<li->pcnt; ++p)
+	 li->paras[p+pdiff]=li->paras[p];
+   } else if (pdiff>0) {
+      for (p=li->pcnt-1; p >= pe; --p)
+	 li->paras[p+pdiff]=li->paras[p];
    }
    /* Figure out the changed paragraphs */
    /* And the number of lines in each */
    lcnt=0;
-   for (p=ps, curp=oldstart; p < ps + pcnt && curp != NULL; ++p) {
+   for (p=ps, curp=oldstart; p<ps+pcnt && curp != NULL; ++p) {
       len=0;
       /* Each para may be composed of several font segments */
       for (fl=curp; fl != NULL; fl=fl->next) {
@@ -549,12 +549,12 @@ void LayoutInfoRefigureLines(LayoutInfo * li, int start_of_change,
 	     && li->text[fl->end]=='\n')
 	    break;		/* End of paragraph */
       }
-      li->paras[p].para=malloc((len + 1) * sizeof(struct paras));
+      li->paras[p].para=malloc((len+1)*sizeof(struct paras));
       li->paras[p].start_pos=curp->start;
       len=0;
       for (fl=curp; fl != NULL; fl=fl->next) {
 	 for (i=0; fl->ottext[i].sc != NULL; ++i)
-	    li->paras[p].para[len + i]=&fl->ottext[i];
+	    li->paras[p].para[len+i]=&fl->ottext[i];
 	 len += i;
 	 if ((fl->next==NULL || fl->next->end != fl->end)
 	     && li->text[fl->end]=='\n') {
@@ -568,32 +568,32 @@ void LayoutInfoRefigureLines(LayoutInfo * li, int start_of_change,
    }
    li->pcnt += pdiff;
 
-   if (li->lmax <= li->lcnt + lcnt - (le - ls) + 1) {
+   if (li->lmax <= li->lcnt+lcnt-(le-ls)+1) {
       li->lines =
 	 realloc(li->lines,
 		 (li->lmax =
-		  li->lcnt + 30 + lcnt - (le - ls +
+		  li->lcnt+30+lcnt-(le-ls +
 					  1)) *
 		 sizeof(struct openfont_str **));
       li->lineheights =
 	 realloc(li->lineheights, li->lmax * sizeof(struct lineheights));
    }
    /* move any old lines around */
-   ldiff=lcnt - (le - ls);
-   for (l=ls; l < le; ++l)
+   ldiff=lcnt-(le-ls);
+   for (l=ls; l<le; ++l)
       free(li->lines[l]);
-   if (ldiff < 0) {
+   if (ldiff<0) {
       for (l=le; l <= li->lcnt; ++l) {
-	 li->lines[l + ldiff]=li->lines[l];
-	 li->lineheights[l + ldiff]=li->lineheights[l];
+	 li->lines[l+ldiff]=li->lines[l];
+	 li->lineheights[l+ldiff]=li->lineheights[l];
       }
-   } else if (ldiff > 0) {
-      for (l=li->lcnt - 1; l >= le; --l) {
-	 li->lines[l + ldiff]=li->lines[l];
-	 li->lineheights[l + ldiff]=li->lineheights[l];
+   } else if (ldiff>0) {
+      for (l=li->lcnt-1; l >= le; --l) {
+	 li->lines[l+ldiff]=li->lines[l];
+	 li->lineheights[l+ldiff]=li->lineheights[l];
       }
    }
-   for (l=ls, p=ps; l < ls + lcnt; ++p) {
+   for (l=ls, p=ps; l<ls+lcnt; ++p) {
       int eol=0;
 
       do {
@@ -605,15 +605,15 @@ void LayoutInfoRefigureLines(LayoutInfo * li, int start_of_change,
    li->lcnt += ldiff;
 
    li->xmax=0;
-   for (l=0; l < li->lcnt; ++l) {
-      if (li->lineheights[l].linelen > li->xmax)
+   for (l=0; l<li->lcnt; ++l) {
+      if (li->lineheights[l].linelen>li->xmax)
 	 li->xmax=li->lineheights[l].linelen;
    }
-   if (ls + lcnt==0)
+   if (ls+lcnt==0)
       lcnt=1;			/* line 0 always starts at 0 */
-   for (l=ls + lcnt; l < li->lcnt; ++l)
+   for (l=ls+lcnt; l<li->lcnt; ++l)
       li->lineheights[l].y =
-	 li->lineheights[l - 1].y + li->lineheights[l - 1].fh;
+	 li->lineheights[l-1].y+li->lineheights[l-1].fh;
    li->ps=-1;
 }
 
@@ -664,9 +664,9 @@ void SFMapFill(struct sfmaps *sfmaps, SplineFont *sf) {
       sfmaps->fake_notdef=notdef;
       notdef->name=fastrdup(".notdef");
       notdef->parent=sf;
-      notdef->width=(sf->ascent + sf->descent);
+      notdef->width=(sf->ascent+sf->descent);
       if (sf->cidmaster==NULL)
-	 notdef->width=6 * notdef->width / 10;
+	 notdef->width=6*notdef->width/10;
       notdef->searcherdummy=true;
       notdef->orig_pos=-1;
    }
@@ -696,7 +696,7 @@ FontData *LI_RegenFontData(LayoutInfo * li, FontData * ret) {
       ret->depends_on != NULL;
    extern Color default_background;
 
-   pixelsize=rint((ret->pointsize * li->dpi) / 72.0);
+   pixelsize=rint((ret->pointsize * li->dpi)/72.0);
    old=ret->bdf;
    ret->bdf=NULL;
 
@@ -711,7 +711,7 @@ FontData *LI_RegenFontData(LayoutInfo * li, FontData * ret) {
 	       break;
 	    }
 	    if (ret->antialias && bdf->clut != NULL &&
-		(ok==NULL || bdf->clut->clut_len > ok->clut->clut_len))
+		(ok==NULL || bdf->clut->clut_len>ok->clut->clut_len))
 	       ok=bdf;
 	 }
       }
@@ -730,12 +730,12 @@ FontData *LI_RegenFontData(LayoutInfo * li, FontData * ret) {
    else if (ret->fonttype==sftf_pfaedit)
       ret->bdf =
 	 SplineFontPieceMeal(ret->sf, ret->layer, ret->pointsize, li->dpi,
-			     ret->antialias ? pf_antialias : 0, NULL);
+			     ret->antialias?pf_antialias:0, NULL);
    else if (ret->fonttype==sftf_nohints)
       ret->bdf =
 	 SplineFontPieceMeal(ret->sf, ret->layer, ret->pointsize, li->dpi,
 			     (ret->
-			      antialias ? pf_antialias : 0) | pf_ft_nohints,
+			      antialias?pf_antialias:0)|pf_ft_nohints,
 			     NULL);
    else {
       for (test=li->generated; test != NULL; test=test->next)
@@ -750,8 +750,8 @@ FontData *LI_RegenFontData(LayoutInfo * li, FontData * ret) {
       }
       if (ftc==NULL) {
 	 int flags=0;
-	 int ff=ret->fonttype==sftf_pfb ? ff_pfb :
-	    ret->fonttype==sftf_ttf ? ff_ttf : ff_otf;
+	 int ff=ret->fonttype==sftf_pfb?ff_pfb :
+	    ret->fonttype==sftf_ttf?ff_ttf:ff_otf;
 	 ftc =
 	    _FreeTypeFontContext(ret->sf, NULL, NULL, ret->layer, ff, flags,
 				 NULL);
@@ -827,7 +827,7 @@ static Array *SFDefaultScriptsLines(Array *arr,SplineFont *sf) {
    int i, scnt, lcnt, gid;
    /* If the font has more than 200 scripts we can't give a good sample image */
    SplineChar *sc;
-   char buffer[51 * 4 + 1], *pt;
+   char buffer[51*4+1], *pt;
    Array *ret;
    char *str;
    int start, end, anyscript=0, anyhere;
@@ -836,16 +836,16 @@ static Array *SFDefaultScriptsLines(Array *arr,SplineFont *sf) {
       pixelsize=arr->vals[0].u.ival;
 
    scnt=0;
-   lines[0]=fastrdup(sf->fullname != NULL ? sf->fullname : sf->fontname);
+   lines[0]=fastrdup(sf->fullname != NULL?sf->fullname:sf->fontname);
    lcnt=1;
-   for (gid=0; gid < sf->glyphcnt; ++gid)
+   for (gid=0; gid<sf->glyphcnt; ++gid)
       if ((sc=sf->glyphs[gid]) != NULL) {
 	 int uni=sc->unicodeenc;
 
 	 if (uni==-1)
 	    continue;
 	 script=SCScriptFromUnicode(sc);
-	 for (i=scnt - 1; i >= 0; --i)
+	 for (i=scnt-1; i >= 0; --i)
 	    if (scripts[i]==script)
 	       break;
 	 if (i >= 0)
@@ -899,8 +899,8 @@ static Array *SFDefaultScriptsLines(Array *arr,SplineFont *sf) {
 	      break;
 	   default:
 	      ScriptMainRange(script, &start, &end);
-	      if (end - start > 50)
-		 end=start + 50;
+	      if (end-start>50)
+		 end=start+50;
 	      pt=buffer;
 	      for (i=start; i <= end; ++i)
 		 pt=utf8_idpb(pt, i, 0);
@@ -933,7 +933,7 @@ static Array *SFDefaultScriptsLines(Array *arr,SplineFont *sf) {
       /*  code assigned for those unicode points */
       pt=buffer;
       for (gid=i=0;
-	   gid < sf->glyphcnt && pt < buffer + sizeof(buffer) - 4 && i < 50;
+	   gid<sf->glyphcnt && pt<buffer+sizeof(buffer)-4 && i<50;
 	   ++gid) {
 	 if ((sc=sf->glyphs[gid]) != NULL && sc->unicodeenc != -1) {
 	    pt=utf8_idpb(pt, sc->unicodeenc, 0);
@@ -941,22 +941,22 @@ static Array *SFDefaultScriptsLines(Array *arr,SplineFont *sf) {
 	 }
       }
       *pt='\0';
-      if (i > 0) {
+      if (i>0) {
 	 lines[lcnt++]=fastrdup(buffer);
 	 scripts[scnt++]=DEFAULT_SCRIPT;
       }
    }
 
    ret=calloc(1, sizeof(Array));
-   ret->argc=2 * lcnt;
-   ret->vals=calloc(2 * lcnt, sizeof(Val));
-   for (i=0; i < lcnt; ++i) {
-      ret->vals[2 * i + 0].type=v_int;
-      ret->vals[2 * i + 0].u.ival=pixelsize;
-      ret->vals[2 * i + 1].type=v_str;
-      ret->vals[2 * i + 1].u.sval=lines[i];
+   ret->argc=2*lcnt;
+   ret->vals=calloc(2*lcnt, sizeof(Val));
+   for (i=0; i<lcnt; ++i) {
+      ret->vals[2*i+0].type=v_int;
+      ret->vals[2*i+0].u.ival=pixelsize;
+      ret->vals[2*i+1].type=v_str;
+      ret->vals[2*i+1].u.sval=lines[i];
    }
-   ret->vals[0].u.ival=3 * pixelsize / 2;	/* Use as a title, make bigger */
+   ret->vals[0].u.ival=3*pixelsize/2;	/* Use as a title, make bigger */
    return (ret);
 }
 
@@ -965,7 +965,7 @@ void FontImage(SplineFont *sf, char *filename, Array * arr, int width,
    LayoutInfo *li=calloc(1, sizeof(LayoutInfo));
    int cnt, len, i, j, ret, p, x;
    struct fontlist *last;
-   enum sftf_fonttype type=sf->layers[ly_fore].order2 ? sftf_ttf : sftf_otf;
+   enum sftf_fonttype type=sf->layers[ly_fore].order2?sftf_ttf:sftf_otf;
    GImage *image;
    struct _GImage *base;
    unichar_t *upt;
@@ -984,18 +984,18 @@ void FontImage(SplineFont *sf, char *filename, Array * arr, int width,
    li->ps=-1;
    SFMapOfSF(li, sf);
 
-   if (arr==NULL || arr->argc < 2)
+   if (arr==NULL || arr->argc<2)
       arr=freeme=SFDefaultScriptsLines(arr, sf);
 
-   cnt=arr->argc / 2;
+   cnt=arr->argc/2;
    len=1;
-   for (i=0; i < cnt; ++i)
-      len += utf8_strlen(arr->vals[2 * i + 1].u.sval) + 1;
+   for (i=0; i<cnt; ++i)
+      len += utf8_strlen(arr->vals[2*i+1].u.sval)+1;
 
    li->text=malloc(len * sizeof(unichar_t));
    len=0;
    last=NULL;
-   for (i=0; i < cnt; ++i) {
+   for (i=0; i<cnt; ++i) {
       if (last==NULL)
 	 last=li->fontlist=chunkalloc(sizeof(struct fontlist));
       else {
@@ -1003,18 +1003,18 @@ void FontImage(SplineFont *sf, char *filename, Array * arr, int width,
 	 last=last->next;
       }
       last->fd =
-	 LI_FindFontData(li, sf, ly_fore, type, arr->vals[2 * i].u.ival,
+	 LI_FindFontData(li, sf, ly_fore, type, arr->vals[2*i].u.ival,
 			 true);
       last->start=len;
 
-      utf82u_strcpy(li->text + len, arr->vals[2 * i + 1].u.sval);
+      utf82u_strcpy(li->text+len, arr->vals[2*i+1].u.sval);
       script=DEFAULT_SCRIPT;
-      for (upt=li->text + len; *upt && script==DEFAULT_SCRIPT; ++upt)
+      for (upt=li->text+len; *upt && script==DEFAULT_SCRIPT; ++upt)
 	 script=ScriptFromUnicode(*upt, NULL);
-      len += utf8_strlen(arr->vals[2 * i + 1].u.sval);
+      len += utf8_strlen(arr->vals[2*i+1].u.sval);
       li->text[len++]='\n';
 
-      last->end=len - 1;
+      last->end=len-1;
 
       last->script=script;
       last->lang=DEFAULT_LANG;
@@ -1022,31 +1022,31 @@ void FontImage(SplineFont *sf, char *filename, Array * arr, int width,
    }
    li->text[len++]='\0';
 
-   LayoutInfoRefigureLines(li, 0, -1, width==-1 ? 0xff00 : width);
+   LayoutInfoRefigureLines(li, 0, -1, width==-1?0xff00:width);
    if (width==-1)
-      width=li->xmax + 2;
+      width=li->xmax+2;
    if (li->lcnt != 0)
       ybase=li->lineheights[0].as;
    if (height==-1 && li->lcnt != 0)
       height =
-	 li->lineheights[li->lcnt - 1].y + li->lineheights[li->lcnt - 1].fh +
-	 2 + ybase;
+	 li->lineheights[li->lcnt-1].y+li->lineheights[li->lcnt-1].fh +
+	 2+ybase;
 
    image=GImageCreate(it_index, width, height);
    base=image->u.image;
    memset(base->data, 0, base->bytes_per_line * base->height);
-   for (i=0; i < 256; ++i)
-      base->clut->clut[i]=(255 - i) * 0x010101;
+   for (i=0; i<256; ++i)
+      base->clut->clut[i]=(255-i)*0x010101;
    base->clut->is_grey=true;
    base->clut->clut_len=256;
 
-   for (i=0; i < li->lcnt; ++i) {
+   for (i=0; i<li->lcnt; ++i) {
       /* Does this para start out r2l or l2r? */
       p=li->lineheights[i].p;
       if (li->paras[p].para[0] != NULL &&
 	  ScriptIsRightToLeft(((struct fontlist *) (li->paras[p].para[0]->
 						    fl))->script))
-	 x=li->xmax - li->lineheights[i].linelen;
+	 x=li->xmax-li->lineheights[i].linelen;
       else
 	 x=0;
       line=li->lines[i];
@@ -1055,8 +1055,8 @@ void FontImage(SplineFont *sf, char *filename, Array * arr, int width,
 		       (void (*)(void *, GImage *, GRect *, int, int))
 		       GImageDrawImage,
 		       (void (*)(void *, GRect *, Color)) GImageDrawRect,
-		       line[j], x, li->lineheights[i].y + ybase, 0x000000);
-	 x += line[j]->advance_width + line[j]->vr.h_adv_off;
+		       line[j], x, li->lineheights[i].y+ybase, 0x000000);
+	 x += line[j]->advance_width+line[j]->vr.h_adv_off;
       }
    }
 #ifndef _NO_LIBPNG

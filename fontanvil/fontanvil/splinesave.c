@@ -1,4 +1,4 @@
-/* $Id: splinesave.c 4525 2015-12-20 19:51:59Z mskala $ */
+/* $Id: splinesave.c 4532 2015-12-22 13:18:53Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -137,13 +137,13 @@ typedef struct glyphinfo {
 } GlyphInfo;
 
 struct mhlist {
-   uint8_t mask[HntMax / 8];
+   uint8_t mask[HntMax/8];
    int subr;
    struct mhlist *next;
 };
 
 struct hintdb {
-   uint8_t mask[HntMax / 8];
+   uint8_t mask[HntMax/8];
    int cnt;			/* number of hints */
    struct mhlist *sublist;
    struct pschars *subrs;
@@ -166,7 +166,7 @@ struct hintdb {
 static void GIContentsFree(GlyphInfo *gi,SplineChar *dummynotdef) {
    int i, j;
 
-   if (gi->glyphcnt > 0 && gi->gb[0].sc==dummynotdef) {
+   if (gi->glyphcnt>0 && gi->gb[0].sc==dummynotdef) {
       if (dummynotdef->layers != NULL) {
 	 SplinePointListsFree(dummynotdef->layers[gi->layer].splines);
 	 dummynotdef->layers[gi->layer].splines=NULL;
@@ -178,14 +178,14 @@ static void GIContentsFree(GlyphInfo *gi,SplineChar *dummynotdef) {
       dummynotdef->layers=NULL;
    }
 
-   for (i=0; i < gi->pcnt; ++i) {
+   for (i=0; i<gi->pcnt; ++i) {
       free(gi->psubrs[i].data);
       free(gi->psubrs[i].startstop);
       gi->psubrs[i].data=NULL;
       gi->psubrs[i].startstop=NULL;
    }
-   for (i=0; i < gi->glyphcnt; ++i) {
-      for (j=0; j < gi->gb[i].bcnt; ++j)
+   for (i=0; i<gi->glyphcnt; ++i) {
+      for (j=0; j<gi->gb[i].bcnt; ++j)
 	 free(gi->gb[i].bits[j].data);
       free(gi->gb[i].bits);
       gi->gb[i].bits=NULL;
@@ -218,8 +218,8 @@ static void StartNextSubroutine(GrowBuf *gb,struct hintdb *hdb) {
    if (gi->bcnt==-1)
       gi->bcnt=0;
    if (gi->bcnt >= gi->bmax)
-      gi->bits=realloc(gi->bits, (gi->bmax += 20) * sizeof(struct bits));
-   gi->bits[gi->bcnt].dlen=gb->pt - gb->base;
+      gi->bits=realloc(gi->bits, (gi->bmax += 20)*sizeof(struct bits));
+   gi->bits[gi->bcnt].dlen=gb->pt-gb->base;
    gi->bits[gi->bcnt].data=malloc(gi->bits[gi->bcnt].dlen);
    gi->bits[gi->bcnt].psub_index=-1;
    memcpy(gi->bits[gi->bcnt].data, gb->base, gi->bits[gi->bcnt].dlen);
@@ -228,16 +228,16 @@ static void StartNextSubroutine(GrowBuf *gb,struct hintdb *hdb) {
 }
 
 static int hashfunc(uint8_t *data,int len) {
-   uint8_t *end=data + len;
+   uint8_t *end=data+len;
    unsigned int hash=0, r;
 
-   while (data < end) {
-      r=(hash >> 30) & 3;
+   while (data<end) {
+      r=(hash >> 30)&3;
       hash <<= 2;
-      hash=(hash | r) & 0xffffffff;
+      hash=(hash|r)&0xffffffff;
       hash ^= *data++;
    }
-   return (hash % HSH_SIZE);
+   return (hash%HSH_SIZE);
 }
 
 static void BreakSubroutine(GrowBuf *gb,struct hintdb *hdb) {
@@ -260,12 +260,12 @@ static void BreakSubroutine(GrowBuf *gb,struct hintdb *hdb) {
    } else if (gi->justbroken)
       return;
    /* Otherwise stuff everything in the growbuffer into a subr */
-   hash=hashfunc(gb->base, gb->pt - gb->base);
+   hash=hashfunc(gb->base, gb->pt-gb->base);
    ps=NULL;
    for (pi=gi->hashed[hash]; pi != -1; pi=gi->psubrs[pi].next) {
       ps=&gi->psubrs[pi];
-      if (ps->len==gb->pt - gb->base
-	  && memcmp(ps->data, gb->base, gb->pt - gb->base)==0)
+      if (ps->len==gb->pt-gb->base
+	  && memcmp(ps->data, gb->base, gb->pt-gb->base)==0)
 	 break;
    }
    if (pi==-1) {
@@ -273,11 +273,11 @@ static void BreakSubroutine(GrowBuf *gb,struct hintdb *hdb) {
 	 gi->psubrs =
 	    realloc(gi->psubrs,
 		    (gi->pmax +=
-		     gi->glyphcnt) * sizeof(struct potentialsubrs));
+		     gi->glyphcnt)*sizeof(struct potentialsubrs));
       ps=&gi->psubrs[gi->pcnt];
       memset(ps, 0, sizeof(*ps));	/* set cnt to 0 */
       ps->idx=gi->pcnt++;
-      ps->len=gb->pt - gb->base;
+      ps->len=gb->pt-gb->base;
       ps->data=malloc(ps->len);
       memcpy(ps->data, gb->base, ps->len);
       ps->next=gi->hashed[hash];
@@ -310,15 +310,15 @@ static int NumberHints(SplineChar *scs[MmMax],int instance_count) {
    int i, j, cnt=-1;
    StemInfo *s;
 
-   for (j=0; j < instance_count; ++j) {
+   for (j=0; j<instance_count; ++j) {
       for (s=scs[j]->hstem, i=0; s != NULL; s=s->next) {
-	 if (i < HntMax)
+	 if (i<HntMax)
 	    s->hintnumber=i++;
 	 else
 	    s->hintnumber=-1;
       }
       for (s=scs[j]->vstem; s != NULL; s=s->next) {
-	 if (i < HntMax)
+	 if (i<HntMax)
 	    s->hintnumber=i++;
 	 else
 	    s->hintnumber=-1;
@@ -336,7 +336,7 @@ static void MarkTranslationRefs(SplineFont *sf,int layer) {
    SplineChar *sc;
    RefChar *r;
 
-   for (i=0; i < sf->glyphcnt; ++i)
+   for (i=0; i<sf->glyphcnt; ++i)
       if ((sc=sf->glyphs[i]) != NULL) {
 	 for (r=sc->layers[layer].refs; r != NULL; r=r->next)
 	    r->justtranslated=(r->transform[0]==1 && r->transform[3]==1
@@ -353,7 +353,7 @@ static double myround(double pos,int round) {
    if (round)
       return (rint(pos));
    else
-      return (rint(pos * 1024.) / 1024.);
+      return (rint(pos*1024.)/1024.);
 }
 
 static void AddNumber(GrowBuf *gb,double pos,int round) {
@@ -361,12 +361,12 @@ static void AddNumber(GrowBuf *gb,double pos,int round) {
    int val;
    unsigned char *str;
 
-   if (gb->pt + 8 >= gb->end)
+   if (gb->pt+8 >= gb->end)
       GrowBuffer(gb);
 
    if (!round && pos != floor(pos)) {
       {
-	 if (rint(pos * 64) / 64==pos) {
+	 if (rint(pos*64)/64==pos) {
 	    pos *= 64;
 	    dodiv=64;
 	 } else {
@@ -376,38 +376,38 @@ static void AddNumber(GrowBuf *gb,double pos,int round) {
       }
    }
    pos=rint(pos);
-   if (dodiv > 0 && floor(pos) / dodiv==floor(pos / dodiv)) {
-      pos=rint(pos / dodiv);
+   if (dodiv>0 && floor(pos)/dodiv==floor(pos/dodiv)) {
+      pos=rint(pos/dodiv);
       dodiv=0;
    }
    val=pos;
    str=gb->pt;
 
    if (pos >= -107 && pos <= 107)
-      *str++=val + 139;
+      *str++=val+139;
    else if (pos >= 108 && pos <= 1131) {
       val -= 108;
-      *str++=(val >> 8) + 247;
-      *str++=val & 0xff;
+      *str++=(val >> 8)+247;
+      *str++=val&0xff;
    } else if (pos >= -1131 && pos <= -108) {
       val=-val;
       val -= 108;
-      *str++=(val >> 8) + 251;
-      *str++=val & 0xff;
+      *str++=(val >> 8)+251;
+      *str++=val&0xff;
    } else {
       *str++='\377';
-      *str++=(val >> 24) & 0xff;
-      *str++=(val >> 16) & 0xff;
-      *str++=(val >> 8) & 0xff;
-      *str++=val & 0xff;
+      *str++=(val >> 24)&0xff;
+      *str++=(val >> 16)&0xff;
+      *str++=(val >> 8)&0xff;
+      *str++=val&0xff;
    }
    if (dodiv) {
-      if (dodiv < 107)
-	 *str++=dodiv + 139;
+      if (dodiv<107)
+	 *str++=dodiv+139;
       else {
 	 dodiv -= 108;
-	 *str++=(dodiv >> 8) + 247;
-	 *str++=dodiv & 0xff;
+	 *str++=(dodiv >> 8)+247;
+	 *str++=dodiv&0xff;
       }
       *str++=12;		/* div (byte1) */
       *str++=12;		/* div (byte2) */
@@ -424,9 +424,9 @@ static void AddData(GrowBuf *gb,double data[MmMax][6],int instances,
    int allsame=true, alls[6];
    int i, j, chunk, min, max, subr;
 
-   for (j=0; j < num_coords; ++j) {
+   for (j=0; j<num_coords; ++j) {
       alls[j]=true;
-      for (i=1; i < instances; ++i) {
+      for (i=1; i<instances; ++i) {
 	 if (data[i][j] != data[0][j]) {
 	    alls[j]=false;
 	    allsame=false;
@@ -437,38 +437,38 @@ static void AddData(GrowBuf *gb,double data[MmMax][6],int instances,
 
    if (allsame) {		/* No need for blending */
       /*  Probably a normal font, but possible in an mm */
-      for (j=0; j < num_coords; ++j)
+      for (j=0; j<num_coords; ++j)
 	 AddNumber(gb, data[0][j], round);
       return;
    }
 
-   chunk=22 / instances;
+   chunk=22/instances;
    if (chunk==5)
       chunk=4;		/* No subroutine for 5 items */
    min=0;
-   while (min < num_coords) {
-      while (min < num_coords && alls[min]) {
+   while (min<num_coords) {
+      while (min<num_coords && alls[min]) {
 	 AddNumber(gb, data[0][min], round);
 	 ++min;
       }
-      max=min + chunk;
-      if (max > num_coords)
+      max=min+chunk;
+      if (max>num_coords)
 	 max=num_coords;
-      while (max - 1 > min && alls[max - 1])
+      while (max-1>min && alls[max-1])
 	 --max;
-      if (max - min==5)
-	 max=min + 4;
-      if (min < max) {
-	 for (j=min; j < max; ++j)
+      if (max-min==5)
+	 max=min+4;
+      if (min<max) {
+	 for (j=min; j<max; ++j)
 	    AddNumber(gb, data[0][j], round);
-	 for (j=min; j < max; ++j)
-	    for (i=1; i < instances; ++i)
-	       AddNumber(gb, data[i][j] - data[0][j], round);
-	 subr=(j - min) + 4;
-	 if (j - min==6)
+	 for (j=min; j<max; ++j)
+	    for (i=1; i<instances; ++i)
+	       AddNumber(gb, data[i][j]-data[0][j], round);
+	 subr=(j-min)+4;
+	 if (j-min==6)
 	    subr=9;
 	 AddNumber(gb, subr, round);
-	 if (gb->pt + 1 >= gb->end)
+	 if (gb->pt+1 >= gb->end)
 	    GrowBuffer(gb);
 	 *gb->pt++=10;	/* callsubr */
 	 min=j;
@@ -485,47 +485,47 @@ int CvtPsStem3(GrowBuf * gb, SplineChar * scs[MmMax], int instance_count,
    int i;
    double off;
 
-   for (i=0; i < instance_count; ++i) {
+   for (i=0; i<instance_count; ++i) {
       if ((ishstem && scs[i]->hconflicts) || (!ishstem && scs[i]->vconflicts))
 	 return (false);
-      h1=ishstem ? scs[i]->hstem : scs[i]->vstem;
+      h1=ishstem?scs[i]->hstem:scs[i]->vstem;
       if (h1==NULL || (h2=h1->next)==NULL || (h3=h2->next)==NULL)
 	 return (false);
       if (h3->next != NULL)
 	 return (false);
-      off=ishstem ? 0 : scs[i]->lsidebearing;
-      if (h1->width < 0) {
+      off=ishstem?0:scs[i]->lsidebearing;
+      if (h1->width<0) {
 	 _h1=*h1;
 	 _h1.start += _h1.width;
 	 _h1.width=-_h1.width;
 	 h1=&_h1;
       }
-      if (h2->width < 0) {
+      if (h2->width<0) {
 	 _h2=*h2;
 	 _h2.start += _h2.width;
 	 _h2.width=-_h2.width;
 	 h2=&_h2;
       }
-      if (h3->width < 0) {
+      if (h3->width<0) {
 	 _h3=*h3;
 	 _h3.start += _h3.width;
 	 _h3.width=-_h3.width;
 	 h3=&_h3;
       }
 
-      if (h1->start > h2->start) {
+      if (h1->start>h2->start) {
 	 StemInfo *ht=h1;
 
 	 h1=h2;
 	 h2=ht;
       }
-      if (h1->start > h3->start) {
+      if (h1->start>h3->start) {
 	 StemInfo *ht=h1;
 
 	 h1=h3;
 	 h3=ht;
       }
-      if (h2->start > h3->start) {
+      if (h2->start>h3->start) {
 	 StemInfo *ht=h2;
 
 	 h2=h3;
@@ -533,23 +533,23 @@ int CvtPsStem3(GrowBuf * gb, SplineChar * scs[MmMax], int instance_count,
       }
       if (h1->width != h3->width)
 	 return (false);
-      if ((h2->start + h2->width / 2) - (h1->start + h1->width / 2) !=
-	  (h3->start + h3->width / 2) - (h2->start + h2->width / 2))
+      if ((h2->start+h2->width/2)-(h1->start+h1->width/2) !=
+	  (h3->start+h3->width/2)-(h2->start+h2->width/2))
 	 return (false);
-      data[i][0]=h1->start - off;
+      data[i][0]=h1->start-off;
       data[i][1]=h1->width;
-      data[i][2]=h2->start - off;
+      data[i][2]=h2->start-off;
       data[i][3]=h2->width;
-      data[i][4]=h3->start - off;
+      data[i][4]=h3->start-off;
       data[i][5]=h3->width;
    }
    if (gb==NULL)
       return (true);
    AddData(gb, data, instance_count, 6, round);
-   if (gb->pt + 3 >= gb->end)
+   if (gb->pt+3 >= gb->end)
       GrowBuffer(gb);
    *(gb->pt)++=12;
-   *(gb->pt)++=ishstem ? 2 : 1;	/* h/v stem3 */
+   *(gb->pt)++=ishstem?2:1;	/* h/v stem3 */
    return (true);
 }
 
@@ -561,8 +561,8 @@ static void CvtPsHints(GrowBuf *gb,SplineChar *scs[MmMax],
    int i;
    double off;
 
-   for (i=0; i < instance_count; ++i)
-      hs[i]=ishstem ? scs[i]->hstem : scs[i]->vstem;
+   for (i=0; i<instance_count; ++i)
+      hs[i]=ishstem?scs[i]->hstem:scs[i]->vstem;
 
    if (hs[0] != NULL && hs[0]->next != NULL && hs[0]->next->next != NULL &&
        hs[0]->next->next->next==NULL)
@@ -570,22 +570,22 @@ static void CvtPsHints(GrowBuf *gb,SplineChar *scs[MmMax],
 	 return;
 
    while (hs[0] != NULL) {
-      for (i=0; i < instance_count; ++i) {
-	 off=offsets != NULL ? offsets[i] :
-	    ishstem ? 0 : scs[i]->lsidebearing;
+      for (i=0; i<instance_count; ++i) {
+	 off=offsets != NULL?offsets[i] :
+	    ishstem?0:scs[i]->lsidebearing;
 	 if (hs[i]->ghost) {
-	    data[i][0]=hs[i]->start - off + hs[i]->width;
+	    data[i][0]=hs[i]->start-off+hs[i]->width;
 	    data[i][1]=-hs[i]->width;
 	 } else {
-	    data[i][0]=hs[i]->start - off;
+	    data[i][0]=hs[i]->start-off;
 	    data[i][1]=hs[i]->width;
 	 }
       }
       AddData(gb, data, instance_count, 2, round);
-      if (gb->pt + 1 >= gb->end)
+      if (gb->pt+1 >= gb->end)
 	 GrowBuffer(gb);
-      *(gb->pt)++=ishstem ? 1 : 3;	/* h/v stem */
-      for (i=0; i < instance_count; ++i)
+      *(gb->pt)++=ishstem?1:3;	/* h/v stem */
+      for (i=0; i<instance_count; ++i)
 	 hs[i]=hs[i]->next;
    }
 }
@@ -597,29 +597,29 @@ static void CvtPsMasked(GrowBuf *gb,SplineChar *scs[MmMax],
    double data[MmMax][6], off;
    int i;
 
-   for (i=0; i < instance_count; ++i)
-      hs[i]=ishstem ? scs[i]->hstem : scs[i]->vstem;
+   for (i=0; i<instance_count; ++i)
+      hs[i]=ishstem?scs[i]->hstem:scs[i]->vstem;
 
    while (hs[0] != NULL) {
       if (hs[0]->hintnumber != -1 &&
-	  (mask[hs[0]->hintnumber >> 3] & (0x80 >> (hs[0]->hintnumber & 7))))
+	  (mask[hs[0]->hintnumber >> 3]&(0x80 >> (hs[0]->hintnumber&7))))
       {
-	 for (i=0; i < instance_count; ++i) {
-	    off=ishstem ? 0 : scs[i]->lsidebearing;
+	 for (i=0; i<instance_count; ++i) {
+	    off=ishstem?0:scs[i]->lsidebearing;
 	    if (hs[i]->ghost) {
-	       data[i][0]=hs[i]->start - off + hs[i]->width;
+	       data[i][0]=hs[i]->start-off+hs[i]->width;
 	       data[i][1]=-hs[i]->width;
 	    } else {
-	       data[i][0]=hs[i]->start - off;
+	       data[i][0]=hs[i]->start-off;
 	       data[i][1]=hs[i]->width;
 	    }
 	 }
 	 AddData(gb, data, instance_count, 2, round);
-	 if (gb->pt + 1 >= gb->end)
+	 if (gb->pt+1 >= gb->end)
 	    GrowBuffer(gb);
-	 *(gb->pt)++=ishstem ? 1 : 3;	/* h/v stem */
+	 *(gb->pt)++=ishstem?1:3;	/* h/v stem */
       }
-      for (i=0; i < instance_count; ++i)
+      for (i=0; i<instance_count; ++i)
 	 hs[i]=hs[i]->next;
    }
 }
@@ -628,24 +628,24 @@ static int FigureCounters(StemInfo *stems,double *hints,int base,
 			  double offset, int countermask_cnt,
 			  HintMask * counters) {
    StemInfo *h;
-   int pos=base + 1, subbase, cnt=0;
+   int pos=base+1, subbase, cnt=0;
    double last=offset;
    int i;
 
-   for (i=0; i < countermask_cnt; ++i) {
+   for (i=0; i<countermask_cnt; ++i) {
       subbase=pos;
       for (h=stems; h != NULL; h=h->next) {
 	 if (h->hintnumber != -1
 	     && (counters[i][h->hintnumber >> 3] &
-		 (0x80 >> (h->hintnumber & 7)))) {
-	    hints[pos++]=h->start - last;
+		 (0x80 >> (h->hintnumber&7)))) {
+	    hints[pos++]=h->start-last;
 	    hints[pos++]=h->width;
-	    last=h->start + h->width;
+	    last=h->start+h->width;
 	 }
       }
       if (pos != subbase) {
-	 hints[pos - 2] += hints[pos - 1];
-	 hints[pos - 1]=-hints[pos - 1];	/* Mark end of group */
+	 hints[pos-2] += hints[pos-1];
+	 hints[pos-1]=-hints[pos-1];	/* Mark end of group */
 	 last=offset;		/* Each new group starts at 0 or lbearing */
 	 ++cnt;
       }
@@ -655,7 +655,7 @@ static int FigureCounters(StemInfo *stems,double *hints,int base,
 }
 
 static void CounterHints1(GrowBuf *gb,SplineChar *sc,int round) {
-   double hints[HntMax * 2 + 2];	/* At most 96 hints, no hint used more than once */
+   double hints[HntMax*2+2];	/* At most 96 hints, no hint used more than once */
    int pos, i, j;
 
    if (sc->countermask_cnt==0)
@@ -673,21 +673,21 @@ static void CounterHints1(GrowBuf *gb,SplineChar *sc,int round) {
 		     sc->countermask_cnt, sc->countermasks);
    if (pos==2)		/* => no counters, one byte to say 0 h counters, one byte for 0 v counters */
       return;
-   for (i=pos; i > 22; i -= 22) {
-      for (j=i - 22; j < i; ++j)
+   for (i=pos; i>22; i -= 22) {
+      for (j=i-22; j<i; ++j)
 	 AddNumber(gb, hints[j], round);
       AddNumber(gb, 22, round);
       AddNumber(gb, 12, round);
-      if (gb->pt + 2 >= gb->end)
+      if (gb->pt+2 >= gb->end)
 	 GrowBuffer(gb);
       *(gb->pt)++=12;
       *(gb->pt)++=16;		/* CallOtherSubr */
    }
-   for (j=0; j < i; ++j)
+   for (j=0; j<i; ++j)
       AddNumber(gb, hints[j], round);
    AddNumber(gb, i, round);
    AddNumber(gb, 13, round);
-   if (gb->pt + 2 >= gb->end)
+   if (gb->pt+2 >= gb->end)
       GrowBuffer(gb);
    *(gb->pt)++=12;
    *(gb->pt)++=16;		/* CallOtherSubr */
@@ -704,7 +704,7 @@ static void SubrsCheck(struct pschars *subrs) {
 	 int i;
 
 	 subrs->keys=realloc(subrs->keys, subrs->cnt * sizeof(char *));
-	 for (i=subrs->cnt - 100; i < subrs->cnt; ++i)
+	 for (i=subrs->cnt-100; i<subrs->cnt; ++i)
 	    subrs->keys[i]=NULL;
       }
    }
@@ -735,7 +735,7 @@ static int FindOrBuildHintSubr(struct hintdb *hdb,uint8_t mask[12],int round) {
 		 NULL);
    else
       CvtPsMasked(&gb, hdb->scs, hdb->instance_count, false, round, mask);
-   if (gb.pt + 1 >= gb.end)
+   if (gb.pt+1 >= gb.end)
       GrowBuffer(&gb);
    *gb.pt++=11;		/* return */
 
@@ -743,13 +743,13 @@ static int FindOrBuildHintSubr(struct hintdb *hdb,uint8_t mask[12],int round) {
    if (mh != NULL) {
       free(hdb->subrs->values[mh->subr]);
       hdb->subrs->values[mh->subr] =
-	 (uint8_t *) copyn((char *) gb.base, gb.pt - gb.base);
-      hdb->subrs->lens[mh->subr]=gb.pt - gb.base;
+	 (uint8_t *) copyn((char *) gb.base, gb.pt-gb.base);
+      hdb->subrs->lens[mh->subr]=gb.pt-gb.base;
       memcpy(mh->mask, mask, sizeof(mh->mask));
    } else {
       hdb->subrs->values[hdb->subrs->next] =
-	 (uint8_t *) copyn((char *) gb.base, gb.pt - gb.base);
-      hdb->subrs->lens[hdb->subrs->next]=gb.pt - gb.base;
+	 (uint8_t *) copyn((char *) gb.base, gb.pt-gb.base);
+      hdb->subrs->lens[hdb->subrs->next]=gb.pt-gb.base;
 
       mh=calloc(1, sizeof(struct mhlist));
       memcpy(mh->mask, mask, sizeof(mh->mask));
@@ -775,7 +775,7 @@ static void CallTransformedHintSubr(GrowBuf *gb,struct hintdb *hdb,
    s=FindOrBuildHintSubr(hdb, hm, round);
    AddNumber(gb, s, round);
    AddNumber(gb, 4, round);	/* subr 4 is (my) magic subr that does the hint subs call */
-   if (gb->pt + 1 >= gb->end)
+   if (gb->pt+1 >= gb->end)
       GrowBuffer(gb);
    *gb->pt++=10;		/* callsubr */
 }
@@ -789,10 +789,10 @@ static void HintSetup(GrowBuf *gb,struct hintdb *hdb,SplinePoint *to,
       return;
    if (hdb->scs[0]->hstem==NULL && hdb->scs[0]->vstem==NULL)	/* Hints are turned off. Hint mask still remains though */
       return;
-   for (i=0; i < HntMax / 8; ++i)
+   for (i=0; i<HntMax/8; ++i)
       if (to->hintmask[i] != 0)
 	 break;
-   if (i==HntMax / 8)		/* Empty mask */
+   if (i==HntMax/8)		/* Empty mask */
       return;
 
    s=FindOrBuildHintSubr(hdb, *to->hintmask, round);
@@ -806,7 +806,7 @@ static void HintSetup(GrowBuf *gb,struct hintdb *hdb,SplinePoint *to,
 
    AddNumber(gb, s, round);
    AddNumber(gb, 4, round);	/* subr 4 is (my) magic subr that does the hint subs call */
-   if (gb->pt + 1 >= gb->end)
+   if (gb->pt+1 >= gb->end)
       GrowBuffer(gb);
    *gb->pt++=10;		/* callsubr */
    hdb->cursub=s;
@@ -821,43 +821,43 @@ static void _moveto(GrowBuf *gb,DBasePoint *current,BasePoint *to,
    int i, samex, samey;
    double data[MmMax][6];
 
-   if (gb->pt + 18 >= gb->end)
+   if (gb->pt+18 >= gb->end)
       GrowBuffer(gb);
 
-   for (i=0; i < instance_count; ++i) {
+   for (i=0; i<instance_count; ++i) {
       temp[i].x=myround(to[i].x, round);
       temp[i].y=myround(to[i].y, round);
    }
    to=temp;
    samex=samey=true;
-   for (i=0; i < instance_count; ++i) {
+   for (i=0; i<instance_count; ++i) {
       if (current[i].x != to[i].x)
 	 samex=false;
       if (current[i].y != to[i].y)
 	 samey=false;
    }
    if (samex) {
-      for (i=0; i < instance_count; ++i)
-	 data[i][0]=to[i].y - current[i].y;
+      for (i=0; i<instance_count; ++i)
+	 data[i][0]=to[i].y-current[i].y;
       AddData(gb, data, instance_count, 1, round);
-      *(gb->pt)++=line ? 7 : 4;	/* v move/line to */
-      for (i=0; i < instance_count; ++i)
+      *(gb->pt)++=line?7:4;	/* v move/line to */
+      for (i=0; i<instance_count; ++i)
 	 current[i].y += data[i][0];
    } else if (samey) {
-      for (i=0; i < instance_count; ++i)
-	 data[i][0]=to[i].x - current[i].x;
+      for (i=0; i<instance_count; ++i)
+	 data[i][0]=to[i].x-current[i].x;
       AddData(gb, data, instance_count, 1, round);
-      *(gb->pt)++=line ? 6 : 22;	/* h move/line to */
-      for (i=0; i < instance_count; ++i)
+      *(gb->pt)++=line?6:22;	/* h move/line to */
+      for (i=0; i<instance_count; ++i)
 	 current[i].x += data[i][0];
    } else {
-      for (i=0; i < instance_count; ++i) {
-	 data[i][0]=to[i].x - current[i].x;
-	 data[i][1]=to[i].y - current[i].y;
+      for (i=0; i<instance_count; ++i) {
+	 data[i][0]=to[i].x-current[i].x;
+	 data[i][1]=to[i].y-current[i].y;
       }
       AddData(gb, data, instance_count, 2, round);
-      *(gb->pt)++=line ? 5 : 21;	/* r move/line to */
-      for (i=0; i < instance_count; ++i) {
+      *(gb->pt)++=line?5:21;	/* r move/line to */
+      for (i=0; i<instance_count; ++i) {
 	 current[i].x += data[i][0];
 	 current[i].y += data[i][1];
       }
@@ -876,7 +876,7 @@ static void moveto(GrowBuf *gb,DBasePoint *current,
       BreakSubroutine(gb, hdb);
    if (hdb != NULL)
       HintSetup(gb, hdb, splines[0]->to, round, line);
-   for (i=0; i < instance_count; ++i)
+   for (i=0; i<instance_count; ++i)
       to[i]=splines[i]->to->me;
    _moveto(gb, current, to, instance_count, line, round, hdb);
 }
@@ -891,7 +891,7 @@ static void splmoveto(GrowBuf *gb,DBasePoint *current,
       BreakSubroutine(gb, hdb);
    if (hdb != NULL)
       HintSetup(gb, hdb, spl[0]->first, round, line);
-   for (i=0; i < instance_count; ++i)
+   for (i=0; i<instance_count; ++i)
       to[i]=spl[i]->first->me;
    _moveto(gb, current, to, instance_count, line, round, hdb);
 }
@@ -899,7 +899,7 @@ static void splmoveto(GrowBuf *gb,DBasePoint *current,
 static int NeverConflicts(RefChar *refs[MmMax],int instance_count) {
    int i;
 
-   for (i=0; i < instance_count; ++i)
+   for (i=0; i<instance_count; ++i)
       if (refs[i]->sc->hconflicts || refs[i]->sc->vconflicts)
 	 return (false);
 
@@ -910,10 +910,10 @@ static int AllStationary(RefChar *refs[MmMax],BasePoint trans[MmMax],
 			 int instance_count) {
    int i;
 
-   for (i=0; i < instance_count; ++i)
+   for (i=0; i<instance_count; ++i)
       if (!refs[i]->justtranslated ||
-	  refs[i]->transform[4] + trans[i].x != 0 ||
-	  refs[i]->transform[5] + trans[i].y != 0)
+	  refs[i]->transform[4]+trans[i].x != 0 ||
+	  refs[i]->transform[5]+trans[i].y != 0)
 	 return (false);
 
    return (true);
@@ -932,7 +932,7 @@ static void refmoveto(GrowBuf *gb,DBasePoint *current,
 
    if (!line)
       BreakSubroutine(gb, hdb);
-   for (i=0; i < instance_count; ++i) {
+   for (i=0; i<instance_count; ++i) {
       to[i]=rpos[i];
       if (refs != NULL) {
 	 to[i].x += refs[i]->transform[4];
@@ -954,11 +954,11 @@ static void curveto(GrowBuf *gb,DBasePoint *current,
    if (hdb != NULL)
       HintSetup(gb, hdb, splines[0]->to, round, true);
 
-   if (gb->pt + 50 >= gb->end)
+   if (gb->pt+50 >= gb->end)
       GrowBuffer(gb);
 
    vh=hv=true;
-   for (i=0; i < instance_count; ++i) {
+   for (i=0; i<instance_count; ++i) {
       c0[i]=&splines[i]->from->nextcp;
       c1[i]=&splines[i]->to->prevcp;
       s1[i]=&splines[i]->to->me;
@@ -977,49 +977,49 @@ static void curveto(GrowBuf *gb,DBasePoint *current,
 	 hv=false;
    }
    if (vh) {
-      for (i=0; i < instance_count; ++i) {
-	 data[i][0]=c0[i]->y - current[i].y;
-	 data[i][1]=c1[i]->x - c0[i]->x;
-	 data[i][2]=c1[i]->y - c0[i]->y;
-	 data[i][3]=s1[i]->x - c1[i]->x;
+      for (i=0; i<instance_count; ++i) {
+	 data[i][0]=c0[i]->y-current[i].y;
+	 data[i][1]=c1[i]->x-c0[i]->x;
+	 data[i][2]=c1[i]->y-c0[i]->y;
+	 data[i][3]=s1[i]->x-c1[i]->x;
       }
       op=30;			/* vhcurveto */
       opcnt=4;
-      for (i=0; i < instance_count; ++i) {
-	 current[i].x += data[i][1] + data[i][3];
-	 current[i].y += data[i][0] + data[i][2];
+      for (i=0; i<instance_count; ++i) {
+	 current[i].x += data[i][1]+data[i][3];
+	 current[i].y += data[i][0]+data[i][2];
       }
    } else if (hv) {
-      for (i=0; i < instance_count; ++i) {
-	 data[i][0]=c0[i]->x - current[i].x;
-	 data[i][1]=c1[i]->x - c0[i]->x;
-	 data[i][2]=c1[i]->y - c0[i]->y;
-	 data[i][3]=s1[i]->y - c1[i]->y;
+      for (i=0; i<instance_count; ++i) {
+	 data[i][0]=c0[i]->x-current[i].x;
+	 data[i][1]=c1[i]->x-c0[i]->x;
+	 data[i][2]=c1[i]->y-c0[i]->y;
+	 data[i][3]=s1[i]->y-c1[i]->y;
       }
       op=31;			/* hvcurveto */
       opcnt=4;
-      for (i=0; i < instance_count; ++i) {
-	 current[i].x += data[i][0] + data[i][1];
-	 current[i].y += data[i][2] + data[i][3];
+      for (i=0; i<instance_count; ++i) {
+	 current[i].x += data[i][0]+data[i][1];
+	 current[i].y += data[i][2]+data[i][3];
       }
    } else {
-      for (i=0; i < instance_count; ++i) {
-	 data[i][0]=c0[i]->x - current[i].x;
-	 data[i][1]=c0[i]->y - current[i].y;
-	 data[i][2]=c1[i]->x - c0[i]->x;
-	 data[i][3]=c1[i]->y - c0[i]->y;
-	 data[i][4]=s1[i]->x - c1[i]->x;
-	 data[i][5]=s1[i]->y - c1[i]->y;
+      for (i=0; i<instance_count; ++i) {
+	 data[i][0]=c0[i]->x-current[i].x;
+	 data[i][1]=c0[i]->y-current[i].y;
+	 data[i][2]=c1[i]->x-c0[i]->x;
+	 data[i][3]=c1[i]->y-c0[i]->y;
+	 data[i][4]=s1[i]->x-c1[i]->x;
+	 data[i][5]=s1[i]->y-c1[i]->y;
       }
       op=8;			/* rrcurveto */
       opcnt=6;
-      for (i=0; i < instance_count; ++i) {
-	 current[i].x += data[i][0] + data[i][2] + data[i][4];
-	 current[i].y += data[i][1] + data[i][3] + data[i][5];
+      for (i=0; i<instance_count; ++i) {
+	 current[i].x += data[i][0]+data[i][2]+data[i][4];
+	 current[i].y += data[i][1]+data[i][3]+data[i][5];
       }
    }
    AddData(gb, data, instance_count, opcnt, false);
-   if (gb->pt + 1 >= gb->end)
+   if (gb->pt+1 >= gb->end)
       GrowBuffer(gb);
    *(gb->pt)++=op;
 }
@@ -1027,7 +1027,7 @@ static void curveto(GrowBuf *gb,DBasePoint *current,
 static int SplinesAreFlexible(Spline *splines[MmMax],int instance_count) {
    int i, x=false, y=false;
 
-   for (i=0; i < instance_count; ++i) {
+   for (i=0; i<instance_count; ++i) {
       if (!splines[i]->to->flexx && !splines[i]->to->flexy)
 	 return (false);
       if ((x && splines[i]->to->flexy) || (y && splines[i]->to->flexx))
@@ -1048,7 +1048,7 @@ static void flexto(GrowBuf *gb,DBasePoint current[MmMax],
    BasePoint temp1, temp2, temp3, temp;
    double data[MmMax][6];
 
-   for (j=0; j < instance_count; ++j) {
+   for (j=0; j<instance_count; ++j) {
       c0=&pspline[j]->from->nextcp;
       c1=&pspline[j]->to->prevcp;
       mid=&pspline[j]->to->me;
@@ -1064,20 +1064,20 @@ static void flexto(GrowBuf *gb,DBasePoint current[MmMax],
       mid=&temp;
 /* reference point is same level as current point */
       if (current[j].y==pspline[j]->to->next->to->me.y) {
-	 offsets[j][0].x=mid->x - current[j].x;
+	 offsets[j][0].x=mid->x-current[j].x;
 	 offsets[j][0].y=0;
-	 offsets[j][1].x=c0->x - mid->x;
-	 offsets[j][1].y=c0->y - current[j].y;
+	 offsets[j][1].x=c0->x-mid->x;
+	 offsets[j][1].y=c0->y-current[j].y;
       } else {
 	 offsets[j][0].x=0;
-	 offsets[j][0].y=mid->y - current[j].y;
-	 offsets[j][1].x=c0->x - current[j].x;
-	 offsets[j][1].y=c0->y - mid->y;
+	 offsets[j][0].y=mid->y-current[j].y;
+	 offsets[j][1].x=c0->x-current[j].x;
+	 offsets[j][1].y=c0->y-mid->y;
       }
-      offsets[j][2].x=c1->x - c0->x;
-      offsets[j][2].y=c1->y - c0->y;
-      offsets[j][3].x=mid->x - c1->x;
-      offsets[j][3].y=mid->y - c1->y;
+      offsets[j][2].x=c1->x-c0->x;
+      offsets[j][2].y=c1->y-c0->y;
+      offsets[j][3].x=mid->x-c1->x;
+      offsets[j][3].y=mid->y-c1->y;
       nspline=pspline[j]->to->next;
       c0=&nspline->from->nextcp;
       c1=&nspline->to->prevcp;
@@ -1093,12 +1093,12 @@ static void flexto(GrowBuf *gb,DBasePoint current[MmMax],
       temp3.y=myround(end->y, round);
       end=&temp3;
 
-      offsets[j][4].x=c0->x - mid->x;
-      offsets[j][4].y=c0->y - mid->y;
-      offsets[j][5].x=c1->x - c0->x;
-      offsets[j][5].y=c1->y - c0->y;
-      offsets[j][6].x=end->x - c1->x;
-      offsets[j][6].y=end->y - c1->y;
+      offsets[j][4].x=c0->x-mid->x;
+      offsets[j][4].y=c0->y-mid->y;
+      offsets[j][5].x=c1->x-c0->x;
+      offsets[j][5].y=c1->y-c0->y;
+      offsets[j][6].x=end->x-c1->x;
+      offsets[j][6].y=end->y-c1->y;
       offsets[j][7].x=end->x;
       offsets[j][7].y=end->y;
       current[j].x=end->x;
@@ -1108,32 +1108,32 @@ static void flexto(GrowBuf *gb,DBasePoint current[MmMax],
    if (hdb != NULL)
       HintSetup(gb, hdb, pspline[0]->to->next->to, round, false);
 
-   if (gb->pt + 2 >= gb->end)
+   if (gb->pt+2 >= gb->end)
       GrowBuffer(gb);
 
-   *(gb->pt)++=1 + 139;	/* 1 */
+   *(gb->pt)++=1+139;	/* 1 */
    *(gb->pt)++=10;		/* callsubr */
-   for (i=0; i < 7; ++i) {
-      if (gb->pt + 20 >= gb->end)
+   for (i=0; i<7; ++i) {
+      if (gb->pt+20 >= gb->end)
 	 GrowBuffer(gb);
-      for (j=0; j < instance_count; ++j) {
+      for (j=0; j<instance_count; ++j) {
 	 data[j][0]=offsets[j][i].x;
 	 data[j][1]=offsets[j][i].y;
       }
       AddData(gb, data, instance_count, 2, round);
       *(gb->pt)++=21;		/* rmoveto */
-      *(gb->pt)++=2 + 139;	/* 2 */
+      *(gb->pt)++=2+139;	/* 2 */
       *(gb->pt)++=10;		/* callsubr */
    }
-   if (gb->pt + 20 >= gb->end)
+   if (gb->pt+20 >= gb->end)
       GrowBuffer(gb);
-   *(gb->pt)++=50 + 139;	/* 50, .50 pixels */
-   for (j=0; j < instance_count; ++j) {
+   *(gb->pt)++=50+139;	/* 50, .50 pixels */
+   for (j=0; j<instance_count; ++j) {
       data[j][0]=offsets[j][7].x;
       data[j][1]=offsets[j][7].y;
    }
    AddData(gb, data, instance_count, 2, round);
-   *(gb->pt)++=0 + 139;	/* 0 */
+   *(gb->pt)++=0+139;	/* 0 */
    *(gb->pt)++=10;		/* callsubr */
 
    current->x=end->x;
@@ -1154,7 +1154,7 @@ static void _CvtPsSplineSet(GrowBuf *gb,SplinePointList *spl[MmMax],
    }
    while (spl[0] != NULL) {
       first=NULL;
-      for (i=0; i < instance_count; ++i)
+      for (i=0; i<instance_count; ++i)
 	 SplineSetReverse(spl[i]);
       /* For some reason fontographer reads its spline in in the reverse */
       /*  order from that I use. I'm not sure how they do that. The result */
@@ -1166,20 +1166,20 @@ static void _CvtPsSplineSet(GrowBuf *gb,SplinePointList *spl[MmMax],
 	 /* list by one, this is possible because only closed paths have */
 	 /* points marked as flex, and because we can't have two flex mid- */
 	 /* points in a row */
-	 for (i=0; i < instance_count; ++i) {
+	 for (i=0; i<instance_count; ++i) {
 	    temp[i]=*spl[i];
 	    temp[i].first=temp[i].last=spl[i]->first->next->to;
 	    spl[i]=&temp[i];
 	 }
 	 if (spl[0]->first->flexy || spl[0]->first->flexx) {
 	    /* well, well, well. We did have two flexes in a row */
-	    for (i=0; i < instance_count; ++i) {
+	    for (i=0; i<instance_count; ++i) {
 	       spl[i]->first->flexx=spl[i]->first->flexy=false;
 	    }
 	 }
       }
       splmoveto(gb, current, spl, instance_count, false, round, hdb);
-      for (i=0; i < instance_count; ++i)
+      for (i=0; i<instance_count; ++i)
 	 spline[i]=spl[i]->first->next;
       while (spline[0] != NULL && spline[0] != first) {
 	 if (first==NULL)
@@ -1187,7 +1187,7 @@ static void _CvtPsSplineSet(GrowBuf *gb,SplinePointList *spl[MmMax],
 	 if (SplinesAreFlexible(spline, instance_count) &&
 	     (hdb->noconflicts || spline[0]->to->hintmask==NULL)) {
 	    flexto(gb, current, spline, instance_count, round, hdb);	/* does two adjacent splines */
-	    for (i=0; i < instance_count; ++i)
+	    for (i=0; i<instance_count; ++i)
 	       spline[i]=spline[i]->to->next;
 	 } else if (spline[0]->knownlinear && spline[0]->to==spl[0]->first) {
 	    /* We can finish this off with the closepath */
@@ -1196,15 +1196,15 @@ static void _CvtPsSplineSet(GrowBuf *gb,SplinePointList *spl[MmMax],
 	    moveto(gb, current, spline, instance_count, true, round, hdb);
 	 else
 	    curveto(gb, current, spline, instance_count, round, hdb);
-	 for (i=0; i < instance_count; ++i)
+	 for (i=0; i<instance_count; ++i)
 	    spline[i]=spline[i]->to->next;
       }
       if (!stroked || spl[0]->first->prev != NULL) {
-	 if (gb->pt + 1 >= gb->end)
+	 if (gb->pt+1 >= gb->end)
 	    GrowBuffer(gb);
 	 *(gb->pt)++=9;	/* closepath */
       }
-      for (i=0; i < instance_count; ++i) {
+      for (i=0; i<instance_count; ++i) {
 	 SplineSetReverse(spl[i]);
 	 /* Of course, I have to Reverse again to get back to my convention after */
 	 /*  saving */
@@ -1252,7 +1252,7 @@ static int IsSeacable(GrowBuf *gb,SplineChar *scs[MmMax],
    int i, j, swap;
    double data[MmMax][6];
 
-   for (j=0; j < instance_count; ++j)
+   for (j=0; j<instance_count; ++j)
       if (!IsPSSeacable(scs[j], layer))
 	 return (false);
 
@@ -1276,7 +1276,7 @@ static int IsSeacable(GrowBuf *gb,SplineChar *scs[MmMax],
       memset(r2, '\0', sizeof(space));
       space.adobe_enc=' ';
       space.transform[0]=space.transform[3]=1.0;
-      for (i=0; i < scs[0]->parent->glyphcnt; ++i)
+      for (i=0; i<scs[0]->parent->glyphcnt; ++i)
 	 if (scs[0]->parent->glyphs[i] != NULL &&
 	     strcmp(scs[0]->parent->glyphs[i]->name, "space")==0)
 	    break;
@@ -1341,7 +1341,7 @@ static int IsSeacable(GrowBuf *gb,SplineChar *scs[MmMax],
        || r1->transform[4] != 0 || r1->transform[5] != 0)
       return (false);
 
-   for (j=0; j < instance_count; ++j) {
+   for (j=0; j<instance_count; ++j) {
       SplineChar *r2sc=scs[j]->parent->glyphs[r2->sc->orig_pos];
       RefChar *r3, t3;
 
@@ -1356,13 +1356,13 @@ static int IsSeacable(GrowBuf *gb,SplineChar *scs[MmMax],
 
       b.minx=myround(b.minx, round);
       data[j][0]=b.minx;
-      data[j][1]=r3->transform[4] + b.minx - scs[j]->lsidebearing;
+      data[j][1]=r3->transform[4]+b.minx-scs[j]->lsidebearing;
       data[j][2]=r3->transform[5];
    }
    AddData(gb, data, instance_count, 3, round);
    AddNumber(gb, r1->adobe_enc, round);
    AddNumber(gb, r2->adobe_enc, round);
-   if (gb->pt + 2 > gb->end)
+   if (gb->pt+2>gb->end)
       GrowBuffer(gb);
    *(gb->pt)++=12;
    *(gb->pt)++=6;		/* seac 12,6 */
@@ -1395,8 +1395,8 @@ static int SCNeedsSubsPts(SplineChar *sc,enum fontformat format,int layer) {
       MMSet *mm=sc->parent->mm;
       int i;
 
-      for (i=0; i < mm->instance_count; ++i)
-	 if (sc->orig_pos < mm->instances[i]->glyphcnt) {
+      for (i=0; i<mm->instance_count; ++i)
+	 if (sc->orig_pos<mm->instances[i]->glyphcnt) {
 	    if (_SCNeedsSubsPts
 		(mm->instances[i]->glyphs[sc->orig_pos], layer))
 	       return (true);
@@ -1414,9 +1414,9 @@ static void ExpandRef1(GrowBuf *gb,SplineChar *scs[MmMax],
    BasePoint rtrans[MmMax], rpos[MmMax];
    int i;
 
-   for (i=0; i < instance_count; ++i) {
-      rtrans[i].x=r[i]->transform[4] + trans[i].x;
-      rtrans[i].y=r[i]->transform[5] + trans[i].y;
+   for (i=0; i<instance_count; ++i) {
+      rtrans[i].x=r[i]->transform[4]+trans[i].x;
+      rtrans[i].y=r[i]->transform[5]+trans[i].y;
       if (round) {
 	 rtrans[i].x=rint(rtrans[i].x);
 	 rtrans[i].y=rint(rtrans[i].y);
@@ -1426,7 +1426,7 @@ static void ExpandRef1(GrowBuf *gb,SplineChar *scs[MmMax],
    BreakSubroutine(gb, hdb);
    if (r[0]->sc==scs[0]) {
       /* Hints for self */
-      if (hdb->cnt > 0 && !hdb->noconflicts
+      if (hdb->cnt>0 && !hdb->noconflicts
 	  && NeverConflicts(r, instance_count)) {
 	 CvtPsHints(gb, scs, instance_count, true, round, iscjk, NULL);
 	 CvtPsHints(gb, scs, instance_count, false, round, iscjk, NULL);
@@ -1447,9 +1447,9 @@ static void ExpandRef1(GrowBuf *gb,SplineChar *scs[MmMax],
       bpt=hdb->gi->psubrs[r[0]->sc->ttf_glyph].startstop;
    else
       bpt=(BasePoint *) (subrs->keys[r[0]->sc->ttf_glyph]);
-   for (i=0; i < instance_count; ++i) {
-      rpos[i].x=bpt[2 * i].x + rtrans[i].x;
-      rpos[i].y=bpt[2 * i].y + rtrans[i].y;
+   for (i=0; i<instance_count; ++i) {
+      rpos[i].x=bpt[2*i].x+rtrans[i].x;
+      rpos[i].y=bpt[2*i].y+rtrans[i].y;
    }
    refmoveto(gb, current, rpos, instance_count, false, round, hdb, NULL);
    hdb->startset=true;
@@ -1463,14 +1463,14 @@ static void ExpandRef1(GrowBuf *gb,SplineChar *scs[MmMax],
       gi->justbroken=true;
    } else {
       AddNumber(gb, r[0]->sc->ttf_glyph, round);
-      if (gb->pt + 1 >= gb->end)
+      if (gb->pt+1 >= gb->end)
 	 GrowBuffer(gb);
       *gb->pt++=10;
    }
 
-   for (i=0; i < instance_count; ++i) {
-      current[i].x=bpt[2 * i + 1].x + rtrans[i].x;
-      current[i].y=bpt[2 * i + 1].y + rtrans[i].y;
+   for (i=0; i<instance_count; ++i) {
+      current[i].x=bpt[2*i+1].x+rtrans[i].x;
+      current[i].y=bpt[2*i+1].y+rtrans[i].y;
    }
 }
 
@@ -1481,13 +1481,13 @@ static void RSC2PS1(GrowBuf *gb,SplineChar *base[MmMax],
 		    int instance_count, int layer) {
    BasePoint subtrans[MmMax];
    SplineChar *rscs[MmMax];
-   int round=(flags & ps_flag_round) ? true : false;
+   int round=(flags&ps_flag_round)?true:false;
    RefChar *refs[MmMax];
    SplineSet *spls[MmMax], *freeme[MmMax];
    int i;
    int wasntconflicted=hdb->noconflicts;
 
-   for (i=0; i < instance_count; ++i) {
+   for (i=0; i<instance_count; ++i) {
       spls[i]=rsc[i]->layers[layer].splines;
       if (base[0] != rsc[0])
 	 spls[i]=freeme[i] =
@@ -1497,16 +1497,16 @@ static void RSC2PS1(GrowBuf *gb,SplineChar *base[MmMax],
 		   base[0]->layers[layer].order2,
 		   base[0]->parent->strokedfont);
    if (base[0] != rsc[0])
-      for (i=0; i < instance_count; ++i)
+      for (i=0; i<instance_count; ++i)
 	 SplinePointListsFree(freeme[i]);
 
-   for (i=0; i < instance_count; ++i)
+   for (i=0; i<instance_count; ++i)
       refs[i]=rsc[i]->layers[layer].refs;
    while (refs[0] != NULL) {
-      for (i=0; i < instance_count; ++i)
+      for (i=0; i<instance_count; ++i)
 	 spls[i]=refs[i]->layers[0].splines;
       if (!refs[0]->justtranslated) {
-	 for (i=0; i < instance_count; ++i)
+	 for (i=0; i<instance_count; ++i)
 	    spls[i]=freeme[i] =
 	       SPLCopyTransformedHintMasks(refs[i], base[i], &trans[i],
 					   layer);
@@ -1517,22 +1517,22 @@ static void RSC2PS1(GrowBuf *gb,SplineChar *base[MmMax],
 	 _CvtPsSplineSet(gb, spls, instance_count, current, round, hdb,
 			 base[0]->layers[layer].order2,
 			 base[0]->parent->strokedfont);
-	 for (i=0; i < instance_count; ++i)
+	 for (i=0; i<instance_count; ++i)
 	    SplinePointListsFree(freeme[i]);
       } else if (refs[0]->sc->ttf_glyph != 0x7fff &&
-		 ((flags & ps_flag_nohints) ||
+		 ((flags&ps_flag_nohints) ||
 		  !refs[0]->sc->layers[layer].anyflexes ||
-		  (refs[0]->transform[4] + trans[0].x==0
-		   && refs[0]->transform[5] + trans[0].y==0))
-		 && ((flags & ps_flag_nohints)
+		  (refs[0]->transform[4]+trans[0].x==0
+		   && refs[0]->transform[5]+trans[0].y==0))
+		 && ((flags&ps_flag_nohints)
 		     || NeverConflicts(refs, instance_count)
 		     || AllStationary(refs, trans, instance_count))) {
 	 ExpandRef1(gb, base, instance_count, hdb, refs, trans, current,
 		    subrs, round, iscjk, layer);
       } else {
-	 for (i=0; i < instance_count; ++i) {
-	    subtrans[i].x=trans[i].x + refs[i]->transform[4];
-	    subtrans[i].y=trans[i].y + refs[i]->transform[5];
+	 for (i=0; i<instance_count; ++i) {
+	    subtrans[i].x=trans[i].x+refs[i]->transform[4];
+	    subtrans[i].y=trans[i].y+refs[i]->transform[5];
 	    rscs[i]=refs[i]->sc;
 	 }
 	 if (!hdb->noconflicts && NeverConflicts(refs, instance_count)) {
@@ -1544,7 +1544,7 @@ static void RSC2PS1(GrowBuf *gb,SplineChar *base[MmMax],
 		 instance_count, layer);
 	 hdb->noconflicts=wasntconflicted;
       }
-      for (i=0; i < instance_count; ++i)
+      for (i=0; i<instance_count; ++i)
 	 refs[i]=refs[i]->next;
    }
 }
@@ -1568,14 +1568,14 @@ static unsigned char *SplineChar2PS(SplineChar *sc,int *len,int round,
    HintMask *hm[MmMax];
    int fixuphm=false;
 
-   if (!(flags & ps_flag_nohints) && SCNeedsSubsPts(sc, format, gi->layer))
+   if (!(flags&ps_flag_nohints) && SCNeedsSubsPts(sc, format, gi->layer))
       SCFigureHintMasks(sc, gi->layer);
 
    if ((format==ff_mma || format==ff_mmb) && mm != NULL) {
       instance_count=mm->instance_count;
-      if (instance_count > 16)
+      if (instance_count>16)
 	 instance_count=16;
-      for (i=0; i < instance_count; ++i)
+      for (i=0; i<instance_count; ++i)
 	 scs[i]=mm->instances[i]->glyphs[sc->orig_pos];
    } else {
       instance_count=1;
@@ -1583,8 +1583,8 @@ static unsigned char *SplineChar2PS(SplineChar *sc,int *len,int round,
       mm=NULL;
    }
 
-   if (flags & ps_flag_nohints) {
-      for (i=0; i < instance_count; ++i) {
+   if (flags&ps_flag_nohints) {
+      for (i=0; i<instance_count; ++i) {
 	 oldh[i]=scs[i]->hstem;
 	 oldv[i]=scs[i]->vstem;
 	 hc[i]=scs[i]->hconflicts;
@@ -1595,12 +1595,12 @@ static unsigned char *SplineChar2PS(SplineChar *sc,int *len,int round,
 	 scs[i]->vconflicts=false;
       }
    } else {
-      for (i=0; i < instance_count; ++i)
+      for (i=0; i<instance_count; ++i)
 	 if (scs[i]->vconflicts || scs[i]->hconflicts)
 	    break;
       if (scs[0]->layers[gi->layer].splines != NULL && i==instance_count) {	/* No conflicts */
 	 fixuphm=true;
-	 for (i=0; i < instance_count; ++i) {
+	 for (i=0; i<instance_count; ++i) {
 	    hm[i]=scs[i]->layers[gi->layer].splines->first->hintmask;
 	    scs[i]->layers[gi->layer].splines->first->hintmask=NULL;
 	 }
@@ -1609,24 +1609,24 @@ static unsigned char *SplineChar2PS(SplineChar *sc,int *len,int round,
 
    memset(&gb, '\0', sizeof(gb));
    memset(current, '\0', sizeof(current));
-   for (i=0; i < instance_count; ++i) {
+   for (i=0; i<instance_count; ++i) {
       SplineCharFindBounds(scs[i], &b);
       scs[i]->lsidebearing=current[i].x=myround(b.minx, round);
       data[i][0]=current[i].x;
       data[i][1]=scs[i]->width;
    }
    AddData(&gb, data, instance_count, 2, round);
-   *gb.pt++=13;		/* hsbw, lbearing & width */
+   *gb.pt++=13;		/* hsbw, lbearing&width */
 
    memset(&hintdb, 0, sizeof(hintdb));
    hintdb.subrs=subrs;
-   hintdb.iscjk=iscjk & ~0x100;
+   hintdb.iscjk=iscjk&~0x100;
    hintdb.scs=scs;
    hintdb.instance_count=instance_count;
    hintdb.cnt=NumberHints(scs, instance_count);
    hintdb.noconflicts=true;
    hintdb.gi=gi;
-   for (i=0; i < instance_count; ++i)
+   for (i=0; i<instance_count; ++i)
       if (scs[i]->hconflicts || scs[i]->vconflicts)
 	 hintdb.noconflicts=false;
    hdb=&hintdb;
@@ -1638,8 +1638,8 @@ static unsigned char *SplineChar2PS(SplineChar *sc,int *len,int round,
    /*  add another reference to it later. CID keyed fonts also can't use */
    /*  seac (they have no encoding so it doesn't work), that's what iscjk&0x100 */
    /*  tests for */
-   if (scs[0]->ttf_glyph==0x7fff && !(iscjk & 0x100)
-       && !(flags & ps_flag_noseac)
+   if (scs[0]->ttf_glyph==0x7fff && !(iscjk&0x100)
+       && !(flags&ps_flag_noseac)
        && IsSeacable(&gb, scs, instance_count, round, gi->layer)) {
       if (gi)
 	 gi->active->wasseac=true;
@@ -1674,15 +1674,15 @@ static unsigned char *SplineChar2PS(SplineChar *sc,int *len,int round,
       }
    }
    free(gb.base);
-   if (flags & ps_flag_nohints) {
-      for (i=0; i < instance_count; ++i) {
+   if (flags&ps_flag_nohints) {
+      for (i=0; i<instance_count; ++i) {
 	 scs[i]->hstem=oldh[i];
 	 scs[i]->vstem=oldv[i];
 	 scs[i]->hconflicts=hc[i];
 	 scs[i]->vconflicts=vc[i];
       }
    } else if (fixuphm) {
-      for (i=0; i < instance_count; ++i)
+      for (i=0; i<instance_count; ++i)
 	 scs[i]->layers[gi->layer].splines->first->hintmask=hm[i];
    }
    return (ret);
@@ -1693,9 +1693,9 @@ static void SplineFont2FullSubrs1(int flags,GlyphInfo *gi) {
    int i;
    SplineChar *sc;
 
-   if (!autohint_before_generate && !(flags & ps_flag_nohints))
+   if (!autohint_before_generate && !(flags&ps_flag_nohints))
       SplineFontAutoHintRefs(gi->sf, gi->layer);
-   for (i=0; i < gi->glyphcnt; ++i)
+   for (i=0; i<gi->glyphcnt; ++i)
       if ((sc=gi->gb[i].sc) != NULL)
 	 sc->ttf_glyph=0x7fff;
 }
@@ -1704,7 +1704,7 @@ int SFOneWidth(SplineFont *sf) {
    int width, i;
 
    width=-2;
-   for (i=0; i < sf->glyphcnt; ++i)
+   for (i=0; i<sf->glyphcnt; ++i)
       if (SCWorthOutputting(sf->glyphs[i]) &&
 	  (strcmp(sf->glyphs[i]->name, ".notdef") != 0
 	   || sf->glyphs[i]->layers[ly_fore].splines != NULL)) {
@@ -1730,8 +1730,8 @@ int CIDOneWidth(SplineFont *_sf) {
    width=-2;
    k=0;
    do {
-      sf=_sf->subfonts==NULL ? _sf : _sf->subfonts[k];
-      for (i=0; i < sf->glyphcnt; ++i)
+      sf=_sf->subfonts==NULL?_sf:_sf->subfonts[k];
+      for (i=0; i<sf->glyphcnt; ++i)
 	 if (SCWorthOutputting(sf->glyphs[i]) &&
 	     strcmp(sf->glyphs[i]->name, ".null") != 0 &&
 	     strcmp(sf->glyphs[i]->name, "nonmarkingreturn") != 0 &&
@@ -1747,7 +1747,7 @@ int CIDOneWidth(SplineFont *_sf) {
 	    }
 	 }
       ++k;
-   } while (k < _sf->subfontcnt);
+   } while (k<_sf->subfontcnt);
    return (width);
 }
 
@@ -1761,7 +1761,7 @@ int SFIsCJK(SplineFont *sf, EncMap * map) {
        map->enc->is_tradchinese || map->enc->is_simplechinese)
       return (true);
    if ((map->enc->is_unicodebmp || map->enc->is_unicodefull) &&
-       sf->glyphcnt > 0x3000 &&
+       sf->glyphcnt>0x3000 &&
        SCWorthOutputting(sf->glyphs[0x3000]) &&
        !SCWorthOutputting(sf->glyphs['A']))
       return (true);
@@ -1782,15 +1782,15 @@ static void SetupType1Subrs(struct pschars *subrs,GlyphInfo *gi) {
    int i;
 
    scnt=subrs->next;
-   call_size=gi->pcnt + scnt < 1131 ? 3 : 6;
-   for (i=0; i < gi->pcnt; ++i) {
+   call_size=gi->pcnt+scnt<1131?3:6;
+   for (i=0; i<gi->pcnt; ++i) {
       /* A subroutine call takes somewhere between 2 and 6 bytes itself. */
       /*  and we must add a return statement to the end. We don't want to */
       /*  make things bigger */
       if (gi->psubrs[i].full_glyph_index != -1)
 	 gi->psubrs[i].idx=scnt++;
       else if (gi->psubrs[i].cnt * gi->psubrs[i].len >
-	       (gi->psubrs[i].cnt * call_size) + gi->psubrs[i].len + 1)
+	       (gi->psubrs[i].cnt * call_size)+gi->psubrs[i].len+1)
 	 gi->psubrs[i].idx=scnt++;
       else
 	 gi->psubrs[i].idx=-1;
@@ -1801,11 +1801,11 @@ static void SetupType1Subrs(struct pschars *subrs,GlyphInfo *gi) {
    subrs->lens=realloc(subrs->lens, scnt * sizeof(int));
    subrs->values=realloc(subrs->values, scnt * sizeof(unsigned char *));
 
-   for (i=0; i < gi->pcnt; ++i) {
+   for (i=0; i<gi->pcnt; ++i) {
       scnt=gi->psubrs[i].idx;
       if (scnt==-1 || gi->psubrs[i].full_glyph_index != -1)
 	 continue;
-      subrs->lens[scnt]=gi->psubrs[i].len + 1;
+      subrs->lens[scnt]=gi->psubrs[i].len+1;
       subrs->values[scnt]=malloc(subrs->lens[scnt]);
       memcpy(subrs->values[scnt], gi->psubrs[i].data, gi->psubrs[i].len);
       subrs->values[scnt][gi->psubrs[i].len]=11;	/* Add a return to end of subr */
@@ -1821,7 +1821,7 @@ static void SetupType1Chrs(struct pschars *chrs,struct pschars *subrs,
    /* The subroutine entry will be everything EXCEPT the glyph header */
    /* the char entry will be the glyph header and a subroutine call */
    /* If the glyph does not go into a subr then everything goes into the char */
-   for (i=0; i < gi->glyphcnt; ++i) {
+   for (i=0; i<gi->glyphcnt; ++i) {
       int len=0;
       struct glyphbits *gb=&gi->gb[i];
 
@@ -1829,17 +1829,17 @@ static void SetupType1Chrs(struct pschars *chrs,struct pschars *subrs,
 	 continue;
       if (!iscid)
 	 chrs->keys[i]=fastrdup(gb->sc->name);
-      for (k=0; k < 2; ++k)
+      for (k=0; k<2; ++k)
 	 if (k != 0 || gb->sc->ttf_glyph != 0x7fff) {
 	    uint8_t *vals;
 
-	    for (j=0; j < gb->bcnt; ++j) {
+	    for (j=0; j<gb->bcnt; ++j) {
 	       if (k != 0 || j != 0)
 		  len += gb->bits[j].dlen;
 	       if (k==1 && gb->sc->ttf_glyph != 0x7fff) {
 		  int si=gi->psubrs[gb->sc->ttf_glyph].idx;
 
-		  len += 1 + (si <= 107 ? 1 : si <= 1131 ? 2 : 5);
+		  len += 1+(si <= 107?1:si <= 1131?2:5);
 		  break;
 	       }
 	       if (gi->psubrs[gb->bits[j].psub_index].idx==-1)
@@ -1847,34 +1847,34 @@ static void SetupType1Chrs(struct pschars *chrs,struct pschars *subrs,
 	       else {
 		  int si=gi->psubrs[gb->bits[j].psub_index].idx;
 
-		  len += 1 + (si <= 107 ? 1 : si <= 1131 ? 2 : 5);
-		  /* Space for a subr call & the sub number to call */
+		  len += 1+(si <= 107?1:si <= 1131?2:5);
+		  /* Space for a subr call&the sub number to call */
 	       }
 	    }
 	    if (k==0) {
 	       int si=gi->psubrs[gb->sc->ttf_glyph].idx;
 
-	       subrs->lens[si]=len + 1;
-	       vals=subrs->values[si]=malloc(len + 2);
+	       subrs->lens[si]=len+1;
+	       vals=subrs->values[si]=malloc(len+2);
 	    } else {
 	       /* Don't need or want and endchar if we are using seac */
-	       chrs->lens[i]=len + !gb->wasseac;
-	       vals=chrs->values[i]=malloc(len + 2);	/* space for endchar and a final NUL (which is really meaningless, but makes me feel better) */
+	       chrs->lens[i]=len+!gb->wasseac;
+	       vals=chrs->values[i]=malloc(len+2);	/* space for endchar and a final NUL (which is really meaningless, but makes me feel better) */
 	    }
 
 	    len=0;
-	    for (j=0; j < gb->bcnt; ++j) {
+	    for (j=0; j<gb->bcnt; ++j) {
 	       int si;
 
 	       if (k != 0 || j != 0) {
-		  memcpy(vals + len, gb->bits[j].data, gb->bits[j].dlen);
+		  memcpy(vals+len, gb->bits[j].data, gb->bits[j].dlen);
 		  len += gb->bits[j].dlen;
 	       }
 	       si=-1;
 	       if (k==1 && gb->sc->ttf_glyph != 0x7fff)
 		  si=gi->psubrs[gb->sc->ttf_glyph].idx;
 	       else if (gi->psubrs[gb->bits[j].psub_index].idx==-1) {
-		  memcpy(vals + len, gi->psubrs[gb->bits[j].psub_index].data,
+		  memcpy(vals+len, gi->psubrs[gb->bits[j].psub_index].data,
 			 gi->psubrs[gb->bits[j].psub_index].len);
 		  len += gi->psubrs[gb->bits[j].psub_index].len;
 	       } else
@@ -1882,17 +1882,17 @@ static void SetupType1Chrs(struct pschars *chrs,struct pschars *subrs,
 	       if (si != -1) {
 		  /* space for the number (subroutine index) */
 		  if (si <= 107)
-		     vals[len++]=si + 139;
-		  else if (si > 0 && si <= 1131) {
+		     vals[len++]=si+139;
+		  else if (si>0 && si <= 1131) {
 		     si -= 108;
-		     vals[len++]=(si >> 8) + 247;
-		     vals[len++]=si & 0xff;
+		     vals[len++]=(si >> 8)+247;
+		     vals[len++]=si&0xff;
 		  } else {
 		     vals[len++]='\377';
-		     vals[len++]=(si >> 24) & 0xff;
-		     vals[len++]=(si >> 16) & 0xff;
-		     vals[len++]=(si >> 8) & 0xff;
-		     vals[len++]=si & 0xff;
+		     vals[len++]=(si >> 24)&0xff;
+		     vals[len++]=(si >> 16)&0xff;
+		     vals[len++]=(si >> 8)&0xff;
+		     vals[len++]=si&0xff;
 		  }
 		  /* space for the subroutine operator */
 		  vals[len++]=10;
@@ -1922,7 +1922,7 @@ struct pschars *SplineFont2ChrsSubrs(SplineFont *sf, int iscjk,
    int fixed;
    int notdef_pos;
    MMSet *mm=sf->mm;
-   int round=(flags & ps_flag_round) ? true : false;
+   int round=(flags&ps_flag_round)?true:false;
    GlyphInfo gi;
    SplineChar dummynotdef, *sc;
 
@@ -1930,7 +1930,7 @@ struct pschars *SplineFont2ChrsSubrs(SplineFont *sf, int iscjk,
       instance_count=mm->instance_count;
       sf=mm->instances[0];
       fixed=0;
-      for (i=0; i < instance_count; ++i) {
+      for (i=0; i<instance_count; ++i) {
 	 MarkTranslationRefs(mm->instances[i], layer);
 	 fixed=SFOneWidth(mm->instances[i]);
 	 if (fixed==-1)
@@ -1944,7 +1944,7 @@ struct pschars *SplineFont2ChrsSubrs(SplineFont *sf, int iscjk,
 
    notdef_pos=SFFindNotdef(sf, fixed);
    cnt=0;
-   for (i=0; i < sf->glyphcnt; ++i)
+   for (i=0; i<sf->glyphcnt; ++i)
 #if HANYANG
       if (sf->glyphs[i] != NULL && sf->glyphs[i]->compositionunit)
 	 /* Don't count it */ ;
@@ -1964,7 +1964,7 @@ struct pschars *SplineFont2ChrsSubrs(SplineFont *sf, int iscjk,
    gi.layer=layer;
    gi.glyphcnt=cnt;
    gi.gb=calloc(cnt, sizeof(struct glyphbits));
-   gi.pmax=3 * cnt;
+   gi.pmax=3*cnt;
    gi.psubrs=malloc(gi.pmax * sizeof(struct potentialsubrs));
    gi.instance_count=instance_count;
 
@@ -1976,12 +1976,12 @@ struct pschars *SplineFont2ChrsSubrs(SplineFont *sf, int iscjk,
       dummynotdef.layers=calloc(sf->layer_cnt, sizeof(Layer));
       dummynotdef.width=SFOneWidth(sf);
       if (dummynotdef.width==-1)
-	 dummynotdef.width=(sf->ascent + sf->descent) / 2;
+	 dummynotdef.width=(sf->ascent+sf->descent)/2;
       gi.gb[0].sc=&dummynotdef;
    } else
       gi.gb[0].sc=sf->glyphs[notdef_pos];
    cnt=1;
-   for (i=0; i < sf->glyphcnt; ++i) {
+   for (i=0; i<sf->glyphcnt; ++i) {
 #if HANYANG
       if (sf->glyphs[i] != NULL && sf->glyphs[i]->compositionunit)
 	 /* don't output it, should be in a subroutine */ ;
@@ -1993,7 +1993,7 @@ struct pschars *SplineFont2ChrsSubrs(SplineFont *sf, int iscjk,
 
    SplineFont2FullSubrs1(flags, &gi);
 
-   for (i=0; i < cnt; ++i) {
+   for (i=0; i<cnt; ++i) {
       if ((sc=gi.gb[i].sc)==NULL)
 	 continue;
       gi.active=&gi.gb[i];
@@ -2012,7 +2012,7 @@ struct pschars *SplineFont2ChrsSubrs(SplineFont *sf, int iscjk,
    GIFree(&gi, &dummynotdef);
 
    chrs->next=cnt;
-   if (chrs->next > chrs->cnt)
+   if (chrs->next>chrs->cnt)
       ErrorMsg(2,"Character estimate failed, about to die...\n");
    return (chrs);
 }
@@ -2024,7 +2024,7 @@ struct pschars *CID2ChrsSubrs(SplineFont *cidmaster,
    int i, cnt, cid;
    SplineFont *sf=NULL;
    struct fddata *fd;
-   int round=(flags & ps_flag_round) ? true : false;
+   int round=(flags&ps_flag_round)?true:false;
 
    /* I don't support mm cid files. I don't think adobe does either */
    GlyphInfo gi;
@@ -2033,10 +2033,10 @@ struct pschars *CID2ChrsSubrs(SplineFont *cidmaster,
 
    cnt=0;
    notdef_subfont=-1;
-   for (i=0; i < cidmaster->subfontcnt; ++i) {
-      if (cnt < cidmaster->subfonts[i]->glyphcnt)
+   for (i=0; i<cidmaster->subfontcnt; ++i) {
+      if (cnt<cidmaster->subfonts[i]->glyphcnt)
 	 cnt=cidmaster->subfonts[i]->glyphcnt;
-      if (cidmaster->subfonts[i]->glyphcnt > 0 &&
+      if (cidmaster->subfonts[i]->glyphcnt>0 &&
 	  SCWorthOutputting(cidmaster->subfonts[i]->glyphs[0]))
 	 notdef_subfont=i;
    }
@@ -2046,19 +2046,19 @@ struct pschars *CID2ChrsSubrs(SplineFont *cidmaster,
       memset(&dummynotdef, 0, sizeof(dummynotdef));
       dummynotdef.name=".notdef";
       dummynotdef.parent=cidmaster->subfonts[0];
-      dummynotdef.layer_cnt=layer + 1;
-      dummynotdef.layers=calloc(layer + 1, sizeof(Layer));;
+      dummynotdef.layer_cnt=layer+1;
+      dummynotdef.layers=calloc(layer+1, sizeof(Layer));;
       dummynotdef.width=SFOneWidth(dummynotdef.parent);
       if (dummynotdef.width==-1)
 	 dummynotdef.width =
-	    (dummynotdef.parent->ascent + dummynotdef.parent->descent);
+	    (dummynotdef.parent->ascent+dummynotdef.parent->descent);
    }
 
    memset(&gi, 0, sizeof(gi));
    gi.instance_count=1;
    gi.glyphcnt=cnt;
    gi.gb=malloc(cnt * sizeof(struct glyphbits));
-   gi.pmax=3 * cnt;
+   gi.pmax=3*cnt;
    gi.psubrs=malloc(gi.pmax * sizeof(struct potentialsubrs));
    gi.layer=layer;
 
@@ -2070,7 +2070,7 @@ struct pschars *CID2ChrsSubrs(SplineFont *cidmaster,
 
    /* In a type1 CID-keyed font we must handle subroutines subfont by subfont */
    /*  as there are no global subrs */
-   for (i=0; i < cidmaster->subfontcnt; ++i) {
+   for (i=0; i<cidmaster->subfontcnt; ++i) {
       gi.sf=sf=cidmaster->subfonts[i];
       MarkTranslationRefs(sf, layer);
       fd=&cidbytes->fds[i];
@@ -2078,9 +2078,9 @@ struct pschars *CID2ChrsSubrs(SplineFont *cidmaster,
       gi.instance_count=1;
       gi.glyphcnt=sf->glyphcnt;
       memset(gi.gb, 0, sf->glyphcnt * sizeof(struct glyphbits));
-      for (cid=0; cid < cnt && cid < sf->glyphcnt; ++cid) {
+      for (cid=0; cid<cnt && cid<sf->glyphcnt; ++cid) {
 	 if (cid==0 && notdef_subfont==-1
-	     && i==cidmaster->subfontcnt - 1)
+	     && i==cidmaster->subfontcnt-1)
 	    gi.gb[0].sc=&dummynotdef;
 	 else if (SCWorthOutputting(sf->glyphs[cid]) && ((i==notdef_subfont && cid==0) || strcmp(sf->glyphs[cid]->name, ".notdef") != 0))	/* We've already added .notdef */
 	    gi.gb[cid].sc=sf->glyphs[cid];
@@ -2089,11 +2089,11 @@ struct pschars *CID2ChrsSubrs(SplineFont *cidmaster,
       }
       SplineFont2FullSubrs1(flags, &gi);
 
-      for (cid=0; cid < cnt && cid < sf->glyphcnt; ++cid) {
+      for (cid=0; cid<cnt && cid<sf->glyphcnt; ++cid) {
 	 if ((sc=gi.gb[cid].sc)==NULL)
 	    continue;
 	 gi.active=&gi.gb[cid];
-	 SplineChar2PS(sc, NULL, round, fd->iscjk | 0x100, fd->subrs,
+	 SplineChar2PS(sc, NULL, round, fd->iscjk|0x100, fd->subrs,
 		       flags, ff_cid, &gi);
       }
 
@@ -2114,64 +2114,64 @@ static double myround2(double pos,int round) {
    if (round)
       return (rint(pos));
 
-   return (rint(65536 * pos) / 65536);
+   return (rint(65536*pos)/65536);
 }
 
 static void AddNumber2(GrowBuf *gb,double pos,int round) {
    int val, factor;
    unsigned char *str;
 
-   if (gb->pt + 5 >= gb->end)
+   if (gb->pt+5 >= gb->end)
       GrowBuffer(gb);
 
-   pos=rint(65536 * pos) / 65536;
+   pos=rint(65536*pos)/65536;
    if (round)
       pos=rint(pos);
 
    str=gb->pt;
-   if (pos > 32767.99 || pos < -32768) {
+   if (pos>32767.99 || pos<-32768) {
       /* same logic for big ints and reals */
-      if (pos > 0x3fffffff || pos < -0x40000000) {
+      if (pos>0x3fffffff || pos<-0x40000000) {
 	 ErrorMsg(2,"Number out of range: %g in type2 output (must be [-65536,65535])\n",
 		  pos);
-	 if (pos > 0)
+	 if (pos>0)
 	    pos=0x3fffffff;
 	 else
 	    pos=-0x40000000;
       }
-      for (factor=2; factor < 32768; factor <<= 2)
-	 if (pos / factor < 32767.99 && pos / factor > -32768)
+      for (factor=2; factor<32768; factor <<= 2)
+	 if (pos/factor<32767.99 && pos/factor>-32768)
 	    break;
-      AddNumber2(gb, pos / factor, false);
+      AddNumber2(gb, pos/factor, false);
       AddNumber2(gb, factor, false);
-      if (gb->pt + 2 >= gb->end)
+      if (gb->pt+2 >= gb->end)
 	 GrowBuffer(gb);
       *(gb->pt++)=0x0c;	/* Multiply operator */
       *(gb->pt++)=0x18;
    } else if (pos != floor(pos)) {
-      val=pos * 65536;
+      val=pos*65536;
       *str++='\377';
-      *str++=(val >> 24) & 0xff;
-      *str++=(val >> 16) & 0xff;
-      *str++=(val >> 8) & 0xff;
-      *str++=val & 0xff;
+      *str++=(val >> 24)&0xff;
+      *str++=(val >> 16)&0xff;
+      *str++=(val >> 8)&0xff;
+      *str++=val&0xff;
    } else {
       val=rint(pos);
       if (pos >= -107 && pos <= 107)
-	 *str++=val + 139;
+	 *str++=val+139;
       else if (pos >= 108 && pos <= 1131) {
 	 val -= 108;
-	 *str++=(val >> 8) + 247;
-	 *str++=val & 0xff;
+	 *str++=(val >> 8)+247;
+	 *str++=val&0xff;
       } else if (pos >= -1131 && pos <= -108) {
 	 val=-val;
 	 val -= 108;
-	 *str++=(val >> 8) + 251;
-	 *str++=val & 0xff;
+	 *str++=(val >> 8)+251;
+	 *str++=val&0xff;
       } else {
 	 *str++=28;
-	 *str++=(val >> 8) & 0xff;
-	 *str++=val & 0xff;
+	 *str++=(val >> 8)&0xff;
+	 *str++=val&0xff;
       }
    }
    gb->pt=str;
@@ -2180,17 +2180,17 @@ static void AddNumber2(GrowBuf *gb,double pos,int round) {
 static void AddMask2(GrowBuf *gb,uint8_t mask[12],int cnt,int oper) {
    int i;
 
-   if (gb->pt + 1 + ((cnt + 7) >> 3) >= gb->end)
+   if (gb->pt+1+((cnt+7) >> 3) >= gb->end)
       GrowBuffer(gb);
    *gb->pt++=oper;		/* hintmask,cntrmask */
-   for (i=0; i < ((cnt + 7) >> 3); ++i)
+   for (i=0; i<((cnt+7) >> 3); ++i)
       *gb->pt++=mask[i];
 }
 
 static void CounterHints2(GrowBuf *gb,SplineChar *sc,int hcnt) {
    int i;
 
-   for (i=0; i < sc->countermask_cnt; ++i)
+   for (i=0; i<sc->countermask_cnt; ++i)
       AddMask2(gb, sc->countermasks[i], hcnt, 20);	/* cntrmask */
 }
 
@@ -2205,7 +2205,7 @@ static int HintSetup2(GrowBuf *gb,struct hintdb *hdb,SplinePoint *to,
        || hdb->skiphm)
       return (false);
 
-   if (memcmp(hdb->mask, *to->hintmask, (hdb->cnt + 7) / 8)==0)
+   if (memcmp(hdb->mask, *to->hintmask, (hdb->cnt+7)/8)==0)
       return (false);
 
    if (break_subr)
@@ -2223,7 +2223,7 @@ static void moveto2(GrowBuf *gb,struct hintdb *hdb,SplinePoint *to,
 		    int round) {
    BasePoint temp, *tom;
 
-   if (gb->pt + 18 >= gb->end)
+   if (gb->pt+18 >= gb->end)
       GrowBuffer(gb);
 
    BreakSubroutine(gb, hdb);
@@ -2235,18 +2235,18 @@ static void moveto2(GrowBuf *gb,struct hintdb *hdb,SplinePoint *to,
       tom=&temp;
    }
    if (hdb->current.x==tom->x) {
-      AddNumber2(gb, tom->y - hdb->current.y, round);
+      AddNumber2(gb, tom->y-hdb->current.y, round);
       *(gb->pt)++=4;		/* v move to */
    } else if (hdb->current.y==tom->y) {
-      AddNumber2(gb, tom->x - hdb->current.x, round);
+      AddNumber2(gb, tom->x-hdb->current.x, round);
       *(gb->pt)++=22;		/* h move to */
    } else {
-      AddNumber2(gb, tom->x - hdb->current.x, round);
-      AddNumber2(gb, tom->y - hdb->current.y, round);
+      AddNumber2(gb, tom->x-hdb->current.x, round);
+      AddNumber2(gb, tom->y-hdb->current.y, round);
       *(gb->pt)++=21;		/* r move to */
    }
-   hdb->current.x=rint(32768 * tom->x) / 32768;
-   hdb->current.y=rint(32768 * tom->y) / 32768;
+   hdb->current.x=rint(32768*tom->x)/32768;
+   hdb->current.y=rint(32768*tom->y)/32768;
    StartNextSubroutine(gb, hdb);
 }
 
@@ -2258,7 +2258,7 @@ static Spline *lineto2(GrowBuf *gb,struct hintdb *hdb,Spline *spline,
    int donehm;
 
    lastgood=NULL;
-   for (test=spline, cnt=0; test->knownlinear && cnt < 15;) {
+   for (test=spline, cnt=0; test->knownlinear && cnt<15;) {
       ++cnt;
       lastgood=test;
       test=test->to->next;
@@ -2327,19 +2327,19 @@ static Spline *lineto2(GrowBuf *gb,struct hintdb *hdb,Spline *spline,
 	       tom=&temp1;
 	    }
 	    if (fromm->x==tom->x)
-	       AddNumber2(gb, tom->y - fromm->y, round);
+	       AddNumber2(gb, tom->y-fromm->y, round);
 	    else
-	       AddNumber2(gb, tom->x - fromm->x, round);
-	    hdb->current.x=rint(32768 * tom->x) / 32768;
-	    hdb->current.y=rint(32768 * tom->y) / 32768;
+	       AddNumber2(gb, tom->x-fromm->x, round);
+	    hdb->current.x=rint(32768*tom->x)/32768;
+	    hdb->current.y=rint(32768*tom->y)/32768;
 	    if (test==lasthvgood) {
 	       test=test->to->next;
 	       break;
 	    }
 	 }
-	 if (gb->pt + 1 >= gb->end)
+	 if (gb->pt+1 >= gb->end)
 	    GrowBuffer(gb);
-	 *(gb->pt)++=spline->from->me.x==spline->to->me.x ? 7 : 6;
+	 *(gb->pt)++=spline->from->me.x==spline->to->me.x?7:6;
 	 return (test);
       }
    }
@@ -2360,16 +2360,16 @@ static Spline *lineto2(GrowBuf *gb,struct hintdb *hdb,Spline *spline,
 	 temp1.y=rint(tom->y);
 	 tom=&temp1;
       }
-      AddNumber2(gb, tom->x - fromm->x, round);
-      AddNumber2(gb, tom->y - fromm->y, round);
-      hdb->current.x=rint(32768 * tom->x) / 32768;
-      hdb->current.y=rint(32768 * tom->y) / 32768;
+      AddNumber2(gb, tom->x-fromm->x, round);
+      AddNumber2(gb, tom->y-fromm->y, round);
+      hdb->current.x=rint(32768*tom->x)/32768;
+      hdb->current.y=rint(32768*tom->y)/32768;
       if (test==lastgood) {
 	 test=test->to->next;
 	 break;
       }
    }
-   if (gb->pt + 1 >= gb->end)
+   if (gb->pt+1 >= gb->end)
       GrowBuffer(gb);
    *(gb->pt)++=5;		/* r line to */
    return (test);
@@ -2411,35 +2411,35 @@ static Spline *curveto2(GrowBuf *gb,struct hintdb *hdb,Spline *spline,
 	 if (hv==1) {
 	    AddNumber2(gb,
 		       myround2(spline->from->nextcp.y,
-				round) - hdb->current.y, round);
+				round)-hdb->current.y, round);
 	    AddNumber2(gb,
 		       myround2(spline->to->prevcp.x,
-				round) - myround2(spline->from->nextcp.x,
+				round)-myround2(spline->from->nextcp.x,
 						  round), round);
 	    AddNumber2(gb,
 		       myround2(spline->to->prevcp.y,
-				round) - myround2(spline->from->nextcp.y,
+				round)-myround2(spline->from->nextcp.y,
 						  round), round);
 	    AddNumber2(gb,
 		       myround2(spline->to->me.x,
-				round) - myround2(spline->to->prevcp.x,
+				round)-myround2(spline->to->prevcp.x,
 						  round), round);
 	    hv=0;
 	 } else {
 	    AddNumber2(gb,
 		       myround2(spline->from->nextcp.x,
-				round) - hdb->current.x, round);
+				round)-hdb->current.x, round);
 	    AddNumber2(gb,
 		       myround2(spline->to->prevcp.x,
-				round) - myround2(spline->from->nextcp.x,
+				round)-myround2(spline->from->nextcp.x,
 						  round), round);
 	    AddNumber2(gb,
 		       myround2(spline->to->prevcp.y,
-				round) - myround2(spline->from->nextcp.y,
+				round)-myround2(spline->from->nextcp.y,
 						  round), round);
 	    AddNumber2(gb,
 		       myround2(spline->to->me.y,
-				round) - myround2(spline->to->prevcp.y,
+				round)-myround2(spline->to->prevcp.y,
 						  round), round);
 	    hv=1;
 	 }
@@ -2447,16 +2447,16 @@ static Spline *curveto2(GrowBuf *gb,struct hintdb *hdb,Spline *spline,
 	 hdb->current.y=myround2(spline->to->me.y, round);
 	 ++cnt;
 	 spline=spline->to->next;
-	 if (spline==done || spline==NULL || cnt > 9
+	 if (spline==done || spline==NULL || cnt>9
 	     || spline->knownlinear)
 	    break;
       }
-      if (gb->pt + 1 >= gb->end)
+      if (gb->pt+1 >= gb->end)
 	 GrowBuffer(gb);
-      *(gb->pt)++=(start.x==myround2(first->from->nextcp.x, round) && myround2(first->to->prevcp.y, round)==myround2(first->to->me.y, round)) ? 30 : 31;	/* vhcurveto:hvcurveto */
+      *(gb->pt)++=(start.x==myround2(first->from->nextcp.x, round) && myround2(first->to->prevcp.y, round)==myround2(first->to->me.y, round))?30:31;	/* vhcurveto:hvcurveto */
       return (spline);
    }
-   while (cnt < 6) {
+   while (cnt<6) {
       if (!donehm && spline->to->hintmask != NULL)
 	 break;
       donehm=false;
@@ -2480,25 +2480,25 @@ static Spline *curveto2(GrowBuf *gb,struct hintdb *hdb,Spline *spline,
 			   round)==myround2(spline->to->next->to->me.y,
 					      round))
 	 break;
-      AddNumber2(gb, myround2(spline->from->nextcp.x, round) - hdb->current.x,
+      AddNumber2(gb, myround2(spline->from->nextcp.x, round)-hdb->current.x,
 		 round);
-      AddNumber2(gb, myround2(spline->from->nextcp.y, round) - hdb->current.y,
+      AddNumber2(gb, myround2(spline->from->nextcp.y, round)-hdb->current.y,
 		 round);
       AddNumber2(gb,
 		 myround2(spline->to->prevcp.x,
-			  round) - myround2(spline->from->nextcp.x, round),
+			  round)-myround2(spline->from->nextcp.x, round),
 		 round);
       AddNumber2(gb,
 		 myround2(spline->to->prevcp.y,
-			  round) - myround2(spline->from->nextcp.y, round),
+			  round)-myround2(spline->from->nextcp.y, round),
 		 round);
       AddNumber2(gb,
 		 myround2(spline->to->me.x,
-			  round) - myround2(spline->to->prevcp.x, round),
+			  round)-myround2(spline->to->prevcp.x, round),
 		 round);
       AddNumber2(gb,
 		 myround2(spline->to->me.y,
-			  round) - myround2(spline->to->prevcp.y, round),
+			  round)-myround2(spline->to->prevcp.y, round),
 		 round);
       hdb->current.x=myround2(spline->to->me.x, round);
       hdb->current.y=myround2(spline->to->me.y, round);
@@ -2507,7 +2507,7 @@ static Spline *curveto2(GrowBuf *gb,struct hintdb *hdb,Spline *spline,
       if (spline==done || spline==NULL || spline->knownlinear)
 	 break;
    }
-   if (gb->pt + 1 >= gb->end)
+   if (gb->pt+1 >= gb->end)
       GrowBuffer(gb);
    *(gb->pt)++=8;		/* rrcurveto */
    return (spline);
@@ -2533,49 +2533,49 @@ static void flexto2(GrowBuf *gb,struct hintdb *hdb,Spline *pspline,
        && myround2(end->y, round)==hdb->current.y
        && myround2(c1->y, round)==myround2(mid->y, round)
        && myround2(nc0->y, round)==myround2(mid->y, round)) {
-      if (gb->pt + 7 * 6 + 2 >= gb->end)
+      if (gb->pt+7*6+2 >= gb->end)
 	 GrowBuffer(gb);
-      AddNumber2(gb, myround2(c0->x, round) - hdb->current.x, round);
-      AddNumber2(gb, myround2(c1->x, round) - myround2(c0->x, round), round);
-      AddNumber2(gb, myround2(c1->y, round) - myround2(c0->y, round), round);
-      AddNumber2(gb, myround2(mid->x, round) - myround2(c1->x, round), round);
-      AddNumber2(gb, myround2(nc0->x, round) - myround2(mid->x, round),
+      AddNumber2(gb, myround2(c0->x, round)-hdb->current.x, round);
+      AddNumber2(gb, myround2(c1->x, round)-myround2(c0->x, round), round);
+      AddNumber2(gb, myround2(c1->y, round)-myround2(c0->y, round), round);
+      AddNumber2(gb, myround2(mid->x, round)-myround2(c1->x, round), round);
+      AddNumber2(gb, myround2(nc0->x, round)-myround2(mid->x, round),
 		 round);
-      AddNumber2(gb, myround2(nc1->x, round) - myround2(nc0->x, round),
+      AddNumber2(gb, myround2(nc1->x, round)-myround2(nc0->x, round),
 		 round);
-      AddNumber2(gb, myround2(end->x, round) - myround2(nc1->x, round),
+      AddNumber2(gb, myround2(end->x, round)-myround2(nc1->x, round),
 		 round);
       *gb->pt++=12;
       *gb->pt++=34;		/* hflex */
    } else {
-      if (gb->pt + 11 * 6 + 2 >= gb->end)
+      if (gb->pt+11*6+2 >= gb->end)
 	 GrowBuffer(gb);
-      AddNumber2(gb, myround2(c0->x, round) - hdb->current.x, round);
-      AddNumber2(gb, myround2(c0->y, round) - hdb->current.y, round);
-      AddNumber2(gb, myround2(c1->x, round) - myround2(c0->x, round), round);
-      AddNumber2(gb, myround2(c1->y, round) - myround2(c0->y, round), round);
-      AddNumber2(gb, myround2(mid->x, round) - myround2(c1->x, round), round);
-      AddNumber2(gb, myround2(mid->y, round) - myround2(c1->y, round), round);
-      AddNumber2(gb, myround2(nc0->x, round) - myround2(mid->x, round),
+      AddNumber2(gb, myround2(c0->x, round)-hdb->current.x, round);
+      AddNumber2(gb, myround2(c0->y, round)-hdb->current.y, round);
+      AddNumber2(gb, myround2(c1->x, round)-myround2(c0->x, round), round);
+      AddNumber2(gb, myround2(c1->y, round)-myround2(c0->y, round), round);
+      AddNumber2(gb, myround2(mid->x, round)-myround2(c1->x, round), round);
+      AddNumber2(gb, myround2(mid->y, round)-myround2(c1->y, round), round);
+      AddNumber2(gb, myround2(nc0->x, round)-myround2(mid->x, round),
 		 round);
-      AddNumber2(gb, myround2(nc0->y, round) - myround2(mid->y, round),
+      AddNumber2(gb, myround2(nc0->y, round)-myround2(mid->y, round),
 		 round);
-      AddNumber2(gb, myround2(nc1->x, round) - myround2(nc0->x, round),
+      AddNumber2(gb, myround2(nc1->x, round)-myround2(nc0->x, round),
 		 round);
-      AddNumber2(gb, myround2(nc1->y, round) - myround2(nc0->y, round),
+      AddNumber2(gb, myround2(nc1->y, round)-myround2(nc0->y, round),
 		 round);
       if (hdb->current.y==myround2(end->y, round))
-	 AddNumber2(gb, myround2(end->x, round) - myround2(nc1->x, round),
+	 AddNumber2(gb, myround2(end->x, round)-myround2(nc1->x, round),
 		    round);
       else
-	 AddNumber2(gb, myround2(end->y, round) - myround2(nc1->y, round),
+	 AddNumber2(gb, myround2(end->y, round)-myround2(nc1->y, round),
 		    round);
       *gb->pt++=12;
       *gb->pt++=37;		/* flex1 */
    }
 
-   hdb->current.x=rint(32768 * end->x) / 32768;
-   hdb->current.y=rint(32768 * end->y) / 32768;
+   hdb->current.x=rint(32768*end->x)/32768;
+   hdb->current.y=rint(32768*end->y)/32768;
 }
 
 static void CvtPsSplineSet2(GrowBuf *gb,SplinePointList *spl,
@@ -2613,7 +2613,7 @@ static void CvtPsSplineSet2(GrowBuf *gb,SplinePointList *spl,
 	    spl->first->flexx=spl->first->flexy=false;
 	 }
       }
-      if (unhinted && hdb->cnt > 0 && spl->first->hintmask != NULL) {
+      if (unhinted && hdb->cnt>0 && spl->first->hintmask != NULL) {
 	 hdb->mask[0]=~(*spl->first->hintmask)[0];	/* Make it different */
 	 unhinted=false;
       }
@@ -2655,29 +2655,29 @@ static void DumpHints(GrowBuf *gb,StemInfo *h,int oper,int midoper,
    while (h != NULL && h->hintnumber != -1) {
       /* Type2 hints do not support negative widths except in the case of */
       /*  ghost (now called edge) hints */
-      if (cnt > 24 - 2) {	/* stack max=48 numbers, => 24 hints, leave a bit of slop for the width */
-	 if (gb->pt + 1 >= gb->end)
+      if (cnt>24-2) {	/* stack max=48 numbers, => 24 hints, leave a bit of slop for the width */
+	 if (gb->pt+1 >= gb->end)
 	    GrowBuffer(gb);
 	 *gb->pt++=midoper;
 	 cnt=0;
       }
-      cur=myround2(h->start, round) + myround2(h->width, round);
-      if (h->width < 0) {
-	 AddNumber2(gb, cur - last, round);
+      cur=myround2(h->start, round)+myround2(h->width, round);
+      if (h->width<0) {
+	 AddNumber2(gb, cur-last, round);
 	 AddNumber2(gb, -myround2(h->width, round), round);
 	 cur -= myround2(h->width, round);
       } else if (h->ghost) {
 	 if (h->width==20) {
-	    AddNumber2(gb, myround2(h->start, round) - last + 20, round);
+	    AddNumber2(gb, myround2(h->start, round)-last+20, round);
 	    AddNumber2(gb, -20, round);
 	    cur=myround2(h->start, round);
 	 } else {
-	    AddNumber2(gb, myround2(h->start + 21, round) - last, round);
+	    AddNumber2(gb, myround2(h->start+21, round)-last, round);
 	    AddNumber2(gb, -21, round);
-	    cur=myround2(h->start + 21, round) - 21;
+	    cur=myround2(h->start+21, round)-21;
 	 }
       } else {
-	 AddNumber2(gb, myround2(h->start, round) - last, round);
+	 AddNumber2(gb, myround2(h->start, round)-last, round);
 	 AddNumber2(gb, myround2(h->width, round), round);
       }
       last=cur;
@@ -2685,7 +2685,7 @@ static void DumpHints(GrowBuf *gb,StemInfo *h,int oper,int midoper,
       ++cnt;
    }
    if (oper != -1) {
-      if (gb->pt + 1 >= gb->end)
+      if (gb->pt+1 >= gb->end)
 	 GrowBuffer(gb);
       *gb->pt++=oper;
    }
@@ -2718,36 +2718,36 @@ static void DumpRefsHints(GrowBuf *gb,struct hintdb *hdb,RefChar *cur,
    cnt=0;
    while (h != NULL && h->hintnumber >= 0) {
       /* Horizontal stems are defined by vertical bounds */
-      double pos=(round ? rint(h->start) : h->start) - trans->y;
+      double pos=(round?rint(h->start):h->start)-trans->y;
 
       for (rs=cur->sc->hstem; rs != NULL; rs=rs->next) {
-	 double rpos=round ? rint(rs->start) : rs->start;
+	 double rpos=round?rint(rs->start):rs->start;
 
 	 if (rpos==pos
-	     && (round ? (rint(rs->width)==rint(h->width))
-		 : (rs->width==h->width))) {
-	    masks[h->hintnumber >> 3] |= 0x80 >> (h->hintnumber & 7);
+	     && (round?(rint(rs->width)==rint(h->width))
+		:(rs->width==h->width))) {
+	    masks[h->hintnumber >> 3] |= 0x80 >> (h->hintnumber&7);
 	    ++sets;
 	    break;
-	 } else if (rpos > pos)
+	 } else if (rpos>pos)
 	    break;
       }
       h=h->next;
       ++cnt;
    }
    while (v != NULL && v->hintnumber >= 0) {
-      double pos=(round ? rint(v->start) : v->start) - trans->x;
+      double pos=(round?rint(v->start):v->start)-trans->x;
 
       for (rs=cur->sc->vstem; rs != NULL; rs=rs->next) {
-	 double rpos=round ? rint(rs->start) : rs->start;
+	 double rpos=round?rint(rs->start):rs->start;
 
 	 if (rpos==pos
-	     && (round ? (rint(rs->width)==rint(v->width))
-		 : (rs->width==v->width))) {
-	    masks[v->hintnumber >> 3] |= 0x80 >> (v->hintnumber & 7);
+	     && (round?(rint(rs->width)==rint(v->width))
+		:(rs->width==v->width))) {
+	    masks[v->hintnumber >> 3] |= 0x80 >> (v->hintnumber&7);
 	    ++sets;
 	    break;
-	 } else if (rpos > pos)
+	 } else if (rpos>pos)
 	    break;
       }
       v=v->next;
@@ -2792,31 +2792,31 @@ static void ExpandRef2(GrowBuf *gb,SplineChar *sc,struct hintdb *hdb,
 
    /* The only refs I deal with here have no hint conflicts within them */
 
-   rtrans.x=r->transform[4] + trans->x;
-   rtrans.y=r->transform[5] + trans->y;
+   rtrans.x=r->transform[4]+trans->x;
+   rtrans.y=r->transform[5]+trans->y;
    if (round) {
       rtrans.x=rint(rtrans.x);
       rtrans.y=rint(rtrans.y);
    }
 
    BreakSubroutine(gb, hdb);
-   if (hdb->cnt > 0 && !hdb->noconflicts)
+   if (hdb->cnt>0 && !hdb->noconflicts)
       DumpRefsHints(gb, hdb, r, sc->hstem, sc->vstem, &rtrans, round, layer);
 
    /* Translate from end of last character to where this one should */
    /*  start (we must have one moveto operator to start off, none */
    /*  in the subr) */
    bpt=hdb->gi->psubrs[r->sc->lsidebearing].startstop;
-   temp.x=bpt[0].x + rtrans.x;
-   temp.y=bpt[0].y + rtrans.y;
+   temp.x=bpt[0].x+rtrans.x;
+   temp.y=bpt[0].y+rtrans.y;
    if (hdb->current.x != temp.x)
-      AddNumber2(gb, temp.x - hdb->current.x, round);
+      AddNumber2(gb, temp.x-hdb->current.x, round);
    if (hdb->current.y != temp.y || hdb->current.x==temp.x)
-      AddNumber2(gb, temp.y - hdb->current.y, round);
-   if (gb->pt + 1 >= gb->end)
+      AddNumber2(gb, temp.y-hdb->current.y, round);
+   if (gb->pt+1 >= gb->end)
       GrowBuffer(gb);
-   *gb->pt++=hdb->current.x==temp.x ? 4 :	/* vmoveto */
-      hdb->current.y==temp.y ? 22 :	/* hmoveto */
+   *gb->pt++=hdb->current.x==temp.x?4 :	/* vmoveto */
+      hdb->current.y==temp.y?22 :	/* hmoveto */
       21;			/* rmoveto */
    if (r->sc->lsidebearing==0x7fff)
       ErrorMsg(2,"Attempt to reference an unreferenceable glyph %s\n", r->sc->name);
@@ -2826,8 +2826,8 @@ static void ExpandRef2(GrowBuf *gb,SplineChar *sc,struct hintdb *hdb,
    gi->bits[gi->bcnt].psub_index=r->sc->lsidebearing;
    ++gi->bcnt;
    gi->justbroken=true;
-   hdb->current.x=bpt[1].x + rtrans.x;
-   hdb->current.y=bpt[1].y + rtrans.y;
+   hdb->current.x=bpt[1].x+rtrans.x;
+   hdb->current.y=bpt[1].y+rtrans.y;
 }
 
 static void RSC2PS2(GrowBuf *gb,SplineChar *base,SplineChar *rsc,
@@ -2837,13 +2837,13 @@ static void RSC2PS2(GrowBuf *gb,SplineChar *base,SplineChar *rsc,
    int stationary=trans->x==0 && trans->y==0;
    RefChar *r, *unsafe=NULL;
    int unsafecnt=0, allwithouthints=true;
-   int round=(flags & ps_flag_round) ? true : false;
+   int round=(flags&ps_flag_round)?true:false;
    StemInfo *oldh, *oldv;
    int hc, vc;
    SplineSet *freeme, *temp;
    int wasntconflicted=hdb->noconflicts;
 
-   if (flags & ps_flag_nohints) {
+   if (flags&ps_flag_nohints) {
       oldh=rsc->hstem;
       oldv=rsc->vstem;
       hc=rsc->hconflicts;
@@ -2892,7 +2892,7 @@ static void RSC2PS2(GrowBuf *gb,SplineChar *base,SplineChar *rsc,
 	 if (!r->justtranslated) {
 	    if (!r->sc->hconflicts && !r->sc->vconflicts && !hdb->noconflicts
 		&& r->transform[1]==0 && r->transform[2]==0
-		&& r->transform[0] > 0 && r->transform[3] > 0)
+		&& r->transform[0]>0 && r->transform[3]>0)
 	       SetTransformedHintMask(gb, hdb, base, r, trans, round);
 	    if (!hdb->donefirsthm)
 	       DummyHintmask(gb, hdb);
@@ -2900,12 +2900,12 @@ static void RSC2PS2(GrowBuf *gb,SplineChar *base,SplineChar *rsc,
 	    CvtPsSplineSet2(gb, temp, hdb, rsc->layers[layer].order2, round);
 	    SplinePointListsFree(temp);
 	 } else if (r->sc->lsidebearing != 0x7fff &&
-		    ((flags & ps_flag_nohints) ||
+		    ((flags&ps_flag_nohints) ||
 		     (!r->sc->hconflicts && !r->sc->vconflicts))) {
 	    ExpandRef2(gb, base, hdb, r, trans, subrs, round, layer);
 	 } else {
-	    subtrans.x=trans->x + r->transform[4];
-	    subtrans.y=trans->y + r->transform[5];
+	    subtrans.x=trans->x+r->transform[4];
+	    subtrans.y=trans->y+r->transform[5];
 	    if (!hdb->noconflicts && !r->sc->hconflicts && !r->sc->vconflicts) {
 	       SetTransformedHintMask(gb, hdb, base, r, trans, round);
 	       hdb->noconflicts=true;
@@ -2915,7 +2915,7 @@ static void RSC2PS2(GrowBuf *gb,SplineChar *base,SplineChar *rsc,
 	 }
       }
 
-   if (flags & ps_flag_nohints) {
+   if (flags&ps_flag_nohints) {
       rsc->hstem=oldh;
       rsc->vstem=oldv;
       rsc->hconflicts=hc;
@@ -2932,17 +2932,17 @@ static unsigned char *SplineChar2PS2(SplineChar *sc,int *len,int nomwid,
    StemInfo *oldh, *oldv;
    int hc, vc;
    SplineChar *scs[MmMax];
-   int round=(flags & ps_flag_round) ? true : false;
+   int round=(flags&ps_flag_round)?true:false;
    HintMask *hm=NULL;
    BasePoint trans;
 
    if (autohint_before_generate && sc->changedsincelasthinted &&
-       !sc->manualhints && !(flags & ps_flag_nohints))
+       !sc->manualhints && !(flags&ps_flag_nohints))
       SplineCharAutoHint(sc, gi->layer, NULL);
-   if (!(flags & ps_flag_nohints) && SCNeedsSubsPts(sc, ff_otf, gi->layer))
+   if (!(flags&ps_flag_nohints) && SCNeedsSubsPts(sc, ff_otf, gi->layer))
       SCFigureHintMasks(sc, gi->layer);
 
-   if (flags & ps_flag_nohints) {
+   if (flags&ps_flag_nohints) {
       oldh=sc->hstem;
       oldv=sc->vstem;
       hc=sc->hconflicts;
@@ -2965,7 +2965,7 @@ static unsigned char *SplineChar2PS2(SplineChar *sc,int *len,int nomwid,
    if (sc->width==defwid)
       /* Don't need to do anything for the width */ ;
    else
-      AddNumber2(&gb, sc->width - nomwid, round);
+      AddNumber2(&gb, sc->width-nomwid, round);
 
    memset(&trans, '\0', sizeof(trans));
    memset(&hdb, '\0', sizeof(hdb));
@@ -2976,10 +2976,10 @@ static unsigned char *SplineChar2PS2(SplineChar *sc,int *len,int nomwid,
    scs[0]=sc;
    hdb.noconflicts=!sc->hconflicts && !sc->vconflicts;
    hdb.cnt=NumberHints(hdb.scs, 1);
-   DumpHints(&gb, sc->hstem, sc->hconflicts || sc->vconflicts ? 18 : 1,
-	     sc->hconflicts || sc->vconflicts ? 18 : 1, round);
-   DumpHints(&gb, sc->vstem, sc->hconflicts || sc->vconflicts ? -1 : 3,
-	     sc->hconflicts || sc->vconflicts ? 23 : 3, round);
+   DumpHints(&gb, sc->hstem, sc->hconflicts || sc->vconflicts?18:1,
+	     sc->hconflicts || sc->vconflicts?18:1, round);
+   DumpHints(&gb, sc->vstem, sc->hconflicts || sc->vconflicts?-1:3,
+	     sc->hconflicts || sc->vconflicts?23:3, round);
    CounterHints2(&gb, sc, hdb.cnt);
    RSC2PS2(&gb, sc, sc, &hdb, &trans, subrs, flags, gi->layer);
 
@@ -2992,7 +2992,7 @@ static unsigned char *SplineChar2PS2(SplineChar *sc,int *len,int nomwid,
    ret=NULL;
 
    free(gb.base);
-   if (flags & ps_flag_nohints) {
+   if (flags&ps_flag_nohints) {
       sc->hstem=oldh;
       sc->vstem=oldv;
       sc->hconflicts=hc;
@@ -3017,22 +3017,22 @@ static void Type2NotDefSplines(SplineFont *sf,SplineChar *sc,int layer) {
    SplineSet *inner, *ss;
    StemInfo *h, *hints;
 
-   stem=(sf->ascent + sf->descent) / 20;
-   ymax=2 * sf->ascent / 3;
+   stem=(sf->ascent+sf->descent)/20;
+   ymax=2*sf->ascent/3;
 
    ss=chunkalloc(sizeof(SplineSet));
    ss->first=ss->last=SplinePointCreate(stem, 0);
    ss->last=LineTo(ss->last, stem, ymax);
-   ss->last=LineTo(ss->last, sc->width - stem, ymax);
-   ss->last=LineTo(ss->last, sc->width - stem, 0);
+   ss->last=LineTo(ss->last, sc->width-stem, ymax);
+   ss->last=LineTo(ss->last, sc->width-stem, 0);
    SplineMake3(ss->last, ss->first);
    ss->last=ss->first;
 
    ss->next=inner=chunkalloc(sizeof(SplineSet));
-   inner->first=inner->last=SplinePointCreate(2 * stem, stem);
-   inner->last=LineTo(inner->last, sc->width - 2 * stem, stem);
-   inner->last=LineTo(inner->last, sc->width - 2 * stem, ymax - stem);
-   inner->last=LineTo(inner->last, 2 * stem, ymax - stem);
+   inner->first=inner->last=SplinePointCreate(2*stem, stem);
+   inner->last=LineTo(inner->last, sc->width-2*stem, stem);
+   inner->last=LineTo(inner->last, sc->width-2*stem, ymax-stem);
+   inner->last=LineTo(inner->last, 2*stem, ymax-stem);
    SplineMake3(inner->last, inner->first);
    inner->last=inner->first;
 
@@ -3042,7 +3042,7 @@ static void Type2NotDefSplines(SplineFont *sf,SplineChar *sc,int layer) {
    hints->start=stem;
    hints->width=stem;
    hints->next=h=chunkalloc(sizeof(StemInfo));
-   h->start=sc->width - 2 * stem;
+   h->start=sc->width-2*stem;
    h->width=stem;
    sc->vstem=hints;
 
@@ -3050,7 +3050,7 @@ static void Type2NotDefSplines(SplineFont *sf,SplineChar *sc,int layer) {
    hints->start=0;
    hints->width=stem;
    hints->next=h=chunkalloc(sizeof(StemInfo));
-   h->start=ymax - stem;
+   h->start=ymax-stem;
    h->width=stem;
    sc->hstem=hints;
 }
@@ -3060,10 +3060,10 @@ static void SplineFont2FullSubrs2(int flags,GlyphInfo *gi) {
    int i;
    SplineChar *sc;
 
-   if (!autohint_before_generate && !(flags & ps_flag_nohints))
+   if (!autohint_before_generate && !(flags&ps_flag_nohints))
       SplineFontAutoHintRefs(gi->sf, gi->layer);
 
-   for (i=0; i < gi->glyphcnt; ++i)
+   for (i=0; i<gi->glyphcnt; ++i)
       if ((sc=gi->gb[i].sc) != NULL)
 	 sc->lsidebearing=0x7fff;
 }
@@ -3077,7 +3077,7 @@ struct pschars *SplineFont2ChrsSubrs2(SplineFont *sf, int nomwid, int defwid,
    GlyphInfo gi;
    SplineChar dummynotdef;
 
-   if (!autohint_before_generate && !(flags & ps_flag_nohints))
+   if (!autohint_before_generate && !(flags&ps_flag_nohints))
       SplineFontAutoHintRefs(sf, layer);
 
    memset(&gi, 0, sizeof(gi));
@@ -3088,9 +3088,9 @@ struct pschars *SplineFont2ChrsSubrs2(SplineFont *sf, int nomwid, int defwid,
    gi.glyphcnt=cnt;
    gi.bygid=bygid;
    gi.gb=calloc(cnt, sizeof(struct glyphbits));
-   gi.pmax=3 * cnt;
+   gi.pmax=3*cnt;
    gi.psubrs=malloc(gi.pmax * sizeof(struct potentialsubrs));
-   for (i=0; i < cnt; ++i) {
+   for (i=0; i<cnt; ++i) {
       int gid=bygid[i];
 
       if (i==0 && gid==-1) {
@@ -3102,7 +3102,7 @@ struct pschars *SplineFont2ChrsSubrs2(SplineFont *sf, int nomwid, int defwid,
 	 dummynotdef.layers=calloc(sf->layer_cnt, sizeof(Layer));
 	 dummynotdef.width=SFOneWidth(sf);
 	 if (dummynotdef.width==-1)
-	    dummynotdef.width=(sf->ascent + sf->descent) / 2;
+	    dummynotdef.width=(sf->ascent+sf->descent)/2;
 	 Type2NotDefSplines(sf, &dummynotdef, layer);
       } else if (gid != -1)
 	 sc=sf->glyphs[gid];
@@ -3111,21 +3111,21 @@ struct pschars *SplineFont2ChrsSubrs2(SplineFont *sf, int nomwid, int defwid,
       gi.gb[i].sc=sc;
       if (autohint_before_generate && sc != NULL &&
 	  sc->changedsincelasthinted && !sc->manualhints &&
-	  !(flags & ps_flag_nohints))
+	  !(flags&ps_flag_nohints))
 	 SplineCharAutoHint(sc, layer, NULL);
       sc->lsidebearing=0x7fff;
    }
    MarkTranslationRefs(sf, layer);
    SplineFont2FullSubrs2(flags, &gi);
 
-   for (i=0; i < cnt; ++i) {
+   for (i=0; i<cnt; ++i) {
       if ((sc=gi.gb[i].sc)==NULL)
 	 continue;
       gi.active=&gi.gb[i];
       SplineChar2PS2(sc, NULL, nomwid, defwid, NULL, flags, &gi);
    }
 
-   for (i=scnt=0; i < gi.pcnt; ++i) {
+   for (i=scnt=0; i<gi.pcnt; ++i) {
       /* A subroutine call takes somewhere between 2 and 4 bytes itself. */
       /*  and we must add a return statement to the end. We don't want to */
       /*  make things bigger */
@@ -3133,7 +3133,7 @@ struct pschars *SplineFont2ChrsSubrs2(SplineFont *sf, int nomwid, int defwid,
       if (gi.psubrs[i].full_glyph_index != -1)
 	 gi.psubrs[i].idx=scnt++;
       else if (gi.psubrs[i].cnt * gi.psubrs[i].len >
-	       (gi.psubrs[i].cnt * 4) + gi.psubrs[i].len + 1)
+	       (gi.psubrs[i].cnt*4)+gi.psubrs[i].len+1)
 	 gi.psubrs[i].idx=scnt++;
       else
 	 gi.psubrs[i].idx=-1;
@@ -3143,11 +3143,11 @@ struct pschars *SplineFont2ChrsSubrs2(SplineFont *sf, int nomwid, int defwid,
    subrs->next=scnt;
    subrs->lens=malloc(scnt * sizeof(int));
    subrs->values=malloc(scnt * sizeof(unsigned char *));
-   subrs->bias=scnt < 1240 ? 107 : scnt < 33900 ? 1131 : 32768;
-   for (i=0; i < gi.pcnt; ++i) {
+   subrs->bias=scnt<1240?107:scnt<33900?1131:32768;
+   for (i=0; i<gi.pcnt; ++i) {
       if (gi.psubrs[i].idx != -1) {
 	 scnt=gi.psubrs[i].idx;
-	 subrs->lens[scnt]=gi.psubrs[i].len + 1;
+	 subrs->lens[scnt]=gi.psubrs[i].len+1;
 	 subrs->values[scnt]=malloc(subrs->lens[scnt]);
 	 memcpy(subrs->values[scnt], gi.psubrs[i].data, gi.psubrs[i].len);
 	 subrs->values[scnt][gi.psubrs[i].len]=11;	/* Add a return to end of subr */
@@ -3160,7 +3160,7 @@ struct pschars *SplineFont2ChrsSubrs2(SplineFont *sf, int nomwid, int defwid,
    chrs->lens=malloc(cnt * sizeof(int));
    chrs->values=malloc(cnt * sizeof(unsigned char *));
    chrs->keys=malloc(cnt * sizeof(char *));
-   for (i=0; i < cnt; ++i) {
+   for (i=0; i<cnt; ++i) {
       int len=0;
       uint8_t *vals;
       struct glyphbits *gb=&gi.gb[i];
@@ -3168,24 +3168,24 @@ struct pschars *SplineFont2ChrsSubrs2(SplineFont *sf, int nomwid, int defwid,
       if (gb->sc==NULL)
 	 continue;
       chrs->keys[i]=fastrdup(gb->sc->name);
-      for (k=0; k < 2; ++k)
+      for (k=0; k<2; ++k)
 	 if (k != 0 || gb->sc->lsidebearing != 0x7fff) {
-	    for (j=0; j < gb->bcnt; ++j) {
+	    for (j=0; j<gb->bcnt; ++j) {
 	       if (k != 0 || j != 0)
 		  len += gb->bits[j].dlen;
 	       if (k==1 && gb->sc->lsidebearing != 0x7fff) {
 		  int si=gi.psubrs[gb->sc->lsidebearing].idx;
 
-		  len += 1 + (si <= 107 && si >= -107 ? 1 : si <= 1131
-			      && si >= -1131 ? 2 : si >= -32768
-			      && si < 32767 ? 3 : 8);
+		  len += 1+(si <= 107 && si >= -107?1:si <= 1131
+			      && si >= -1131?2:si >= -32768
+			      && si<32767?3:8);
 		  break;
 	       }
 	       if (gi.psubrs[gb->bits[j].psub_index].idx==-1)
 		  len += gi.psubrs[gb->bits[j].psub_index].len;
 	       else {
 		  int si =
-		     gi.psubrs[gb->bits[j].psub_index].idx - subrs->bias;
+		     gi.psubrs[gb->bits[j].psub_index].idx-subrs->bias;
 		  /* space for the number (subroutine index) */
 		  if (si >= -107 && si <= 107)
 		     ++len;
@@ -3202,55 +3202,55 @@ struct pschars *SplineFont2ChrsSubrs2(SplineFont *sf, int nomwid, int defwid,
 	    if (k==0) {
 	       int si=gi.psubrs[gb->sc->lsidebearing].idx;
 
-	       subrs->lens[si]=len + 1;
-	       vals=subrs->values[si]=malloc(len + 2);
+	       subrs->lens[si]=len+1;
+	       vals=subrs->values[si]=malloc(len+2);
 	    } else {
-	       chrs->lens[i]=len + 1;
-	       vals=chrs->values[i]=malloc(len + 2);	/* space for endchar and a final NUL (which is really meaningless, but makes me feel better) */
+	       chrs->lens[i]=len+1;
+	       vals=chrs->values[i]=malloc(len+2);	/* space for endchar and a final NUL (which is really meaningless, but makes me feel better) */
 	    }
 
 	    len=0;
-	    for (j=0; j < gb->bcnt; ++j) {
+	    for (j=0; j<gb->bcnt; ++j) {
 	       int si;
 
 	       if (k != 0 || j != 0) {
-		  memcpy(vals + len, gb->bits[j].data, gb->bits[j].dlen);
+		  memcpy(vals+len, gb->bits[j].data, gb->bits[j].dlen);
 		  len += gb->bits[j].dlen;
 	       }
 	       si=0x80000000;
 	       if (k==1 && gb->sc->lsidebearing != 0x7fff)
-		  si=gi.psubrs[gb->sc->lsidebearing].idx - subrs->bias;
+		  si=gi.psubrs[gb->sc->lsidebearing].idx-subrs->bias;
 	       else if (gi.psubrs[gb->bits[j].psub_index].idx==-1) {
-		  memcpy(vals + len, gi.psubrs[gb->bits[j].psub_index].data,
+		  memcpy(vals+len, gi.psubrs[gb->bits[j].psub_index].data,
 			 gi.psubrs[gb->bits[j].psub_index].len);
 		  len += gi.psubrs[gb->bits[j].psub_index].len;
 	       } else
-		  si=gi.psubrs[gb->bits[j].psub_index].idx - subrs->bias;
+		  si=gi.psubrs[gb->bits[j].psub_index].idx-subrs->bias;
 	       if (si != 0x80000000) {
 		  /* space for the number (subroutine index) */
 		  if (si >= -107 && si <= 107)
-		     vals[len++]=si + 139;
-		  else if (si > 0 && si <= 1131) {
+		     vals[len++]=si+139;
+		  else if (si>0 && si <= 1131) {
 		     si -= 108;
-		     vals[len++]=(si >> 8) + 247;
-		     vals[len++]=si & 0xff;
-		  } else if (si >= -1131 && si < 0) {
-		     si=(-si) - 108;
-		     vals[len++]=(si >> 8) + 251;
-		     vals[len++]=si & 0xff;
+		     vals[len++]=(si >> 8)+247;
+		     vals[len++]=si&0xff;
+		  } else if (si >= -1131 && si<0) {
+		     si=(-si)-108;
+		     vals[len++]=(si >> 8)+251;
+		     vals[len++]=si&0xff;
 		  } else if (si >= -32768 && si <= 32767) {
 		     vals[len++]=28;
-		     vals[len++]=(si >> 8) & 0xff;
-		     vals[len++]=si & 0xff;
+		     vals[len++]=(si >> 8)&0xff;
+		     vals[len++]=si&0xff;
 		  } else {
 		     /* store as fixed point, then multiply by 64. Takes 8 bytes */
-		     si *= (65536 / 64);
+		     si *= (65536/64);
 		     vals[len++]='\377';
-		     vals[len++]=(si >> 24) & 0xff;
-		     vals[len++]=(si >> 16) & 0xff;
-		     vals[len++]=(si >> 8) & 0xff;
-		     vals[len++]=si & 0xff;
-		     vals[len++]=64 + 139;
+		     vals[len++]=(si >> 24)&0xff;
+		     vals[len++]=(si >> 16)&0xff;
+		     vals[len++]=(si >> 8)&0xff;
+		     vals[len++]=si&0xff;
+		     vals[len++]=64+139;
 		     vals[len++]=0xc;
 		     vals[len++]=0x18;	/* Multiply */
 		  }
@@ -3292,16 +3292,16 @@ struct pschars *CID2ChrsSubrs2(SplineFont *cidmaster, struct fd2data *fds,
    SplineChar dummynotdef;
 
    max=0;
-   for (i=0; i < cidmaster->subfontcnt; ++i) {
-      if (max < cidmaster->subfonts[i]->glyphcnt)
+   for (i=0; i<cidmaster->subfontcnt; ++i) {
+      if (max<cidmaster->subfonts[i]->glyphcnt)
 	 max=cidmaster->subfonts[i]->glyphcnt;
       MarkTranslationRefs(cidmaster->subfonts[i], layer);
    }
    cnt=1;			/* for .notdef */
-   for (cid=1; cid < max; ++cid) {
-      for (i=0; i < cidmaster->subfontcnt; ++i) {
+   for (cid=1; cid<max; ++cid) {
+      for (i=0; i<cidmaster->subfontcnt; ++i) {
 	 sf=cidmaster->subfonts[i];
-	 if (cid < sf->glyphcnt && (sc=sf->glyphs[cid]) != NULL) {
+	 if (cid<sf->glyphcnt && (sc=sf->glyphs[cid]) != NULL) {
 	    sc->ttf_glyph=-1;
 	    sc->lsidebearing=0x7fff;
 	    if (SCWorthOutputting(sc))
@@ -3318,15 +3318,15 @@ struct pschars *CID2ChrsSubrs2(SplineFont *cidmaster, struct fd2data *fds,
    gi.glyphcnt=cnt;
    gi.bygid=NULL;
    gi.gb=calloc(cnt, sizeof(struct glyphbits));
-   gi.pmax=3 * cnt;
+   gi.pmax=3*cnt;
    gi.psubrs=malloc(gi.pmax * sizeof(struct potentialsubrs));
    gi.layer=layer;
 
-   for (cid=cnt=0; cid < max; ++cid) {
+   for (cid=cnt=0; cid<max; ++cid) {
       sf=NULL;
-      for (i=0; i < cidmaster->subfontcnt; ++i) {
+      for (i=0; i<cidmaster->subfontcnt; ++i) {
 	 sf=cidmaster->subfonts[i];
-	 if (cid < sf->glyphcnt && SCWorthOutputting(sf->glyphs[cid]))
+	 if (cid<sf->glyphcnt && SCWorthOutputting(sf->glyphs[cid]))
 	    break;
       }
       if (cid != 0 && i==cidmaster->subfontcnt) {
@@ -3338,14 +3338,14 @@ struct pschars *CID2ChrsSubrs2(SplineFont *cidmaster, struct fd2data *fds,
 	 memset(sc, 0, sizeof(dummynotdef));
 	 dummynotdef.name=".notdef";
 	 dummynotdef.parent=sf;
-	 dummynotdef.layer_cnt=layer + 1;
-	 dummynotdef.layers=calloc(layer + 1, sizeof(Layer));
+	 dummynotdef.layer_cnt=layer+1;
+	 dummynotdef.layers=calloc(layer+1, sizeof(Layer));
 	 dummynotdef.width=SFOneWidth(sf);
 	 if (dummynotdef.width==-1)
-	    dummynotdef.width=(sf->ascent + sf->descent);
+	    dummynotdef.width=(sf->ascent+sf->descent);
 	 Type2NotDefSplines(sf, &dummynotdef, layer);
 	 gi.gb[cnt].sc=sc;
-	 gi.gb[cnt].fd=i=cidmaster->subfontcnt - 1;
+	 gi.gb[cnt].fd=i=cidmaster->subfontcnt-1;
       } else {
 	 gi.gb[cnt].sc=sc=sf->glyphs[cid];
 	 gi.gb[cnt].fd=i;
@@ -3359,12 +3359,12 @@ struct pschars *CID2ChrsSubrs2(SplineFont *cidmaster, struct fd2data *fds,
       }
    }
 
-   scnts=calloc(cidmaster->subfontcnt + 1, sizeof(int));
-   for (i=0; i < gi.pcnt; ++i) {
+   scnts=calloc(cidmaster->subfontcnt+1, sizeof(int));
+   for (i=0; i<gi.pcnt; ++i) {
       gi.psubrs[i].idx=-1;
       if (gi.psubrs[i].cnt * gi.psubrs[i].len >
-	  (gi.psubrs[i].cnt * 4) + gi.psubrs[i].len + 1)
-	 gi.psubrs[i].idx=scnts[gi.psubrs[i].fd + 1]++;
+	  (gi.psubrs[i].cnt*4)+gi.psubrs[i].len+1)
+	 gi.psubrs[i].idx=scnts[gi.psubrs[i].fd+1]++;
    }
 
    glbls=calloc(1, sizeof(struct pschars));
@@ -3372,25 +3372,25 @@ struct pschars *CID2ChrsSubrs2(SplineFont *cidmaster, struct fd2data *fds,
    glbls->next=scnts[0];
    glbls->lens=malloc(scnts[0] * sizeof(int));
    glbls->values=malloc(scnts[0] * sizeof(unsigned char *));
-   glbls->bias=scnts[0] < 1240 ? 107 : scnts[0] < 33900 ? 1131 : 32768;
-   for (fd=0; fd < cidmaster->subfontcnt; ++fd) {
+   glbls->bias=scnts[0]<1240?107:scnts[0]<33900?1131:32768;
+   for (fd=0; fd<cidmaster->subfontcnt; ++fd) {
       fds[fd].subrs=calloc(1, sizeof(struct pschars));
-      fds[fd].subrs->cnt=scnts[fd + 1];
-      fds[fd].subrs->next=scnts[fd + 1];
-      fds[fd].subrs->lens=malloc(scnts[fd + 1] * sizeof(int));
-      fds[fd].subrs->values=malloc(scnts[fd + 1] * sizeof(unsigned char *));
-      fds[fd].subrs->bias=scnts[fd + 1] < 1240 ? 107 :
-	 scnts[fd + 1] < 33900 ? 1131 : 32768;
+      fds[fd].subrs->cnt=scnts[fd+1];
+      fds[fd].subrs->next=scnts[fd+1];
+      fds[fd].subrs->lens=malloc(scnts[fd+1] * sizeof(int));
+      fds[fd].subrs->values=malloc(scnts[fd+1] * sizeof(unsigned char *));
+      fds[fd].subrs->bias=scnts[fd+1]<1240?107 :
+	 scnts[fd+1]<33900?1131:32768;
    }
    free(scnts);
 
-   for (i=0; i < gi.pcnt; ++i) {
+   for (i=0; i<gi.pcnt; ++i) {
       if (gi.psubrs[i].idx != -1) {
 	 struct pschars *subrs =
-	    gi.psubrs[i].fd==-1 ? glbls : fds[gi.psubrs[i].fd].subrs;
+	    gi.psubrs[i].fd==-1?glbls:fds[gi.psubrs[i].fd].subrs;
 	 int scnt=gi.psubrs[i].idx;
 
-	 subrs->lens[scnt]=gi.psubrs[i].len + 1;
+	 subrs->lens[scnt]=gi.psubrs[i].len+1;
 	 subrs->values[scnt]=malloc(subrs->lens[scnt]);
 	 memcpy(subrs->values[scnt], gi.psubrs[i].data, gi.psubrs[i].len);
 	 subrs->values[scnt][gi.psubrs[i].len]=11;	/* Add a return to end of subr */
@@ -3404,20 +3404,20 @@ struct pschars *CID2ChrsSubrs2(SplineFont *cidmaster, struct fd2data *fds,
    chrs->lens=malloc(cnt * sizeof(int));
    chrs->values=malloc(cnt * sizeof(unsigned char *));
    chrs->keys=malloc(cnt * sizeof(char *));
-   for (i=0; i < cnt; ++i) {
+   for (i=0; i<cnt; ++i) {
       int len=0;
       struct glyphbits *gb=&gi.gb[i];
 
       chrs->keys[i]=fastrdup(gb->sc->name);
-      for (j=0; j < gb->bcnt; ++j) {
+      for (j=0; j<gb->bcnt; ++j) {
 	 len += gb->bits[j].dlen;
 	 if (gi.psubrs[gb->bits[j].psub_index].idx==-1)
 	    len += gi.psubrs[gb->bits[j].psub_index].len;
 	 else {
 	    struct pschars *subrs =
 	       gi.psubrs[gb->bits[j].psub_index].fd ==
-	       -1 ? glbls : fds[gi.psubrs[gb->bits[j].psub_index].fd].subrs;
-	    int si=gi.psubrs[gb->bits[j].psub_index].idx - subrs->bias;
+	       -1?glbls:fds[gi.psubrs[gb->bits[j].psub_index].fd].subrs;
+	    int si=gi.psubrs[gb->bits[j].psub_index].idx-subrs->bias;
 
 	    /* space for the number (subroutine index) */
 	    if (si >= -107 && si <= 107)
@@ -3432,48 +3432,48 @@ struct pschars *CID2ChrsSubrs2(SplineFont *cidmaster, struct fd2data *fds,
 	    ++len;
 	 }
       }
-      chrs->lens[i]=len + 1;
-      chrs->values[i]=malloc(len + 2);	/* space for endchar and a final NUL (which is really meaningless, but makes me feel better) */
+      chrs->lens[i]=len+1;
+      chrs->values[i]=malloc(len+2);	/* space for endchar and a final NUL (which is really meaningless, but makes me feel better) */
 
       len=0;
-      for (j=0; j < gb->bcnt; ++j) {
-	 memcpy(chrs->values[i] + len, gb->bits[j].data, gb->bits[j].dlen);
+      for (j=0; j<gb->bcnt; ++j) {
+	 memcpy(chrs->values[i]+len, gb->bits[j].data, gb->bits[j].dlen);
 	 len += gb->bits[j].dlen;
 	 if (gi.psubrs[gb->bits[j].psub_index].idx==-1) {
-	    memcpy(chrs->values[i] + len,
+	    memcpy(chrs->values[i]+len,
 		   gi.psubrs[gb->bits[j].psub_index].data,
 		   gi.psubrs[gb->bits[j].psub_index].len);
 	    len += gi.psubrs[gb->bits[j].psub_index].len;
 	 } else {
 	    struct pschars *subrs =
 	       gi.psubrs[gb->bits[j].psub_index].fd ==
-	       -1 ? glbls : fds[gi.psubrs[gb->bits[j].psub_index].fd].subrs;
-	    int si=gi.psubrs[gb->bits[j].psub_index].idx - subrs->bias;
+	       -1?glbls:fds[gi.psubrs[gb->bits[j].psub_index].fd].subrs;
+	    int si=gi.psubrs[gb->bits[j].psub_index].idx-subrs->bias;
 
 	    /* space for the number (subroutine index) */
 	    if (si >= -107 && si <= 107)
-	       chrs->values[i][len++]=si + 139;
-	    else if (si > 0 && si <= 1131) {
+	       chrs->values[i][len++]=si+139;
+	    else if (si>0 && si <= 1131) {
 	       si -= 108;
-	       chrs->values[i][len++]=(si >> 8) + 247;
-	       chrs->values[i][len++]=si & 0xff;
-	    } else if (si >= -1131 && si < 0) {
-	       si=(-si) - 108;
-	       chrs->values[i][len++]=(si >> 8) + 251;
-	       chrs->values[i][len++]=si & 0xff;
+	       chrs->values[i][len++]=(si >> 8)+247;
+	       chrs->values[i][len++]=si&0xff;
+	    } else if (si >= -1131 && si<0) {
+	       si=(-si)-108;
+	       chrs->values[i][len++]=(si >> 8)+251;
+	       chrs->values[i][len++]=si&0xff;
 	    } else if (si >= -32768 && si <= 32767) {
 	       chrs->values[i][len++]=28;
-	       chrs->values[i][len++]=(si >> 8) & 0xff;
-	       chrs->values[i][len++]=si & 0xff;
+	       chrs->values[i][len++]=(si >> 8)&0xff;
+	       chrs->values[i][len++]=si&0xff;
 	    } else {
 	       /* store as fixed point, then multiply by 64. Takes 8 bytes */
-	       si *= (65536 / 64);
+	       si *= (65536/64);
 	       chrs->values[i][len++]='\377';
-	       chrs->values[i][len++]=(si >> 24) & 0xff;
-	       chrs->values[i][len++]=(si >> 16) & 0xff;
-	       chrs->values[i][len++]=(si >> 8) & 0xff;
-	       chrs->values[i][len++]=si & 0xff;
-	       chrs->values[i][len++]=64 + 139;
+	       chrs->values[i][len++]=(si >> 24)&0xff;
+	       chrs->values[i][len++]=(si >> 16)&0xff;
+	       chrs->values[i][len++]=(si >> 8)&0xff;
+	       chrs->values[i][len++]=si&0xff;
+	       chrs->values[i][len++]=64+139;
 	       chrs->values[i][len++]=0xc;
 	       chrs->values[i][len++]=0x18;	/* Multiply */
 	    }

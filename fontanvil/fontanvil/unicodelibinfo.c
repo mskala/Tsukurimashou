@@ -1,4 +1,4 @@
-/* $Id: unicodelibinfo.c 4523 2015-12-20 12:30:49Z mskala $ */
+/* $Id: unicodelibinfo.c 4532 2015-12-22 13:18:53Z mskala $ */
 /* Copyright (C) 2013 by Jose Da Silva */
 /*
  * Redistribution and use in source and binary forms, with or without
@@ -34,8 +34,8 @@
 #   include <uninameslist.h>
 #endif
 
-const struct unicode_nameannot *const *const *_UnicodeNameAnnot = NULL;	/* deprecated */
-const struct unicode_block *_UnicodeBlock = NULL;
+const struct unicode_nameannot *const *const *_UnicodeNameAnnot=NULL;	/* deprecated */
+const struct unicode_block *_UnicodeBlock=NULL;
 
 #ifndef _NO_LIBUNICODENAMES
 #   include <libunicodenames.h>
@@ -59,12 +59,12 @@ void inituninameannot(void) {
 /* for existing code if you want to re-enable this feature again.  */
 
 #if _NO_LIBUNINAMESLIST
-   _UnicodeNameAnnot = NULL;	/* libuninameslist not available */
-   _UnicodeBlock = NULL;
+   _UnicodeNameAnnot=NULL;	/* libuninameslist not available */
+   _UnicodeBlock=NULL;
 #else
    /* backward compatibility for other programs using libuninames */
-   _UnicodeNameAnnot = UnicodeNameAnnot;
-   _UnicodeBlock = UnicodeBlock;
+   _UnicodeNameAnnot=UnicodeNameAnnot;
+   _UnicodeBlock=UnicodeBlock;
 #endif
 
 #ifndef _NO_LIBUNICODENAMES
@@ -75,17 +75,17 @@ void inituninameannot(void) {
 
    /* Load character names and annotations that come from the Unicode NamesList.txt */
    /* This should not be done until after the locale has been set */
-   names_db_file = uninm_find_names_db(NULL);
+   names_db_file=uninm_find_names_db(NULL);
    names_db =
       (names_db_file ==
-       NULL) ? ((uninm_names_db) 0) : uninm_names_db_open(names_db_file);
+       NULL)?((uninm_names_db) 0):uninm_names_db_open(names_db_file);
    free(names_db_file);
    /* NOTE: you need to do uninm_names_db_close(names_db); when you exit program */
 
-   blocks_db_file = uninm_find_blocks_db(NULL);
+   blocks_db_file=uninm_find_blocks_db(NULL);
    blocks_db =
       (blocks_db_file ==
-       NULL) ? ((uninm_blocks_db) 0) : uninm_blocks_db_open(blocks_db_file);
+       NULL)?((uninm_blocks_db) 0):uninm_blocks_db_open(blocks_db_file);
    free(blocks_db_file);
    /* NOTE: you need to do uninm_blocks_db_close(blocks_db); when you exit program */
 #endif
@@ -101,28 +101,28 @@ char *unicode_name(int32_t unienc) {
    return (NULL);
 #else
    /* have nameslist library code available to use */
-   if (unienc < 0 || unienc >= 0x110000)
+   if (unienc<0 || unienc >= 0x110000)
       return (NULL);
 
-   char *name_data = NULL;
+   char *name_data=NULL;
 
 #   ifndef _NO_LIBUNINAMESLIST
 #      ifndef _LIBUNINAMESLIST_FUN
    /* old libuninameslist library code */
    if (_UnicodeNameAnnot != NULL &&
-       _UnicodeNameAnnot[unienc >> 16][(unienc >> 8) & 0xff][unienc & 0xff].
+       _UnicodeNameAnnot[unienc >> 16][(unienc >> 8)&0xff][unienc&0xff].
        name != NULL) {
       name_data =
-	 copy(_UnicodeNameAnnot[unienc >> 16][(unienc >> 8) & 0xff]
-	      [unienc & 0xff].name);
+	 copy(_UnicodeNameAnnot[unienc >> 16][(unienc >> 8)&0xff]
+	      [unienc&0xff].name);
    }
 #      else
    /* new libuninameslist library code */
-   name_data = copy(uniNamesList_name(unienc));
+   name_data=copy(uniNamesList_name(unienc));
 #      endif
 #   else
    /* libunicodesnames library code */
-   name_data = copy(uninm_name(names_db, (unsigned int) (unienc)));
+   name_data=copy(uninm_name(names_db, (unsigned int) (unienc)));
 #   endif
 
    /* George Williams' improvisation on Hangul Syllable range
@@ -133,20 +133,20 @@ char *unicode_name(int32_t unienc) {
     * revisit later.
     */
    if ((unienc >= 0xAC00 && unienc <= 0xD7A3) && (name_data == NULL)) {
-      if (((unienc - 0xAC00) % 28) == 0) {
-	 name_data = (char *) g_strdup_printf("Hangul Syllable %s-%s",
+      if (((unienc-0xAC00)%28) == 0) {
+	 name_data=(char *) g_strdup_printf("Hangul Syllable %s-%s",
 					      chosung[(unienc -
-						       0xAC00) / (21 * 28)],
+						       0xAC00)/(21*28)],
 					      jungsung[((unienc -
-							 0xAC00) / 28) % 21]);
+							 0xAC00)/28)%21]);
       } else {
-	 name_data = (char *) g_strdup_printf("Hangul Syllable %s-%s-%s",
+	 name_data=(char *) g_strdup_printf("Hangul Syllable %s-%s-%s",
 					      chosung[(unienc -
-						       0xAC00) / (21 * 28)],
+						       0xAC00)/(21*28)],
 					      jungsung[((unienc -
-							 0xAC00) / 28) % 21],
+							 0xAC00)/28)%21],
 					      jongsung[(unienc -
-							0xAC00) % 28]);
+							0xAC00)%28]);
       }
    }
 
@@ -171,40 +171,40 @@ static char *unicode_nicer(const char *from) {
       return (NULL);
 
    /* check if we need to convert some chars to bullets and symbols */
-   c = l = 0;
-   for (pf = from; (ch = *pf++) != '\0'; ++l)
+   c=l=0;
+   for (pf=from; (ch=*pf++) != '\0'; ++l)
       if (ch == '\t') {
 	 /* require extra space for these larger utf8 type chars */
 	 if (*pf == '*' || *pf == 'x' || *pf == ':' || *pf == '#')
 	    ++c;
       }
 
-   if ((pt = to = malloc(l + c + c + 1)) != NULL) {
+   if ((pt=to=malloc(l+c+c+1)) != NULL) {
       if (c) {
-	 while ((ch = *pt++ = *from++) != '\0')
+	 while ((ch=*pt++=*from++) != '\0')
 	    if (ch == '\t') {
 	       if (*from == '*') {
-		  c = 0x2022;
+		  c=0x2022;
 		  goto unicode_expand_c;	/* 0x2022, bullet */
 	       } else if (*from == 'x') {
-		  c = 0x2192;
+		  c=0x2192;
 		  goto unicode_expand_c;	/* 0x2192, right-arrow */
 	       } else if (*from == ':') {
-		  c = 0x224d;
+		  c=0x224d;
 		  goto unicode_expand_c;	/* 0x224d, nearly equal */
 	       } else if (*from == '#') {
-		  c = 0x2245;
+		  c=0x2245;
 		  goto unicode_expand_c;	/* 0x2245, approx equal */
 		unicode_expand_c:
 		  ++from;
-		  *pt++ = 0xe0 + ((c >> 12) & 0x0f);
-		  *pt++ = 0x80 + ((c >> 6) & 0x3f);
-		  *pt++ = 0x80 + (c & 0x3f);
+		  *pt++=0xe0+((c >> 12)&0x0f);
+		  *pt++=0x80+((c >> 6)&0x3f);
+		  *pt++=0x80+(c&0x3f);
 	       }
 	    }
       } else
 	 /* simply copy information verbatim, without the need to edit */
-	 while ((*pt++ = *from++) != '\0');
+	 while ((*pt++=*from++) != '\0');
    }
 
    return (to);
@@ -221,28 +221,28 @@ char *unicode_annot(int32_t unienc) {
    return (NULL);
 #else
    /* have nameslist library code available to use */
-   if (unienc < 0 || unienc >= 0x110000)
+   if (unienc<0 || unienc >= 0x110000)
       return (NULL);
 
-   char *annot_data = NULL;
+   char *annot_data=NULL;
 
 #   ifndef _NO_LIBUNINAMESLIST
 #      ifndef _LIBUNINAMESLIST_FUN
    /* old libuninameslist library code */
    if (_UnicodeNameAnnot != NULL &&
-       _UnicodeNameAnnot[unienc >> 16][(unienc >> 8) & 0xff][unienc & 0xff].
+       _UnicodeNameAnnot[unienc >> 16][(unienc >> 8)&0xff][unienc&0xff].
        annot != NULL) {
       annot_data =
-	 unicode_nicer(_UnicodeNameAnnot[unienc >> 16][(unienc >> 8) & 0xff]
-		       [unienc & 0xff].annot);
+	 unicode_nicer(_UnicodeNameAnnot[unienc >> 16][(unienc >> 8)&0xff]
+		       [unienc&0xff].annot);
    }
 #      else
    /* new libuninameslist library code */
-   annot_data = unicode_nicer(uniNamesList_annot(unienc));
+   annot_data=unicode_nicer(uniNamesList_annot(unienc));
 #      endif
 #   else
    /* libunicodesnames library code */
-   annot_data = copy(uninm_annotation(names_db, (unsigned int) (unienc)));
+   annot_data=copy(uninm_annotation(names_db, (unsigned int) (unienc)));
 #   endif
 
    return (annot_data);

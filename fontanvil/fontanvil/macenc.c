@@ -1,4 +1,4 @@
-/* $Id: macenc.c 4523 2015-12-20 12:30:49Z mskala $ */
+/* $Id: macenc.c 4532 2015-12-22 13:18:53Z mskala $ */
 /* Copyright (C) 2003-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -626,9 +626,9 @@ char *MacStrToUtf8(const char *str, int macenc, int maclang) {
    if (macenc==sm_japanese || macenc==sm_korean
        || macenc==sm_tradchinese || macenc==sm_simpchinese) {
       Encoding *enc =
-	 FindOrMakeEncoding(macenc==sm_japanese ? "Sjis" : macenc ==
-			    sm_korean ? "EUC-KR" : macenc ==
-			    sm_tradchinese ? "Big5" : "EUC-CN");
+	 FindOrMakeEncoding(macenc==sm_japanese?"Sjis":macenc ==
+			    sm_korean?"EUC-KR":macenc ==
+			    sm_tradchinese?"Big5":"EUC-CN");
       iconv_t *toutf8;
       ICONV_CONST char *in;
       char *out;
@@ -639,20 +639,20 @@ char *MacStrToUtf8(const char *str, int macenc, int maclang) {
       toutf8 =
 	 iconv_open("UTF-8",
 		    enc->iconv_name !=
-		    NULL ? enc->iconv_name : enc->enc_name);
-      if (toutf8==(iconv_t) - 1 || toutf8==NULL)
+		    NULL?enc->iconv_name:enc->enc_name);
+      if (toutf8==(iconv_t)-1 || toutf8==NULL)
 	 return (NULL);
       in=(char *) str;
       inlen=strlen(in);
-      outlen=(inlen + 1) * 4;
-      out=(char *) (ret=malloc(outlen + 2));
+      outlen=(inlen+1)*4;
+      out=(char *) (ret=malloc(outlen+2));
       iconv(toutf8, &in, &inlen, &out, &outlen);
       out[0]='\0';
       iconv_close(toutf8);
       return (ret);
    }
 
-   if (macenc < 0 || macenc > 31) {
+   if (macenc<0 || macenc>31) {
       ErrorMsg(2,"Invalid mac encoding %d.\n", macenc);
       return (NULL);
    }
@@ -661,7 +661,7 @@ char *MacStrToUtf8(const char *str, int macenc, int maclang) {
    if (table==NULL)
       return (NULL);
 
-   ret=malloc(strlen(str) * 4 + 1);
+   ret=malloc(strlen(str)*4+1);
    for (rpt=ret; *ustr; ++ustr) {
       int ch=table[*ustr];
 
@@ -682,9 +682,9 @@ char *Utf8ToMacStr(const char *ustr, int macenc, int maclang) {
    if (macenc==sm_japanese || macenc==sm_korean
        || macenc==sm_tradchinese || macenc==sm_simpchinese) {
       Encoding *enc =
-	 FindOrMakeEncoding(macenc==sm_japanese ? "Sjis" : macenc ==
-			    sm_korean ? "EUC-KR" : macenc ==
-			    sm_tradchinese ? "Big5" : "EUC-CN");
+	 FindOrMakeEncoding(macenc==sm_japanese?"Sjis":macenc ==
+			    sm_korean?"EUC-KR":macenc ==
+			    sm_tradchinese?"Big5":"EUC-CN");
       iconv_t fromutf8;
       ICONV_CONST char *in;
       char *out;
@@ -693,14 +693,14 @@ char *Utf8ToMacStr(const char *ustr, int macenc, int maclang) {
       if (enc==NULL)
 	 return (NULL);
       fromutf8 =
-	 iconv_open(enc->iconv_name != NULL ? enc->iconv_name : enc->enc_name,
+	 iconv_open(enc->iconv_name != NULL?enc->iconv_name:enc->enc_name,
 		    "UTF-8");
-      if (fromutf8==(iconv_t) - 1 || fromutf8==NULL)
+      if (fromutf8==(iconv_t)-1 || fromutf8==NULL)
 	 return (NULL);
       in=(char *) ustr;
       inlen=strlen(ustr);
-      outlen=sizeof(unichar_t) * strlen(ustr);
-      out=ret=malloc(outlen + sizeof(unichar_t));
+      outlen=sizeof(unichar_t)*strlen(ustr);
+      out=ret=malloc(outlen+sizeof(unichar_t));
       iconv(fromutf8, &in, &inlen, &out, &outlen);
       out[0]=out[1]='\0';
       out[2]=out[3]='\0';
@@ -726,9 +726,9 @@ char *Utf8ToMacStr(const char *ustr, int macenc, int maclang) {
    if (table==NULL)
       return (NULL);
 
-   ret=malloc(strlen(ustr) + 1);
+   ret=malloc(strlen(ustr)+1);
    for (rpt=ret; (ch=utf8_ildb(&ustr));) {
-      for (i=0; i < 256; ++i)
+      for (i=0; i<256; ++i)
 	 if (table[i]==ch) {
 	    *rpt++=i;
 	    break;
@@ -739,17 +739,17 @@ char *Utf8ToMacStr(const char *ustr, int macenc, int maclang) {
 }
 
 uint8_t MacEncFromMacLang(int maclang) {
-   if (maclang < 0
+   if (maclang<0
        || maclang >=
-       sizeof(_MacScriptFromLanguage) / sizeof(_MacScriptFromLanguage[0]))
+       sizeof(_MacScriptFromLanguage)/sizeof(_MacScriptFromLanguage[0]))
       return (0xff);
 
    return (_MacScriptFromLanguage[maclang]);
 }
 
 uint16_t WinLangFromMac(int maclang) {
-   if (maclang < 0
-       || maclang >= sizeof(_WinLangFromMac) / sizeof(_WinLangFromMac[0]))
+   if (maclang<0
+       || maclang >= sizeof(_WinLangFromMac)/sizeof(_WinLangFromMac[0]))
       return (0xffff);
 
    return (_WinLangFromMac[maclang]);
@@ -758,13 +758,13 @@ uint16_t WinLangFromMac(int maclang) {
 uint16_t WinLangToMac(int winlang) {
    int i;
 
-   for (i=0; i < sizeof(_WinLangFromMac) / sizeof(_WinLangFromMac[0]); ++i)
+   for (i=0; i<sizeof(_WinLangFromMac)/sizeof(_WinLangFromMac[0]); ++i)
       if (_WinLangFromMac[i]==winlang)
 	 return (i);
 
    winlang &= 0xff;
-   for (i=0; i < sizeof(_WinLangFromMac) / sizeof(_WinLangFromMac[0]); ++i)
-      if ((_WinLangFromMac[i] & 0xff)==winlang)
+   for (i=0; i<sizeof(_WinLangFromMac)/sizeof(_WinLangFromMac[0]); ++i)
+      if ((_WinLangFromMac[i]&0xff)==winlang)
 	 return (i);
 
    return (0xffff);
@@ -778,7 +778,7 @@ const int32_t *MacEncToUnicode(int script, int lang) {
    table=MacEncLangToTable(script, lang);
    if (table==NULL)
       return (NULL);
-   for (i=0; i < 256; ++i)
+   for (i=0; i<256; ++i)
       temp[i]=table[i];
    return (temp);
 }

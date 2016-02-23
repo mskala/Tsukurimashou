@@ -1,4 +1,4 @@
-/* $Id: nonlineartrans.c 4464 2015-11-30 09:57:27Z mskala $ */
+/* $Id: nonlineartrans.c 4532 2015-12-22 13:18:53Z mskala $ */
 /* Copyright (C) 2003-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -89,7 +89,7 @@ static int gettoken(struct context *c,double *val) {
       pt=buffer;
       *pt++=ch;
       while (isalnum(c->cur[0])) {
-	 if (pt < buffer + sizeof(buffer) - 1)
+	 if (pt<buffer+sizeof(buffer)-1)
 	    *pt++=c->cur[0];
 	 ++c->cur;
       }
@@ -445,7 +445,7 @@ static double evaluate_expr(struct context *c,struct expr *e) {
 	     }
 	     return (log(val1));
 	  case op_sqrt:
-	     if (val1 < 0) {
+	     if (val1<0) {
 		ErrorMsg(2,"Attempt to take the square root of %1$g in %2$.30s\n",
 			      val1, c->sc->name);
 		c->had_error=true;
@@ -461,7 +461,7 @@ static double evaluate_expr(struct context *c,struct expr *e) {
 	  case op_tan:
 	     return (tan(val1));
 	  case op_abs:
-	     return (val1 < 0 ? -val1 : val1);
+	     return (val1<0?-val1:val1);
 	  case op_rint:
 	     return (rint(val1));
 	  case op_floor:
@@ -474,7 +474,7 @@ static double evaluate_expr(struct context *c,struct expr *e) {
      case op_pow:
 	return (pow(evaluate_expr(c, e->op1), evaluate_expr(c, e->op2)));
      case op_times:
-	return (evaluate_expr(c, e->op1) * evaluate_expr(c, e->op2));
+	return (evaluate_expr(c, e->op1)*evaluate_expr(c, e->op2));
      case op_div:
      case op_mod:
 	val2=evaluate_expr(c, e->op2);
@@ -484,12 +484,12 @@ static double evaluate_expr(struct context *c,struct expr *e) {
 	   return (0);
 	}
 	if (e->operator== op_div)
-	   return (evaluate_expr(c, e->op1) / val2);
+	   return (evaluate_expr(c, e->op1)/val2);
 	return (fmod(evaluate_expr(c, e->op1), val2));
      case op_add:
-	return (evaluate_expr(c, e->op1) + evaluate_expr(c, e->op2));
+	return (evaluate_expr(c, e->op1)+evaluate_expr(c, e->op2));
      case op_sub:
-	return (evaluate_expr(c, e->op1) - evaluate_expr(c, e->op2));
+	return (evaluate_expr(c, e->op1)-evaluate_expr(c, e->op2));
      case op_eq:
 	return (evaluate_expr(c, e->op1)==evaluate_expr(c, e->op2));
      case op_ne:
@@ -497,11 +497,11 @@ static double evaluate_expr(struct context *c,struct expr *e) {
      case op_le:
 	return (evaluate_expr(c, e->op1) <= evaluate_expr(c, e->op2));
      case op_lt:
-	return (evaluate_expr(c, e->op1) < evaluate_expr(c, e->op2));
+	return (evaluate_expr(c, e->op1)<evaluate_expr(c, e->op2));
      case op_ge:
 	return (evaluate_expr(c, e->op1) >= evaluate_expr(c, e->op2));
      case op_gt:
-	return (evaluate_expr(c, e->op1) > evaluate_expr(c, e->op2));
+	return (evaluate_expr(c, e->op1)>evaluate_expr(c, e->op2));
      case op_and:
 	val1=evaluate_expr(c, e->op1);
 	if (val1==0)
@@ -532,7 +532,7 @@ static double NL_expr(struct context *c,struct expr *e) {
       return (0);
    if (val >= 32768)
       return (32767);
-   else if (val < -32768)
+   else if (val<-32768)
       return (-32768);
 
    return (val);
@@ -552,11 +552,11 @@ static void NLTransPoint(SplinePoint *sp,struct context *c) {
 	 (c->pov_func) (&sp->nextcp, c->pov);
 	 fixup=false;
       } else {
-	 off.x=old.x + 1;
-	 off.y=old.y + 1;
+	 off.x=old.x+1;
+	 off.y=old.y+1;
 	 (c->pov_func) (&off, c->pov);
-	 delta.x=off.x - sp->me.x;
-	 delta.y=off.y - sp->me.y;
+	 delta.x=off.x-sp->me.x;
+	 delta.y=off.y-sp->me.y;
       }
    } else {
       c->x=sp->me.x;
@@ -582,16 +582,16 @@ static void NLTransPoint(SplinePoint *sp,struct context *c) {
 	 /*  apply that to the slope. Pretend it is linear */
 	 ++c->x;
 	 ++c->y;
-	 delta.x=NL_expr(c, c->x_expr) - sp->me.x;
-	 delta.y=NL_expr(c, c->y_expr) - sp->me.y;
+	 delta.x=NL_expr(c, c->x_expr)-sp->me.x;
+	 delta.y=NL_expr(c, c->y_expr)-sp->me.y;
       }
    }
    if (fixup) {
       /* A one unit change in x is transformed into delta.x */
-      sp->prevcp.x=(sp->prevcp.x - old.x) * delta.x + sp->me.x;
-      sp->prevcp.y=(sp->prevcp.y - old.y) * delta.y + sp->me.y;
-      sp->nextcp.x=(sp->nextcp.x - old.x) * delta.x + sp->me.x;
-      sp->nextcp.y=(sp->nextcp.y - old.y) * delta.y + sp->me.y;
+      sp->prevcp.x=(sp->prevcp.x-old.x)*delta.x+sp->me.x;
+      sp->prevcp.y=(sp->prevcp.y-old.y)*delta.y+sp->me.y;
+      sp->nextcp.x=(sp->nextcp.x-old.x)*delta.x+sp->me.x;
+      sp->nextcp.y=(sp->nextcp.y-old.y)*delta.y+sp->me.y;
    }
 }
 
@@ -630,10 +630,10 @@ static void SplineSetNLTrans(SplineSet *ss,struct context *c,
 	 if (everything || (next->selected && last->selected)) {
 	    xsp=&sp->prev->splines[0];
 	    ysp=&sp->prev->splines[1];
-	    for (i=0; i < 20; ++i) {
-	       t=(i + 1) / 21.0;
-	       c->x=((xsp->a * t + xsp->b) * t + xsp->c) * t + xsp->d;
-	       c->y=((ysp->a * t + ysp->b) * t + ysp->c) * t + ysp->d;
+	    for (i=0; i<20; ++i) {
+	       t=(i+1)/21.0;
+	       c->x=((xsp->a * t+xsp->b)*t+xsp->c)*t+xsp->d;
+	       c->y=((ysp->a * t+ysp->b)*t+ysp->c)*t+ysp->d;
 	       mids[i].t=t;
 	       if (c->pov_func==NULL) {
 		  mids[i].x=NL_expr(c, c->x_expr);
@@ -693,7 +693,7 @@ static void _SCNLTrans(SplineChar *sc,struct context *c,int layer) {
    RefChar *ref;
    int i, last, first;
 
-   if (sc->layer_cnt==ly_fore + 1 &&
+   if (sc->layer_cnt==ly_fore+1 &&
        sc->layers[ly_fore].splines==NULL
        && sc->layers[ly_fore].refs==NULL)
       return;
@@ -701,7 +701,7 @@ static void _SCNLTrans(SplineChar *sc,struct context *c,int layer) {
    c->sc=sc;
    if (sc->parent->multilayer) {
       first=ly_fore;
-      last=sc->layer_cnt - 1;
+      last=sc->layer_cnt-1;
       SCPreserveState(sc, false);
    } else {
       first=last=layer;
@@ -728,13 +728,13 @@ void _SFNLTrans(FontViewBase * fv, struct context *c) {
 
    SFUntickAll(fv->sf);
 
-   for (i=0; i < fv->map->enccount; ++i)
+   for (i=0; i<fv->map->enccount; ++i)
       if (fv->selected[i] && (gid=fv->map->map[i]) != -1 &&
 	  (sc=fv->sf->glyphs[gid]) != NULL && !sc->ticked) {
 	 _SCNLTrans(sc, c, fv->active_layer);
 	 sc->ticked=true;
       }
-   for (i=0; i < fv->map->enccount; ++i)
+   for (i=0; i<fv->map->enccount; ++i)
       if (fv->selected[i] && (gid=fv->map->map[i]) != -1 &&
 	  (sc=fv->sf->glyphs[gid]) != NULL &&
 	  (sc->layers[layer].splines != NULL

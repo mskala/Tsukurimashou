@@ -1,4 +1,4 @@
-/* $Id: splinechar.c 4525 2015-12-20 19:51:59Z mskala $ */
+/* $Id: splinechar.c 4532 2015-12-22 13:18:53Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -99,7 +99,7 @@ void SCSynchronizeWidth(SplineChar * sc, double newwidth, double oldwidth,
       if (bc != NULL) {
 	 int width =
 	    rint(sc->width * bdf->pixelsize /
-		 (double) (sc->parent->ascent + sc->parent->descent));
+		 (double) (sc->parent->ascent+sc->parent->descent));
 	 if (bc->width != width) {
 	    /*BCPreserveWidth(bc); */ /* Bitmaps can't set width, so no undo for it */
 	    bc->width=width;
@@ -202,7 +202,7 @@ static int _SCRefNumberPoints2(SplineSet ** _rss,SplineChar *sc,int pnum,
       if (rss==NULL)		/* Can't happen */
 	 break;
       starts_with_cp=!ss->first->noprevcp &&
-	 ((ss->first->ttfindex==pnum + 1 && ss->first->prev != NULL &&
+	 ((ss->first->ttfindex==pnum+1 && ss->first->prev != NULL &&
 	   ss->first->prev->from->nextcpindex==pnum) ||
 	  ((ss->first->ttfindex==0xffff || SPInterpolate(ss->first))));
       startcnt=pnum;
@@ -255,7 +255,7 @@ int SSTtfNumberPoints(SplineSet * ss) {
 
    for (; ss != NULL; ss=ss->next) {
       starts_with_cp=!ss->first->noprevcp &&
-	 ((ss->first->ttfindex==pnum + 1 && ss->first->prev != NULL &&
+	 ((ss->first->ttfindex==pnum+1 && ss->first->prev != NULL &&
 	   ss->first->prev->from->nextcpindex==pnum) ||
 	  SPInterpolate(ss->first));
       if (starts_with_cp && ss->first->prev != NULL)
@@ -340,7 +340,7 @@ int SCNumberPoints(SplineChar * sc, int layer) {
 
       if (sc->parent->multilayer) {
 	 first=ly_fore;
-	 last=sc->layer_cnt - 1;
+	 last=sc->layer_cnt-1;
       } else
 	 first=last=layer;
       for (layer=first; layer <= last; ++layer) {
@@ -363,7 +363,7 @@ int SCPointsNumberedProperly(SplineChar * sc, int layer) {
       return (false);		/* TrueType can't represent this, so always remove instructions. They can't be meaningful */
 
    for (ss=sc->layers[layer].splines; ss != NULL; ss=ss->next) {
-      starts_with_cp=(ss->first->ttfindex==pnum + 1
+      starts_with_cp=(ss->first->ttfindex==pnum+1
 			|| ss->first->ttfindex==0xffff)
 	 && !ss->first->noprevcp;
       start_pnum=pnum;
@@ -421,7 +421,7 @@ void SCClearContents(SplineChar * sc, int layer) {
 
    if (sc->parent != NULL && sc->parent->multilayer) {
       ly_first=ly_fore;
-      ly_last=sc->layer_cnt - 1;
+      ly_last=sc->layer_cnt-1;
    } else
      ly_first=ly_last=layer;
 
@@ -540,25 +540,25 @@ int BpColinear(BasePoint * first, BasePoint * mid, BasePoint * last) {
    BasePoint dist_f, unit_f, dist_l, unit_l;
    double len, off_l, off_f;
 
-   dist_f.x=first->x - mid->x;
-   dist_f.y=first->y - mid->y;
-   len=sqrt(dist_f.x * dist_f.x + dist_f.y * dist_f.y);
+   dist_f.x=first->x-mid->x;
+   dist_f.y=first->y-mid->y;
+   len=sqrt(dist_f.x * dist_f.x+dist_f.y * dist_f.y);
    if (len==0)
       return (false);
-   unit_f.x=dist_f.x / len;
-   unit_f.y=dist_f.y / len;
+   unit_f.x=dist_f.x/len;
+   unit_f.y=dist_f.y/len;
 
-   dist_l.x=last->x - mid->x;
-   dist_l.y=last->y - mid->y;
-   len=sqrt(dist_l.x * dist_l.x + dist_l.y * dist_l.y);
+   dist_l.x=last->x-mid->x;
+   dist_l.y=last->y-mid->y;
+   len=sqrt(dist_l.x * dist_l.x+dist_l.y * dist_l.y);
    if (len==0)
       return (false);
-   unit_l.x=dist_l.x / len;
-   unit_l.y=dist_l.y / len;
+   unit_l.x=dist_l.x/len;
+   unit_l.y=dist_l.y/len;
 
-   off_f=dist_l.x * unit_f.y - dist_l.y * unit_f.x;
-   off_l=dist_f.x * unit_l.y - dist_f.y * unit_l.x;
-   if ((off_f < -1.5 || off_f > 1.5) && (off_l < -1.5 || off_l > 1.5))
+   off_f=dist_l.x * unit_f.y-dist_l.y * unit_f.x;
+   off_l=dist_f.x * unit_l.y-dist_f.y * unit_l.x;
+   if ((off_f<-1.5 || off_f>1.5) && (off_l<-1.5 || off_l>1.5))
       return (false);
 
    return (true);
@@ -568,28 +568,28 @@ int BpWithin(BasePoint * first, BasePoint * mid, BasePoint * last) {
    BasePoint dist_mf, unit_mf, dist_lf, unit_lf;
    double len, off_lf, off_mf, len2;
 
-   dist_mf.x=mid->x - first->x;
-   dist_mf.y=mid->y - first->y;
-   len=sqrt(dist_mf.x * dist_mf.x + dist_mf.y * dist_mf.y);
+   dist_mf.x=mid->x-first->x;
+   dist_mf.y=mid->y-first->y;
+   len=sqrt(dist_mf.x * dist_mf.x+dist_mf.y * dist_mf.y);
    if (len==0)
       return (true);
-   unit_mf.x=dist_mf.x / len;
-   unit_mf.y=dist_mf.y / len;
+   unit_mf.x=dist_mf.x/len;
+   unit_mf.y=dist_mf.y/len;
 
-   dist_lf.x=last->x - first->x;
-   dist_lf.y=last->y - first->y;
-   len=sqrt(dist_lf.x * dist_lf.x + dist_lf.y * dist_lf.y);
+   dist_lf.x=last->x-first->x;
+   dist_lf.y=last->y-first->y;
+   len=sqrt(dist_lf.x * dist_lf.x+dist_lf.y * dist_lf.y);
    if (len==0)
       return (false);
-   unit_lf.x=dist_lf.x / len;
-   unit_lf.y=dist_lf.y / len;
+   unit_lf.x=dist_lf.x/len;
+   unit_lf.y=dist_lf.y/len;
 
-   off_mf=dist_lf.x * unit_mf.y - dist_lf.y * unit_mf.x;
-   off_lf=dist_mf.x * unit_lf.y - dist_mf.y * unit_lf.x;
-   if ((off_mf < -.1 || off_mf > .1) && (off_lf < -.1 || off_lf > .1))
+   off_mf=dist_lf.x * unit_mf.y-dist_lf.y * unit_mf.x;
+   off_lf=dist_mf.x * unit_lf.y-dist_mf.y * unit_lf.x;
+   if ((off_mf<-.1 || off_mf>.1) && (off_lf<-.1 || off_lf>.1))
       return (false);
 
-   len2=dist_mf.x * unit_lf.x + dist_mf.y * unit_lf.y;
+   len2=dist_mf.x * unit_lf.x+dist_mf.y * unit_lf.y;
    return (len2 >= 0 && len2 <= len);
 }
 
@@ -600,27 +600,27 @@ void SplinePointRound(SplinePoint * sp, double factor) {
        sp->ttfindex==0xffff) {
       /* For interpolated points we want to round the controls */
       /* and then interpolated based on that */
-      sp->nextcp.x=rint(sp->nextcp.x * factor) / factor;
-      sp->nextcp.y=rint(sp->nextcp.y * factor) / factor;
-      sp->prevcp.x=rint(sp->prevcp.x * factor) / factor;
-      sp->prevcp.y=rint(sp->prevcp.y * factor) / factor;
-      sp->me.x=(sp->nextcp.x + sp->prevcp.x) / 2;
-      sp->me.y=(sp->nextcp.y + sp->prevcp.y) / 2;
+      sp->nextcp.x=rint(sp->nextcp.x * factor)/factor;
+      sp->nextcp.y=rint(sp->nextcp.y * factor)/factor;
+      sp->prevcp.x=rint(sp->prevcp.x * factor)/factor;
+      sp->prevcp.y=rint(sp->prevcp.y * factor)/factor;
+      sp->me.x=(sp->nextcp.x+sp->prevcp.x)/2;
+      sp->me.y=(sp->nextcp.y+sp->prevcp.y)/2;
    } else {
       /* For normal points we want to round the distance of the controls */
       /*  from the base */
-      noff.x=rint((sp->nextcp.x - sp->me.x) * factor) / factor;
-      noff.y=rint((sp->nextcp.y - sp->me.y) * factor) / factor;
-      poff.x=rint((sp->prevcp.x - sp->me.x) * factor) / factor;
-      poff.y=rint((sp->prevcp.y - sp->me.y) * factor) / factor;
+      noff.x=rint((sp->nextcp.x-sp->me.x)*factor)/factor;
+      noff.y=rint((sp->nextcp.y-sp->me.y)*factor)/factor;
+      poff.x=rint((sp->prevcp.x-sp->me.x)*factor)/factor;
+      poff.y=rint((sp->prevcp.y-sp->me.y)*factor)/factor;
 
-      sp->me.x=rint(sp->me.x * factor) / factor;
-      sp->me.y=rint(sp->me.y * factor) / factor;
+      sp->me.x=rint(sp->me.x * factor)/factor;
+      sp->me.y=rint(sp->me.y * factor)/factor;
 
-      sp->nextcp.x=sp->me.x + noff.x;
-      sp->nextcp.y=sp->me.y + noff.y;
-      sp->prevcp.x=sp->me.x + poff.x;
-      sp->prevcp.y=sp->me.y + poff.y;
+      sp->nextcp.x=sp->me.x+noff.x;
+      sp->nextcp.y=sp->me.y+noff.y;
+      sp->prevcp.x=sp->me.x+poff.x;
+      sp->prevcp.y=sp->me.y+poff.y;
    }
    if (sp->next != NULL && sp->next->order2)
       sp->next->to->prevcp=sp->nextcp;
@@ -633,8 +633,8 @@ void SplinePointRound(SplinePoint * sp, double factor) {
 }
 
 static void SpiroRound2Int(spiro_cp *cp,double factor) {
-   cp->x=rint(cp->x * factor) / factor;
-   cp->y=rint(cp->y * factor) / factor;
+   cp->x=rint(cp->x * factor)/factor;
+   cp->y=rint(cp->y * factor)/factor;
 }
 
 void SplineSetsRound2Int(SplineSet * spl, double factor, int inspiro,
@@ -644,7 +644,7 @@ void SplineSetsRound2Int(SplineSet * spl, double factor, int inspiro,
 
    for (; spl != NULL; spl=spl->next) {
       if (inspiro && spl->spiro_cnt != 0) {
-	 for (i=0; i < spl->spiro_cnt - 1; ++i)
+	 for (i=0; i<spl->spiro_cnt-1; ++i)
 	    if (!onlysel || SPIRO_SELECTED(&spl->spiros[i]))
 	       SpiroRound2Int(&spl->spiros[i], factor);
 	 SSRegenerateFromSpiros(spl);
@@ -676,7 +676,7 @@ static void SplineSetsChangeCoord(SplineSet *spl,double old,double new,
    for (; spl != NULL; spl=spl->next) {
       changed=false;
       if (inspiro) {
-	 for (i=0; i < spl->spiro_cnt - 1; ++i) {
+	 for (i=0; i<spl->spiro_cnt-1; ++i) {
 	    if (isy && RealNear(spl->spiros[i].y, old)) {
 	       spl->spiros[i].y=new;
 	       changed=true;
@@ -693,11 +693,11 @@ static void SplineSetsChangeCoord(SplineSet *spl,double old,double new,
 		  if (RealNear(sp->nextcp.y, old))
 		     sp->nextcp.y=new;
 		  else
-		     sp->nextcp.y += new - sp->me.y;
+		     sp->nextcp.y += new-sp->me.y;
 		  if (RealNear(sp->prevcp.y, old))
 		     sp->prevcp.y=new;
 		  else
-		     sp->prevcp.y += new - sp->me.y;
+		     sp->prevcp.y += new-sp->me.y;
 		  sp->me.y=new;
 		  changed=true;
 		  /* we expect to be called before SplineSetRound2Int and will */
@@ -708,11 +708,11 @@ static void SplineSetsChangeCoord(SplineSet *spl,double old,double new,
 		  if (RealNear(sp->nextcp.x, old))
 		     sp->nextcp.x=new;
 		  else
-		     sp->nextcp.x += new - sp->me.x;
+		     sp->nextcp.x += new-sp->me.x;
 		  if (RealNear(sp->prevcp.x, old))
 		     sp->prevcp.x=new;
 		  else
-		     sp->prevcp.x += new - sp->me.x;
+		     sp->prevcp.x += new-sp->me.x;
 		  sp->me.x=new;
 		  changed=true;
 	       }
@@ -737,19 +737,19 @@ void SCRound2Int(SplineChar * sc, int layer, double factor) {
    int first, last;
 
    for (stems=sc->hstem; stems != NULL; stems=stems->next) {
-      old=stems->start + stems->width;
-      stems->start=rint(stems->start * factor) / factor;
-      stems->width=rint(stems->width * factor) / factor;
-      new=stems->start + stems->width;
+      old=stems->start+stems->width;
+      stems->start=rint(stems->start * factor)/factor;
+      stems->width=rint(stems->width * factor)/factor;
+      new=stems->start+stems->width;
       if (old != new)
 	 SplineSetsChangeCoord(sc->layers[ly_fore].splines, old, new, true,
 			       sc->inspiro && hasspiro());
    }
    for (stems=sc->vstem; stems != NULL; stems=stems->next) {
-      old=stems->start + stems->width;
-      stems->start=rint(stems->start * factor) / factor;
-      stems->width=rint(stems->width * factor) / factor;
-      new=stems->start + stems->width;
+      old=stems->start+stems->width;
+      stems->start=rint(stems->start * factor)/factor;
+      stems->width=rint(stems->width * factor)/factor;
+      new=stems->start+stems->width;
       if (old != new)
 	 SplineSetsChangeCoord(sc->layers[ly_fore].splines, old, new, false,
 			       sc->inspiro && hasspiro());
@@ -757,15 +757,15 @@ void SCRound2Int(SplineChar * sc, int layer, double factor) {
 
    if (sc->parent->multilayer) {
       first=ly_fore;
-      last=sc->layer_cnt - 1;
+      last=sc->layer_cnt-1;
    } else
       first=last=layer;
    for (layer=first; layer <= last; ++layer) {
       SplineSetsRound2Int(sc->layers[layer].splines, factor, sc->inspiro
 			  && hasspiro(), false);
       for (r=sc->layers[layer].refs; r != NULL; r=r->next) {
-	 r->transform[4]=rint(r->transform[4] * factor) / factor;
-	 r->transform[5]=rint(r->transform[5] * factor) / factor;
+	 r->transform[4]=rint(r->transform[4] * factor)/factor;
+	 r->transform[5]=rint(r->transform[5] * factor)/factor;
 	 RefCharFindBounds(r);
       }
    }
@@ -775,8 +775,8 @@ void SCRound2Int(SplineChar * sc, int layer, double factor) {
       --layer;
 
    for (ap=sc->anchor; ap != NULL; ap=ap->next) {
-      ap->me.x=rint(ap->me.x * factor) / factor;
-      ap->me.y=rint(ap->me.y * factor) / factor;
+      ap->me.x=rint(ap->me.x * factor)/factor;
+      ap->me.y=rint(ap->me.y * factor)/factor;
    }
    SCCharChangedUpdate(sc, layer, true);
 }
@@ -852,9 +852,9 @@ void SCOrderAP(SplineChar * sc) {
    /* Order so that first ligature index comes first */
 
    for (ap=sc->anchor; ap != NULL; ap=ap->next) {
-      if (ap->lig_index < lc)
+      if (ap->lig_index<lc)
 	 out=true;
-      if (ap->lig_index > lc)
+      if (ap->lig_index>lc)
 	 lc=ap->lig_index;
       ++cnt;
    }
@@ -864,9 +864,9 @@ void SCOrderAP(SplineChar * sc) {
    array=malloc(cnt * sizeof(AnchorPoint *));
    for (i=0, ap=sc->anchor; ap != NULL; ++i, ap=ap->next)
       array[i]=ap;
-   for (i=0; i < cnt - 1; ++i) {
-      for (j=i + 1; j < cnt; ++j) {
-	 if (array[i]->lig_index > array[j]->lig_index) {
+   for (i=0; i<cnt-1; ++i) {
+      for (j=i+1; j<cnt; ++j) {
+	 if (array[i]->lig_index>array[j]->lig_index) {
 	    ap=array[i];
 	    array[i]=array[j];
 	    array[j]=ap;
@@ -874,9 +874,9 @@ void SCOrderAP(SplineChar * sc) {
       }
    }
    sc->anchor=array[0];
-   for (i=0; i < cnt - 1; ++i)
-      array[i]->next=array[i + 1];
-   array[cnt - 1]->next=NULL;
+   for (i=0; i<cnt-1; ++i)
+      array[i]->next=array[i+1];
+   array[cnt-1]->next=NULL;
    free(array);
 }
 
@@ -927,7 +927,7 @@ int SCSetMetaData(SplineChar * sc, char *name, int unienc,
    }
    if (alt != NULL || !samename) {
       isnotdef=strcmp(name, ".notdef")==0;
-      for (i=0; i < sf->glyphcnt; ++i)
+      for (i=0; i<sf->glyphcnt; ++i)
 	 if (sf->glyphs[i] != NULL && sf->glyphs[i]->orig_pos != sc->orig_pos) {
 	    if (unienc != -1 && sf->glyphs[i]->unicodeenc==unienc) {
 	       mv=1;
@@ -938,7 +938,7 @@ int SCSetMetaData(SplineChar * sc, char *name, int unienc,
 		   && sf->glyphs[i]->unicodeenc != -1) {
 		  char buffer[12];
 
-		  if (sf->glyphs[i]->unicodeenc < 0x10000)
+		  if (sf->glyphs[i]->unicodeenc<0x10000)
 		     sprintf(buffer, "uni%04X", sf->glyphs[i]->unicodeenc);
 		  else
 		     sprintf(buffer, "u%04X", sf->glyphs[i]->unicodeenc);
@@ -956,7 +956,7 @@ int SCSetMetaData(SplineChar * sc, char *name, int unienc,
 	 RefChar *ref;
 
 	 for (scl=sc->dependents; scl != NULL; scl=scl->next) {
-	    for (layer=ly_back; layer < scl->sc->layer_cnt; ++layer)
+	    for (layer=ly_back; layer<scl->sc->layer_cnt; ++layer)
 	       for (ref=scl->sc->layers[layer].refs; ref != NULL;
 		    ref=ref->next)
 		  if (ref->sc==sc)
@@ -986,8 +986,8 @@ int SCSetMetaData(SplineChar * sc, char *name, int unienc,
       for (fvs=sf->fv; fvs != NULL; fvs=fvs->nextsame) {
 	 int enc=fvs->map->backmap[sc->orig_pos];
 
-	 if (enc != -1 && ((fvs->map->enc->only_1byte && enc < 256) ||
-			   (fvs->map->enc->has_2byte && enc < 65535))) {
+	 if (enc != -1 && ((fvs->map->enc->only_1byte && enc<256) ||
+			   (fvs->map->enc->has_2byte && enc<65535))) {
 	    fvs->map->enc=&custom;
 	 }
       }
@@ -1001,8 +1001,8 @@ int SCSetMetaData(SplineChar * sc, char *name, int unienc,
 }
 
 int BPTooFar(BasePoint * bp1, BasePoint * bp2) {
-   return (bp1->x - bp2->x > 32767 || bp2->x - bp1->x > 32767 ||
-	   bp1->y - bp2->y > 32767 || bp2->y - bp1->y > 32767);
+   return (bp1->x-bp2->x>32767 || bp2->x-bp1->x>32767 ||
+	   bp1->y-bp2->y>32767 || bp2->y-bp1->y>32767);
 }
 
 AnchorClass *SCValidateAnchors(SplineChar * sc) {
@@ -1039,9 +1039,9 @@ AnchorClass *SCValidateAnchors(SplineChar * sc) {
 
 void SCClearInstrsOrMark(SplineChar * sc, int layer, int complain) {
    uint8_t *instrs=sc->ttf_instrs==NULL && sc->parent->mm != NULL
-      && sc->parent->mm->apple ? sc->parent->mm->normal->glyphs[sc->
+      && sc->parent->mm->apple?sc->parent->mm->normal->glyphs[sc->
 								orig_pos]->
-      ttf_instrs : sc->ttf_instrs;
+      ttf_instrs:sc->ttf_instrs;
    struct splinecharlist *dep;
    SplineSet *ss;
    SplinePoint *sp;
@@ -1126,9 +1126,9 @@ void PatternSCBounds(SplineChar * sc, DBounds * b) {
    } else
       *b=sc->tile_bounds;
    if (b->minx >= b->maxx)
-      b->maxx=b->minx + 1;
+      b->maxx=b->minx+1;
    if (b->miny >= b->maxy)
-      b->maxy=b->miny + 1;
+      b->maxy=b->miny+1;
 }
 
 void SCHintsChanged(SplineChar * sc) {
@@ -1141,9 +1141,9 @@ void SCHintsChanged(SplineChar * sc) {
 
 static void instrcheck(SplineChar * sc, int layer) {
    uint8_t *instrs=sc->ttf_instrs==NULL && sc->parent->mm != NULL
-      && sc->parent->mm->apple ? sc->parent->mm->normal->glyphs[sc->
+      && sc->parent->mm->apple?sc->parent->mm->normal->glyphs[sc->
 								orig_pos]->
-      ttf_instrs : sc->ttf_instrs;
+      ttf_instrs:sc->ttf_instrs;
 
    if (!sc->layers[layer].order2 || sc->layers[layer].background)
       return;
@@ -1180,10 +1180,10 @@ void TTFPointMatches(SplineChar * sc, int layer, int top) {
 	     -1
 	     && ttfFindPointInSC(ref->sc, layer, ref->match_pt_ref, &here,
 				 NULL)==-1) {
-	    if (ref->transform[4] != there.x - here.x
-		|| ref->transform[5] != there.y - here.y) {
-	       ref->transform[4]=there.x - here.x;
-	       ref->transform[5]=there.y - here.y;
+	    if (ref->transform[4] != there.x-here.x
+		|| ref->transform[5] != there.y-here.y) {
+	       ref->transform[4]=there.x-here.x;
+	       ref->transform[5]=there.y-here.y;
 	       SCReinstantiateRefChar(sc, ref, layer);
 	       if (!top)
 		  SCCharChangedUpdate(sc, layer, true);

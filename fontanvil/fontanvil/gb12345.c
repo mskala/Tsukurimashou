@@ -1,4 +1,4 @@
-/* $Id: gb12345.c 3857 2015-03-25 13:26:40Z mskala $ */
+/* $Id: gb12345.c 4532 2015-12-22 13:18:53Z mskala $ */
 #include "gb12345.h"
 
 static const unsigned short __gb12345_to_ucs[]={
@@ -4472,11 +4472,11 @@ static const unsigned short *__gb12345_from_ucs4[]={
 int euc_gb12345_to_uni(int enc) {
    int val;
 
-   if (enc < 0xa1)
+   if (enc<0xa1)
       return (enc);
-   if ((enc >> 8) < 0xa1 || (enc & 0xff) < 0xa1)
+   if ((enc >> 8)<0xa1 || (enc&0xff)<0xa1)
       return (-1);
-   val=((enc >> 8) - 0xa1) * 94 + ((enc & 0xff) - 0xa1);
+   val=((enc >> 8)-0xa1)*94+((enc&0xff)-0xa1);
    if (val >= 0x2058)
       return (-1);
    if (__gb12345_to_ucs[val]==0)
@@ -4487,11 +4487,11 @@ int euc_gb12345_to_uni(int enc) {
 int uni_to_euc_gb12345(int u) {
    int val;
 
-   if (u < 0 || u >= 65536)
+   if (u<0 || u >= 65536)
       return (-1);
-   if (u >= 0x20 && u < 0xa1)
+   if (u >= 0x20 && u<0xa1)
       return (u);
-   val=__gb12345_from_ucs4[u >> 8][u & 0xff];
+   val=__gb12345_from_ucs4[u >> 8][u&0xff];
    if (val==0)
       return (-1);
    return (val);

@@ -1,4 +1,4 @@
-/* $Id: autohint.c 4525 2015-12-20 19:51:59Z mskala $ */
+/* $Id: autohint.c 4532 2015-12-22 13:18:53Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -551,19 +551,19 @@ static int EIAddEdge(Spline *spline,double tmin,double tmax,EIList *el) {
    new->tmax=tmax;
 
    s=&spline->splines[1];
-   if ((dydtmin=(3 * s->a * tmin+2 * s->b) * tmin+s->c)<0)
+   if ((dydtmin=(3*s->a * tmin+2*s->b)*tmin+s->c)<0)
       dydtmin=-dydtmin;
-   if ((dydtmax=(3 * s->a * tmax+2 * s->b) * tmax+s->c)<0)
+   if ((dydtmax=(3*s->a * tmax+2*s->b)*tmax+s->c)<0)
       dydtmax=-dydtmax;
    s=&spline->splines[0];
-   if ((dxdtmin=(3 * s->a * tmin+2 * s->b) * tmin+s->c)<0)
+   if ((dxdtmin=(3*s->a * tmin+2*s->b)*tmin+s->c)<0)
       dxdtmin=-dxdtmin;
-   if ((dxdtmax=(3 * s->a * tmax+2 * s->b) * tmax+s->c)<0)
+   if ((dxdtmax=(3*s->a * tmax+2*s->b)*tmax+s->c)<0)
       dxdtmax=-dxdtmax;
 
    /*s=&spline->splines[0]; */
-   min=((s->a * tmin+s->b) * tmin+s->c) * tmin+s->d;
-   max=((s->a * tmax+s->b) * tmax+s->c) * tmax+s->d;
+   min=((s->a * tmin+s->b)*tmin+s->c)*tmin+s->d;
+   max=((s->a * tmax+s->b)*tmax+s->c)*tmax+s->d;
    if (tmax==1)
       max=spline->to->me.x;	/* beware rounding errors */
    if (!el->leavetiny && floor(min)==floor(max)) {	/* If it doesn't cross a pixel boundary then it might as well be vertical */
@@ -585,9 +585,9 @@ static int EIAddEdge(Spline *spline,double tmin,double tmax,EIList *el) {
    }
    if (!el->leavetiny && min+1>max)
       new->almostvert=true;
-   if (40 * dxdtmin<dydtmin)
+   if (40*dxdtmin<dydtmin)
       new->vertattmin=true;
-   if (40 * dxdtmax<dydtmax)
+   if (40*dxdtmax<dydtmax)
       new->vertattmax=true;
    /*if (new->vertattmin && new->vertattmax && s->a==0 && s->b==0 ) new->almostvert=true; */
    new->coordmin[0]=min;
@@ -598,8 +598,8 @@ static int EIAddEdge(Spline *spline,double tmin,double tmax,EIList *el) {
       el->coordmax[0]=max;
 
    s=&spline->splines[1];
-   min=((s->a * tmin+s->b) * tmin+s->c) * tmin+s->d;
-   max=((s->a * tmax+s->b) * tmax+s->c) * tmax+s->d;
+   min=((s->a * tmin+s->b)*tmin+s->c)*tmin+s->d;
+   max=((s->a * tmax+s->b)*tmax+s->c)*tmax+s->d;
    if (tmax==1)
       max=spline->to->me.y;
    if (!el->leavetiny && floor(min)==floor(max)) {	/* If it doesn't cross a pixel boundary then it might as well be horizontal */
@@ -621,9 +621,9 @@ static int EIAddEdge(Spline *spline,double tmin,double tmax,EIList *el) {
    }
    if (!el->leavetiny && min+1>max)
       new->almosthor=true;
-   if (40 * dydtmin<dxdtmin)
+   if (40*dydtmin<dxdtmin)
       new->horattmin=true;
-   if (40 * dydtmax<dxdtmax)
+   if (40*dydtmax<dxdtmax)
       new->horattmax=true;
    /*if (new->horattmin && new->horattmax && s->a==0 && s->b==0 ) new->almosthor=true; */
    new->coordmin[1]=min;
@@ -723,12 +723,12 @@ static int IsBiggerSlope(EI *test,EI *base,int major) {
    else
       t=test->tmax;
    tdm =
-      (3 * test->spline->splines[major].a * t +
-       2 * test->spline->splines[major].b) * t +
+      (3*test->spline->splines[major].a * t +
+       2*test->spline->splines[major].b)*t +
       test->spline->splines[major].c;
    tdo =
-      (3 * test->spline->splines[other].a * t +
-       2 * test->spline->splines[other].b) * t +
+      (3*test->spline->splines[other].a * t +
+       2*test->spline->splines[other].b)*t +
       test->spline->splines[other].c;
 
    if ((major && base->vup) || (!major && base->hup))
@@ -736,12 +736,12 @@ static int IsBiggerSlope(EI *test,EI *base,int major) {
    else
       t=base->tmax;
    bdm =
-      (3 * base->spline->splines[major].a * t +
-       2 * base->spline->splines[major].b) * t +
+      (3*base->spline->splines[major].a * t +
+       2*base->spline->splines[major].b)*t +
       base->spline->splines[major].c;
    bdo =
-      (3 * base->spline->splines[other].a * t +
-       2 * base->spline->splines[other].b) * t +
+      (3*base->spline->splines[other].a * t +
+       2*base->spline->splines[other].b)*t +
       base->spline->splines[other].c;
 
    if (tdm==0 && bdm==0)
@@ -930,7 +930,7 @@ double EITOfNextMajor(EI * e, EIList * el, double sought_m) {
    while (1) {
       new_t=(t_mmin+t_mmax)/2;
       found_m =
-	 (((msp->a * new_t+msp->b) * new_t+msp->c) * new_t+msp->d);
+	 (((msp->a * new_t+msp->b)*new_t+msp->c)*new_t+msp->d);
       if (found_m>sought_m-.001 && found_m<sought_m+.001)
 	 return (new_t);
       if (found_m>sought_m) {
@@ -1004,7 +1004,7 @@ EI *EIActiveEdgesRefigure(EIList * el, EI * active, double i, int major,
 
       apt->tcur=EITOfNextMajor(apt, el, i+el->low);
       apt->ocur =
-	 (((osp->a * apt->tcur+osp->b) * apt->tcur+osp->c) * apt->tcur +
+	 (((osp->a * apt->tcur+osp->b)*apt->tcur+osp->c)*apt->tcur +
 	  osp->d);
    }
    /* reorder list */
@@ -1761,7 +1761,7 @@ int MergeDStemInfo(SplineFont *sf, DStemInfo ** ds, DStemInfo * test) {
       *ds=test;
       return (true);
    }
-   dist_error_diag=(sf->ascent+sf->descent) * 0.0065;
+   dist_error_diag=(sf->ascent+sf->descent)*0.0065;
 
    cur=prev=NULL;
    for (dn=*ds; dn != NULL; dn=dn->next) {
@@ -1783,15 +1783,15 @@ int MergeDStemInfo(SplineFont *sf, DStemInfo ** ds, DStemInfo * test) {
       if (dot <= -0.5 || dot >= 0.5)
 	 continue;
 
-      loff=(test->left.x-dn->left.x) * dn->unit.y -
-	 (test->left.y-dn->left.y) * dn->unit.x;
-      roff=(test->right.x-dn->right.x) * dn->unit.y -
-	 (test->right.y-dn->right.y) * dn->unit.x;
+      loff=(test->left.x-dn->left.x)*dn->unit.y -
+	 (test->left.y-dn->left.y)*dn->unit.x;
+      roff=(test->right.x-dn->right.x)*dn->unit.y -
+	 (test->right.y-dn->right.y)*dn->unit.x;
       if (loff <= -dist_error_diag || loff >= dist_error_diag ||
 	  roff <= -dist_error_diag || loff >= dist_error_diag)
 	 continue;
-      soff=(test->left.x-dn->left.x) * dn->unit.x +
-	 (test->left.y-dn->left.y) * dn->unit.y;
+      soff=(test->left.x-dn->left.x)*dn->unit.x +
+	 (test->left.y-dn->left.y)*dn->unit.y;
       overlap=false;
       if (dn->where != NULL && test->where != NULL
 	  && test->where->next==NULL) {
@@ -3207,7 +3207,7 @@ static int IsFlexSmooth(SplinePoint *sp) {
 
    /* Something is smooth if the normal projection is 0. Let's allow for */
    /*  some rounding errors */
-   if (proj_same >= 16 * proj_normal)
+   if (proj_same >= 16*proj_normal)
       return (true);
 
    return (false);

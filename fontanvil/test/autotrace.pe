@@ -1,0 +1,28 @@
+#!/usr/local/bin/fontanvil
+# test that PNG image import and AutoTrace() do things
+
+srcdir=GetEnv("srcdir")
+if (srcdir=="")
+  srcdir=""
+else
+  srcdir=srcdir+"/"
+endif
+
+if (FileAccess(srcdir+"test/fonts/i11.png"))
+  Print("SKIPPING because we don't have i11.png")
+  Quit(77)
+endif
+
+New()
+Select('i')
+x=GlyphInfo('PointCount')
+Import(srcdir+"test/fonts/i11.png")
+AutoTrace()
+y=GlyphInfo('PointCount')
+
+if ((y-x)<30)
+  Print("did not find at least 30 points when tracing")
+  Quit(1)
+endif
+GetCoverageCounts()
+Quit(0)

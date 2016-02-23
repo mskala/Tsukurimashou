@@ -1,4 +1,4 @@
-/* $Id: tottfvar.c 4524 2015-12-20 19:28:13Z mskala $ */
+/* $Id: tottfvar.c 4532 2015-12-22 13:18:53Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -54,9 +54,9 @@ static int AssignPtNumbers(MMSet *mm,int gid) {
    int i;
    int allavg, alllines, stillmore, ret=true;
 
-   ss=malloc((mm->instance_count + 1) * sizeof(SplineSet *));
-   sp=malloc((mm->instance_count + 1) * sizeof(SplinePoint *));
-   for (i=0; i < mm->instance_count; ++i)
+   ss=malloc((mm->instance_count+1)*sizeof(SplineSet *));
+   sp=malloc((mm->instance_count+1)*sizeof(SplinePoint *));
+   for (i=0; i<mm->instance_count; ++i)
       ss[i]=mm->instances[i]->glyphs[gid]->layers[ly_fore].splines;
    ss[i]=mm->normal->glyphs[gid]->layers[ly_fore].splines;
 
@@ -84,9 +84,9 @@ static int AssignPtNumbers(MMSet *mm,int gid) {
 	 allavg=alllines=true;
 	 for (i=0; i <= mm->instance_count; ++i) {
 	    if (!RealNear
-		(sp[i]->me.x, (sp[i]->nextcp.x + sp[i]->prevcp.x) / 2)
+		(sp[i]->me.x, (sp[i]->nextcp.x+sp[i]->prevcp.x)/2)
 		|| !RealNear(sp[i]->me.y,
-			     (sp[i]->nextcp.y + sp[i]->prevcp.y) / 2))
+			     (sp[i]->nextcp.y+sp[i]->prevcp.y)/2))
 	       allavg=false;
 	    if (!sp[i]->nonextcp)
 	       alllines=false;
@@ -213,9 +213,9 @@ static int MatchPoints(SplineFont *sffixed,SplineFont *sfother,int gid) {
 	 for (sp1=ss1->first, sp2=ss2->first;;) {
 	    if (sp1->ttfindex != 0xffff)
 	       sp2->ttfindex=sp1->ttfindex;
-	    else if (!RealNear(sp2->me.x, (sp2->nextcp.x + sp2->prevcp.x) / 2)
+	    else if (!RealNear(sp2->me.x, (sp2->nextcp.x+sp2->prevcp.x)/2)
 		     || !RealNear(sp2->me.y,
-				  (sp2->nextcp.y + sp2->prevcp.y) / 2))
+				  (sp2->nextcp.y+sp2->prevcp.y)/2))
 	       return (false);
 	    else
 	       sp2->ttfindex=0xffff;
@@ -253,7 +253,7 @@ int ContourPtNumMatch(MMSet * mm, int gid) {
    if (gid >= mm->normal->glyphcnt)
       return (false);
    if (!SCWorthOutputting(mm->normal->glyphs[gid])) {
-      for (i=0; i < mm->instance_count; ++i) {
+      for (i=0; i<mm->instance_count; ++i) {
 	 if (gid >= mm->instances[i]->glyphcnt)
 	    return (false);
 	 if (SCWorthOutputting(mm->instances[i]->glyphs[gid]))
@@ -261,7 +261,7 @@ int ContourPtNumMatch(MMSet * mm, int gid) {
       }
       return (true);		/* None is not worth outputting, and that's ok, they match */
    } else {
-      for (i=0; i < mm->instance_count; ++i) {
+      for (i=0; i<mm->instance_count; ++i) {
 	 if (gid >= mm->instances[i]->glyphcnt)
 	    return (false);
 	 if (!SCWorthOutputting(mm->instances[i]->glyphs[gid]))
@@ -273,7 +273,7 @@ int ContourPtNumMatch(MMSet * mm, int gid) {
    if (mm->normal->glyphs[gid]->layers[ly_fore].refs != NULL
        && mm->normal->glyphs[gid]->layers[ly_fore].splines != NULL)
       return (false);
-   for (i=0; i < mm->instance_count; ++i) {
+   for (i=0; i<mm->instance_count; ++i) {
       if (mm->instances[i]->glyphs[gid]->layers[ly_fore].refs != NULL
 	  && mm->instances[i]->glyphs[gid]->layers[ly_fore].splines != NULL)
 	 return (false);
@@ -285,7 +285,7 @@ int ContourPtNumMatch(MMSet * mm, int gid) {
       for (r=mm->normal->glyphs[gid]->layers[ly_fore].refs, cnt=0;
 	   r != NULL; r=r->next)
 	 ++cnt;
-      for (i=0; i < mm->instance_count; ++i) {
+      for (i=0; i<mm->instance_count; ++i) {
 	 for (r=mm->instances[i]->glyphs[gid]->layers[ly_fore].refs, c=0;
 	      r != NULL; r=r->next)
 	    ++c;
@@ -298,7 +298,7 @@ int ContourPtNumMatch(MMSet * mm, int gid) {
    if (PtNumbersAreSet(mm->normal->glyphs[gid]))
       sf=mm->normal;
    else {
-      for (i=0; i < mm->instance_count; ++i) {
+      for (i=0; i<mm->instance_count; ++i) {
 	 if (PtNumbersAreSet(mm->instances[i]->glyphs[gid])) {
 	    sf=mm->instances[i];
 	    break;
@@ -311,7 +311,7 @@ int ContourPtNumMatch(MMSet * mm, int gid) {
 
    if (sf != mm->normal && !MatchPoints(sf, mm->normal, gid))
       return (false);
-   for (i=0; i < mm->instance_count; ++i)
+   for (i=0; i<mm->instance_count; ++i)
       if (sf != mm->instances[i]) {
 	 if (!MatchPoints(sf, mm->instances[i], gid))
 	    return (false);
@@ -343,26 +343,26 @@ int16_t **SCFindDeltas(MMSet * mm, int gid, int *_ptcnt) {
    if (!SCWorthOutputting(mm->normal->glyphs[gid]))
       return (NULL);
 
-   *_ptcnt=ptcnt=SCPointCount(mm->normal->glyphs[gid]) + 4;
-   deltas=malloc(2 * mm->instance_count * sizeof(int16_t *));
-   for (i=0; i < 2 * mm->instance_count; ++i)
+   *_ptcnt=ptcnt=SCPointCount(mm->normal->glyphs[gid])+4;
+   deltas=malloc(2*mm->instance_count * sizeof(int16_t *));
+   for (i=0; i<2*mm->instance_count; ++i)
       deltas[i]=calloc(ptcnt, sizeof(int16_t));
-   for (i=0; i < mm->instance_count; ++i) {
+   for (i=0; i<mm->instance_count; ++i) {
       for (ss1=mm->normal->glyphs[gid]->layers[ly_fore].splines,
 	   ss2=mm->instances[i]->glyphs[gid]->layers[ly_fore].splines;
 	   ss1 != NULL && ss2 != NULL; ss1=ss1->next, ss2=ss2->next) {
 	 for (sp1=ss1->first, sp2=ss2->first;;) {
 	    if (sp1->ttfindex != 0xffff) {
-	       deltas[2 * i][sp1->ttfindex] =
-		  rint(sp2->me.x) - rint(sp1->me.x);
-	       deltas[2 * i + 1][sp1->ttfindex] =
-		  rint(sp2->me.y) - rint(sp1->me.y);
+	       deltas[2*i][sp1->ttfindex] =
+		  rint(sp2->me.x)-rint(sp1->me.x);
+	       deltas[2*i+1][sp1->ttfindex] =
+		  rint(sp2->me.y)-rint(sp1->me.y);
 	    }
 	    if (sp1->nextcpindex != 0xffff) {
-	       deltas[2 * i][sp1->nextcpindex] =
-		  rint(sp2->nextcp.x) - rint(sp1->nextcp.x);
-	       deltas[2 * i + 1][sp1->nextcpindex] =
-		  rint(sp2->nextcp.y) - rint(sp1->nextcp.y);
+	       deltas[2*i][sp1->nextcpindex] =
+		  rint(sp2->nextcp.x)-rint(sp1->nextcp.x);
+	       deltas[2*i+1][sp1->nextcpindex] =
+		  rint(sp2->nextcp.y)-rint(sp1->nextcp.y);
 	    }
 	    if (sp1->next==NULL)
 	       break;
@@ -376,43 +376,43 @@ int16_t **SCFindDeltas(MMSet * mm, int gid, int *_ptcnt) {
 	   r1=mm->normal->glyphs[gid]->layers[ly_fore].refs,
 	   r2=mm->instances[i]->glyphs[gid]->layers[ly_fore].refs;
 	   r1 != NULL && r2 != NULL; r1=r1->next, r2=r2->next, ++cnt) {
-	 deltas[2 * i][cnt]=r2->transform[4] - r1->transform[4];
-	 deltas[2 * i + 1][cnt]=r2->transform[5] - r1->transform[5];
+	 deltas[2*i][cnt]=r2->transform[4]-r1->transform[4];
+	 deltas[2*i+1][cnt]=r2->transform[5]-r1->transform[5];
       }
       /* Phantom points */
-      deltas[2 * i][ptcnt - 4]=0;
-      deltas[2 * i + 1][ptcnt - 4]=0;	/* lbearing */
-      deltas[2 * i][ptcnt - 3] =
+      deltas[2*i][ptcnt-4]=0;
+      deltas[2*i+1][ptcnt-4]=0;	/* lbearing */
+      deltas[2*i][ptcnt-3] =
 	 mm->instances[i]->glyphs[gid]->width -
 	 mm->normal->glyphs[gid]->width;
-      deltas[2 * i + 1][ptcnt - 3]=0;	/* horizontal advance */
-      deltas[2 * i][ptcnt - 2]=0;
-      deltas[2 * i + 1][ptcnt - 2]=0;	/* top bearing */
-      deltas[2 * i][ptcnt - 1]=0;	/* vertical advance */
-      deltas[2 * i + 1][ptcnt - 1]=mm->instances[i]->glyphs[gid]->vwidth - mm->normal->glyphs[gid]->vwidth;	/* horizontal advance */
+      deltas[2*i+1][ptcnt-3]=0;	/* horizontal advance */
+      deltas[2*i][ptcnt-2]=0;
+      deltas[2*i+1][ptcnt-2]=0;	/* top bearing */
+      deltas[2*i][ptcnt-1]=0;	/* vertical advance */
+      deltas[2*i+1][ptcnt-1]=mm->instances[i]->glyphs[gid]->vwidth-mm->normal->glyphs[gid]->vwidth;	/* horizontal advance */
    }
 
    /* Ok, each delta now contains the difference between the instance[i] points */
    /*  and the base points. But that isn't good enough. We must subtract */
    /*  [0,1] and [1,0] from [1,1], and then subtract [1,1,0] [1,0,1] [0,1,1] */
    /*  from [1,1,1] and so on (also [-1,0] from [-1,1], etc.) */
-   for (j=1; j < mm->axis_count; ++j) {
-      for (i=0; i < mm->instance_count; ++i) {
-	 for (k=cnt=0; k < mm->axis_count; ++k)
-	    if (mm->positions[i * mm->axis_count + k] != 0)
+   for (j=1; j<mm->axis_count; ++j) {
+      for (i=0; i<mm->instance_count; ++i) {
+	 for (k=cnt=0; k<mm->axis_count; ++k)
+	    if (mm->positions[i * mm->axis_count+k] != 0)
 	       ++cnt;
 	 if (cnt==j) {
-	    for (l=0; l < mm->instance_count; ++l)
+	    for (l=0; l<mm->instance_count; ++l)
 	       if (l != i) {
-		  for (k=0; k < mm->axis_count; ++k)
-		     if (mm->positions[i * mm->axis_count + k] != 0 &&
-			 mm->positions[l * mm->axis_count + k] !=
-			 mm->positions[i * mm->axis_count + k])
+		  for (k=0; k<mm->axis_count; ++k)
+		     if (mm->positions[i * mm->axis_count+k] != 0 &&
+			 mm->positions[l * mm->axis_count+k] !=
+			 mm->positions[i * mm->axis_count+k])
 			break;
 		  if (k==mm->axis_count) {
-		     for (k=0; k < ptcnt; ++k) {
-			deltas[2 * l][k] -= deltas[2 * i][k];
-			deltas[2 * l + 1][k] -= deltas[2 * i + 1][k];
+		     for (k=0; k<ptcnt; ++k) {
+			deltas[2*l][k] -= deltas[2*i][k];
+			deltas[2*l+1][k] -= deltas[2*i+1][k];
 		     }
 		  }
 	       }
@@ -422,8 +422,8 @@ int16_t **SCFindDeltas(MMSet * mm, int gid, int *_ptcnt) {
 
    /* If all variants of the glyph are the same, no point in having a gvar */
    /*  entry for it */
-   for (i=0; i < mm->instance_count; ++i) {
-      for (j=0; j < ptcnt; ++j)
+   for (i=0; i<mm->instance_count; ++i) {
+      for (j=0; j<ptcnt; ++j)
 	 if (deltas[i][j] != 0)
 	    break;
       if (j != ptcnt)
@@ -431,7 +431,7 @@ int16_t **SCFindDeltas(MMSet * mm, int gid, int *_ptcnt) {
    }
    if (i==mm->instance_count) {
       /* All zeros */
-      for (i=0; i < mm->instance_count; ++i)
+      for (i=0; i<mm->instance_count; ++i)
 	 free(deltas[i]);
       free(deltas);
       return (NULL);
@@ -452,44 +452,44 @@ int16_t **CvtFindDeltas(MMSet * mm, int *_ptcnt) {
       return (NULL);
 
    icvt=NULL;
-   for (i=0; i < mm->instance_count; ++i)
+   for (i=0; i<mm->instance_count; ++i)
       if ((icvt=mm->instances[i]->ttf_tables) != NULL)
 	 break;
    if (icvt==NULL)		/* No other cvt tables => no variation */
       return (NULL);
 
-   *_ptcnt=ptcnt=cvt->len / 2;
+   *_ptcnt=ptcnt=cvt->len/2;
    deltas=calloc(mm->instance_count, sizeof(int16_t *));
-   for (i=0; i < mm->instance_count; ++i)
+   for (i=0; i<mm->instance_count; ++i)
       if ((icvt=mm->instances[i]->ttf_tables) != NULL) {
 	 deltas[i]=calloc(ptcnt, sizeof(int16_t));
-	 for (j=0; j < ptcnt; ++j)
+	 for (j=0; j<ptcnt; ++j)
 	    deltas[i][j] =
 	       memushort(icvt->data, icvt->len,
-			 sizeof(uint16_t) * j) - memushort(cvt->data, cvt->len,
-							 sizeof(uint16_t) * j);
+			 sizeof(uint16_t)*j)-memushort(cvt->data, cvt->len,
+							 sizeof(uint16_t)*j);
       }
 
    /* Ok, each delta now contains the difference between the instance[i] points */
    /*  and the base points. But that isn't good enough. We must subtract */
    /*  [0,1] and [1,0] from [1,1], and then subtract [1,1,0] [1,0,1] [0,1,1] */
    /*  from [1,1,1] and so on (also [-1,0] from [-1,1], etc.) */
-   for (j=1; j < mm->axis_count; ++j) {
-      for (i=0; i < mm->instance_count; ++i)
+   for (j=1; j<mm->axis_count; ++j) {
+      for (i=0; i<mm->instance_count; ++i)
 	 if (deltas[i] != NULL) {
-	    for (k=cnt=0; k < mm->axis_count; ++k)
-	       if (mm->positions[i * mm->axis_count + k] != 0)
+	    for (k=cnt=0; k<mm->axis_count; ++k)
+	       if (mm->positions[i * mm->axis_count+k] != 0)
 		  ++cnt;
 	    if (cnt==j) {
-	       for (l=0; l < mm->instance_count; ++l)
+	       for (l=0; l<mm->instance_count; ++l)
 		  if (l != i && deltas[l] != NULL) {
-		     for (k=0; k < mm->axis_count; ++k)
-			if (mm->positions[i * mm->axis_count + k] != 0 &&
-			    mm->positions[l * mm->axis_count + k] !=
-			    mm->positions[i * mm->axis_count + k])
+		     for (k=0; k<mm->axis_count; ++k)
+			if (mm->positions[i * mm->axis_count+k] != 0 &&
+			    mm->positions[l * mm->axis_count+k] !=
+			    mm->positions[i * mm->axis_count+k])
 			   break;
 		     if (k==mm->axis_count) {
-			for (k=0; k < ptcnt; ++k)
+			for (k=0; k<ptcnt; ++k)
 			   deltas[l][k] -= deltas[i][k];
 		     }
 		  }
@@ -499,9 +499,9 @@ int16_t **CvtFindDeltas(MMSet * mm, int *_ptcnt) {
 
    /* If all variants of the cvt are the same, no point in having a gvar */
    /*  entry for it */
-   for (i=0; i < mm->instance_count; ++i)
+   for (i=0; i<mm->instance_count; ++i)
       if (deltas[i] != NULL) {
-	 for (j=0; j < ptcnt; ++j)
+	 for (j=0; j<ptcnt; ++j)
 	    if (deltas[i][j] != 0)
 	       break;
 	 if (j==ptcnt) {
@@ -509,7 +509,7 @@ int16_t **CvtFindDeltas(MMSet * mm, int *_ptcnt) {
 	    deltas[i]=NULL;
 	 }
       }
-   for (i=0; i < mm->instance_count; ++i)
+   for (i=0; i<mm->instance_count; ++i)
       if (deltas[i] != NULL)
 	 break;
    if (i==mm->instance_count) {
@@ -530,7 +530,7 @@ static void ttf_dumpcvar(struct alltabs *at,MMSet *mm) {
    uint16_t *pts;
 
    deltas=CvtFindDeltas(mm, &ptcnt);
-   for (i=cnt=0; i < mm->instance_count; ++i)
+   for (i=cnt=0; i<mm->instance_count; ++i)
       if (deltas[i] != NULL)
 	 ++cnt;
    if (cnt==0) {
@@ -538,132 +538,132 @@ static void ttf_dumpcvar(struct alltabs *at,MMSet *mm) {
       return;
    }
 
-   tuple_size=4 + 2 * mm->axis_count;
+   tuple_size=4+2*mm->axis_count;
    at->cvar=atmpfile();
    putlong(at->cvar, 0x00010000);	/* Format */
    aput_int16_be_checked(cnt,at->cvar);	/* Number of instances with cvt tables (tuple count of interesting tuples) */
-   aput_int16_be_checked(8 + cnt * tuple_size,at->cvar);	/* Offset to data */
+   aput_int16_be_checked(8+cnt * tuple_size,at->cvar);	/* Offset to data */
 
-   for (i=0; i < mm->instance_count; ++i)
+   for (i=0; i<mm->instance_count; ++i)
       if (deltas[i] != NULL) {
 	 aput_int16_be_checked(0,at->cvar);	/* tuple data size, figure out later */
 	 aput_int16_be_checked(0xa000,at->cvar);	/* tuple coords follow, private points in data */
-	 for (j=0; j < mm->axis_count; ++j)
+	 for (j=0; j<mm->axis_count; ++j)
 	    aput_int16_be_checked(
-		     rint(16384 * mm->positions[i * mm->axis_count + j]),at->cvar);
+		     rint(16384*mm->positions[i * mm->axis_count+j]),at->cvar);
       }
-   if (aftell(at->cvar) != 8 + cnt * tuple_size)
+   if (aftell(at->cvar) != 8+cnt * tuple_size)
       ErrorMsg(2,"Data offset wrong\n");
 
-   for (i=cnt=0; i < mm->instance_count; ++i)
+   for (i=cnt=0; i<mm->instance_count; ++i)
       if (deltas[i] != NULL) {
 	 start=aftell(at->cvar);
-	 for (j=pcnt=0; j < ptcnt; ++j)
+	 for (j=pcnt=0; j<ptcnt; ++j)
 	    if (deltas[i][j] != 0)
 	       ++pcnt;
 	 pts=malloc(pcnt * sizeof(uint16_t));
-	 for (j=pcnt=0; j < ptcnt; ++j)
+	 for (j=pcnt=0; j<ptcnt; ++j)
 	    if (deltas[i][j] != 0)
 	       pts[pcnt++]=j;
 
-	 if (pcnt > 0x7f) {
-	    aputc(0x80 | (pcnt >> 8), at->cvar);
-	    aputc(pcnt & 0xff, at->cvar);
+	 if (pcnt>0x7f) {
+	    aputc(0x80|(pcnt >> 8), at->cvar);
+	    aputc(pcnt&0xff, at->cvar);
 	 } else
 	    aputc(pcnt, at->cvar);
-	 for (j=0; j < pcnt;) {
-	    big=pts[j] >= 0x80 ? 0x80 : 0;
-	    for (rj=j + 1; rj < j + 0x80 && rj < pcnt && !big; ++rj)
-	       if (pts[rj] - pts[rj - 1] >= 0x80)
+	 for (j=0; j<pcnt;) {
+	    big=pts[j] >= 0x80?0x80:0;
+	    for (rj=j+1; rj<j+0x80 && rj<pcnt && !big; ++rj)
+	       if (pts[rj]-pts[rj-1] >= 0x80)
 		  big=0x80;
 
-	    aputc((rj - j - 1) | big, at->cvar);
+	    aputc((rj-j-1)|big, at->cvar);
 	    if (big) {
 	       aput_int16_be_checked(pts[j],at->cvar);
-	       for (++j; j < rj; ++j)
-		  aput_int16_be_checked(pts[j] - pts[j - 1],at->cvar);
+	       for (++j; j<rj; ++j)
+		  aput_int16_be_checked(pts[j]-pts[j-1],at->cvar);
 	    } else {
 	       aputc(pts[j], at->cvar);
-	       for (++j; j < rj; ++j)
-		  aputc(pts[j] - pts[j - 1], at->cvar);
+	       for (++j; j<rj; ++j)
+		  aputc(pts[j]-pts[j-1], at->cvar);
 	    }
 	 }
 	 /* Now output the corresponding deltas for those points */
-	 for (j=0; j < pcnt;) {
-	    if (deltas[i][j] > 0x7f || deltas[i][j] < 0x80) {
-	       for (rj=j + 1; rj < j + 0x40 && rj < pcnt; ++rj) {
-		  if (deltas[i][pts[rj]] > 0x7f || deltas[i][pts[rj]] < 0x80
-		      || (rj + 1 < j + 0x40 && rj + 1 < pcnt
-			  && (deltas[i][pts[rj + 1]] > 0x7f
-			      || deltas[i][pts[rj + 1]] < 0x80)))
+	 for (j=0; j<pcnt;) {
+	    if (deltas[i][j]>0x7f || deltas[i][j]<0x80) {
+	       for (rj=j+1; rj<j+0x40 && rj<pcnt; ++rj) {
+		  if (deltas[i][pts[rj]]>0x7f || deltas[i][pts[rj]]<0x80
+		      || (rj+1<j+0x40 && rj+1<pcnt
+			  && (deltas[i][pts[rj+1]]>0x7f
+			      || deltas[i][pts[rj+1]]<0x80)))
 		     /* Keep going with a big run */ ;
 		  else
 		     break;
 	       }
-	       aputc((rj - j - 1) | 0x40, at->cvar);
-	       for (; j < rj; ++j)
+	       aputc((rj-j-1)|0x40, at->cvar);
+	       for (; j<rj; ++j)
 		  aput_int16_be_checked(deltas[i][pts[j]],at->cvar);
 	    } else {
-	       for (rj=j + 1; rj < j + 0x40 && rj < pcnt; ++rj) {
-		  if (deltas[i][pts[rj]] > 0x7f || deltas[i][pts[rj]] < 0x80)
+	       for (rj=j+1; rj<j+0x40 && rj<pcnt; ++rj) {
+		  if (deltas[i][pts[rj]]>0x7f || deltas[i][pts[rj]]<0x80)
 		     break;
 	       }
-	       aputc(rj - j - 1, at->cvar);
-	       for (; j < rj; ++j)
+	       aputc(rj-j-1, at->cvar);
+	       for (; j<rj; ++j)
 		  aputc(deltas[i][pts[j]], at->cvar);
 	    }
 	 }
 	 free(pts);
 	 end=aftell(at->cvar);
-	 afseek(at->cvar, 8 + cnt * tuple_size, SEEK_SET);
-	 aput_int16_be_checked(end - start,at->cvar);
+	 afseek(at->cvar, 8+cnt * tuple_size, SEEK_SET);
+	 aput_int16_be_checked(end-start,at->cvar);
 	 afseek(at->cvar, end, SEEK_SET);
 	 ++cnt;
       }
 
-   for (i=0; i < mm->instance_count; ++i)
+   for (i=0; i<mm->instance_count; ++i)
       free(deltas[i]);
    free(deltas);
 
    at->cvarlen=aftell(at->cvar);
-   if (at->cvarlen & 1)
+   if (at->cvarlen&1)
       aputc('\0', at->cvar);
-   if (aftell(at->cvar) & 2)
+   if (aftell(at->cvar)&2)
       aput_int16_be_checked(0,at->cvar);
 }
 
 static void dumpdeltas(struct alltabs *at,int16_t *deltas,int ptcnt) {
    int j, rj;
 
-   for (j=0; j < ptcnt;) {
-      for (rj=j; rj < ptcnt && rj < j + 0x40 && deltas[rj]==0; ++rj);
+   for (j=0; j<ptcnt;) {
+      for (rj=j; rj<ptcnt && rj<j+0x40 && deltas[rj]==0; ++rj);
       if (rj != j) {
-	 aputc((rj - j - 1) | 0x80, at->gvar);
+	 aputc((rj-j-1)|0x80, at->gvar);
 	 j=rj;
 	 continue;
       }
-      if (deltas[j] > 0x7f || deltas[j] < 0x80) {
-	 for (rj=j + 1; rj < j + 0x40 && rj < ptcnt; ++rj) {
-	    if (deltas[rj] > 0x7f || deltas[rj] < 0x80 ||
-		(rj + 1 < j + 0x40 && rj + 1 < ptcnt
-		 && (deltas[rj + 1] > 0x7f || deltas[rj + 1] < 0x80)))
+      if (deltas[j]>0x7f || deltas[j]<0x80) {
+	 for (rj=j+1; rj<j+0x40 && rj<ptcnt; ++rj) {
+	    if (deltas[rj]>0x7f || deltas[rj]<0x80 ||
+		(rj+1<j+0x40 && rj+1<ptcnt
+		 && (deltas[rj+1]>0x7f || deltas[rj+1]<0x80)))
 	       /* Keep going with a big run */ ;
 	    else
 	       break;
 	 }
-	 aputc((rj - j - 1) | 0x40, at->gvar);
-	 for (; j < rj; ++j)
+	 aputc((rj-j-1)|0x40, at->gvar);
+	 for (; j<rj; ++j)
 	    aput_int16_be_checked(deltas[j],at->gvar);
       } else {
-	 for (rj=j + 1; rj < j + 0x40 && rj < ptcnt; ++rj) {
-	    if (deltas[rj] > 0x7f || deltas[rj] < 0x80 ||
-		(deltas[rj]==0 && rj + 1 < j + 0x40 && rj + 1 < ptcnt &&
-		 deltas[rj + 1] <= 0x7f && deltas[rj + 1] >= 0x80
-		 && deltas[rj + 1] != 0))
+	 for (rj=j+1; rj<j+0x40 && rj<ptcnt; ++rj) {
+	    if (deltas[rj]>0x7f || deltas[rj]<0x80 ||
+		(deltas[rj]==0 && rj+1<j+0x40 && rj+1<ptcnt &&
+		 deltas[rj+1] <= 0x7f && deltas[rj+1] >= 0x80
+		 && deltas[rj+1] != 0))
 	       break;
 	 }
-	 aputc(rj - j - 1, at->gvar);
-	 for (; j < rj; ++j)
+	 aputc(rj-j-1, at->gvar);
+	 for (; j<rj; ++j)
 	    aputc(deltas[j], at->gvar);
       }
    }
@@ -683,60 +683,60 @@ static void ttf_dumpgvar(struct alltabs *at,MMSet *mm) {
    putlong(at->gvar, 0);	/* Offset to global tuples, fix later */
    aput_int16_be_checked(at->maxp.numGlyphs,at->gvar);
    aput_int16_be_checked(1,at->gvar);	/* always output 32bit offsets */
-   putlong(at->gvar, aftell(at->gvar) + 4 + (at->maxp.numGlyphs + 1) * 4);
+   putlong(at->gvar, aftell(at->gvar)+4+(at->maxp.numGlyphs+1)*4);
    glyphoffs=aftell(at->gvar);
    for (i=0; i <= at->maxp.numGlyphs; ++i)
       putlong(at->gvar, 0);
 
    start=aftell(at->gvar);
    last=-1;
-   for (i=0; i < at->gi.gcnt; ++i)
+   for (i=0; i<at->gi.gcnt; ++i)
       if (at->gi.bygid[i] != -1) {
 	 deltas=SCFindDeltas(mm, at->gi.bygid[i], &ptcnt);
 	 if (deltas==NULL)
 	    continue;
 	 here=aftell(at->gvar);
-	 afseek(at->gvar, glyphoffs + (last + 1) * 4, SEEK_SET);
-	 for (; last < i; ++last)
-	    putlong(at->gvar, here - start);
+	 afseek(at->gvar, glyphoffs+(last+1)*4, SEEK_SET);
+	 for (; last<i; ++last)
+	    putlong(at->gvar, here-start);
 	 afseek(at->gvar, here, SEEK_SET);
 	 aput_int16_be_checked(mm->instance_count,at->gvar);
-	 aput_int16_be_checked(4 + 4 * mm->instance_count,at->gvar);	/* offset to data */
-	 for (j=0; j < mm->instance_count; ++j) {
+	 aput_int16_be_checked(4+4*mm->instance_count,at->gvar);	/* offset to data */
+	 for (j=0; j<mm->instance_count; ++j) {
 	    aput_int16_be_checked(0,at->gvar);	/* tuple data size, fix later */
-	    aput_int16_be_checked(0x2000 | j,at->gvar);	/* private points, tuple i */
+	    aput_int16_be_checked(0x2000|j,at->gvar);	/* private points, tuple i */
 	 }
-	 for (j=0; j < mm->instance_count; ++j) {
+	 for (j=0; j<mm->instance_count; ++j) {
 	    tupledatastart=aftell(at->gvar);
 	    aputc('\0', at->gvar);	/* Point list, all points */
-	    dumpdeltas(at, deltas[2 * j], ptcnt);
-	    dumpdeltas(at, deltas[2 * j + 1], ptcnt);
+	    dumpdeltas(at, deltas[2*j], ptcnt);
+	    dumpdeltas(at, deltas[2*j+1], ptcnt);
 	    tupledataend=aftell(at->gvar);
-	    afseek(at->gvar, here + 4 + 4 * j, SEEK_SET);
-	    aput_int16_be_checked(tupledataend - tupledatastart,at->gvar);
+	    afseek(at->gvar, here+4+4*j, SEEK_SET);
+	    aput_int16_be_checked(tupledataend-tupledatastart,at->gvar);
 	    afseek(at->gvar, tupledataend, SEEK_SET);
-	    free(deltas[2 * j]);
-	    free(deltas[2 * j + 1]);
+	    free(deltas[2*j]);
+	    free(deltas[2*j+1]);
 	 }
 	 free(deltas);
       }
    here=aftell(at->gvar);
-   afseek(at->gvar, glyphoffs + (last + 1) * 4, SEEK_SET);
-   for (; last < at->maxp.numGlyphs; ++last)
-      putlong(at->gvar, here - start);
+   afseek(at->gvar, glyphoffs+(last+1)*4, SEEK_SET);
+   for (; last<at->maxp.numGlyphs; ++last)
+      putlong(at->gvar, here-start);
    afseek(at->gvar, gcoordoff, SEEK_SET);
    putlong(at->gvar, here);
    afseek(at->gvar, here, SEEK_SET);
-   for (j=0; j < mm->instance_count; ++j) {
-      for (i=0; i < mm->axis_count; ++i)
+   for (j=0; j<mm->instance_count; ++j) {
+      for (i=0; i<mm->axis_count; ++i)
 	 aput_int16_be_checked(
-		  rint(16384 * mm->positions[j * mm->axis_count + i]),at->gvar);
+		  rint(16384*mm->positions[j * mm->axis_count+i]),at->gvar);
    }
 
    at->gvarlen=aftell(at->gvar);
-   if (at->gvarlen & 1)
+   if (at->gvarlen&1)
       aputc('\0', at->gvar);
-   if (aftell(at->gvar) & 2)
+   if (aftell(at->gvar)&2)
       aput_int16_be_checked(0,at->gvar);
 }
 
@@ -744,8 +744,8 @@ static void ttf_dumpgvar(struct alltabs *at,MMSet *mm) {
 static void ttf_dumpavar(struct alltabs *at,MMSet *mm) {
    int i, j;
 
-   for (i=0; i < mm->axis_count; ++i) {
-      if (mm->axismaps[i].points > 3)
+   for (i=0; i<mm->axis_count; ++i) {
+      if (mm->axismaps[i].points>3)
 	 break;
    }
    if (i==mm->axis_count)	/* We only have simple axes */
@@ -754,25 +754,25 @@ static void ttf_dumpavar(struct alltabs *at,MMSet *mm) {
    at->avar=atmpfile();
    putlong(at->avar, 0x00010000);	/* Format */
    putlong(at->avar, mm->axis_count);
-   for (i=0; i < mm->axis_count; ++i) {
+   for (i=0; i<mm->axis_count; ++i) {
       aput_int16_be_checked(mm->axismaps[i].points,at->avar);
-      for (j=0; j < mm->axismaps[i].points; ++j) {
-	 if (mm->axismaps[i].designs[j] < mm->axismaps[i].def)
+      for (j=0; j<mm->axismaps[i].points; ++j) {
+	 if (mm->axismaps[i].designs[j]<mm->axismaps[i].def)
 	    aput_int16_be_checked(
 		     (mm->axismaps[i].designs[j] -
-		      mm->axismaps[i].def) * 16384 / (mm->axismaps[i].def -
+		      mm->axismaps[i].def)*16384/(mm->axismaps[i].def -
 						      mm->axismaps[i].min),at->avar);
 	 else
 	    aput_int16_be_checked(
 		     (mm->axismaps[i].designs[j] -
-		      mm->axismaps[i].def) * 16384 / (mm->axismaps[i].max -
+		      mm->axismaps[i].def)*16384/(mm->axismaps[i].max -
 						      mm->axismaps[i].def),at->avar);
-	 aput_int16_be_checked(mm->axismaps[i].blends[j] * 16384,at->avar);
+	 aput_int16_be_checked(mm->axismaps[i].blends[j]*16384,at->avar);
       }
    }
 
    at->avarlen=aftell(at->avar);
-   if (at->avarlen & 2)
+   if (at->avarlen&2)
       aput_int16_be_checked(0,at->avar);
 }
 
@@ -790,7 +790,7 @@ static uint32_t AxisNameToTag(char *name) {
       return (CHR('s', 'l', 'n', 't'));
 
    memset(buf, 0, sizeof(buf));
-   for (i=0; i < 4 && name[i] != '\0'; ++i)
+   for (i=0; i<4 && name[i] != '\0'; ++i)
       buf[i]=name[i];
    return (CHR(buf[0], buf[1], buf[2], buf[3]));
 }
@@ -819,28 +819,28 @@ static void ttf_dumpfvar(struct alltabs *at,MMSet *mm) {
    aput_int16_be_checked(mm->axis_count,at->fvar);
    aput_int16_be_checked(20,at->fvar);	/* Size of each axis record */
    aput_int16_be_checked(mm->named_instance_count,at->fvar);
-   aput_int16_be_checked(4 + 4 * mm->axis_count,at->fvar);
+   aput_int16_be_checked(4+4*mm->axis_count,at->fvar);
 
    /* For each axis ... */
-   for (i=0; i < mm->axis_count; ++i) {
+   for (i=0; i<mm->axis_count; ++i) {
       putlong(at->fvar, AxisNameToTag(mm->axes[i]));
-      putlong(at->fvar, rint(mm->axismaps[i].min * 65536));
-      putlong(at->fvar, rint(mm->axismaps[i].def * 65536));
-      putlong(at->fvar, rint(mm->axismaps[i].max * 65536));
+      putlong(at->fvar, rint(mm->axismaps[i].min*65536));
+      putlong(at->fvar, rint(mm->axismaps[i].def*65536));
+      putlong(at->fvar, rint(mm->axismaps[i].max*65536));
       aput_int16_be_checked(0,at->fvar);	/* No flags defined for axes */
       aput_int16_be_checked(AllocateStrId(at, mm->axismaps[i].axisnames),at->fvar);
    }
 
    /* For each named font ... */
-   for (i=0; i < mm->named_instance_count; ++i) {
+   for (i=0; i<mm->named_instance_count; ++i) {
       aput_int16_be_checked(AllocateStrId(at, mm->named_instances[i].names),at->fvar);
       aput_int16_be_checked(0,at->fvar);	/* No flags here either */
-      for (j=0; j < mm->axis_count; ++j)
-	 putlong(at->fvar, rint(65536 * mm->named_instances[i].coords[j]));
+      for (j=0; j<mm->axis_count; ++j)
+	 putlong(at->fvar, rint(65536*mm->named_instances[i].coords[j]));
    }
 
    at->fvarlen=aftell(at->fvar);
-   if (at->fvarlen & 2)		/* I don't think this is ever hit */
+   if (at->fvarlen&2)		/* I don't think this is ever hit */
       aput_int16_be_checked(0,at->fvar);
 }
 
@@ -848,9 +848,9 @@ void ttf_dumpvariations(struct alltabs *at, SplineFont *sf) {
    MMSet *mm=sf->mm;
    int i, j;
 
-   for (j=0; j < sf->glyphcnt; ++j)
+   for (j=0; j<sf->glyphcnt; ++j)
       if (sf->glyphs[j] != NULL) {
-	 for (i=0; i < mm->instance_count; ++i)
+	 for (i=0; i<mm->instance_count; ++i)
 	    if (mm->instances[i]->glyphs[j] != NULL)
 	       mm->instances[i]->glyphs[j]->ttf_glyph =
 		  sf->glyphs[j]->ttf_glyph;

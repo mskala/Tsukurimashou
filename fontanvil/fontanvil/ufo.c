@@ -1,4 +1,4 @@
-/* $Id: ufo.c 4525 2015-12-20 19:51:59Z mskala $ */
+/* $Id: ufo.c 4532 2015-12-22 13:18:53Z mskala $ */
 /* Copyright (C) 2003-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -57,10 +57,10 @@
 /*  different/more tags in fontinfo.plist */
 
 static char *buildname(char *basedir,char *sub) {
-   char *fname=malloc(strlen(basedir) + strlen(sub) + 2);
+   char *fname=malloc(strlen(basedir)+strlen(sub)+2);
 
    strcpy(fname, basedir);
-   if (fname[strlen(fname) - 1] != '/')
+   if (fname[strlen(fname)-1] != '/')
       strcat(fname, "/");
    strcat(fname, sub);
    return (fname);
@@ -167,9 +167,9 @@ static int _GlifDump(AFILE *glif,SplineChar *sc,int layer) {
 	      ref=ref->next)
 	    if (SCWorthOutputting(ref->sc))
 	       refs[cnt++]=ref;
-	 if (cnt > 1)
+	 if (cnt>1)
 	    qsort(refs, cnt, sizeof(RefChar *), refcomp);
-	 for (i=0; i < cnt; ++i) {
+	 for (i=0; i<cnt; ++i) {
 	    ref=refs[i];
 	    afprintf(glif, "    <component base=\"%s\"", ref->sc->name);
 	    if (ref->transform[0] != 1)
@@ -194,7 +194,7 @@ static int _GlifDump(AFILE *glif,SplineChar *sc,int layer) {
 	 afprintf(glif, "    <contour>\n");
 	 afprintf(glif,
 		 "      <point x=\"%g\" y=\"%g\" type=\"move\" name=\"%s%s\"/>\n",
-		 ap->me.x, ap->me.y, ismark ? "_" : "", ap->anchor->name);
+		 ap->me.x, ap->me.y, ismark?"_":"", ap->anchor->name);
 	 afprintf(glif, "    </contour>\n");
       }
       for (spl=sc->layers[layer].splines; spl != NULL; spl=spl->next) {
@@ -208,11 +208,11 @@ static int _GlifDump(AFILE *glif,SplineChar *sc,int layer) {
 		       "      <point x=\"%g\" y=\"%g\" type=\"%s\"%s%s%s%s/>\n",
 		       (double) sp->me.x, (double) sp->me.y,
 		       sp->prev ==
-		       NULL ? "move" : sp->prev->
-		       knownlinear ? "line" : isquad ? "qcurve" : "curve",
-		       sp->pointtype != pt_corner ? " smooth=\"yes\"" : "",
-		       sp->name ? " name=\"" : "", sp->name ? sp->name : "",
-		       sp->name ? "\"" : "");
+		       NULL?"move":sp->prev->
+		       knownlinear?"line":isquad?"qcurve":"curve",
+		       sp->pointtype != pt_corner?" smooth=\"yes\"":"",
+		       sp->name?" name=\"":"", sp->name?sp->name:"",
+		       sp->name?"\"":"");
 	    if (sp->next==NULL)
 	       break;
 	    /* We write control points. */
@@ -298,7 +298,7 @@ static void PListOutputReal(AFILE *plist,char *key,double value) {
 
 static void PListOutputBoolean(AFILE *plist,char *key,int value) {
    afprintf(plist, "\t<key>%s</key>\n", key);
-   afprintf(plist, value ? "\t<true/>\n" : "\t<false/>\n");
+   afprintf(plist, value?"\t<true/>\n":"\t<false/>\n");
 }
 
 static void PListOutputDate(AFILE *plist,char *key,time_t timestamp) {
@@ -311,7 +311,7 @@ static void PListOutputDate(AFILE *plist,char *key,time_t timestamp) {
 
    afprintf(plist, "\t<key>%s</key>\n", key);
    afprintf(plist, "\t<string>%4d/%02d/%02d %02d:%02d:%02d</string>\n",
-	   tm->tm_year + 1900, tm->tm_mon + 1,
+	   tm->tm_year+1900, tm->tm_mon+1,
 	   tm->tm_mday, tm->tm_hour, tm->tm_min, tm->tm_sec);
 }
 
@@ -361,7 +361,7 @@ static void PListOutputIntArray(AFILE *plist,char *key,char *entries,
 
    afprintf(plist, "\t<key>%s</key>\n", key);
    afprintf(plist, "\t<array>\n");
-   for (i=0; i < len; ++i)
+   for (i=0; i<len; ++i)
       afprintf(plist, "\t\t<integer>%d</integer>\n", entries[i]);
    afprintf(plist, "\t</array>\n");
 }
@@ -441,17 +441,17 @@ static int UFOOutputFontInfo(char *basedir,SplineFont *sf,int layer) {
       return (false);
 /* Same keys in both formats */
    PListOutputString(plist, "familyName",
-		     sf->familyname_with_timestamp ? sf->
-		     familyname_with_timestamp : sf->familyname);
+		     sf->familyname_with_timestamp?sf->
+		     familyname_with_timestamp:sf->familyname);
    PListOutputString(plist, "styleName", SFGetModifiers(sf));
    PListOutputString(plist, "copyright", sf->copyright);
    PListOutputNameString(plist, "trademark", sf, ttf_trademark);
-   PListOutputInteger(plist, "unitsPerEm", sf->ascent + sf->descent);
+   PListOutputInteger(plist, "unitsPerEm", sf->ascent+sf->descent);
    test=SFXHeight(sf, layer, true);
-   if (test > 0)
+   if (test>0)
       PListOutputInteger(plist, "xHeight", (int) rint(test));
    test=SFCapHeight(sf, layer, true);
-   if (test > 0)
+   if (test>0)
       PListOutputInteger(plist, "capHeight", (int) rint(test));
    if (sf->ufo_ascent==0)
       PListOutputInteger(plist, "ascender", sf->ascent);
@@ -472,7 +472,7 @@ static int UFOOutputFontInfo(char *basedir,SplineFont *sf,int layer) {
    /* FontAnvil does not maintain a menuname except possibly in the ttfnames section where there are many different languages of it */
    PListOutputString(plist, "weightName", sf->weight);
    /* No longer in the spec. Was it ever? Did I get this wrong? */
-   /* PListOutputString(plist,"curveType",sf->layers[layer].order2 ? "Quadratic" : "Cubic"); */
+   /* PListOutputString(plist,"curveType",sf->layers[layer].order2?"Quadratic":"Cubic"); */
 #else
    PListOutputString(plist, "note", sf->comments);
    PListOutputDate(plist, "openTypeHeadCreated", sf->creationtime);
@@ -480,13 +480,13 @@ static int UFOOutputFontInfo(char *basedir,SplineFont *sf,int layer) {
    if (sf->pfminfo.hheadset) {
       if (sf->pfminfo.hheadascent_add)
 	 PListOutputInteger(plist, "openTypeHheaAscender",
-			    bb.maxy + sf->pfminfo.hhead_ascent);
+			    bb.maxy+sf->pfminfo.hhead_ascent);
       else
 	 PListOutputInteger(plist, "openTypeHheaAscender",
 			    sf->pfminfo.hhead_ascent);
       if (sf->pfminfo.hheaddescent_add)
 	 PListOutputInteger(plist, "openTypeHheaDescender",
-			    bb.miny + sf->pfminfo.hhead_descent);
+			    bb.miny+sf->pfminfo.hhead_descent);
       else
 	 PListOutputInteger(plist, "openTypeHheaDescender",
 			    sf->pfminfo.hhead_descent);
@@ -526,27 +526,27 @@ static int UFOOutputFontInfo(char *basedir,SplineFont *sf,int layer) {
       vendor[4]=0;
       PListOutputString(plist, "openTypeOS2VendorID", vendor);
       fc[0]=sf->pfminfo.os2_family_class >> 8;
-      fc[1]=sf->pfminfo.os2_family_class & 0xff;
+      fc[1]=sf->pfminfo.os2_family_class&0xff;
       PListOutputIntArray(plist, "openTypeOS2FamilyClass", fc, 2);
       if (sf->pfminfo.fstype != -1) {
 	 int fscnt, i;
 	 char fstype[16];
 
-	 for (i=fscnt=0; i < 16; ++i)
-	    if (sf->pfminfo.fstype & (1 << i))
+	 for (i=fscnt=0; i<16; ++i)
+	    if (sf->pfminfo.fstype&(1 << i))
 	       fstype[fscnt++]=i;
 	 if (fscnt != 0)
 	    PListOutputIntArray(plist, "openTypeOS2Type", fstype, fscnt);
       }
       if (sf->pfminfo.typoascent_add)
 	 PListOutputInteger(plist, "openTypeOS2TypoAscender",
-			    sf->ascent + sf->pfminfo.os2_typoascent);
+			    sf->ascent+sf->pfminfo.os2_typoascent);
       else
 	 PListOutputInteger(plist, "openTypeOS2TypoAscender",
 			    sf->pfminfo.os2_typoascent);
       if (sf->pfminfo.typodescent_add)
 	 PListOutputInteger(plist, "openTypeOS2TypoDescender",
-			    sf->descent + sf->pfminfo.os2_typodescent);
+			    sf->descent+sf->pfminfo.os2_typodescent);
       else
 	 PListOutputInteger(plist, "openTypeOS2TypoDescender",
 			    sf->pfminfo.os2_typodescent);
@@ -554,13 +554,13 @@ static int UFOOutputFontInfo(char *basedir,SplineFont *sf,int layer) {
 			 sf->pfminfo.os2_typolinegap);
       if (sf->pfminfo.winascent_add)
 	 PListOutputInteger(plist, "openTypeOS2WinAscent",
-			    bb.maxy + sf->pfminfo.os2_winascent);
+			    bb.maxy+sf->pfminfo.os2_winascent);
       else
 	 PListOutputInteger(plist, "openTypeOS2WinAscent",
 			    sf->pfminfo.os2_winascent);
       if (sf->pfminfo.windescent_add)
 	 PListOutputInteger(plist, "openTypeOS2WinDescent",
-			    bb.miny + sf->pfminfo.os2_windescent);
+			    bb.miny+sf->pfminfo.os2_windescent);
       else
 	 PListOutputInteger(plist, "openTypeOS2WinDescent",
 			    sf->pfminfo.os2_windescent);
@@ -594,10 +594,10 @@ static int UFOOutputFontInfo(char *basedir,SplineFont *sf,int layer) {
       char ranges[128];
       int i, j, c=0;
 
-      for (i=0; i < 4; i++)
-	 for (j=0; j < 32; j++)
-	    if (sf->pfminfo.unicoderanges[i] & (1 << j))
-	       ranges[c++]=i * 32 + j;
+      for (i=0; i<4; i++)
+	 for (j=0; j<32; j++)
+	    if (sf->pfminfo.unicoderanges[i]&(1 << j))
+	       ranges[c++]=i*32+j;
       if (c != 0)
 	 PListOutputIntArray(plist, "openTypeOS2UnicodeRanges", ranges, c);
    }
@@ -605,10 +605,10 @@ static int UFOOutputFontInfo(char *basedir,SplineFont *sf,int layer) {
       char pages[64];
       int i, j, c=0;
 
-      for (i=0; i < 2; i++)
-	 for (j=0; j < 32; j++)
-	    if (sf->pfminfo.codepages[i] & (1 << j))
-	       pages[c++]=i * 32 + j;
+      for (i=0; i<2; i++)
+	 for (j=0; j<32; j++)
+	    if (sf->pfminfo.codepages[i]&(1 << j))
+	       pages[c++]=i*32+j;
       if (c != 0)
 	 PListOutputIntArray(plist, "openTypeOS2CodePageRanges", pages, c);
    }
@@ -677,7 +677,7 @@ static int UFOOutputKerning(char *basedir,SplineFont *sf) {
       return (false);
    /* There is some muttering about how to do kerning by classes, but no */
    /*  resolution to those thoughts. So I ignore the issue */
-   for (i=0; i < sf->glyphcnt; ++i)
+   for (i=0; i<sf->glyphcnt; ++i)
       if (SCWorthOutputting(sc=sf->glyphs[i]) && sc->kerns != NULL)
 	 KerningPListOutputGlyph(plist, sc->name, sc->kerns);
    return (PListOutputTrailer(plist));
@@ -688,16 +688,16 @@ static int UFOOutputVKerning(char *basedir,SplineFont *sf) {
    SplineChar *sc;
    int i;
 
-   for (i=sf->glyphcnt - 1; i >= 0; --i)
+   for (i=sf->glyphcnt-1; i >= 0; --i)
       if (SCWorthOutputting(sc=sf->glyphs[i]) && sc->vkerns != NULL)
 	 break;
-   if (i < 0)
+   if (i<0)
       return (true);
 
    plist=PListCreate(basedir, "vkerning.plist");
    if (plist==NULL)
       return (false);
-   for (i=0; i < sf->glyphcnt; ++i)
+   for (i=0; i<sf->glyphcnt; ++i)
       if ((sc=sf->glyphs[i]) != NULL && sc->vkerns != NULL)
 	 KerningPListOutputGlyph(plist, sc->name, sc->vkerns);
    return (PListOutputTrailer(plist));
@@ -725,7 +725,7 @@ static int UFOOutputFeatures(char *basedir,SplineFont *sf) {
 
 int WriteUFOFont(char *basedir, SplineFont *sf, enum fontformat ff,
 		 int flags, EncMap * map, int layer) {
-   char *foo=malloc(strlen(basedir) + 20), *glyphdir, *gfname;
+   char *foo=malloc(strlen(basedir)+20), *glyphdir, *gfname;
    int err;
    AFILE *plist;
    int i;
@@ -761,11 +761,11 @@ int WriteUFOFont(char *basedir, SplineFont *sf, enum fontformat ff,
       return (false);
    }
 
-   for (i=0; i < sf->glyphcnt; ++i)
+   for (i=0; i<sf->glyphcnt; ++i)
       if (SCWorthOutputting(sc=sf->glyphs[i])) {
 	 char *start, *gstart;
 
-	 gstart=gfname=malloc(2 * strlen(sc->name) + 20);
+	 gstart=gfname=malloc(2*strlen(sc->name)+20);
 	 start=sc->name;
 	 if (*start=='.') {
 	    *gstart++='_';
@@ -821,7 +821,7 @@ static char *get_thingy(AFILE *file,char *buffer,char *tag) {
       if (ch != '>')
 	 continue;
       pt=buffer;
-      while ((ch=agetc(file)) != '<' && ch != EOF && pt < buffer + 1000)
+      while ((ch=agetc(file)) != '<' && ch != EOF && pt<buffer+1000)
 	 *pt++=ch;
       *pt='\0';
       return (buffer);
@@ -994,17 +994,17 @@ static StemInfo *GlifParseHints(xmlDocPtr doc,xmlNodePtr dict,
 /* Finds or adds an AnchorClass of the given name. Resets it to have the given subtable if not NULL */
 static AnchorClass *SFFindOrAddAnchorClass(SplineFont *sf,char *name,struct lookup_subtable *sub) {
    AnchorClass *ac;
-   int actype = act_unknown;
+   int actype=act_unknown;
    for (ac=sf->anchor; ac!=NULL; ac=ac->next )
      if (strcmp(name,ac->name)==0)
        break;
    if (ac!=NULL && (sub==NULL || ac->subtable==sub ) )
      return(ac );
    if (sub!=NULL )
-     actype = sub->lookup->lookup_type==gpos_cursive ? act_curs :
-     sub->lookup->lookup_type==gpos_mark2base ? act_mark :
-     sub->lookup->lookup_type==gpos_mark2ligature ? act_mklg :
-     sub->lookup->lookup_type==gpos_mark2mark ? act_mkmk :
+     actype=sub->lookup->lookup_type==gpos_cursive?act_curs :
+     sub->lookup->lookup_type==gpos_mark2base?act_mark :
+     sub->lookup->lookup_type==gpos_mark2ligature?act_mklg :
+     sub->lookup->lookup_type==gpos_mark2mark?act_mkmk :
      act_unknown;
    if (ac==NULL ) {
       ac=chunkalloc(sizeof(AnchorClass));
@@ -1074,7 +1074,7 @@ static SplineChar *_UFOLoadGlyph(SplineFont *sf,xmlDocPtr doc,
    if (name==NULL && glifname != NULL) {
       char *pt=strrchr(glifname, '/');
 
-      name=fastrdup(pt + 1);
+      name=fastrdup(pt+1);
       for (pt=cpt=name; *cpt != '\0'; ++cpt) {
 	 if (*cpt != '_')
 	    *pt++=*cpt;
@@ -1102,10 +1102,10 @@ static SplineChar *_UFOLoadGlyph(SplineFont *sf,xmlDocPtr doc,
    last=NULL;
    /* Check layer availability here. */
    if (layerdest >= sc->layer_cnt) {
-      sc->layers=realloc(sc->layers, (layerdest + 1) * sizeof(Layer));
-      memset(sc->layers + sc->layer_cnt, 0,
-	     (layerdest + 1 - sc->layer_cnt) * sizeof(Layer));
-      sc->layer_cnt=layerdest + 1;
+      sc->layers=realloc(sc->layers, (layerdest+1)*sizeof(Layer));
+      memset(sc->layers+sc->layer_cnt, 0,
+	     (layerdest+1-sc->layer_cnt)*sizeof(Layer));
+      sc->layer_cnt=layerdest+1;
    }
    if (sc->layers==NULL) {
       if ((newsc==1) && (sc != NULL)) {
@@ -1210,7 +1210,7 @@ static SplineChar *_UFOLoadGlyph(SplineFont *sf,xmlDocPtr doc,
 		     /* make an AP and if necessary an AC */
 		     AnchorPoint *ap=chunkalloc(sizeof(AnchorPoint));
 		     AnchorClass *ac;
-		     char *namep=*sname=='_' ? sname + 1 : sname;
+		     char *namep=*sname=='_'?sname+1:sname;
 		     char *xs=(char *) xmlGetProp(points, (xmlChar *) "x");
 		     char *ys=(char *) xmlGetProp(points, (xmlChar *) "y");
 
@@ -1219,11 +1219,11 @@ static SplineChar *_UFOLoadGlyph(SplineFont *sf,xmlDocPtr doc,
 
 		     ac=SFFindOrAddAnchorClass(sf, namep, NULL);
 		     if (*sname=='_')
-			ap->type=ac->type==act_curs ? at_centry : at_mark;
+			ap->type=ac->type==act_curs?at_centry:at_mark;
 		     else
-			ap->type=ac->type==act_mkmk ? at_basemark :
-			   ac->type==act_curs ? at_cexit :
-			   ac->type==act_mklg ? at_baselig : at_basechar;
+			ap->type=ac->type==act_mkmk?at_basemark :
+			   ac->type==act_curs?at_cexit :
+			   ac->type==act_mklg?at_baselig:at_basechar;
 		     ap->anchor=ac;
 		     ap->next=sc->anchor;
 		     sc->anchor=ap;
@@ -1327,12 +1327,12 @@ static SplineChar *_UFOLoadGlyph(SplineFont *sf,xmlDocPtr doc,
 			ss->last=sp;
 		     } else if (strcmp(type, "qcurve")==0) {
 			wasquad=true;
-			if (precnt > 0 && precnt <= 2) {
+			if (precnt>0 && precnt <= 2) {
 			   if (precnt==2) {
 			      /* If we have two cached control points and the end point is quadratic, we need an implied point between the two control points. */
 			      sp2 =
-				 SplinePointCreate((pre[1].x + pre[0].x) / 2,
-						   (pre[1].y + pre[0].y) / 2);
+				 SplinePointCreate((pre[1].x+pre[0].x)/2,
+						   (pre[1].y+pre[0].y)/2);
 			      sp2->prevcp=ss->last->nextcp=pre[0];
 			      sp2->noprevcp=ss->last->nonextcp=false;
 			      sp2->ttfindex=0xffff;
@@ -1340,7 +1340,7 @@ static SplineChar *_UFOLoadGlyph(SplineFont *sf,xmlDocPtr doc,
 			      ss->last=sp2;
 			   }
 			   /* Now we connect the real point. */
-			   sp->prevcp=ss->last->nextcp=pre[precnt - 1];
+			   sp->prevcp=ss->last->nextcp=pre[precnt-1];
 			   sp->noprevcp=ss->last->nonextcp=false;
 			}
 			SplineMake(ss->last, sp, true);
@@ -1359,8 +1359,8 @@ static SplineChar *_UFOLoadGlyph(SplineFont *sf,xmlDocPtr doc,
 			initcnt=1;
 			/* We make the point between the two already cached control points. */
 			sp =
-			   SplinePointCreate((pre[1].x + pre[0].x) / 2,
-					     (pre[1].y + pre[0].y) / 2);
+			   SplinePointCreate((pre[1].x+pre[0].x)/2,
+					     (pre[1].y+pre[0].y)/2);
 			sp->ttfindex=0xffff;
 			if (pname != NULL) {
 			   sp->name=fastrdup(pname);
@@ -1381,8 +1381,8 @@ static SplineChar *_UFOLoadGlyph(SplineFont *sf,xmlDocPtr doc,
 			ss->last=sp;
 			/* We make the point between the previously cached control point and the new control point. */
 			sp =
-			   SplinePointCreate((x + pre[1].x) / 2,
-					     (y + pre[1].y) / 2);
+			   SplinePointCreate((x+pre[1].x)/2,
+					     (y+pre[1].y)/2);
 			sp->prevcp=pre[1];
 			sp->noprevcp=false;
 			sp->ttfindex=0xffff;
@@ -1398,8 +1398,8 @@ static SplineChar *_UFOLoadGlyph(SplineFont *sf,xmlDocPtr doc,
 			/* and the point type reader would, it seems, be a cubic curve trailing a quadratic curve. */
 			/* This seems not to be the best way to handle it. */
 			sp =
-			   SplinePointCreate((x + pre[0].x) / 2,
-					     (y + pre[0].y) / 2);
+			   SplinePointCreate((x+pre[0].x)/2,
+					     (y+pre[0].y)/2);
 			if (pname != NULL) {
 			   sp->name=fastrdup(pname);
 			}
@@ -1418,7 +1418,7 @@ static SplineChar *_UFOLoadGlyph(SplineFont *sf,xmlDocPtr doc,
 			ss->last=sp;
 			pre[0].x=x;
 			pre[0].y=y;
-		     } else if (precnt < 2) {
+		     } else if (precnt<2) {
 			pre[precnt].x=x;
 			pre[precnt].y=y;
 			++precnt;
@@ -1450,26 +1450,26 @@ static SplineChar *_UFOLoadGlyph(SplineFont *sf,xmlDocPtr doc,
 
 		     memcpy(temp, init, sizeof(temp));
 		     memcpy(init, pre, sizeof(pre));
-		     memcpy(init + precnt, temp, sizeof(temp));
+		     memcpy(init+precnt, temp, sizeof(temp));
 		     initcnt += precnt;
 		  }
-		  if ((firstpointsaidquad==true && initcnt > 0)
+		  if ((firstpointsaidquad==true && initcnt>0)
 		      || initcnt==1) {
 		     /* If the final curve is declared quadratic or is assumed to be by control point count, we proceed accordingly. */
 		     int i;
 
-		     for (i=0; i < initcnt - 1; ++i) {
+		     for (i=0; i<initcnt-1; ++i) {
 			/* If the final curve is declared quadratic but has more than one control point, we add implied points. */
 			sp =
-			   SplinePointCreate((init[i + 1].x + init[i].x) / 2,
-					     (init[i + 1].y + init[i].y) / 2);
+			   SplinePointCreate((init[i+1].x+init[i].x)/2,
+					     (init[i+1].y+init[i].y)/2);
 			sp->prevcp=ss->last->nextcp=init[i];
 			sp->noprevcp=ss->last->nonextcp=false;
 			sp->ttfindex=0xffff;
 			SplineMake(ss->last, sp, true);
 			ss->last=sp;
 		     }
-		     ss->last->nextcp=ss->first->prevcp=init[initcnt - 1];
+		     ss->last->nextcp=ss->first->prevcp=init[initcnt-1];
 		     ss->last->nonextcp=ss->first->noprevcp=false;
 		     wasquad=true;
 		  } else if (initcnt==2) {
@@ -1632,7 +1632,7 @@ static void UFOLoadGlyphs(SplineFont *sf,char *glyphdir,int layerdest) {
 	       if (sf->glyphcnt >= sf->glyphmax)
 		  sf->glyphs =
 		     realloc(sf->glyphs,
-			     (sf->glyphmax += 100) * sizeof(SplineChar *));
+			     (sf->glyphmax += 100)*sizeof(SplineChar *));
 	       sc->orig_pos=sf->glyphcnt;
 	       sf->glyphs[sf->glyphcnt++]=sc;
 	    }
@@ -1643,12 +1643,12 @@ static void UFOLoadGlyphs(SplineFont *sf,char *glyphdir,int layerdest) {
    xmlFreeDoc(doc);
 
    GlyphHashFree(sf);
-   for (i=0; i < sf->glyphcnt; ++i)
+   for (i=0; i<sf->glyphcnt; ++i)
       UFORefFixup(sf, sf->glyphs[i]);
 }
 
 static void UFOHandleKern(SplineFont *sf,char *basedir,int isv) {
-   char *fname=buildname(basedir, isv ? "vkerning.plist" : "kerning.plist");
+   char *fname=buildname(basedir, isv?"vkerning.plist":"kerning.plist");
    xmlDocPtr doc=NULL;
    xmlNodePtr plist, dict, keys, value, subkeys;
    char *keyname, *valname;
@@ -1700,7 +1700,7 @@ static void UFOHandleKern(SplineFont *sf,char *basedir,int isv) {
 	       free(keyname);
 	       if (ssc==NULL)
 		  continue;
-	       for (kp=isv ? sc->vkerns : sc->kerns;
+	       for (kp=isv?sc->vkerns:sc->kerns;
 		    kp != NULL && kp->sc != ssc; kp=kp->next);
 	       if (kp != NULL)
 		  continue;
@@ -1723,7 +1723,7 @@ static void UFOHandleKern(SplineFont *sf,char *basedir,int isv) {
 		  if (script==DEFAULT_SCRIPT)
 		     script=SCScriptFromUnicode(ssc);
 		  kp->subtable=SFSubTableFindOrMake(sf,
-						      isv ? CHR('v', 'k', 'r',
+						      isv?CHR('v', 'k', 'r',
 								'n') :
 						      CHR('k', 'e', 'r', 'n'),
 						      script, gpos_pair);
@@ -1772,15 +1772,15 @@ static void UFOAddPrivateArray(SplineFont *sf,char *key,xmlDocPtr doc,
    if (xmlStrcmp(value->name, (const xmlChar *) "array") != 0)
       return;
    pt=space;
-   end=pt + sizeof(space) - 10;
+   end=pt+sizeof(space)-10;
    *pt++='[';
    for (kid=value->children; kid != NULL; kid=kid->next) {
       if (xmlStrcmp(kid->name, (const xmlChar *) "integer")==0 ||
 	  xmlStrcmp(kid->name, (const xmlChar *) "real")==0) {
 	 char *valName =
 	    (char *) xmlNodeListGetString(doc, kid->children, true);
-	 if (pt + 1 + strlen(valName) < end) {
-	    if (pt != space + 1)
+	 if (pt+1+strlen(valName)<end) {
+	    if (pt != space+1)
 	       *pt++=' ';
 	    strcpy(pt, valName);
 	    pt += strlen(pt);
@@ -1788,7 +1788,7 @@ static void UFOAddPrivateArray(SplineFont *sf,char *key,xmlDocPtr doc,
 	 free(valName);
       }
    }
-   if (pt != space + 1) {
+   if (pt != space+1) {
       *pt++=']';
       *pt++='\0';
       UFOAddPrivate(sf, key, space);
@@ -1809,7 +1809,7 @@ static void UFOGetByteArray(char *array,int cnt,xmlDocPtr doc,
       if (xmlStrcmp(kid->name, (const xmlChar *) "integer")==0) {
 	 char *valName =
 	    (char *) xmlNodeListGetString(doc, kid->children, true);
-	 if (i < cnt)
+	 if (i<cnt)
 	    array[i++]=strtol(valName, NULL, 10);
 	 free(valName);
       }
@@ -1845,8 +1845,8 @@ static void UFOGetBitArray(xmlDocPtr doc,xmlNodePtr value,uint32_t *res,
 	 char *valName =
 	    (char *) xmlNodeListGetString(doc, kid->children, true);
 	 index=strtol(valName, NULL, 10);
-	 if (index < len << 5)
-	    res[index >> 5] |= 1 << (index & 31);
+	 if (index<len << 5)
+	    res[index >> 5] |= 1 << (index&31);
 	 free(valName);
       }
    }
@@ -1914,87 +1914,87 @@ SplineFont *SFReadUFO(char *basedir, int flags) {
 	 else if (xmlStrcmp(keyname, (xmlChar *) "trademark")==0)
 	    UFOAddName(sf, (char *) valname, ttf_trademark);
 	 else if (strncmp((char *) keyname, "openTypeName", 12)==0) {
-	    if (xmlStrcmp(keyname + 12, (xmlChar *) "Designer")==0)
+	    if (xmlStrcmp(keyname+12, (xmlChar *) "Designer")==0)
 	       UFOAddName(sf, (char *) valname, ttf_designer);
-	    else if (xmlStrcmp(keyname + 12, (xmlChar *) "DesignerURL")==0)
+	    else if (xmlStrcmp(keyname+12, (xmlChar *) "DesignerURL")==0)
 	       UFOAddName(sf, (char *) valname, ttf_designerurl);
-	    else if (xmlStrcmp(keyname + 12, (xmlChar *) "Manufacturer")==0)
+	    else if (xmlStrcmp(keyname+12, (xmlChar *) "Manufacturer")==0)
 	       UFOAddName(sf, (char *) valname, ttf_manufacturer);
-	    else if (xmlStrcmp(keyname + 12, (xmlChar *) "ManufacturerURL") ==
+	    else if (xmlStrcmp(keyname+12, (xmlChar *) "ManufacturerURL") ==
 		     0)
 	       UFOAddName(sf, (char *) valname, ttf_venderurl);
-	    else if (xmlStrcmp(keyname + 12, (xmlChar *) "License")==0)
+	    else if (xmlStrcmp(keyname+12, (xmlChar *) "License")==0)
 	       UFOAddName(sf, (char *) valname, ttf_license);
-	    else if (xmlStrcmp(keyname + 12, (xmlChar *) "LicenseURL")==0)
+	    else if (xmlStrcmp(keyname+12, (xmlChar *) "LicenseURL")==0)
 	       UFOAddName(sf, (char *) valname, ttf_licenseurl);
-	    else if (xmlStrcmp(keyname + 12, (xmlChar *) "Version")==0)
+	    else if (xmlStrcmp(keyname+12, (xmlChar *) "Version")==0)
 	       UFOAddName(sf, (char *) valname, ttf_version);
-	    else if (xmlStrcmp(keyname + 12, (xmlChar *) "UniqueID")==0)
+	    else if (xmlStrcmp(keyname+12, (xmlChar *) "UniqueID")==0)
 	       UFOAddName(sf, (char *) valname, ttf_uniqueid);
-	    else if (xmlStrcmp(keyname + 12, (xmlChar *) "Description")==0)
+	    else if (xmlStrcmp(keyname+12, (xmlChar *) "Description")==0)
 	       UFOAddName(sf, (char *) valname, ttf_descriptor);
-	    else if (xmlStrcmp(keyname + 12, (xmlChar *) "PreferedFamilyName")
+	    else if (xmlStrcmp(keyname+12, (xmlChar *) "PreferedFamilyName")
 		    ==0)
 	       UFOAddName(sf, (char *) valname, ttf_preffamilyname);
 	    else
 	       if (xmlStrcmp
-		   (keyname + 12, (xmlChar *) "PreferedSubfamilyName")==0)
+		   (keyname+12, (xmlChar *) "PreferedSubfamilyName")==0)
 	       UFOAddName(sf, (char *) valname, ttf_prefmodifiers);
-	    else if (xmlStrcmp(keyname + 12, (xmlChar *) "CompatibleFullName")
+	    else if (xmlStrcmp(keyname+12, (xmlChar *) "CompatibleFullName")
 		    ==0)
 	       UFOAddName(sf, (char *) valname, ttf_compatfull);
-	    else if (xmlStrcmp(keyname + 12, (xmlChar *) "SampleText")==0)
+	    else if (xmlStrcmp(keyname+12, (xmlChar *) "SampleText")==0)
 	       UFOAddName(sf, (char *) valname, ttf_sampletext);
-	    else if (xmlStrcmp(keyname + 12, (xmlChar *) "WWSFamilyName") ==
+	    else if (xmlStrcmp(keyname+12, (xmlChar *) "WWSFamilyName") ==
 		     0)
 	       UFOAddName(sf, (char *) valname, ttf_wwsfamily);
-	    else if (xmlStrcmp(keyname + 12, (xmlChar *) "WWSSubfamilyName")
+	    else if (xmlStrcmp(keyname+12, (xmlChar *) "WWSSubfamilyName")
 		    ==0)
 	       UFOAddName(sf, (char *) valname, ttf_wwssubfamily);
 	    else
 	       free(valname);
 	 } else if (strncmp((char *) keyname, "openTypeHhea", 12)==0) {
-	    if (xmlStrcmp(keyname + 12, (xmlChar *) "Ascender")==0) {
+	    if (xmlStrcmp(keyname+12, (xmlChar *) "Ascender")==0) {
 	       sf->pfminfo.hhead_ascent=strtol((char *) valname, &end, 10);
 	       sf->pfminfo.hheadascent_add=false;
-	    } else if (xmlStrcmp(keyname + 12, (xmlChar *) "Descender")==0) {
+	    } else if (xmlStrcmp(keyname+12, (xmlChar *) "Descender")==0) {
 	       sf->pfminfo.hhead_descent=strtol((char *) valname, &end, 10);
 	       sf->pfminfo.hheaddescent_add=false;
-	    } else if (xmlStrcmp(keyname + 12, (xmlChar *) "LineGap")==0)
+	    } else if (xmlStrcmp(keyname+12, (xmlChar *) "LineGap")==0)
 	       sf->pfminfo.linegap=strtol((char *) valname, &end, 10);
 	    free(valname);
 	    sf->pfminfo.hheadset=true;
 	 } else if (strncmp((char *) keyname, "openTypeVhea", 12)==0) {
-	    if (xmlStrcmp(keyname + 12, (xmlChar *) "LineGap")==0)
+	    if (xmlStrcmp(keyname+12, (xmlChar *) "LineGap")==0)
 	       sf->pfminfo.vlinegap=strtol((char *) valname, &end, 10);
 	    sf->pfminfo.vheadset=true;
 	    free(valname);
 	 } else if (strncmp((char *) keyname, "openTypeOS2", 11)==0) {
 	    sf->pfminfo.pfmset=true;
-	    if (xmlStrcmp(keyname + 11, (xmlChar *) "Panose")==0) {
+	    if (xmlStrcmp(keyname+11, (xmlChar *) "Panose")==0) {
 	       UFOGetByteArray(sf->pfminfo.panose, sizeof(sf->pfminfo.panose),
 			       doc, value);
 	       sf->pfminfo.panose_set=true;
-	    } else if (xmlStrcmp(keyname + 11, (xmlChar *) "Type")==0) {
+	    } else if (xmlStrcmp(keyname+11, (xmlChar *) "Type")==0) {
 	       sf->pfminfo.fstype=UFOGetBits(doc, value);
-	       if (sf->pfminfo.fstype < 0) {
+	       if (sf->pfminfo.fstype<0) {
 		  /* all bits are set, but this is wrong, OpenType spec says */
 		  /* bits 0, 4-7 and 10-15 must be unset, go see             */
 		  /* http://www.microsoft.com/typography/otspec/os2.htm#fst  */
 		  ErrorMsg(2,"Bad openTypeOS2type key: all bits are set. It will be ignored\n");
 		  sf->pfminfo.fstype=0;
 	       }
-	    } else if (xmlStrcmp(keyname + 11, (xmlChar *) "FamilyClass") ==
+	    } else if (xmlStrcmp(keyname+11, (xmlChar *) "FamilyClass") ==
 		       0) {
 	       char fc[2];
 
 	       UFOGetByteArray(fc, sizeof(fc), doc, value);
-	       sf->pfminfo.os2_family_class=(fc[0] << 8) | fc[1];
-	    } else if (xmlStrcmp(keyname + 11, (xmlChar *) "WidthClass")==0)
+	       sf->pfminfo.os2_family_class=(fc[0] << 8)|fc[1];
+	    } else if (xmlStrcmp(keyname+11, (xmlChar *) "WidthClass")==0)
 	       sf->pfminfo.width=strtol((char *) valname, &end, 10);
-	    else if (xmlStrcmp(keyname + 11, (xmlChar *) "WeightClass")==0)
+	    else if (xmlStrcmp(keyname+11, (xmlChar *) "WeightClass")==0)
 	       sf->pfminfo.weight=strtol((char *) valname, &end, 10);
-	    else if (xmlStrcmp(keyname + 11, (xmlChar *) "VendorID")==0) {
+	    else if (xmlStrcmp(keyname+11, (xmlChar *) "VendorID")==0) {
 	       const int os2_vendor_sz=sizeof(sf->pfminfo.os2_vendor);
 	       int valname_len;
 
@@ -2003,109 +2003,109 @@ SplineFont *SFReadUFO(char *basedir, int flags) {
 		   <=os2_vendor_sz)
 		  strncpy(sf->pfminfo.os2_vendor,(const char *)valname,
 			  valname_len);
-	       char *temp=sf->pfminfo.os2_vendor + os2_vendor_sz - 1;
+	       char *temp=sf->pfminfo.os2_vendor+os2_vendor_sz-1;
 
 	       while (*temp==0 && temp >= sf->pfminfo.os2_vendor)
 		  *temp--=' ';
-	    } else if (xmlStrcmp(keyname + 11, (xmlChar *) "TypoAscender") ==
+	    } else if (xmlStrcmp(keyname+11, (xmlChar *) "TypoAscender") ==
 		       0) {
 	       sf->pfminfo.typoascent_add=false;
 	       sf->pfminfo.os2_typoascent =
 		  strtol((char *) valname, &end, 10);
-	    } else if (xmlStrcmp(keyname + 11, (xmlChar *) "TypoDescender") ==
+	    } else if (xmlStrcmp(keyname+11, (xmlChar *) "TypoDescender") ==
 		       0) {
 	       sf->pfminfo.typodescent_add=false;
 	       sf->pfminfo.os2_typodescent =
 		  strtol((char *) valname, &end, 10);
-	    } else if (xmlStrcmp(keyname + 11, (xmlChar *) "TypoLineGap") ==
+	    } else if (xmlStrcmp(keyname+11, (xmlChar *) "TypoLineGap") ==
 		       0)
 	       sf->pfminfo.os2_typolinegap =
 		  strtol((char *) valname, &end, 10);
-	    else if (xmlStrcmp(keyname + 11, (xmlChar *) "WinAscent")==0) {
+	    else if (xmlStrcmp(keyname+11, (xmlChar *) "WinAscent")==0) {
 	       sf->pfminfo.winascent_add=false;
 	       sf->pfminfo.os2_winascent=strtol((char *) valname, &end, 10);
-	    } else if (xmlStrcmp(keyname + 11, (xmlChar *) "WinDescent")==0) {
+	    } else if (xmlStrcmp(keyname+11, (xmlChar *) "WinDescent")==0) {
 	       sf->pfminfo.windescent_add=false;
 	       sf->pfminfo.os2_windescent =
 		  strtol((char *) valname, &end, 10);
-	    } else if (strncmp((char *) keyname + 11, "Subscript", 9)==0) {
+	    } else if (strncmp((char *) keyname+11, "Subscript", 9)==0) {
 	       sf->pfminfo.subsuper_set=true;
-	       if (xmlStrcmp(keyname + 20, (xmlChar *) "XSize")==0)
+	       if (xmlStrcmp(keyname+20, (xmlChar *) "XSize")==0)
 		  sf->pfminfo.os2_subxsize =
 		     strtol((char *) valname, &end, 10);
-	       else if (xmlStrcmp(keyname + 20, (xmlChar *) "YSize")==0)
+	       else if (xmlStrcmp(keyname+20, (xmlChar *) "YSize")==0)
 		  sf->pfminfo.os2_subysize =
 		     strtol((char *) valname, &end, 10);
-	       else if (xmlStrcmp(keyname + 20, (xmlChar *) "XOffset")==0)
+	       else if (xmlStrcmp(keyname+20, (xmlChar *) "XOffset")==0)
 		  sf->pfminfo.os2_subxoff =
 		     strtol((char *) valname, &end, 10);
-	       else if (xmlStrcmp(keyname + 20, (xmlChar *) "YOffset")==0)
+	       else if (xmlStrcmp(keyname+20, (xmlChar *) "YOffset")==0)
 		  sf->pfminfo.os2_subyoff =
 		     strtol((char *) valname, &end, 10);
-	    } else if (strncmp((char *) keyname + 11, "Superscript", 11)==0) {
+	    } else if (strncmp((char *) keyname+11, "Superscript", 11)==0) {
 	       sf->pfminfo.subsuper_set=true;
-	       if (xmlStrcmp(keyname + 22, (xmlChar *) "XSize")==0)
+	       if (xmlStrcmp(keyname+22, (xmlChar *) "XSize")==0)
 		  sf->pfminfo.os2_supxsize =
 		     strtol((char *) valname, &end, 10);
-	       else if (xmlStrcmp(keyname + 22, (xmlChar *) "YSize")==0)
+	       else if (xmlStrcmp(keyname+22, (xmlChar *) "YSize")==0)
 		  sf->pfminfo.os2_supysize =
 		     strtol((char *) valname, &end, 10);
-	       else if (xmlStrcmp(keyname + 22, (xmlChar *) "XOffset")==0)
+	       else if (xmlStrcmp(keyname+22, (xmlChar *) "XOffset")==0)
 		  sf->pfminfo.os2_supxoff =
 		     strtol((char *) valname, &end, 10);
-	       else if (xmlStrcmp(keyname + 22, (xmlChar *) "YOffset")==0)
+	       else if (xmlStrcmp(keyname+22, (xmlChar *) "YOffset")==0)
 		  sf->pfminfo.os2_supyoff =
 		     strtol((char *) valname, &end, 10);
-	    } else if (strncmp((char *) keyname + 11, "Strikeout", 9)==0) {
+	    } else if (strncmp((char *) keyname+11, "Strikeout", 9)==0) {
 	       sf->pfminfo.subsuper_set=true;
-	       if (xmlStrcmp(keyname + 20, (xmlChar *) "Size")==0)
+	       if (xmlStrcmp(keyname+20, (xmlChar *) "Size")==0)
 		  sf->pfminfo.os2_strikeysize =
 		     strtol((char *) valname, &end, 10);
-	       else if (xmlStrcmp(keyname + 20, (xmlChar *) "Position")==0)
+	       else if (xmlStrcmp(keyname+20, (xmlChar *) "Position")==0)
 		  sf->pfminfo.os2_strikeypos =
 		     strtol((char *) valname, &end, 10);
-	    } else if (strncmp((char *) keyname + 11, "CodePageRanges", 14) ==
+	    } else if (strncmp((char *) keyname+11, "CodePageRanges", 14) ==
 		       0) {
 	       UFOGetBitArray(doc, value, sf->pfminfo.codepages, 2);
 	       sf->pfminfo.hascodepages=true;
-	    } else if (strncmp((char *) keyname + 11, "UnicodeRanges", 13) ==
+	    } else if (strncmp((char *) keyname+11, "UnicodeRanges", 13) ==
 		       0) {
 	       UFOGetBitArray(doc, value, sf->pfminfo.unicoderanges, 4);
 	       sf->pfminfo.hasunicoderanges=true;
 	    }
 	    free(valname);
 	 } else if (strncmp((char *) keyname, "postscript", 10)==0) {
-	    if (xmlStrcmp(keyname + 10, (xmlChar *) "UnderlineThickness") ==
+	    if (xmlStrcmp(keyname+10, (xmlChar *) "UnderlineThickness") ==
 		0)
 	       sf->uwidth=strtol((char *) valname, &end, 10);
-	    else if (xmlStrcmp(keyname + 10, (xmlChar *) "UnderlinePosition")
+	    else if (xmlStrcmp(keyname+10, (xmlChar *) "UnderlinePosition")
 		    ==0)
 	       sf->upos=strtol((char *) valname, &end, 10);
-	    else if (xmlStrcmp(keyname + 10, (xmlChar *) "BlueFuzz")==0)
+	    else if (xmlStrcmp(keyname+10, (xmlChar *) "BlueFuzz")==0)
 	       UFOAddPrivate(sf, "BlueFuzz", (char *) valname);
-	    else if (xmlStrcmp(keyname + 10, (xmlChar *) "BlueScale")==0)
+	    else if (xmlStrcmp(keyname+10, (xmlChar *) "BlueScale")==0)
 	       UFOAddPrivate(sf, "BlueScale", (char *) valname);
-	    else if (xmlStrcmp(keyname + 10, (xmlChar *) "BlueShift")==0)
+	    else if (xmlStrcmp(keyname+10, (xmlChar *) "BlueShift")==0)
 	       UFOAddPrivate(sf, "BlueShift", (char *) valname);
-	    else if (xmlStrcmp(keyname + 10, (xmlChar *) "BlueValues")==0)
+	    else if (xmlStrcmp(keyname+10, (xmlChar *) "BlueValues")==0)
 	       UFOAddPrivateArray(sf, "BlueValues", doc, value);
-	    else if (xmlStrcmp(keyname + 10, (xmlChar *) "OtherBlues")==0)
+	    else if (xmlStrcmp(keyname+10, (xmlChar *) "OtherBlues")==0)
 	       UFOAddPrivateArray(sf, "OtherBlues", doc, value);
-	    else if (xmlStrcmp(keyname + 10, (xmlChar *) "FamilyBlues")==0)
+	    else if (xmlStrcmp(keyname+10, (xmlChar *) "FamilyBlues")==0)
 	       UFOAddPrivateArray(sf, "FamilyBlues", doc, value);
-	    else if (xmlStrcmp(keyname + 10, (xmlChar *) "FamilyOtherBlues")
+	    else if (xmlStrcmp(keyname+10, (xmlChar *) "FamilyOtherBlues")
 		    ==0)
 	       UFOAddPrivateArray(sf, "FamilyOtherBlues", doc, value);
-	    else if (xmlStrcmp(keyname + 10, (xmlChar *) "StemSnapH")==0)
+	    else if (xmlStrcmp(keyname+10, (xmlChar *) "StemSnapH")==0)
 	       UFOAddPrivateArray(sf, "StemSnapH", doc, value);
-	    else if (xmlStrcmp(keyname + 10, (xmlChar *) "StemSnapV")==0)
+	    else if (xmlStrcmp(keyname+10, (xmlChar *) "StemSnapV")==0)
 	       UFOAddPrivateArray(sf, "StemSnapV", doc, value);
-	    else if (xmlStrcmp(keyname + 10, (xmlChar *) "ForceBold")==0)
+	    else if (xmlStrcmp(keyname+10, (xmlChar *) "ForceBold")==0)
 	       UFOAddPrivate(sf, "ForceBold", (char *) value->name);
 	    /* value->name is either true or false */
 	    free(valname);
 	 } else if (strncmp((char *) keyname, "macintosh", 9)==0) {
-	    if (xmlStrcmp(keyname + 9, (xmlChar *) "FONDName")==0)
+	    if (xmlStrcmp(keyname+9, (xmlChar *) "FONDName")==0)
 	       sf->fondname=(char *) valname;
 	    else
 	       free(valname);
@@ -2146,12 +2146,12 @@ SplineFont *SFReadUFO(char *basedir, int flags) {
       }
    }
    if (em==-1 && as != -1 && ds != -1)
-      em=as + ds;
-   if (em==as + ds)
+      em=as+ds;
+   if (em==as+ds)
       /* Yay! They follow my conventions */ ;
    else if (em != -1) {
-      as=800 * em / 1000;
-      ds=em - as;
+      as=800*em/1000;
+      ds=em-as;
    }
    if (em==-1) {
       ErrorMsg(2,"This font does not specify unitsPerEm\n");
@@ -2182,7 +2182,7 @@ SplineFont *SFReadUFO(char *basedir, int flags) {
    if (sf->version==NULL && sf->names != NULL &&
        sf->names->names[ttf_version] != NULL &&
        strncmp(sf->names->names[ttf_version], "Version ", 8)==0)
-      sf->version=fastrdup(sf->names->names[ttf_version] + 8);
+      sf->version=fastrdup(sf->names->names[ttf_version]+8);
    xmlFreeDoc(doc);
    char *layercontentsname=buildname(basedir, "layercontents.plist");
    char **layernames=NULL;
@@ -2206,7 +2206,7 @@ SplineFont *SFReadUFO(char *basedir, int flags) {
 		 FindNode(layercontentsplist->children, "array"))) {
 	    layercontentslayercount=0;
 	    layernamesbuffersize=2;
-	    layernames=malloc(2 * sizeof(char *) * layernamesbuffersize);
+	    layernames=malloc(2*sizeof(char *)*layernamesbuffersize);
 	    /* Look through the children of the top-level array. Stop if one of them is not an array. (Ignore text objects since these probably just have whitespace.) */
 	    for (layercontentslayer=layercontentsdict->children;
 		 (layercontentslayer != NULL)
@@ -2254,26 +2254,26 @@ SplineFont *SFReadUFO(char *basedir, int flags) {
 		     }
 		  }
 		  /* We need two values (as noted above) per layer entry and ignore any layer lacking those. */
-		  if ((layercontentsvaluecount > 1)
-		      && (layernamesbuffersize < INT_MAX / 2)) {
+		  if ((layercontentsvaluecount>1)
+		      && (layernamesbuffersize<INT_MAX/2)) {
 		     /* Resize the layer names array as necessary. */
 		     if (layercontentslayercount >= layernamesbuffersize) {
 			layernamesbuffersize *= 2;
 			layernames =
 			   realloc(layernames,
-				   2 * sizeof(char *) * layernamesbuffersize);
+				   2*sizeof(char *)*layernamesbuffersize);
 		     }
 		     /* Fail silently on allocation failure; it's highly unlikely. */
 		     if (layernames != NULL) {
-			layernames[2 * layercontentslayercount] =
+			layernames[2*layercontentslayercount] =
 			   fastrdup((char *) (layerlabel));
-			if (layernames[2 * layercontentslayercount]) {
-			   layernames[(2 * layercontentslayercount) + 1] =
+			if (layernames[2*layercontentslayercount]) {
+			   layernames[(2*layercontentslayercount)+1] =
 			      fastrdup((char *) (layerglyphdirname));
-			   if (layernames[(2 * layercontentslayercount) + 1])
+			   if (layernames[(2*layercontentslayercount)+1])
 			      layercontentslayercount++;	/* We increment only if both pointers are valid so as to avoid read problems later. */
 			   else
-			      free(layernames[2 * layercontentslayercount]);
+			      free(layernames[2*layercontentslayercount]);
 			}
 		     }
 		  }
@@ -2293,11 +2293,11 @@ SplineFont *SFReadUFO(char *basedir, int flags) {
 	       int layerdest=0;
 	       int bg=1;
 
-	       if (layercontentslayercount > 0) {
+	       if (layercontentslayercount>0) {
 		  /* Start reading layers. */
-		  for (lcount=0; lcount < layercontentslayercount; lcount++) {
+		  for (lcount=0; lcount<layercontentslayercount; lcount++) {
 		     if ((glyphdir =
-			  buildname(basedir, layernames[2 * lcount + 1]))) {
+			  buildname(basedir, layernames[2*lcount+1]))) {
 			if ((glyphlist =
 			     buildname(glyphdir, "contents.plist"))) {
 			   if (!GFileExists(glyphlist)) {
@@ -2307,13 +2307,13 @@ SplineFont *SFReadUFO(char *basedir, int flags) {
 			      bg=1;
 			      /* public.default and public.background have fixed mappings. Other layers start at 2. */
 			      if (strcmp
-				  (layernames[2 * lcount],
+				  (layernames[2*lcount],
 				   "public.default")==0) {
 				 layerdest=ly_fore;
 				 bg=0;
 			      } else
 				 if (strcmp
-				     (layernames[2 * lcount],
+				     (layernames[2*lcount],
 				      "public.background")==0) {
 				 layerdest=ly_back;
 			      } else {
@@ -2321,23 +2321,23 @@ SplineFont *SFReadUFO(char *basedir, int flags) {
 			      }
 
 			      /* We ensure that the splinefont layer list has sufficient space. */
-			      if (layerdest + 1 > sf->layer_cnt) {
+			      if (layerdest+1>sf->layer_cnt) {
 				 sf->layers =
 				    realloc(sf->layers,
 					    (layerdest +
-					     1) * sizeof(LayerInfo));
-				 memset(sf->layers + sf->layer_cnt, 0,
-					((layerdest + 1) -
-					 sf->layer_cnt) * sizeof(LayerInfo));
+					     1)*sizeof(LayerInfo));
+				 memset(sf->layers+sf->layer_cnt, 0,
+					((layerdest+1) -
+					 sf->layer_cnt)*sizeof(LayerInfo));
 			      }
-			      sf->layer_cnt=layerdest + 1;
+			      sf->layer_cnt=layerdest+1;
 
 			      /* The check is redundant, but it allows us to copy from sfd.c. */
-			      if ((layerdest < sf->layer_cnt) && sf->layers) {
+			      if ((layerdest<sf->layer_cnt) && sf->layers) {
 				 if (sf->layers[layerdest].name)
 				    free(sf->layers[layerdest].name);
 				 sf->layers[layerdest].name =
-				    layernames[2 * lcount];
+				    layernames[2*lcount];
 				 sf->layers[layerdest].background=bg;
 				 /* Fetch glyphs. */
 				 UFOLoadGlyphs(sf, glyphdir, layerdest);
@@ -2362,11 +2362,11 @@ SplineFont *SFReadUFO(char *basedir, int flags) {
 		 ErrorMsg(2,"layercontents.plist lists no valid layers.\n");
 
 	       /* Free layer names. */
-	       for (lcount=0; lcount < layercontentslayercount; lcount++) {
-		  if (layernames[2 * lcount])
-		     free(layernames[2 * lcount]);
-		  if (layernames[2 * lcount + 1])
-		     free(layernames[2 * lcount + 1]);
+	       for (lcount=0; lcount<layercontentslayercount; lcount++) {
+		  if (layernames[2*lcount])
+		     free(layernames[2*lcount]);
+		  if (layernames[2*lcount+1])
+		     free(layernames[2*lcount+1]);
 	       }
 	       free(layernames);
 	    }

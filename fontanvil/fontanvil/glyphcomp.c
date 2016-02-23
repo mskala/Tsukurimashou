@@ -1,4 +1,4 @@
-/* $Id: glyphcomp.c 4464 2015-11-30 09:57:27Z mskala $ */
+/* $Id: glyphcomp.c 4532 2015-12-22 13:18:53Z mskala $ */
 /* Copyright (C) 2006-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -59,9 +59,9 @@ static double FindNewT(double pos,const Spline1D *s,double old_t) {
 
    CubicSolve(s, pos, ts);
    closest=-1;
-   for (i=0; i < 3 && ts[i] != -1; ++i) {
-      if (ts[i] > old_t && ts[i] <= 1) {
-	 if (closest==-1 || ts[i] < closest)
+   for (i=0; i<3 && ts[i] != -1; ++i) {
+      if (ts[i]>old_t && ts[i] <= 1) {
+	 if (closest==-1 || ts[i]<closest)
 	    closest=ts[i];
       }
    }
@@ -84,8 +84,8 @@ static int NearSplineSet(BasePoint *here,const SplineSet *ss,
    if (*last_found==NULL) {
       /* We are looking for the first point. Check our first point */
       /*  Usually that will be right */
-      if ((dx=here->x - ss->first->me.x) <= err && dx >= -err &&
-	  (dy=here->y - ss->first->me.y) <= err && dy >= -err) {
+      if ((dx=here->x-ss->first->me.x) <= err && dx >= -err &&
+	  (dy=here->y-ss->first->me.y) <= err && dy >= -err) {
 	 *last_found=ss->first->next;
 	 *last_t=0;
 	 return (true);
@@ -95,38 +95,38 @@ static int NearSplineSet(BasePoint *here,const SplineSet *ss,
       best_s=NULL;
       best=1e10;
       best_t=-1;
-      for (j=0; j < 3; ++j) {
+      for (j=0; j<3; ++j) {
 	 for (s=ss->first->next; s != NULL && s != first; s=s->to->next) {
 	    if (first==NULL)
 	       first=s;
-	    if ((dx=s->to->me.x - s->from->me.x) < 0)
+	    if ((dx=s->to->me.x-s->from->me.x)<0)
 	       dx=-dx;
-	    if ((dy=s->to->me.y - s->from->me.y) < 0)
+	    if ((dy=s->to->me.y-s->from->me.y)<0)
 	       dy=-dy;
-	    if (dx > dy)
-	       CubicSolve(&s->splines[0], here->x + err * offset[j], ts);
+	    if (dx>dy)
+	       CubicSolve(&s->splines[0], here->x+err * offset[j], ts);
 	    else
-	       CubicSolve(&s->splines[1], here->y + err * offset[j], ts);
-	    for (i=0; i < 3 && ts[i] != -1; ++i) {
+	       CubicSolve(&s->splines[1], here->y+err * offset[j], ts);
+	    for (i=0; i<3 && ts[i] != -1; ++i) {
 	       test.x =
-		  ((s->splines[0].a * ts[i] + s->splines[0].b) * ts[i] +
-		   s->splines[0].c) * ts[i] + s->splines[0].d;
+		  ((s->splines[0].a * ts[i]+s->splines[0].b)*ts[i] +
+		   s->splines[0].c)*ts[i]+s->splines[0].d;
 	       test.y =
-		  ((s->splines[1].a * ts[i] + s->splines[1].b) * ts[i] +
-		   s->splines[1].c) * ts[i] + s->splines[1].d;
-	       if ((dx=test.x - here->x) < 0)
+		  ((s->splines[1].a * ts[i]+s->splines[1].b)*ts[i] +
+		   s->splines[1].c)*ts[i]+s->splines[1].d;
+	       if ((dx=test.x-here->x)<0)
 		  dx=-dx;
-	       if ((dy=test.y - here->y) < 0)
+	       if ((dy=test.y-here->y)<0)
 		  dy=-dy;
 	       if (dx <= err && dy <= err) {
-		  if (best_s==NULL || dx + dy < best) {
+		  if (best_s==NULL || dx+dy<best) {
 		     if (best==0) {
 			*last_found=s;
 			*last_t=ts[i];
 			return (true);
 		     }
 		     best_s=s;
-		     best=dx + dy;
+		     best=dx+dy;
 		     best_t=ts[i];
 		  }
 	       }
@@ -146,30 +146,30 @@ static int NearSplineSet(BasePoint *here,const SplineSet *ss,
       s=*last_found;
       t=*last_t;
       if ((adx =
-	   (3 * s->splines[0].a * t + 2 * s->splines[0].b) * t +
-	   s->splines[0].c) < 0)
+	   (3*s->splines[0].a * t+2*s->splines[0].b)*t +
+	   s->splines[0].c)<0)
 	 adx=-adx;
       if ((ady =
-	   (3 * s->splines[1].a * t + 2 * s->splines[1].b) * t +
-	   s->splines[1].c) < 0)
+	   (3*s->splines[1].a * t+2*s->splines[1].b)*t +
+	   s->splines[1].c)<0)
 	 ady=-ady;
-      for (j=0; j < 3; ++j) {
+      for (j=0; j<3; ++j) {
 	 while (s != NULL) {
-	    if (adx > ady)
-	       CubicSolve(&s->splines[0], here->x + err * offset[j], ts);
+	    if (adx>ady)
+	       CubicSolve(&s->splines[0], here->x+err * offset[j], ts);
 	    else
-	       CubicSolve(&s->splines[1], here->y + err * offset[j], ts);
-	    for (i=0; i < 3 && ts[i] != -1; ++i)
+	       CubicSolve(&s->splines[1], here->y+err * offset[j], ts);
+	    for (i=0; i<3 && ts[i] != -1; ++i)
 	       if (ts[i] >= t) {
 		  test.x =
-		     ((s->splines[0].a * ts[i] + s->splines[0].b) * ts[i] +
-		      s->splines[0].c) * ts[i] + s->splines[0].d;
+		     ((s->splines[0].a * ts[i]+s->splines[0].b)*ts[i] +
+		      s->splines[0].c)*ts[i]+s->splines[0].d;
 		  test.y =
-		     ((s->splines[1].a * ts[i] + s->splines[1].b) * ts[i] +
-		      s->splines[1].c) * ts[i] + s->splines[1].d;
-		  if ((dx=test.x - here->x) < 0)
+		     ((s->splines[1].a * ts[i]+s->splines[1].b)*ts[i] +
+		      s->splines[1].c)*ts[i]+s->splines[1].d;
+		  if ((dx=test.x-here->x)<0)
 		     dx=-dx;
-		  if ((dy=test.y - here->y) < 0)
+		  if ((dy=test.y-here->y)<0)
 		     dy=-dy;
 		  if (dx <= err && dy <= err) {
 		     *last_found=s;
@@ -181,20 +181,20 @@ static int NearSplineSet(BasePoint *here,const SplineSet *ss,
 	    /*  current point than the step size (either 1 or err) then */
 	    /*  looking in the following spline won't help. We didn't match */
 	    /* Let's be a little more generous than the step size. twice the step */
-	    if (t > .9 ||
-		(((dx=s->to->me.x - here->x) <= 3 || dx <= 3 * err)
-		 && (dx >= -3 || dx >= -3 * err)
-		 && ((dy=s->to->me.y - here->y) <= 3 || dy <= 3 * err)
-		 && (dy >= -3 || dy >= -3 * err))) {
+	    if (t>.9 ||
+		(((dx=s->to->me.x-here->x) <= 3 || dx <= 3*err)
+		 && (dx >= -3 || dx >= -3*err)
+		 && ((dy=s->to->me.y-here->y) <= 3 || dy <= 3*err)
+		 && (dy >= -3 || dy >= -3*err))) {
 	       s=s->to->next;
 	       t=0;
 	       if ((adx =
-		    (3 * s->splines[0].a * t + 2 * s->splines[0].b) * t +
-		    s->splines[0].c) < 0)
+		    (3*s->splines[0].a * t+2*s->splines[0].b)*t +
+		    s->splines[0].c)<0)
 		  adx=-adx;
 	       if ((ady =
-		    (3 * s->splines[1].a * t + 2 * s->splines[1].b) * t +
-		    s->splines[1].c) < 0)
+		    (3*s->splines[1].a * t+2*s->splines[1].b)*t +
+		    s->splines[1].c)<0)
 		  ady=-ady;
 	    } else
 	       break;
@@ -217,7 +217,7 @@ static int ContourMatch(const SplineSet *ss1,const SplineSet *ss2,
    BasePoint here;
    double dx, dy, adx, ady, step;
 
-   step=err >= 1 ? err * 1.001 : 1;
+   step=err >= 1?err*1.001:1;
    first=NULL;
    for (s=ss1->first->next; s != NULL && s != first; s=s->to->next) {
       t=0;
@@ -228,48 +228,48 @@ static int ContourMatch(const SplineSet *ss1,const SplineSet *ss2,
       here=s->from->me;
       while (1) {
 	 adx=dx =
-	    (3 * s->splines[0].a * t + 2 * s->splines[0].b) * t +
+	    (3*s->splines[0].a * t+2*s->splines[0].b)*t +
 	    s->splines[0].c;
 	 ady=dy =
-	    (3 * s->splines[1].a * t + 2 * s->splines[1].b) * t +
+	    (3*s->splines[1].a * t+2*s->splines[1].b)*t +
 	    s->splines[1].c;
-	 if (adx < 0)
+	 if (adx<0)
 	    adx=-adx;
-	 if (ady < 0)
+	 if (ady<0)
 	    ady=-ady;
-	 if (ady > adx) {
-	    if (dy < 0)
-	       here.y=here.y - step;
+	 if (ady>adx) {
+	    if (dy<0)
+	       here.y=here.y-step;
 	    else
-	       here.y=here.y + step;
+	       here.y=here.y+step;
 	    newt=FindNewT(here.y, &s->splines[1], t);
 	    /* Now it is possible that it will turn an abrupt corner soon */
 	    /* and the instantanious slope here may not be useful */
 	    if (newt==-1) {
 	       double t_xp, t_xm;
 
-	       t_xp=FindNewT(here.x + step, &s->splines[0], t);
-	       t_xm=FindNewT(here.x - step, &s->splines[0], t);
+	       t_xp=FindNewT(here.x+step, &s->splines[0], t);
+	       t_xm=FindNewT(here.x-step, &s->splines[0], t);
 	       if (t_xp != -1 && t_xm != -1)
-		  newt=t_xp < t_xm ? t_xp : t_xm;
+		  newt=t_xp<t_xm?t_xp:t_xm;
 	       else if (t_xp != -1)
 		  newt=t_xp;
 	       else
 		  newt=t_xm;
 	    }
 	 } else {
-	    if (dx < 0)
-	       here.x=here.x - step;
+	    if (dx<0)
+	       here.x=here.x-step;
 	    else
-	       here.x=here.x + step;
+	       here.x=here.x+step;
 	    newt=FindNewT(here.x, &s->splines[0], t);
 	    if (newt==-1) {
 	       double t_yp, t_ym;
 
-	       t_yp=FindNewT(here.y + step, &s->splines[1], t);
-	       t_ym=FindNewT(here.y - step, &s->splines[1], t);
+	       t_yp=FindNewT(here.y+step, &s->splines[1], t);
+	       t_ym=FindNewT(here.y-step, &s->splines[1], t);
 	       if (t_yp != -1 && t_ym != -1)
-		  newt=t_yp < t_ym ? t_yp : t_ym;
+		  newt=t_yp<t_ym?t_yp:t_ym;
 	       else if (t_yp != -1)
 		  newt=t_yp;
 	       else
@@ -277,14 +277,14 @@ static int ContourMatch(const SplineSet *ss1,const SplineSet *ss2,
 	    }
 	 }
 	 t=newt;
-	 if (t < 0 || t >= 1)
+	 if (t<0 || t >= 1)
 	    break;
 	 here.x =
-	    ((s->splines[0].a * t + s->splines[0].b) * t +
-	     s->splines[0].c) * t + s->splines[0].d;
+	    ((s->splines[0].a * t+s->splines[0].b)*t +
+	     s->splines[0].c)*t+s->splines[0].d;
 	 here.y =
-	    ((s->splines[1].a * t + s->splines[1].b) * t +
-	     s->splines[1].c) * t + s->splines[1].d;
+	    ((s->splines[1].a * t+s->splines[1].b)*t +
+	     s->splines[1].c)*t+s->splines[1].d;
 	 if (!NearSplineSet(&here, ss2, &last_found, &last_t, err))
 	    return (false);
       }
@@ -300,12 +300,12 @@ static int AllPointsMatch(const SplinePoint *start1,
    SplinePoint *hmfail=NULL;
 
    while (1) {
-      if ((dx=sp1->me.x - sp2->me.x) <= err && dx >= -err &&
-	  (dy=sp1->me.y - sp2->me.y) <= err && dy >= -err &&
-	  (dx=sp1->nextcp.x - sp2->nextcp.x) <= err && dx >= -err &&
-	  (dy=sp1->nextcp.y - sp2->nextcp.y) <= err && dy >= -err &&
-	  (dx=sp1->prevcp.x - sp2->prevcp.x) <= err && dx >= -err &&
-	  (dy=sp1->prevcp.y - sp2->prevcp.y) <= err && dy >= -err)
+      if ((dx=sp1->me.x-sp2->me.x) <= err && dx >= -err &&
+	  (dy=sp1->me.y-sp2->me.y) <= err && dy >= -err &&
+	  (dx=sp1->nextcp.x-sp2->nextcp.x) <= err && dx >= -err &&
+	  (dy=sp1->nextcp.y-sp2->nextcp.y) <= err && dy >= -err &&
+	  (dx=sp1->prevcp.x-sp2->prevcp.x) <= err && dx >= -err &&
+	  (dy=sp1->prevcp.y-sp2->prevcp.y) <= err && dy >= -err)
 	 /* Good */ ;
       else
 	 return (false);
@@ -343,7 +343,7 @@ static int ContourPointsMatch(const SplineSet *ss1,const SplineSet *ss2,
    /* Does ANY point on the second contour match the start point of the first? */
    for (sp2=ss2->first;;) {
       if (AllPointsMatch(ss1->first, sp2, err, _hmfail))
-	 return (sp2==ss2->first ? 1 : 2);
+	 return (sp2==ss2->first?1:2);
       if (sp2->next==NULL)
 	 return (false);
       sp2=sp2->next->to;
@@ -369,11 +369,11 @@ enum Compare_Ret SSsCompare(const SplineSet * ss1, const SplineSet * ss2,
    for (ss=ss1, cnt1=0; ss != NULL; ss=ss->next, ++cnt1);
    for (ss=ss2, cnt2=0; ss != NULL; ss=ss->next, ++cnt2);
    if (cnt1 != cnt2)
-      return (SS_DiffContourCount | SS_NoMatch);
+      return (SS_DiffContourCount|SS_NoMatch);
 
-   b1=malloc(cnt1 * sizeof(DBounds));
-   b2=malloc(cnt1 * sizeof(DBounds));
-   match=malloc(cnt1 * sizeof(SplineSet *));
+   b1=malloc(cnt1*sizeof(DBounds));
+   b2=malloc(cnt1*sizeof(DBounds));
+   match=malloc(cnt1*sizeof(SplineSet *));
    for (ss=ss1, cnt1=0; ss != NULL; ss=ss->next, ++cnt1) {
       SplineSet *next=ss->next;
 
@@ -392,18 +392,18 @@ enum Compare_Ret SSsCompare(const SplineSet * ss1, const SplineSet * ss2,
       bestdiff=-1;
       for (s2s=ss2, cnt2=0; s2s != NULL; s2s=s2s->next, ++cnt2)
 	 if (b2[cnt2].minx <= b2[cnt2].maxx) {
-	    if ((diff=b1[cnt1].minx - b2[cnt2].minx) < 0)
+	    if ((diff=b1[cnt1].minx-b2[cnt2].minx)<0)
 	       diff=-diff;
-	    if ((delta=b1[cnt1].maxx - b2[cnt2].maxx) < 0)
+	    if ((delta=b1[cnt1].maxx-b2[cnt2].maxx)<0)
 	       delta=-delta;
 	    diff += delta;
-	    if ((delta=b1[cnt1].miny - b2[cnt2].miny) < 0)
+	    if ((delta=b1[cnt1].miny-b2[cnt2].miny)<0)
 	       delta=-delta;
 	    diff += delta;
-	    if ((delta=b1[cnt1].maxy - b2[cnt2].maxy) < 0)
+	    if ((delta=b1[cnt1].maxy-b2[cnt2].maxy)<0)
 	       delta=-delta;
 	    diff += delta;
-	    if ((diff < bestdiff || bestdiff==-1) &&
+	    if ((diff<bestdiff || bestdiff==-1) &&
 		/* Only match closed contours with closed, open with open */
 		(ss1->first->prev==NULL)==(ss2->first->prev==NULL)) {
 	       bestdiff=diff;
@@ -417,10 +417,10 @@ enum Compare_Ret SSsCompare(const SplineSet * ss1, const SplineSet * ss2,
 	 free(b1);
 	 free(b2);
 	 free(match);
-	 return (SS_MismatchOpenClosed | SS_NoMatch);
+	 return (SS_MismatchOpenClosed|SS_NoMatch);
       }
       match[cnt1]=bestss;
-      b2[bestcnt].maxx=b2[bestcnt].minx - 1;	/* Mark as used */
+      b2[bestcnt].maxx=b2[bestcnt].minx-1;	/* Mark as used */
       if (bestcnt != cnt1)
 	 info=SS_DisorderedContours;
    }
@@ -465,10 +465,10 @@ enum Compare_Ret SSsCompare(const SplineSet * ss1, const SplineSet * ss2,
 	 }
 	 if (dir_mismatch)
 	    info |= SS_DisorderedDirection;
-	 if ((dx=ss->first->me.x - match[cnt1]->first->me.x) > spline_err ||
-	     dx < -spline_err ||
-	     (dy=ss->first->me.y - match[cnt1]->first->me.y) > spline_err ||
-	     dy < -spline_err)
+	 if ((dx=ss->first->me.x-match[cnt1]->first->me.x)>spline_err ||
+	     dx<-spline_err ||
+	     (dy=ss->first->me.y-match[cnt1]->first->me.y)>spline_err ||
+	     dy<-spline_err)
 	    info |= SS_DisorderedStart;
       }
       if (allmatch) {
@@ -479,7 +479,7 @@ enum Compare_Ret SSsCompare(const SplineSet * ss1, const SplineSet * ss2,
 
    free(match);
    if (!allmatch)
-      return (SS_NoMatch | SS_ContourMismatch);
+      return (SS_NoMatch|SS_ContourMismatch);
 
    return (info);
 }
@@ -502,7 +502,7 @@ static int SSRefCompare(const SplineSet *ss1,const SplineSet *ss2,
    else
       for (tail=head1; tail->next != NULL; tail=tail->next);
    for (r=refs1; r != NULL; r=r->next) {
-      for (layer=0; layer < r->layer_cnt; ++layer) {
+      for (layer=0; layer<r->layer_cnt; ++layer) {
 	 temp=SplinePointListCopy(r->layers[layer].splines);
 	 if (head1==NULL)
 	    head1=tail=temp;
@@ -519,7 +519,7 @@ static int SSRefCompare(const SplineSet *ss1,const SplineSet *ss2,
    else
       for (tail=head2; tail->next != NULL; tail=tail->next);
    for (r=refs2; r != NULL; r=r->next) {
-      for (layer=0; layer < r->layer_cnt; ++layer) {
+      for (layer=0; layer<r->layer_cnt; ++layer) {
 	 temp=SplinePointListCopy(r->layers[layer].splines);
 	 if (head2==NULL)
 	    head2=tail=temp;
@@ -531,7 +531,7 @@ static int SSRefCompare(const SplineSet *ss1,const SplineSet *ss2,
    }
 
    ret=SSsCompare(head1, head2, pt_err, spline_err, &junk);
-   if (!(ret & SS_NoMatch))
+   if (!(ret&SS_NoMatch))
       ret |= SS_UnlinkRefMatch;
 
    SplinePointListsFree(head1);
@@ -552,71 +552,71 @@ enum Compare_Ret BitmapCompare(BDFChar * bc1, BDFChar * bc2, int err,
    int failed=0;
 
    if (bc1->byte_data != bc2->byte_data)
-      return (BC_DepthMismatch | BC_NoMatch);
+      return (BC_DepthMismatch|BC_NoMatch);
 
    if (bc1->width != bc2->width)
-      failed=SS_WidthMismatch | BC_NoMatch;
+      failed=SS_WidthMismatch|BC_NoMatch;
 
    if (bc1->vwidth != bc2->vwidth)
-      failed |= SS_VWidthMismatch | BC_NoMatch;
+      failed |= SS_VWidthMismatch|BC_NoMatch;
 
    BCFlattenFloat(bc1);
    BCCompressBitmap(bc1);
 
    if (bc1->byte_data) {
-      if ((d=bc1->xmin - bc2->xmin) > bb_err || d < -bb_err ||
-	  (d=bc1->ymin - bc2->ymin) > bb_err || d < -bb_err ||
-	  (d=bc1->xmax - bc2->xmax) > bb_err || d < -bb_err ||
-	  (d=bc1->ymax - bc2->ymax) > bb_err || d < -bb_err)
-	 return (BC_BoundingBoxMismatch | BC_NoMatch | failed);
+      if ((d=bc1->xmin-bc2->xmin)>bb_err || d<-bb_err ||
+	  (d=bc1->ymin-bc2->ymin)>bb_err || d<-bb_err ||
+	  (d=bc1->xmax-bc2->xmax)>bb_err || d<-bb_err ||
+	  (d=bc1->ymax-bc2->ymax)>bb_err || d<-bb_err)
+	 return (BC_BoundingBoxMismatch|BC_NoMatch|failed);
 
-      xmin=bc1->xmin > bc2->xmin ? bc2->xmin : bc1->xmin;
-      ymin=bc1->ymin > bc2->ymin ? bc2->ymin : bc1->ymin;
-      xmax=bc1->xmax < bc2->xmax ? bc2->xmax : bc1->xmax;
-      ymax=bc1->ymax < bc2->ymax ? bc2->ymax : bc1->ymax;
+      xmin=bc1->xmin>bc2->xmin?bc2->xmin:bc1->xmin;
+      ymin=bc1->ymin>bc2->ymin?bc2->ymin:bc1->ymin;
+      xmax=bc1->xmax<bc2->xmax?bc2->xmax:bc1->xmax;
+      ymax=bc1->ymax<bc2->ymax?bc2->ymax:bc1->ymax;
       for (j=ymin; j <= ymax; ++j) {
 	 if (j >= bc1->ymin && j <= bc1->ymax)
-	    pt1=bc1->bitmap + (j - bc1->ymin) * bc1->bytes_per_line;
+	    pt1=bc1->bitmap+(j-bc1->ymin)*bc1->bytes_per_line;
 	 else
 	    pt1=NULL;
 	 if (j >= bc2->ymin && j <= bc2->ymax)
-	    pt2=bc2->bitmap + (j - bc2->ymin) * bc2->bytes_per_line;
+	    pt2=bc2->bitmap+(j-bc2->ymin)*bc2->bytes_per_line;
 	 else
 	    pt2=NULL;
 	 for (i=xmin; i <= xmax; ++i) {
 	    if (pt1 != NULL && i >= bc1->xmin && i <= bc1->xmax)
-	       c1=pt1[i - bc1->xmin];
+	       c1=pt1[i-bc1->xmin];
 	    else
 	       c1=0;
 	    if (pt2 != NULL && i >= bc2->xmin && i <= bc2->xmax)
-	       c2=pt2[i - bc2->xmin];
+	       c2=pt2[i-bc2->xmin];
 	    else
 	       c2=0;
-	    if ((d=c1 - c2) > err || d < -err)
-	       return (BC_NoMatch | BC_BitmapMismatch | failed);
+	    if ((d=c1-c2)>err || d<-err)
+	       return (BC_NoMatch|BC_BitmapMismatch|failed);
 	 }
       }
    } else {
       /* Bitmap */
       if (bc1->xmin != bc2->xmin || bc1->xmax != bc2->xmax ||
 	  bc1->ymin != bc2->ymin || bc1->ymax != bc2->ymax)
-	 return (BC_BoundingBoxMismatch | BC_NoMatch | failed);
+	 return (BC_BoundingBoxMismatch|BC_NoMatch|failed);
 
-      xlen=bc1->xmax - bc1->xmin;
-      mask=0xff00 >> ((xlen & 7) + 1);
+      xlen=bc1->xmax-bc1->xmin;
+      mask=0xff00 >> ((xlen&7)+1);
       xlen >>= 3;
-      for (j=0; j <= bc1->ymax - bc1->ymin; ++j) {
-	 pt1=bc1->bitmap + j * bc1->bytes_per_line;
-	 pt2=bc2->bitmap + j * bc2->bytes_per_line;
-	 for (i=xlen - 1; i >= 0; --i)
+      for (j=0; j <= bc1->ymax-bc1->ymin; ++j) {
+	 pt1=bc1->bitmap+j * bc1->bytes_per_line;
+	 pt2=bc2->bitmap+j * bc2->bytes_per_line;
+	 for (i=xlen-1; i >= 0; --i)
 	    if (pt1[i] != pt2[i])
-	       return (BC_NoMatch | BC_BitmapMismatch | failed);
-	 if ((pt1[xlen] & mask) != (pt2[xlen] & mask))
-	    return (BC_NoMatch | BC_BitmapMismatch | failed);
+	       return (BC_NoMatch|BC_BitmapMismatch|failed);
+	 if ((pt1[xlen]&mask) != (pt2[xlen]&mask))
+	    return (BC_NoMatch|BC_BitmapMismatch|failed);
       }
    }
 
-   return (failed==0 ? BC_Match : failed);
+   return (failed==0?BC_Match:failed);
 }
 
 /* ************************************************************************** */
@@ -636,7 +636,7 @@ static int RefCheck(const RefChar *ref1,const RefChar *ref2) {
 	 if (!r2->checked) {
 	    /* BUG!!!! glyphs with no unicode encoding? */
 	    if (r2->unicode_enc==r1->unicode_enc) {
-	       for (i=0; i < 6 &&
+	       for (i=0; i<6 &&
 		    RealNear(r1->transform[i], r2->transform[i]); ++i);
 	       if (i==6)
 		  break;
@@ -658,7 +658,7 @@ static int RefCheck(const RefChar *ref1,const RefChar *ref2) {
 	 return (false);
       }
 
-   return (true + ptmatchdiff);
+   return (true+ptmatchdiff);
 }
 
 int CompareLayer(Context * c, const SplineSet * ss1, const SplineSet * ss2,
@@ -667,31 +667,31 @@ int CompareLayer(Context * c, const SplineSet * ss1, const SplineSet * ss2,
 		 int diffs_are_errors, SplinePoint ** _hmfail) {
    int val, refc;
 
-   if (pt_err < 0 && spline_err < 0)
+   if (pt_err<0 && spline_err<0)
       return (SS_PointsMatch);
    val=SSsCompare(ss1, ss2, pt_err, spline_err, _hmfail);
    refc=RefCheck(refs1, refs2);
    if (!refc) {
-      if (!(val & SS_NoMatch))
-	 val=SS_NoMatch | SS_RefMismatch;
+      if (!(val&SS_NoMatch))
+	 val=SS_NoMatch|SS_RefMismatch;
       else
 	 val |= SS_RefMismatch;
    } else if (refc==2)
       val |= SS_RefPtMismatch;
-   if ((val & SS_NoMatch) && diffs_are_errors) {
-      if (val & SS_DiffContourCount)
+   if ((val&SS_NoMatch) && diffs_are_errors) {
+      if (val&SS_DiffContourCount)
 	 GCErrorString(c,
 		       "Spline mismatch (different number of contours) in glyph",
 		       name);
-      else if (val & SS_MismatchOpenClosed)
+      else if (val&SS_MismatchOpenClosed)
 	 GCErrorString(c, "Open/Closed contour mismatch in glyph", name);
-      else if (val & SS_RefMismatch)
+      else if (val&SS_RefMismatch)
 	 GCErrorString(c, "Reference mismatch in glyph", name);
       else
 	 GCErrorString(c, "Spline mismatch in glyph", name);
       return (-1);
    }
-   if ((val & SS_RefPtMismatch) && diffs_are_errors) {
+   if ((val&SS_RefPtMismatch) && diffs_are_errors) {
       GCErrorString(c,
 		    "References have different truetype point matching in glyph",
 		    name);
@@ -727,16 +727,16 @@ static int CompareBitmap(Context *c,SplineChar *sc,const Undoes *cur,
    bc.width=cur->u.bmpstate.width;
    err=pixel_off_frac * (1 << BDFDepth(bdf));
    ret=BitmapCompare(bdf->glyphs[sc->orig_pos], &bc, err, bb_err);
-   if ((ret & BC_NoMatch) && diffs_are_errors) {
-      if (ret & BC_BoundingBoxMismatch)
+   if ((ret&BC_NoMatch) && diffs_are_errors) {
+      if (ret&BC_BoundingBoxMismatch)
 	 GCError3(c,
 		  "Bitmaps bounding boxes do not match in glyph %s pixelsize %d depth %d",
 		  sc->name, bdf->pixelsize, BDFDepth(bdf));
-      else if (ret & SS_WidthMismatch)
+      else if (ret&SS_WidthMismatch)
 	 GCError3(c,
 		  "Bitmaps advance widths do not match in glyph %s pixelsize %d depth %d",
 		  sc->name, bdf->pixelsize, BDFDepth(bdf));
-      else if (ret & SS_VWidthMismatch)
+      else if (ret&SS_VWidthMismatch)
 	 GCError3(c,
 		  "Bitmaps vertical advance widths do not match in glyph %s pixelsize %d depth %d",
 		  sc->name, bdf->pixelsize, BDFDepth(bdf));
@@ -793,7 +793,7 @@ static int CompareSplines(Context *c,SplineChar *sc,const Undoes *cur,
 			  int diffs_are_errors) {
    int ret=0, failed=0, temp, ly;
    const Undoes *layer;
-   double err=pt_err > 0 ? pt_err : spline_err;
+   double err=pt_err>0?pt_err:spline_err;
    SplinePoint *hmfail;
 
    switch (cur->undotype) {
@@ -808,29 +808,29 @@ static int CompareSplines(Context *c,SplineChar *sc,const Undoes *cur,
 			   diffs_are_errors, &hmfail);
 	   if (ret==-1)
 	      return (-1);
-	   if (ret & SS_NoMatch)
+	   if (ret&SS_NoMatch)
 	      failed |= ret;
-	   if (sc->vwidth - cur->u.state.vwidth > err
-	       || sc->vwidth - cur->u.state.vwidth < -err)
-	      failed |= SS_NoMatch | SS_VWidthMismatch;
-	   if (sc->width - cur->u.state.width > err
-	       || sc->width - cur->u.state.width < -err)
-	      failed |= SS_NoMatch | SS_WidthMismatch;
+	   if (sc->vwidth-cur->u.state.vwidth>err
+	       || sc->vwidth-cur->u.state.vwidth<-err)
+	      failed |= SS_NoMatch|SS_VWidthMismatch;
+	   if (sc->width-cur->u.state.width>err
+	       || sc->width-cur->u.state.width<-err)
+	      failed |= SS_NoMatch|SS_WidthMismatch;
 	}
-	if (cur->undotype==ut_statehint && (comp_hints & 1) &&
+	if (cur->undotype==ut_statehint && (comp_hints&1) &&
 	    !CompareHints(sc, cur->u.state.hints))
-	   failed |= SS_NoMatch | SS_HintMismatch;
-	if (cur->undotype==ut_statehint && (comp_hints & 2) &&
-	    (sc->hconflicts || sc->vconflicts || !(comp_hints & 4)) &&
+	   failed |= SS_NoMatch|SS_HintMismatch;
+	if (cur->undotype==ut_statehint && (comp_hints&2) &&
+	    (sc->hconflicts || sc->vconflicts || !(comp_hints&4)) &&
 	    hmfail != NULL)
-	   failed |= SS_NoMatch | SS_HintMaskMismatch;
+	   failed |= SS_NoMatch|SS_HintMaskMismatch;
 	if (failed)
 	   ret=failed;
 	break;
      case ut_layers:
 	if (err >= 0) {
 	   for (ly=ly_fore, layer=cur->u.multiple.mult;
-		ly < sc->layer_cnt && layer != NULL;
+		ly<sc->layer_cnt && layer != NULL;
 		++ly, layer=cur->next) {
 	      temp =
 		 CompareLayer(c, sc->layers[ly].splines, cur->u.state.splines,
@@ -839,23 +839,23 @@ static int CompareSplines(Context *c,SplineChar *sc,const Undoes *cur,
 			      &hmfail);
 	      if (temp==-1)
 		 return (-1);
-	      if (temp & SS_NoMatch)
+	      if (temp&SS_NoMatch)
 		 failed |= temp;
 	      else
 		 ret |= temp;
 	      /* No hints in type3 fonts */
 	   }
 	   if (ly==ly_fore
-	       && (sc->vwidth - cur->u.state.vwidth > err
-		   || sc->vwidth - cur->u.state.vwidth < -err))
-	      failed |= SS_NoMatch | SS_VWidthMismatch;
+	       && (sc->vwidth-cur->u.state.vwidth>err
+		   || sc->vwidth-cur->u.state.vwidth<-err))
+	      failed |= SS_NoMatch|SS_VWidthMismatch;
 	   if (ly==ly_fore
-	       && (sc->width - cur->u.state.width > err
-		   || sc->width - cur->u.state.width < -err))
-	      failed |= SS_NoMatch | SS_WidthMismatch;
+	       && (sc->width-cur->u.state.width>err
+		   || sc->width-cur->u.state.width<-err))
+	      failed |= SS_NoMatch|SS_WidthMismatch;
 	}
 	if (ly != sc->layer_cnt || layer != NULL)
-	   failed |= SS_NoMatch | SS_LayerCntMismatch;
+	   failed |= SS_NoMatch|SS_LayerCntMismatch;
 	if (failed)
 	   ret=failed;
 	break;
@@ -864,19 +864,19 @@ static int CompareSplines(Context *c,SplineChar *sc,const Undoes *cur,
 	return (-1);
    }
 
-   if ((ret & SS_WidthMismatch) && diffs_are_errors) {
+   if ((ret&SS_WidthMismatch) && diffs_are_errors) {
       GCErrorString(c, "Advance width mismatch in glyph", sc->name);
       return (-1);
    }
-   if ((ret & SS_VWidthMismatch) && diffs_are_errors) {
+   if ((ret&SS_VWidthMismatch) && diffs_are_errors) {
       GCErrorString(c, "Vertical advance width mismatch in glyph", sc->name);
       return (-1);
    }
-   if ((ret & SS_HintMismatch) && diffs_are_errors) {
+   if ((ret&SS_HintMismatch) && diffs_are_errors) {
       GCErrorString(c, "Hinting mismatch in glyph", sc->name);
       return (-1);
    }
-   if ((ret & SS_HintMaskMismatch) && diffs_are_errors) {
+   if ((ret&SS_HintMaskMismatch) && diffs_are_errors) {
       if (hmfail==NULL || c==NULL)
 	 GCErrorString(c, "Hint mask mismatch in glyph", sc->name);
       else
@@ -884,7 +884,7 @@ static int CompareSplines(Context *c,SplineChar *sc,const Undoes *cur,
 		      hmfail->me.x, hmfail->me.y, sc->name);
       return (-1);
    }
-   if ((ret & SS_LayerCntMismatch) && diffs_are_errors) {
+   if ((ret&SS_LayerCntMismatch) && diffs_are_errors) {
       GCErrorString(c, "Layer difference in glyph", sc->name);
       return (-1);
    }
@@ -900,7 +900,7 @@ int CompareGlyphs(Context * c, double pt_err, double spline_err,
    int ret=0;
    const Undoes *cur, *bmp;
 
-   for (i=0; i < fv->map->enccount; ++i)
+   for (i=0; i<fv->map->enccount; ++i)
       if (fv->selected[i])
 	 ++cnt;
    if (cnt==0) {
@@ -917,10 +917,10 @@ int CompareGlyphs(Context * c, double pt_err, double spline_err,
    if (cur->undotype==ut_multiple)
       cur=cur->u.multiple.mult;
 
-   for (i=0; i < fv->map->enccount; ++i)
+   for (i=0; i<fv->map->enccount; ++i)
       if (fv->selected[i]) {
 	 SplineChar *sc =
-	    fv->map->map[i]==-1 ? NULL : sf->glyphs[fv->map->map[i]];
+	    fv->map->map[i]==-1?NULL:sf->glyphs[fv->map->map[i]];
 
 	 if (sc==NULL) {
 	    GCError(c, "Missing character");
@@ -937,7 +937,7 @@ int CompareGlyphs(Context * c, double pt_err, double spline_err,
 	   case ut_statehint:
 	   case ut_statename:
 	   case ut_layers:
-	      if (pt_err >= 0 || spline_err > 0 || comp_hints) {
+	      if (pt_err >= 0 || spline_err>0 || comp_hints) {
 		 ret |=
 		    CompareSplines(c, sc, cur, pt_err, spline_err, comp_hints,
 				   diffs_are_errors);
@@ -957,7 +957,7 @@ int CompareGlyphs(Context * c, double pt_err, double spline_err,
 	      break;
 	   case ut_composit:
 	      if (cur->u.composit.state != NULL
-		  && (pt_err >= 0 || spline_err > 0 || comp_hints))
+		  && (pt_err >= 0 || spline_err>0 || comp_hints))
 		 ret |=
 		    CompareSplines(c, sc, cur->u.composit.state, pt_err,
 				   spline_err, comp_hints, diffs_are_errors);
@@ -977,8 +977,8 @@ int CompareGlyphs(Context * c, double pt_err, double spline_err,
 	      return (-1);
 	 }
 	 if (ret &
-	     (SS_NoMatch | SS_RefMismatch | SS_WidthMismatch | BC_NoMatch)) {
-	    ret &= ~(BC_Match | SS_PointsMatch | SS_ContourMatch);
+	     (SS_NoMatch|SS_RefMismatch|SS_WidthMismatch|BC_NoMatch)) {
+	    ret &= ~(BC_Match|SS_PointsMatch|SS_ContourMatch);
 	    return (ret);
 	 }
 	 cur=cur->next;
@@ -1090,7 +1090,7 @@ static int fdRefCheck(struct font_diff *fd,SplineChar *sc1,
 		(r1->sc->unicodeenc != -1
 		 || strcmp(r1->sc->name, r2->sc->name)==0)) {
 	       for (i=0;
-		    i < 6 && RealNear(r1->transform[i], r2->transform[i]);
+		    i<6 && RealNear(r1->transform[i], r2->transform[i]);
 		    ++i);
 	       if (i==6)
 		  break;
@@ -1190,7 +1190,7 @@ static void SCCompare(SplineChar *sc1,SplineChar *sc2,
    else {
       last=ly_fore;
       if (sc1->parent->multilayer)
-	 last=sc1->layer_cnt - 1;
+	 last=sc1->layer_cnt-1;
       for (layer=ly_fore; layer <= last; ++layer) {
 	 if (sc1->layers[layer].dofill != sc2->layers[layer].dofill)
 	    GlyphDiffSCError(fd, sc1,
@@ -1200,7 +1200,7 @@ static void SCCompare(SplineChar *sc1,SplineChar *sc2,
 	    GlyphDiffSCError(fd, sc1,
 			     "Glyph \"%s\" has a different stroke in layer %d\n",
 			     sc1->name, layer);
-	 if (!(fd->flags & fcf_exact)) {
+	 if (!(fd->flags&fcf_exact)) {
 	    int tdiff, rd;
 
 	    val=SS_NoMatch;
@@ -1214,7 +1214,7 @@ static void SCCompare(SplineChar *sc1,SplineChar *sc2,
 			       sc1->layers[layer].refs,
 			       sc2->layers[layer].refs, 0, 1.5);
 	    }
-	    if (val & SS_NoMatch) {
+	    if (val&SS_NoMatch) {
 	       fdRefCheck(fd, sc1, sc1->layers[layer].refs,
 			  sc2->layers[layer].refs, true);
 	       val =
@@ -1226,12 +1226,12 @@ static void SCCompare(SplineChar *sc1,SplineChar *sc2,
 	       GlyphDiffSCError(fd, sc1,
 				"Glyph \"%s\" contains a reference which has different truetype point match specifications\n",
 				sc1->name);
-	    if ((val & SS_ContourMatch) && (fd->flags & fcf_warn_not_exact))
+	    if ((val&SS_ContourMatch) && (fd->flags&fcf_warn_not_exact))
 	       GlyphDiffSCError(fd, sc1,
 				"Glyph \"%s\" does not have splines which match exactly, but they are close\n",
 				sc1->name);
-	    if ((val & SS_UnlinkRefMatch)
-		&& (fd->flags & fcf_warn_not_ref_exact))
+	    if ((val&SS_UnlinkRefMatch)
+		&& (fd->flags&fcf_warn_not_ref_exact))
 	       GlyphDiffSCError(fd, sc1,
 				"A match was found after unlinking references in glyph \"%s\"\n",
 				sc1->name);
@@ -1243,12 +1243,12 @@ static void SCCompare(SplineChar *sc1,SplineChar *sc2,
 	       SSsCompare(sc1->layers[layer].splines,
 			  sc2->layers[layer].splines, 0, -1, &hmfail);
 	 }
-	 if (val & SS_NoMatch) {
-	    if (val & SS_DiffContourCount)
+	 if (val&SS_NoMatch) {
+	    if (val&SS_DiffContourCount)
 	       GlyphDiffSCError(fd, sc1,
 				"Different number of contours in glyph \"%s\"\n",
 				sc1->name);
-	    else if (val & SS_MismatchOpenClosed)
+	    else if (val&SS_MismatchOpenClosed)
 	       GlyphDiffSCError(fd, sc1,
 				"Open/Closed contour mismatch in glyph \"%s\"\n",
 				sc1->name);
@@ -1259,7 +1259,7 @@ static void SCCompare(SplineChar *sc1,SplineChar *sc2,
 	 }
       }
    }
-   if (fd->last_sc==sc1 && (fd->flags & fcf_adddiff2sf1))
+   if (fd->last_sc==sc1 && (fd->flags&fcf_adddiff2sf1))
       SCAddBackgrounds(sc1, sc2, fd);
 
    if (sc1->width != sc2->width)
@@ -1273,16 +1273,16 @@ static void SCCompare(SplineChar *sc1,SplineChar *sc2,
 		       sc1->name, sc1->vwidth, fd->name1, sc2->vwidth,
 		       fd->name2);
 
-   if ((fd->flags & fcf_hintmasks) && !(val & SS_NoMatch) &&
+   if ((fd->flags&fcf_hintmasks) && !(val&SS_NoMatch) &&
        (sc1->hconflicts || sc1->vconflicts
-	|| !(fd->flags & fcf_hmonlywithconflicts)) && hmfail != NULL)
+	|| !(fd->flags&fcf_hmonlywithconflicts)) && hmfail != NULL)
       GlyphDiffSCError(fd, sc1,
 		       "Hint masks differ in glyph \"%s\" at (%g,%g)\n",
 		       sc1->name, hmfail->me.x, hmfail->me.y);
-   if ((fd->flags & fcf_hinting) && !SCCompareHints(sc1, sc2))
+   if ((fd->flags&fcf_hinting) && !SCCompareHints(sc1, sc2))
       GlyphDiffSCError(fd, sc1, "Hints differ in glyph \"%s\"\n",
 		       sc1->name);
-   if ((fd->flags & fcf_hinting)
+   if ((fd->flags&fcf_hinting)
        && (sc1->ttf_instrs_len != 0 || sc2->ttf_instrs_len != 0)) {
       if (sc1->ttf_instrs_len==0)
 	 GlyphDiffSCError(fd, sc1,
@@ -1325,7 +1325,7 @@ static void comparefontglyphs(struct font_diff *fd) {
    SplineFont *sf1=fd->sf1, *sf2=fd->sf2;
 
    fd->top_diff=fd->local_diff=false;
-   for (gid1=0; gid1 < fd->sf1_glyphcnt; ++gid1) {
+   for (gid1=0; gid1<fd->sf1_glyphcnt; ++gid1) {
       if ((sc=sf1->glyphs[gid1]) != NULL && !sc->ticked) {
 	 if (!fd->top_diff)
 	    afprintf(fd->diffs, "%s", "Outline Glyphs\n");
@@ -1342,7 +1342,7 @@ static void comparefontglyphs(struct font_diff *fd) {
    }
 
    fd->local_diff=false;
-   for (gid2=0; gid2 < sf2->glyphcnt; ++gid2)
+   for (gid2=0; gid2<sf2->glyphcnt; ++gid2)
       if ((sc=sf2->glyphs[gid2]) != NULL && !sc->ticked) {
 	 if (!fd->top_diff)
 	    afprintf(fd->diffs, "%s", "Outline Glyphs\n");
@@ -1355,11 +1355,11 @@ static void comparefontglyphs(struct font_diff *fd) {
 	 afputs("  ", fd->diffs);
 	 afprintf(fd->diffs, "Glyph \"%s\" missing from %s\n", sc->name,
 		 fd->name1);
-	 if (fd->flags & fcf_addmissing)
+	 if (fd->flags&fcf_addmissing)
 	    FDAddMissingGlyph(fd, sc);
       }
 
-   if (sf1->ascent + sf1->descent != sf2->ascent + sf2->descent) {
+   if (sf1->ascent+sf1->descent != sf2->ascent+sf2->descent) {
       if (!fd->top_diff)
 	 afprintf(fd->diffs, "%s", "Outline Glyphs\n");
       aputc(' ', fd->diffs);
@@ -1372,7 +1372,7 @@ static void comparefontglyphs(struct font_diff *fd) {
    }
 
    fd->local_diff=false;
-   for (gid1=0; gid1 < fd->sf1_glyphcnt; ++gid1) {
+   for (gid1=0; gid1<fd->sf1_glyphcnt; ++gid1) {
       if ((sc=sf1->glyphs[gid1]) != NULL
 	  && (sc2=fd->matches[gid1]) != NULL)
 	 SCCompare(sc, sc2, fd);
@@ -1384,20 +1384,20 @@ static void comparebitmapglyphs(struct font_diff *fd,BDFFont *bdf1,
    BDFChar *bdfc, *bdfc2;
    int gid1, gid2;
 
-   for (gid1=0; gid1 < bdf1->glyphcnt; ++gid1)
+   for (gid1=0; gid1<bdf1->glyphcnt; ++gid1)
       if ((bdfc=bdf1->glyphs[gid1]) != NULL)
 	 bdfc->ticked=false;
-   for (gid2=0; gid2 < bdf2->glyphcnt; ++gid2)
+   for (gid2=0; gid2<bdf2->glyphcnt; ++gid2)
       if ((bdfc=bdf2->glyphs[gid2]) != NULL)
 	 bdfc->ticked=false;
 
    fd->middle_diff=fd->local_diff=false;
-   for (gid1=0; gid1 < bdf1->glyphcnt; ++gid1) {
+   for (gid1=0; gid1<bdf1->glyphcnt; ++gid1) {
       if ((bdfc=bdf1->glyphs[gid1]) != NULL) {
 	 bdfc2=NULL;
 	 if (fd->matches[gid1] != NULL) {
 	    gid2=fd->matches[gid1]->orig_pos;
-	    if (gid2 < bdf2->glyphcnt) {
+	    if (gid2<bdf2->glyphcnt) {
 	       bdfc2=bdf2->glyphs[gid2];
 	       bdfc2->ticked=true;
 	       bdfc->ticked=true;
@@ -1427,7 +1427,7 @@ static void comparebitmapglyphs(struct font_diff *fd,BDFFont *bdf1,
    }
 
    fd->local_diff=false;
-   for (gid2=0; gid2 < bdf2->glyphcnt; ++gid2)
+   for (gid2=0; gid2<bdf2->glyphcnt; ++gid2)
       if ((bdfc=bdf2->glyphs[gid2]) != NULL && !bdfc->ticked) {
 	 if (!fd->top_diff)
 	    afprintf(fd->diffs, "%s", "Bitmap Strikes\n");
@@ -1448,12 +1448,12 @@ static void comparebitmapglyphs(struct font_diff *fd,BDFFont *bdf1,
       }
 
    fd->local_diff=false;
-   for (gid1=0; gid1 < bdf1->glyphcnt; ++gid1) {
+   for (gid1=0; gid1<bdf1->glyphcnt; ++gid1) {
       if ((bdfc=bdf1->glyphs[gid1]) != NULL) {
 	 bdfc2=NULL;
 	 if (fd->matches[gid1] != NULL) {
 	    gid2=fd->matches[gid1]->orig_pos;
-	    if (gid2 < bdf2->glyphcnt)
+	    if (gid2<bdf2->glyphcnt)
 	       bdfc2=bdf2->glyphs[gid2];
 	 }
 	 if (bdfc2 != NULL) {
@@ -1472,31 +1472,31 @@ static void comparebitmapglyphs(struct font_diff *fd,BDFFont *bdf1,
 	       afprintf(fd->diffs, "Glyphs Differences at %d@%d\n",
 		       bdf1->pixelsize, BDFDepth(bdf1));
 	    }
-	    if (((val & SS_WidthMismatch) !=
-		 0) + ((val & SS_VWidthMismatch) !=
+	    if (((val&SS_WidthMismatch) !=
+		 0)+((val&SS_VWidthMismatch) !=
 		       0) +
-		((val & (BC_BoundingBoxMismatch | BC_BitmapMismatch)) != 0) >
+		((val&(BC_BoundingBoxMismatch|BC_BitmapMismatch)) != 0) >
 		1) {
 	       afputs(leader, fd->diffs);
 	       afprintf(fd->diffs, "Glyph \"%s\" differs at %d@%d\n",
 		       bdfc->sc->name, bdf1->pixelsize, BDFDepth(bdf1));
 	       leader="    ";
 	    }
-	    if (val & SS_WidthMismatch) {
+	    if (val&SS_WidthMismatch) {
 	       afputs(leader, fd->diffs);
 	       afprintf(fd->diffs,
 		       "Glyph \"%s\" has advance width %d in %s but %d in %s at %d@%d\n",
 		       bdfc->sc->name, bdfc->width, fd->name1, bdfc2->width,
 		       fd->name2, bdf1->pixelsize, BDFDepth(bdf1));
 	    }
-	    if (val & SS_VWidthMismatch) {
+	    if (val&SS_VWidthMismatch) {
 	       afputs(leader, fd->diffs);
 	       afprintf(fd->diffs,
 		       "Glyph \"%s\" has vertical advance width %d in %s but %d in %s at %d@%d\n",
 		       bdfc->sc->name, bdfc->vwidth, fd->name1, bdfc2->vwidth,
 		       fd->name2, bdf1->pixelsize, BDFDepth(bdf1));
 	    }
-	    if (val & (BC_BoundingBoxMismatch | BC_BitmapMismatch)) {
+	    if (val&(BC_BoundingBoxMismatch|BC_BitmapMismatch)) {
 	       afputs(leader, fd->diffs);
 	       afprintf(fd->diffs,
 		       "Glyph \"%s\" has a different bitmap at %d@%d\n",
@@ -1648,7 +1648,7 @@ static void comparefontnames(struct font_diff *fd) {
 	   names2 != NULL && names2->lang != names1->lang;
 	   names2=names2->next);
       if (names2 != NULL) {
-	 for (id=0; id < ttf_namemax; ++id)
+	 for (id=0; id<ttf_namemax; ++id)
 	    if (names1->names[id] != NULL && names2->names[id] != NULL)
 	       TtfNameCompare(fd, names1->names[id], names2->names[id],
 			      names1->lang, id);
@@ -1659,12 +1659,12 @@ static void comparefontnames(struct font_diff *fd) {
 	   names2 != NULL && names2->lang != names1->lang;
 	   names2=names2->next);
       if (names2 != NULL) {
-	 for (id=0; id < ttf_namemax; ++id)
+	 for (id=0; id<ttf_namemax; ++id)
 	    if (names1->names[id] != NULL && names2->names[id]==NULL)
 	       TtfMissingName(fd, fd->name1, fd->name2, names1->names[id],
 			      names1->lang, id);
       } else {
-	 for (id=0; id < ttf_namemax; ++id)
+	 for (id=0; id<ttf_namemax; ++id)
 	    if (names1->names[id] != NULL)
 	       TtfMissingName(fd, fd->name1, fd->name2, names1->names[id],
 			      names1->lang, id);
@@ -1675,12 +1675,12 @@ static void comparefontnames(struct font_diff *fd) {
 	   names1 != NULL && names1->lang != names2->lang;
 	   names1=names1->next);
       if (names1 != NULL) {
-	 for (id=0; id < ttf_namemax; ++id)
+	 for (id=0; id<ttf_namemax; ++id)
 	    if (names2->names[id] != NULL && names1->names[id]==NULL)
 	       TtfMissingName(fd, fd->name2, fd->name1, names2->names[id],
 			      names2->lang, id);
       } else {
-	 for (id=0; id < ttf_namemax; ++id)
+	 for (id=0; id<ttf_namemax; ++id)
 	    if (names2->names[id] != NULL)
 	       TtfMissingName(fd, fd->name2, fd->name1, names2->names[id],
 			      names2->lang, id);
@@ -1697,7 +1697,7 @@ static int ScriptMatch(struct scriptlanglist *sl1,struct scriptlanglist *sl2,
    struct scriptlanglist *s1, *s2;
 
    if (exactness) {
-      /* Features & scripts should be ordered */
+      /* Features&scripts should be ordered */
       for (s1=sl1, s2=sl2; s1 != NULL && s2 != NULL;
 	   s1=s1->next, s2=s2->next) {
 	 if (s1->script != s2->script)
@@ -1734,7 +1734,7 @@ static int FeatureMatch(FeatureScriptLangList *fl1,
    FeatureScriptLangList *f1, *f2;
 
    if (exactness) {
-      /* Features & scripts should be ordered */
+      /* Features&scripts should be ordered */
       for (f1=fl1, f2=fl2; f1 != NULL && f2 != NULL;
 	   f1=f1->next, f2=f2->next) {
 	 if (f1->featuretag != f2->featuretag
@@ -1861,10 +1861,10 @@ static int comparekc(struct font_diff *fd,KernClass *kc1,KernClass *kc2) {
    else if (classcmp(kc1->firsts[0], kc2->firsts[0]) != 0)
       return (false);
 
-   for (i=1; i < kc1->first_cnt; ++i)
+   for (i=1; i<kc1->first_cnt; ++i)
       if (classcmp(kc1->firsts[i], kc2->firsts[i]) != 0)
 	 return (false);
-   for (i=1; i < kc1->second_cnt; ++i)
+   for (i=1; i<kc1->second_cnt; ++i)
       if (classcmp(kc1->seconds[i], kc2->seconds[i]) != 0)
 	 return (false);
 
@@ -1892,23 +1892,23 @@ static int comparefpst(struct font_diff *fd,FPST *fpst1,FPST *fpst2) {
    if (fpst1->nccnt != fpst2->nccnt || fpst1->bccnt != fpst2->bccnt
        || fpst1->fccnt != fpst2->fccnt)
       return (false);
-   for (i=0; i < fpst1->nccnt; ++i)
+   for (i=0; i<fpst1->nccnt; ++i)
       if (!(fpst1->nclass[i]==NULL && fpst2->nclass[i]==NULL) &&
 	  ((fpst1->nclass[i]==NULL || fpst2->nclass[i]==NULL) ||
 	   classcmp(fpst1->nclass[i], fpst2->nclass[i]) != 0))
 	 return (false);
-   for (i=0; i < fpst1->bccnt; ++i)
+   for (i=0; i<fpst1->bccnt; ++i)
       if (!(fpst1->bclass[i]==NULL && fpst2->bclass[i]==NULL) &&
 	  ((fpst1->bclass[i]==NULL || fpst2->bclass[i]==NULL) ||
 	   classcmp(fpst1->bclass[i], fpst2->bclass[i]) != 0))
 	 return (false);
-   for (i=0; i < fpst1->fccnt; ++i)
+   for (i=0; i<fpst1->fccnt; ++i)
       if (!(fpst1->fclass[i]==NULL && fpst2->fclass[i]==NULL) &&
 	  ((fpst1->fclass[i]==NULL || fpst2->fclass[i]==NULL) ||
 	   classcmp(fpst1->fclass[i], fpst2->fclass[i]) != 0))
 	 return (false);
 
-   for (i=0; i < fpst1->rule_cnt; ++i) {
+   for (i=0; i<fpst1->rule_cnt; ++i) {
       if (fpst1->format==pst_glyphs) {
 	 if (strcmp
 	     (fpst1->rules[i].u.glyph.names,
@@ -1952,17 +1952,17 @@ static int comparefpst(struct font_diff *fd,FPST *fpst1,FPST *fpst2) {
 	     || fpst1->rules[i].u.coverage.fcnt !=
 	     fpst2->rules[i].u.class.fcnt)
 	    return (false);
-	 for (j=0; j < fpst1->rules[i].u.coverage.ncnt; ++j)
+	 for (j=0; j<fpst1->rules[i].u.coverage.ncnt; ++j)
 	    if (classcmp
 		(fpst1->rules[i].u.coverage.ncovers[j],
 		 fpst2->rules[i].u.coverage.ncovers[j]) != 0)
 	       return (false);
-	 for (j=0; j < fpst1->rules[i].u.coverage.bcnt; ++j)
+	 for (j=0; j<fpst1->rules[i].u.coverage.bcnt; ++j)
 	    if (classcmp
 		(fpst1->rules[i].u.coverage.bcovers[j],
 		 fpst2->rules[i].u.coverage.bcovers[j]) != 0)
 	       return (false);
-	 for (j=0; j < fpst1->rules[i].u.coverage.fcnt; ++j)
+	 for (j=0; j<fpst1->rules[i].u.coverage.fcnt; ++j)
 	    if (classcmp
 		(fpst1->rules[i].u.coverage.fcovers[j],
 		 fpst2->rules[i].u.coverage.fcovers[j]) != 0)
@@ -1977,10 +1977,10 @@ static int comparefpst(struct font_diff *fd,FPST *fpst1,FPST *fpst2) {
 
       if (fpst1->rules[i].lookup_cnt != fpst2->rules[i].lookup_cnt)
 	 return (false);
-      for (j=0; j < fpst1->rules[i].lookup_cnt; ++j)
+      for (j=0; j<fpst1->rules[i].lookup_cnt; ++j)
 	 if (fpst1->rules[i].lookups[j].seq != fpst2->rules[i].lookups[j].seq)
 	    return (false);
-      for (j=0; j < fpst1->rules[i].lookup_cnt; ++j)
+      for (j=0; j<fpst1->rules[i].lookup_cnt; ++j)
 	 if (!NestedLookupsMatch(fd,
 				 fpst1->rules[i].lookups[j].lookup,
 				 fpst2->rules[i].lookups[j].lookup))
@@ -2024,7 +2024,7 @@ static int comparelookupsubtable(struct font_diff *fd,
    if (!test_anchors && !test_kerns && !test_psts)
       return (false);
 
-   for (gid1=0; gid1 < fd->sf1_glyphcnt; ++gid1)
+   for (gid1=0; gid1<fd->sf1_glyphcnt; ++gid1)
       if ((sc2=fd->matches[gid1]) != NULL
 	  && (sc1=fd->sf1->glyphs[gid1]) != NULL) {
 	 if (test_psts) {
@@ -2050,11 +2050,11 @@ static int comparelookupsubtable(struct font_diff *fd,
 	       }
 	 }
 	 if (test_kerns) {
-	    for (isv=0; isv < 2; ++isv) {
-	       for (kp1=isv ? sc1->kerns : sc1->vkerns; kp1 != NULL;
+	    for (isv=0; isv<2; ++isv) {
+	       for (kp1=isv?sc1->kerns:sc1->vkerns; kp1 != NULL;
 		    kp1=kp1->next)
 		  if (kp1->subtable==sub1) {
-		     for (kp2=isv ? sc2->kerns : sc2->vkerns; kp2 != NULL;
+		     for (kp2=isv?sc2->kerns:sc2->vkerns; kp2 != NULL;
 			  kp2=kp2->next)
 			if (kp2->subtable==sub2) {
 			   if (kp1->off==kp2->off
@@ -2064,10 +2064,10 @@ static int comparelookupsubtable(struct font_diff *fd,
 		     if (kp2==NULL)
 			return (false);
 		  }
-	       for (kp2=isv ? sc2->kerns : sc2->vkerns; kp2 != NULL;
+	       for (kp2=isv?sc2->kerns:sc2->vkerns; kp2 != NULL;
 		    kp2=kp2->next)
 		  if (kp2->subtable==sub2) {
-		     for (kp1=isv ? sc1->kerns : sc1->vkerns; kp1 != NULL;
+		     for (kp1=isv?sc1->kerns:sc1->vkerns; kp1 != NULL;
 			  kp1=kp1->next)
 			if (kp1->subtable==sub1) {
 			   if (kp1->off==kp2->off
@@ -2178,10 +2178,10 @@ static void MatchLookups(struct font_diff *fd) {
 	    if (otl2->ticked)
 	       continue;
 	    if (otl->lookup_type==otl2->lookup_type &&
-		(!(exactness & 2)
+		(!(exactness&2)
 		 || strcmp(otl->lookup_name, otl2->lookup_name)==0)
 		&& FeatureMatch(otl->features, otl2->features,
-				exactness & 1)) {
+				exactness&1)) {
 	       otl->ticked=otl2->ticked=true;
 	       fd->l2match1[lcnt]=otl2;
 	       fd->l1match2[otl2->lookup_index]=otl;
@@ -2225,7 +2225,7 @@ static void featureheader(struct font_diff *fd) {
    if (!fd->top_diff)
       afprintf(fd->diffs, "%s",
 	      fd->
-	      is_gpos ? "Glyph Positioning\n" : "Glyph Substitution\n");
+	      is_gpos?"Glyph Positioning\n":"Glyph Substitution\n");
    if (!fd->middle_diff) {
       aputc(' ', fd->diffs);
       afprintf(fd->diffs, "%s", "Lookup Differences\n");
@@ -2235,7 +2235,7 @@ static void featureheader(struct font_diff *fd) {
       afprintf(fd->diffs, "Lookup subtable %s (matched with %s)\n",
 	      fd->cur_sub1->subtable_name,
 	      fd->cur_sub2 ==
-	      NULL ? "<Nothing>" : fd->cur_sub2->subtable_name);
+	      NULL?"<Nothing>":fd->cur_sub2->subtable_name);
    }
    fd->top_diff=fd->middle_diff=fd->diff=fd->local_diff=true;
 }
@@ -2252,7 +2252,7 @@ static void complainscfeature(struct font_diff *fd,SplineChar *sc,
 	 afputs("   ", fd->diffs);
 	 afprintf(fd->diffs, "Glyph \"%s\" differs\n", sc->name);
 	 afprintf(fd->diffs, "    %s", fd->held);
-	 if (fd->held[strlen(fd->held) - 1] != '\n')
+	 if (fd->held[strlen(fd->held)-1] != '\n')
 	    aputc('\n', fd->diffs);
 	 fd->held[0]='\0';
       }
@@ -2360,7 +2360,7 @@ static void comparesubtable(struct font_diff *fd) {
       return;
    }
 
-   for (gid1=0; gid1 < fd->sf1_glyphcnt; ++gid1)
+   for (gid1=0; gid1<fd->sf1_glyphcnt; ++gid1)
       if ((sc2=fd->matches[gid1]) != NULL
 	  && (sc1=fd->sf1->glyphs[gid1]) != NULL) {
 	 if (test_psts) {
@@ -2413,15 +2413,15 @@ static void comparesubtable(struct font_diff *fd) {
 	       }
 	 }
 	 if (test_kerns) {
-	    for (isv=0; isv < 2; ++isv) {
-	       for (kp2=isv ? sc2->vkerns : sc2->kerns; kp2 != NULL;
+	    for (isv=0; isv<2; ++isv) {
+	       for (kp2=isv?sc2->vkerns:sc2->kerns; kp2 != NULL;
 		    kp2=kp2->next)
 		  kp2->kcid=0;
-	       for (kp1=isv ? sc1->vkerns : sc1->kerns; kp1 != NULL;
+	       for (kp1=isv?sc1->vkerns:sc1->kerns; kp1 != NULL;
 		    kp1=kp1->next) {
 		  if (kp1->subtable != fd->cur_sub1)
 		     continue;
-		  for (kp2=isv ? sc2->vkerns : sc2->kerns; kp2 != NULL;
+		  for (kp2=isv?sc2->vkerns:sc2->kerns; kp2 != NULL;
 		       kp2=kp2->next)
 		     if (!kp2->kcid) {
 			if (kp2->subtable != fd->cur_sub2)
@@ -2443,7 +2443,7 @@ static void comparesubtable(struct font_diff *fd) {
 				       kp1->off, fd->name1);
 		  }
 	       }
-	       for (kp2=isv ? sc2->vkerns : sc2->kerns; kp2 != NULL;
+	       for (kp2=isv?sc2->vkerns:sc2->kerns; kp2 != NULL;
 		    kp2=kp2->next)
 		  if (!kp2->kcid && kp2->subtable==fd->cur_sub2)
 		     complainscfeature(fd, sc1,
@@ -2471,7 +2471,7 @@ static void compareg___(struct font_diff *fd) {
 	 if (!fd->top_diff)
 	    afprintf(fd->diffs, "%s",
 		    fd->
-		    is_gpos ? "Glyph Positioning\n" :
+		    is_gpos?"Glyph Positioning\n" :
 		    "Glyph Substitution\n");
 	 if (!fd->middle_diff) {
 	    aputc(' ', fd->diffs);
@@ -2493,7 +2493,7 @@ static void compareg___(struct font_diff *fd) {
 	       if (!fd->top_diff)
 		  afprintf(fd->diffs, "%s",
 			  fd->
-			  is_gpos ? "Glyph Positioning\n" :
+			  is_gpos?"Glyph Positioning\n" :
 			  "Glyph Substitution\n");
 	       if (!fd->middle_diff) {
 		  aputc(' ', fd->diffs);
@@ -2517,7 +2517,7 @@ static void compareg___(struct font_diff *fd) {
 	 if (!fd->top_diff)
 	    afprintf(fd->diffs, "%s",
 		    fd->
-		    is_gpos ? "Glyph Positioning\n" :
+		    is_gpos?"Glyph Positioning\n" :
 		    "Glyph Substitution\n");
 	 if (!fd->middle_diff) {
 	    aputc(' ', fd->diffs);
@@ -2539,7 +2539,7 @@ static void compareg___(struct font_diff *fd) {
 	       if (!fd->top_diff)
 		  afprintf(fd->diffs, "%s",
 			  fd->
-			  is_gpos ? "Glyph Positioning\n" :
+			  is_gpos?"Glyph Positioning\n" :
 			  "Glyph Substitution\n");
 	       if (!fd->middle_diff) {
 		  aputc(' ', fd->diffs);
@@ -2638,15 +2638,15 @@ int CompareFonts(SplineFont *sf1, EncMap * map1, SplineFont *sf2,
 	 fd.name2=sf2->filename;
    }
 
-   for (gid2=0; gid2 < sf2->glyphcnt; ++gid2)
+   for (gid2=0; gid2<sf2->glyphcnt; ++gid2)
       if ((sc=sf2->glyphs[gid2]) != NULL)
 	 sc->ticked=false;
-   for (gid1=0; gid1 < sf1->glyphcnt; ++gid1)
+   for (gid1=0; gid1<sf1->glyphcnt; ++gid1)
       if ((sc=sf1->glyphs[gid1]) != NULL)
 	 sc->ticked=false;
    fd.matches=calloc(sf1->glyphcnt, sizeof(SplineChar *));
 
-   for (gid1=0; gid1 < sf1->glyphcnt; ++gid1)
+   for (gid1=0; gid1<sf1->glyphcnt; ++gid1)
       if ((sc=sf1->glyphs[gid1]) != NULL) {
 	 sc2=SFGetChar(sf2, sc->unicodeenc, sc->name);
 	 fd.matches[gid1]=sc2;
@@ -2656,15 +2656,15 @@ int CompareFonts(SplineFont *sf1, EncMap * map1, SplineFont *sf2,
 	 }
       }
 
-   if (flags & fcf_names)
+   if (flags&fcf_names)
       comparefontnames(&fd);
-   if (flags & fcf_outlines)
+   if (flags&fcf_outlines)
       comparefontglyphs(&fd);
-   if (flags & fcf_bitmaps)
+   if (flags&fcf_bitmaps)
       comparebitmapstrikes(&fd);
-   if (flags & fcf_gpos)
+   if (flags&fcf_gpos)
       comparegpos(&fd);
-   if (flags & fcf_gsub)
+   if (flags&fcf_gsub)
       comparegsub(&fd);
 
    free(fd.matches);

@@ -1,4 +1,4 @@
-/* $Id: fvcomposite.c 4525 2015-12-20 19:51:59Z mskala $ */
+/* $Id: fvcomposite.c 4532 2015-12-22 13:18:53Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -134,13 +134,13 @@ int CanonicalCombiner(int uni) {
       return (uni);
 
    for (j=0; accents[j][0] != 0xffff; ++j) {
-      for (k=0; k < 4 && accents[j][k] != 0; ++k) {
+      for (k=0; k<4 && accents[j][k] != 0; ++k) {
 	 if (uni==accents[j][k]) {
-	    uni=0x300 + j;
+	    uni=0x300+j;
 	    break;
 	 }
       }
-      if (uni >= 0x300 && uni < 0x370)
+      if (uni >= 0x300 && uni<0x370)
 	 break;
    }
    return (uni);
@@ -946,7 +946,7 @@ static double SplineSetQuickTop(SplineSet *ss) {
 
    for (; ss != NULL; ss=ss->next) {
       for (sp=ss->first;;) {
-	 if (sp->me.y > max)
+	 if (sp->me.y>max)
 	    max=sp->me.y;
 	 if (sp->next==NULL)
 	    break;
@@ -955,7 +955,7 @@ static double SplineSetQuickTop(SplineSet *ss) {
 	    break;
       }
    }
-   if (max < -65536)
+   if (max<-65536)
       max=0;			/* return a reasonable value for an empty glyph */
    return (max);
 }
@@ -966,15 +966,15 @@ static double SplineCharQuickTop(SplineChar *sc,int layer) {
 
    max=SplineSetQuickTop(sc->layers[layer].splines);
    for (ref=sc->layers[layer].refs; ref != NULL; ref=ref->next)
-      if ((temp=SplineSetQuickTop(ref->layers[0].splines)) > max)
+      if ((temp=SplineSetQuickTop(ref->layers[0].splines))>max)
 	 max=temp;
    return (max);
 }
 
 int isaccent(int uni) {
-   if (uni < 0x10000 && iscombining(uni))
+   if (uni<0x10000 && iscombining(uni))
       return (true);
-   if (uni >= 0x2b0 && uni < 0x2ff)
+   if (uni >= 0x2b0 && uni<0x2ff)
       return (true);
    if (uni=='.' || uni==',' || uni==0x60 || uni==0x5e || uni==0x7e
        || uni==0xa8 || uni==0xaf || uni==0xb8 || uni==0x384
@@ -1033,7 +1033,7 @@ static const unichar_t *arabicfixup(SplineFont *sf,const unichar_t *upt,
       if (*pt==' ') {
 	 *apt=' ';
 	 ini=true;
-      } else if (*pt < 0x600 || *pt > 0x6ff)
+      } else if (*pt<0x600 || *pt>0x6ff)
 	 *apt=*pt;
       else if (ini) {
 	 *apt=arabic_forms_lookup(*pt).initial;
@@ -1055,7 +1055,7 @@ static const unichar_t *arabicfixup(SplineFont *sf,const unichar_t *upt,
 static const unichar_t *SFAlternateFromLigature(SplineFont *sf,int base,
 						SplineChar * sc) {
    static unichar_t space[30];
-   unichar_t *spt, *send=space + sizeof(space) / sizeof(space[0]) - 1;
+   unichar_t *spt, *send=space+sizeof(space)/sizeof(space[0])-1;
    char *ligstart, *semi, *pt, sch, ch, *dpt;
    int j;
    PST *pst;
@@ -1072,7 +1072,7 @@ static const unichar_t *SFAlternateFromLigature(SplineFont *sf,int base,
    ligstart=pst->u.lig.components;
    semi=strchr(ligstart, ';');
    if (semi==NULL)
-      semi=ligstart + strlen(ligstart);
+      semi=ligstart+strlen(ligstart);
    sch=*semi;
    *semi='\0';
    spt=space;
@@ -1084,15 +1084,15 @@ static const unichar_t *SFAlternateFromLigature(SplineFont *sf,int base,
       for (; *pt != '\0' && *pt != ' '; ++pt);
       ch=*pt;
       *pt='\0';
-      for (j=0; j < sf->glyphcnt; ++j)
+      for (j=0; j<sf->glyphcnt; ++j)
 	 if (sf->glyphs[j] != NULL && strcmp(sf->glyphs[j]->name, start)==0)
 	    break;
       *pt=ch;
-      if (j==sf->glyphcnt && (dpt=strchr(start, '.')) != NULL && dpt < pt) {
+      if (j==sf->glyphcnt && (dpt=strchr(start, '.')) != NULL && dpt<pt) {
 	 int dch=*dpt;
 
 	 *dpt='\0';
-	 for (j=0; j < sf->glyphcnt; ++j)
+	 for (j=0; j<sf->glyphcnt; ++j)
 	    if (sf->glyphs[j] != NULL
 		&& strcmp(sf->glyphs[j]->name, start)==0)
 	       break;
@@ -1133,19 +1133,19 @@ const unichar_t *SFGetAlternate(SplineFont *sf, int base, SplineChar * sc,
 
    if (sc != NULL && (dot=strchr(sc->name, '.')) != NULL) {
       /* agrave.sc should be built from a.sc and grave or grave.sc */
-      char *temp=copyn(sc->name, dot - sc->name);
+      char *temp=copyn(sc->name, dot-sc->name);
 
       base=UniFromName(temp, sf->uni_interp, NULL);
       free(temp);
    }
 
    if (base >= 0xac00 && base <= 0xd7a3) {	/* Hangul syllables */
-      greekalts[0]=(base - 0xac00) / (21 * 28) + 0x1100;
-      greekalts[1]=((base - 0xac00) / 28) % 21 + 0x1161;
-      if ((base - 0xac00) % 28==0)
+      greekalts[0]=(base-0xac00)/(21*28)+0x1100;
+      greekalts[1]=((base-0xac00)/28)%21+0x1161;
+      if ((base-0xac00)%28==0)
 	 greekalts[2]=0;
       else
-	 greekalts[2]=(base - 0xac00) % 28 - 1 + 0x11a8;
+	 greekalts[2]=(base-0xac00)%28-1+0x11a8;
       greekalts[3]=0;
       return (greekalts);
    }
@@ -1162,8 +1162,8 @@ const unichar_t *SFGetAlternate(SplineFont *sf, int base, SplineChar * sc,
    }
 
    if (sf->uni_interp==ui_adobe && base >= 0xf600 && base <= 0xf7ff &&
-       adobes_pua_alts[base - 0xf600] != 0)
-      return (adobes_pua_alts[base - 0xf600]);
+       adobes_pua_alts[base-0xf600] != 0)
+      return (adobes_pua_alts[base-0xf600]);
 
    if (base==-1 || base >= 65536 || (has_alternates_lookup(base)==0))
       return (SFAlternateFromLigature(sf, base, sc));
@@ -1171,8 +1171,8 @@ const unichar_t *SFGetAlternate(SplineFont *sf, int base, SplineChar * sc,
    /* The definitions of some of the greek letters may make some */
    /*  linguistic sense, but I can't use it to place the accents */
    /*  properly. So I redefine them here */
-   if (base >= 0x1f00 && base < 0x2000) {
-      gpt=unicode_greekalts[base - 0x1f00];
+   if (base >= 0x1f00 && base<0x2000) {
+      gpt=unicode_greekalts[base-0x1f00];
       if (*gpt && (nocheck ||
 		   (haschar(sf, *gpt, dot)
 		    && (gpt[1]=='\0' || haschar(sf, gpt[1], dot)))))
@@ -1187,7 +1187,7 @@ const unichar_t *SFGetAlternate(SplineFont *sf, int base, SplineChar * sc,
    } else if (base >= 0x380 && base <= 0x3ff && upt != NULL) {
       /* Use precombined accents when possible */
       if (base==0x390 || base==0x3b0) {
-	 greekalts[0]=base==0x390 ? 0x3b9 : 0x3c5;
+	 greekalts[0]=base==0x390?0x3b9:0x3c5;
 	 greekalts[1]=0x385;
 	 greekalts[2]='\0';
 	 if (nocheck || haschar(sf, greekalts[1], dot))
@@ -1209,7 +1209,7 @@ const unichar_t *SFGetAlternate(SplineFont *sf, int base, SplineChar * sc,
 	 return (greekalts);
       }
    } else if ((base >= 0xfb50 && base <= 0xfdff)
-	      || (base >= 0xfe70 && base < 0xfeff))
+	      || (base >= 0xfe70 && base<0xfeff))
       return (arabicfixup
 	      (sf, upt, isarabisolated(base)
 	       || isarabinitial(base), isarabisolated(base)
@@ -1218,13 +1218,13 @@ const unichar_t *SFGetAlternate(SplineFont *sf, int base, SplineChar * sc,
 	    || base==0x013b || base==0x013c || base==0x0145
 	    || base==0x0146 || base==0x0156 || base==0x0157) {
       /* Unicode says these use cedilla, but it looks like a comma below */
-      greekalts[0]=base==0x0122 ? 'G' :
-	 base==0x0136 ? 'K' :
-	 base==0x0137 ? 'k' :
-	 base==0x013b ? 'L' :
-	 base==0x013c ? 'l' :
-	 base==0x0145 ? 'N' :
-	 base==0x0146 ? 'n' : base==0x0156 ? 'R' : 'r';
+      greekalts[0]=base==0x0122?'G' :
+	 base==0x0136?'K' :
+	 base==0x0137?'k' :
+	 base==0x013b?'L' :
+	 base==0x013c?'l' :
+	 base==0x0145?'N' :
+	 base==0x0146?'n':base==0x0156?'R':'r';
       greekalts[1]=0x326;
       greekalts[2]='\0';
       return (greekalts);
@@ -1237,8 +1237,8 @@ const unichar_t *SFGetAlternate(SplineFont *sf, int base, SplineChar * sc,
    } else if (base==0x010f || base==0x013d || base==0x013e
 	      || base==0x0165) {
       /* Unicode says these use caron, but it looks like comma above right */
-      greekalts[0]=base==0x010f ? 'd' :
-	 base==0x013d ? 'L' : base==0x013e ? 'l' : 't';
+      greekalts[0]=base==0x010f?'d' :
+	 base==0x013d?'L':base==0x013e?'l':'t';
       greekalts[1]=0x315;
       greekalts[2]='\0';
       return (greekalts);
@@ -1266,7 +1266,7 @@ int SFIsCompositBuildable(SplineFont *sf, int unicodeenc, SplineChar * sc,
 
    if (sc != NULL && (dot=strchr(sc->name, '.')) != NULL) {
       /* agrave.sc should be built from a.sc and grave or grave.sc */
-      char *temp=copyn(sc->name, dot - sc->name);
+      char *temp=copyn(sc->name, dot-sc->name);
 
       unicodeenc=UniFromName(temp, sf->uni_interp, NULL);
       free(temp);
@@ -1304,7 +1304,7 @@ int SFIsRotatable(SplineFont *sf, SplineChar * sc, int layer) {
    int cid;
 
    if (sf->cidmaster != NULL && strncmp(sc->name, "vertcid_", 8)==0) {
-      cid=strtol(sc->name + 8, &end, 10);
+      cid=strtol(sc->name+8, &end, 10);
       if (*end=='\0' && SFHasCID(sf, cid) != -1)
 	 return (true);
    } else if (sf->cidmaster != NULL && strstr(sc->name, ".vert") != NULL &&
@@ -1312,18 +1312,18 @@ int SFIsRotatable(SplineFont *sf, SplineChar * sc, int layer) {
       if (SFHasCID(sf, cid) != -1)
 	 return (true);
    } else if (strncmp(sc->name, "vertuni", 7)==0 && strlen(sc->name)==11) {
-      int uni=strtol(sc->name + 7, &end, 16);
+      int uni=strtol(sc->name+7, &end, 16);
 
       if (*end=='\0' && SFCIDFindExistingChar(sf, uni, NULL) != -1)
 	 return (true);
    } else if (strncmp(sc->name, "uni", 3)==0
 	      && strstr(sc->name, ".vert") != NULL) {
-      int uni=strtol(sc->name + 3, &end, 16);
+      int uni=strtol(sc->name+3, &end, 16);
 
       if (*end=='.' && SFCIDFindExistingChar(sf, uni, NULL) != -1)
 	 return (true);
    } else if (sc->name[0]=='u' && strstr(sc->name, ".vert") != NULL) {
-      int uni=strtol(sc->name + 1, &end, 16);
+      int uni=strtol(sc->name+1, &end, 16);
 
       if (*end=='.' && SFCIDFindExistingChar(sf, uni, NULL) != -1)
 	 return (true);
@@ -1333,7 +1333,7 @@ int SFIsRotatable(SplineFont *sf, SplineChar * sc, int layer) {
       char *temp;
 
       end=strchr(sc->name, '.');
-      temp=copyn(sc->name, end - sc->name);
+      temp=copyn(sc->name, end-sc->name);
       ret=SFFindExistingSlot(sf, -1, temp) != -1;
       free(temp);
       return (ret);
@@ -1357,12 +1357,12 @@ int hascomposing(SplineFont *sf, int u, SplineChar * sc) {
 	 /* Only build Jongsung out of chosung when doing a build composit */
 	 /*  not when doing a build accented (that's what the upt[1]!='\0' */
 	 /*  means */
-	 if (*upt >= 0x1100 && *upt < 0x11c7 && upt[1] != '\0')
+	 if (*upt >= 0x1100 && *upt<0x11c7 && upt[1] != '\0')
 	    return (true);
 	 ++upt;
       }
 
-      if (u >= 0x1f70 && u < 0x1f80)
+      if (u >= 0x1f70 && u<0x1f80)
 	 return (true);		/* Yes. they do work, I don't care what it looks like */
       if (u==0x0149)
 	 return (true);
@@ -1404,13 +1404,13 @@ static void _SplineSetFindXRange(SplinePointList *spl,DBounds *bounds,
 
    for (; spl != NULL; spl=spl->next) {
       if (SPInRange(spl->first, ymin, ymax)) {
-	 xadjust=spl->first->me.x + tia * (spl->first->me.y - ymin);
+	 xadjust=spl->first->me.x+tia * (spl->first->me.y-ymin);
 	 if (bounds->minx==0 && bounds->maxx==0) {
 	    bounds->minx=bounds->maxx=xadjust;
 	 } else {
-	    if (xadjust < bounds->minx)
+	    if (xadjust<bounds->minx)
 	       bounds->minx=xadjust;
-	    if (xadjust > bounds->maxx)
+	    if (xadjust>bounds->maxx)
 	       bounds->maxx=xadjust;
 	 }
       }
@@ -1418,13 +1418,13 @@ static void _SplineSetFindXRange(SplinePointList *spl,DBounds *bounds,
 	   spline != NULL && spline->to != spl->first;
 	   spline=spline->to->next) {
 	 if (SPInRange(spline->to, ymin, ymax)) {
-	    xadjust=spline->to->me.x + tia * (spline->to->me.y - ymin);
+	    xadjust=spline->to->me.x+tia * (spline->to->me.y-ymin);
 	    if (bounds->minx==0 && bounds->maxx==0) {
 	       bounds->minx=bounds->maxx=xadjust;
 	    } else {
-	       if (xadjust < bounds->minx)
+	       if (xadjust<bounds->minx)
 		  bounds->minx=xadjust;
-	       if (xadjust > bounds->maxx)
+	       if (xadjust>bounds->maxx)
 		  bounds->maxx=xadjust;
 	    }
 	 }
@@ -1443,10 +1443,10 @@ static double _SplineSetFindXRangeAtYExtremum(SplinePointList *spl,
       for (spline=spl->first->next; spline != NULL;
 	   spline=spline->to->next) {
 	 if ((findymax
-	      && !(yextreme > spline->from->me.y
-		   && yextreme > spline->from->nextcp.y
-		   && yextreme > spline->to->me.y
-		   && yextreme > spline->to->prevcp.y)) || (!findymax
+	      && !(yextreme>spline->from->me.y
+		   && yextreme>spline->from->nextcp.y
+		   && yextreme>spline->to->me.y
+		   && yextreme>spline->to->prevcp.y)) || (!findymax
 							    && !(yextreme <
 								 spline->
 								 from->me.y
@@ -1469,50 +1469,50 @@ static double _SplineSetFindXRangeAtYExtremum(SplinePointList *spl,
 	    t3=1;
 	    if (t1 != -1) {
 	       y1 =
-		  ((spline->splines[1].a * t1 + spline->splines[1].b) * t1 +
-		   spline->splines[1].c) * t1 + spline->splines[1].d;
-	       if (y1 > y0) {
+		  ((spline->splines[1].a * t1+spline->splines[1].b)*t1 +
+		   spline->splines[1].c)*t1+spline->splines[1].d;
+	       if (y1>y0) {
 		  y0=y1;
 		  t0=t1;
 	       }
 	    }
 	    if (t2 != -1) {
 	       y2 =
-		  ((spline->splines[1].a * t2 + spline->splines[1].b) * t2 +
-		   spline->splines[1].c) * t2 + spline->splines[1].d;
-	       if (y2 > y3) {
+		  ((spline->splines[1].a * t2+spline->splines[1].b)*t2 +
+		   spline->splines[1].c)*t2+spline->splines[1].d;
+	       if (y2>y3) {
 		  y3=y2;
 		  t3=t2;
 	       }
 	    }
-	    if ((findymax && y0 > yextreme + .1)
-		|| (!findymax && y0 < yextreme - .1)) {
+	    if ((findymax && y0>yextreme+.1)
+		|| (!findymax && y0<yextreme-.1)) {
 	       bounds->miny=bounds->maxy=yextreme=y0;
 	       bounds->minx=bounds->maxx =
-		  ((spline->splines[0].a * t0 + spline->splines[0].b) * t0 +
-		   spline->splines[0].c) * t0 + spline->splines[0].d;
-	    } else if ((findymax && y0 >= yextreme - .1)
-		       || (!findymax && y0 <= yextreme + 1)) {
-	       x=((spline->splines[0].a * t0 + spline->splines[0].b) * t0 +
-		    spline->splines[0].c) * t0 + spline->splines[0].d;
-	       if (x > bounds->maxx)
+		  ((spline->splines[0].a * t0+spline->splines[0].b)*t0 +
+		   spline->splines[0].c)*t0+spline->splines[0].d;
+	    } else if ((findymax && y0 >= yextreme-.1)
+		       || (!findymax && y0 <= yextreme+1)) {
+	       x=((spline->splines[0].a * t0+spline->splines[0].b)*t0 +
+		    spline->splines[0].c)*t0+spline->splines[0].d;
+	       if (x>bounds->maxx)
 		  bounds->maxx=x;
-	       else if (x < bounds->minx)
+	       else if (x<bounds->minx)
 		  bounds->minx=x;
 	    }
-	    if ((findymax && y3 > yextreme + .1)
-		|| (!findymax && y3 < yextreme - .1)) {
+	    if ((findymax && y3>yextreme+.1)
+		|| (!findymax && y3<yextreme-.1)) {
 	       bounds->miny=bounds->maxy=yextreme=y3;
 	       bounds->minx=bounds->maxx =
-		  ((spline->splines[0].a * t3 + spline->splines[0].b) * t3 +
-		   spline->splines[0].c) * t3 + spline->splines[0].d;
-	    } else if ((findymax && y3 >= yextreme - .1)
-		       || (!findymax && y3 <= yextreme + 1)) {
-	       x=((spline->splines[0].a * t3 + spline->splines[0].b) * t3 +
-		    spline->splines[0].c) * t3 + spline->splines[0].d;
-	       if (x > bounds->maxx)
+		  ((spline->splines[0].a * t3+spline->splines[0].b)*t3 +
+		   spline->splines[0].c)*t3+spline->splines[0].d;
+	    } else if ((findymax && y3 >= yextreme-.1)
+		       || (!findymax && y3 <= yextreme+1)) {
+	       x=((spline->splines[0].a * t3+spline->splines[0].b)*t3 +
+		    spline->splines[0].c)*t3+spline->splines[0].d;
+	       if (x>bounds->maxx)
 		  bounds->maxx=x;
-	       else if (x < bounds->minx)
+	       else if (x<bounds->minx)
 		  bounds->minx=x;
 	    }
 	 }
@@ -1575,8 +1575,8 @@ static double SCFindBottomXRange(SplineChar *sc,int layer,DBounds *bounds,
 static double SCFindTopBounds(SplineChar *sc,int layer,DBounds *bounds,
 			    double ia) {
    RefChar *rf;
-   int ymax=bounds->maxy + 1, ymin =
-      ymax - (bounds->maxy - bounds->miny) / 20;
+   int ymax=bounds->maxy+1, ymin =
+      ymax-(bounds->maxy-bounds->miny)/20;
 
    /* a char with no splines (ie. a space) must have an lbearing of 0 */
    bounds->minx=bounds->maxx=0;
@@ -1592,8 +1592,8 @@ static double SCFindTopBounds(SplineChar *sc,int layer,DBounds *bounds,
 static double SCFindBottomBounds(SplineChar *sc,int layer,DBounds *bounds,
 			       double ia) {
    RefChar *rf;
-   int ymin=bounds->miny - 1, ymax =
-      ymin + (bounds->maxy - bounds->miny) / 20;
+   int ymin=bounds->miny-1, ymax =
+      ymin+(bounds->maxy-bounds->miny)/20;
 
    /* a char with no splines (ie. a space) must have an lbearing of 0 */
    bounds->minx=bounds->maxx=0;
@@ -1611,7 +1611,7 @@ static double SplineCharFindSlantedBounds(SplineChar *sc,int layer,
    RefChar *rf;
    SplineCharFindBounds(sc, bounds);
 
-   ymin=bounds->miny - 1, ymax=bounds->maxy + 1;
+   ymin=bounds->miny-1, ymax=bounds->maxy+1;
 
    if (ia != 0) {
       bounds->minx=bounds->maxx=0;
@@ -1640,25 +1640,25 @@ static int SCStemCheck(SplineFont *sf,int layer,int basech,DBounds *bb,
        && !sc->manualhints)
       SplineCharAutoHint(sc, layer, NULL);
    if ((best=sc->vstem) != NULL) {
-      if (pos & ____CENTERLEFT) {
+      if (pos&____CENTERLEFT) {
 	 for (h=best->next;
-	      h != NULL && h->start < best->start + best->width; h=h->next)
-	    if (h->start + h->width < best->start + best->width)
+	      h != NULL && h->start<best->start+best->width; h=h->next)
+	    if (h->start+h->width<best->start+best->width)
 	       best=h;
-	 if (best->start + best->width / 2 > (bb->maxx + bb->minx) / 2)
+	 if (best->start+best->width/2>(bb->maxx+bb->minx)/2)
 	    best=NULL;
-      } else if (pos & ____CENTERRIGHT) {
+      } else if (pos&____CENTERRIGHT) {
 	 while (best->next != NULL)
 	    best=best->next;
-	 if (best->start + best->width / 2 < (bb->maxx + bb->minx) / 2)
+	 if (best->start+best->width/2<(bb->maxx+bb->minx)/2)
 	    best=NULL;
       } else {
 	 for (h=best->next; h != NULL; h=h->next)
-	    if (HIlen(h) > HIlen(best))
+	    if (HIlen(h)>HIlen(best))
 	       best=h;
       }
       if (best != NULL)
-	 return (best->start + best->width / 2 - (rbb->maxx - rbb->minx) / 2 -
+	 return (best->start+best->width/2-(rbb->maxx-rbb->minx)/2 -
 		 rbb->minx);
    }
    if (sc->dstem != NULL) {
@@ -1669,7 +1669,7 @@ static int SCStemCheck(SplineFont *sf,int layer,int basech,DBounds *bb,
       for (d=sc->dstem; d != NULL; d=d->next) {
 	 if (d->where==NULL)
 	    continue;
-	 if (d->where->begin < d->where->end) {
+	 if (d->where->begin<d->where->end) {
 	    himin=d->where->begin;
 	    himax=d->where->end;
 	 } else {
@@ -1677,37 +1677,37 @@ static int SCStemCheck(SplineFont *sf,int layer,int basech,DBounds *bb,
 	    himax=d->where->begin;
 	 }
 	 for (hi=d->where->next; hi != NULL; hi=hi->next) {
-	    if (hi->begin < himin)
+	    if (hi->begin<himin)
 	       himin=hi->begin;
-	    if (hi->end < himin)
+	    if (hi->end<himin)
 	       himin=hi->end;
-	    if (hi->end > himax)
+	    if (hi->end>himax)
 	       himax=hi->end;
-	    if (hi->begin > himax)
+	    if (hi->begin>himax)
 	       himax=hi->begin;
 	 }
-	 hibase=(d->unit.y > 0) ? himin : himax;
-	 roff=(d->right.x - d->left.x) * d->unit.x +
-	    (d->right.y - d->left.y) * d->unit.y;
-	 lbxtest=d->left.x + d->unit.x * hibase;
-	 rbxtest=d->right.x + d->unit.x * (hibase - roff);
-	 if (rbxtest < lbxtest) {
+	 hibase=(d->unit.y>0)?himin:himax;
+	 roff=(d->right.x-d->left.x)*d->unit.x +
+	    (d->right.y-d->left.y)*d->unit.y;
+	 lbxtest=d->left.x+d->unit.x * hibase;
+	 rbxtest=d->right.x+d->unit.x * (hibase-roff);
+	 if (rbxtest<lbxtest) {
 	    temp=rbxtest;
 	    rbxtest=lbxtest;
 	    lbxtest=temp;
 	 }
 	 if (d==sc->dstem ||
-	     (pos & ____CENTERLEFT && rbxtest < rbx) ||
-	     (pos & ____CENTERRIGHT && lbxtest > lbx)) {
+	     (pos&____CENTERLEFT && rbxtest<rbx) ||
+	     (pos&____CENTERRIGHT && lbxtest>lbx)) {
 	    lbx=lbxtest;
 	    rbx=rbxtest;
 	 }
       }
-      if (lbx < rbx && ((pos & ____CENTERLEFT &&
-			 (lbx + rbx) / 2 <= (bb->maxx + bb->minx) / 2) ||
-			(pos & ____CENTERRIGHT &&
-			 (lbx + rbx) / 2 >= (bb->maxx + bb->minx) / 2)))
-	 return ((lbx + rbx) / 2 - (rbb->maxx - rbb->minx) / 2 - rbb->minx);
+      if (lbx<rbx && ((pos&____CENTERLEFT &&
+			 (lbx+rbx)/2 <= (bb->maxx+bb->minx)/2) ||
+			(pos&____CENTERRIGHT &&
+			 (lbx+rbx)/2 >= (bb->maxx+bb->minx)/2)))
+	 return ((lbx+rbx)/2-(rbb->maxx-rbb->minx)/2-rbb->minx);
    }
    return (0x70000000);
 }
@@ -1754,10 +1754,10 @@ static void BCClearAndCopyBelow(BDFFont *bdf,int togid,int fromgid,
       bc->ymax=ymax;
       bc->bytes_per_line=rbc->bytes_per_line;
       bc->width=rbc->width;
-      bc->bitmap=malloc(bc->bytes_per_line * (bc->ymax - bc->ymin + 1));
+      bc->bitmap=malloc(bc->bytes_per_line * (bc->ymax-bc->ymin+1));
       memcpy(bc->bitmap,
-	     rbc->bitmap + (rbc->ymax - ymax) * rbc->bytes_per_line,
-	     bc->bytes_per_line * (bc->ymax - bc->ymin + 1));
+	     rbc->bitmap+(rbc->ymax-ymax)*rbc->bytes_per_line,
+	     bc->bytes_per_line * (bc->ymax-bc->ymin+1));
    }
 }
 
@@ -1781,8 +1781,8 @@ static int BCFindGap(BDFChar *bc) {
    BCFlattenFloat(bc);
    BCCompressBitmap(bc);
    for (y=bc->ymax; y >= bc->ymin; --y) {
-      for (i=0; i < bc->bytes_per_line; ++i)
-	 if (bc->bitmap[(bc->ymax - y) * bc->bytes_per_line + i] != 0)
+      for (i=0; i<bc->bytes_per_line; ++i)
+	 if (bc->bitmap[(bc->ymax-y)*bc->bytes_per_line+i] != 0)
 	    break;
       if (i==bc->bytes_per_line)
 	 return (y);
@@ -1827,7 +1827,7 @@ static int SCMakeBaseReference(SplineChar *sc,SplineFont *sf,int layer,
 	 SCAddRef(sc, rsc, layer, 0, 0);	/* should be after the call to MakeChar */
    }
    if (!disp_only) {
-      for (bdf=sf->cidmaster ? sf->cidmaster->bitmaps : sf->bitmaps;
+      for (bdf=sf->cidmaster?sf->cidmaster->bitmaps:sf->bitmaps;
 	   bdf != NULL; bdf=bdf->next) {
 	 if (bdf->glyphs[rsc->orig_pos] != NULL) {
 	    if ((bc=bdf->glyphs[sc->orig_pos])==NULL) {
@@ -1874,15 +1874,15 @@ static SplineChar *GetGoodAccentGlyph(SplineFont *sf,int uni,int basech,
 	       && !SCDependsOnSC(GetChar(sf,uni,NULL),destination))))
      ach=uni;
    else if (uni >= BottomAccent && uni <= TopAccent) {
-      apt=accents[uni - BottomAccent];
-      end=apt + sizeof(accents[0]) / sizeof(accents[0][0]);
-      while (*apt && apt < end &&
+      apt=accents[uni-BottomAccent];
+      end=apt+sizeof(accents[0])/sizeof(accents[0][0]);
+      while (*apt && apt<end &&
 	     (GetChar(sf, *apt, dot)==NULL
 	      || SCDependsOnSC(GetChar(sf, *apt, dot), destination))
 	     && (dot==NULL || GetChar(sf, *apt, NULL)==NULL
 		 || SCDependsOnSC(GetChar(sf, *apt, NULL), destination)))
 	 ++apt;
-      if (*apt != '\0' && apt < end)
+      if (*apt != '\0' && apt<end)
 	 ach=*apt;
       else if (haschar(sf, uni, dot)
 	       && !SCDependsOnSC(GetChar(sf, uni, dot), destination))
@@ -1930,7 +1930,7 @@ static SplineChar *GetGoodAccentGlyph(SplineFont *sf,int uni,int basech,
       int scnt=0, i;
 
       if (rsc != NULL) {
-	 uc_accent=malloc(strlen(rsc->name) + 11);
+	 uc_accent=malloc(strlen(rsc->name)+11);
 	 strcpy(uc_accent, rsc->name);
       } else
 	 uc_accent=NULL;
@@ -1943,15 +1943,15 @@ static SplineChar *GetGoodAccentGlyph(SplineFont *sf,int uni,int basech,
       if (isupper(basech))
 	 suffixes[scnt++]="cap";
 
-      for (i=0; test==NULL && i < scnt; ++i) {
+      for (i=0; test==NULL && i<scnt; ++i) {
 	 if (uni >= BottomAccent && uni <= TopAccent) {
-	    apt=accents[uni - BottomAccent];
-	    end=apt + sizeof(accents[0]) / sizeof(accents[0][0]);
-	    while (test==NULL && apt < end) {
-	       int acc=*apt ? *apt : uni;
+	    apt=accents[uni-BottomAccent];
+	    end=apt+sizeof(accents[0])/sizeof(accents[0][0]);
+	    while (test==NULL && apt<end) {
+	       int acc=*apt?*apt:uni;
 
 	       sprintf(buffer, "%.70s.%s",
-		       StdGlyphName(buffer, acc, ui_none, (NameList *) - 1),
+		       StdGlyphName(buffer, acc, ui_none, (NameList *)-1),
 		       suffixes[i]);
 	       if ((test=SFGetChar(sf, -1, buffer)) != NULL)
 		  rsc=test;
@@ -1968,13 +1968,13 @@ static SplineChar *GetGoodAccentGlyph(SplineFont *sf,int uni,int basech,
       }
       if (test==NULL && uni >= BottomAccent && uni <= TopAccent
 	  && isupper(basech)) {
-	 apt=accents[uni - BottomAccent];
-	 end=apt + sizeof(accents[0]) / sizeof(accents[0][0]);
-	 while (test==NULL && apt < end) {
-	    int acc=*apt ? *apt : uni;
+	 apt=accents[uni-BottomAccent];
+	 end=apt+sizeof(accents[0])/sizeof(accents[0][0]);
+	 while (test==NULL && apt<end) {
+	    int acc=*apt?*apt:uni;
 
 	    sprintf(buffer, "%.70s.%s",
-		    StdGlyphName(buffer, acc, ui_none, (NameList *) - 1),
+		    StdGlyphName(buffer, acc, ui_none, (NameList *)-1),
 		    suffixes[i]);
 	    if (islower(buffer[0])) {
 	       buffer[0]=toupper(buffer[0]);
@@ -1988,10 +1988,10 @@ static SplineChar *GetGoodAccentGlyph(SplineFont *sf,int uni,int basech,
       }
       if (test==NULL && uni >= BottomAccent
 	  && uni <
-	  BottomAccent + sizeof(uc_accent_names) / sizeof(uc_accent_names[0])
-	  && uc_accent_names[uni - BottomAccent] != NULL && isupper(basech))
+	  BottomAccent+sizeof(uc_accent_names)/sizeof(uc_accent_names[0])
+	  && uc_accent_names[uni-BottomAccent] != NULL && isupper(basech))
 	 if ((test =
-	      SFGetChar(sf, -1, uc_accent_names[uni - BottomAccent])) != NULL)
+	      SFGetChar(sf, -1, uc_accent_names[uni-BottomAccent])) != NULL)
 	    rsc=test;
       if (test==NULL && uc_accent != NULL && islower(*uc_accent)
 	  && isupper(basech)) {
@@ -2013,7 +2013,7 @@ static void TurnOffUseMyMetrics(SplineChar *sc) {
    RefChar *refs;
    int ly;
 
-   for (ly=ly_fore; ly < sc->layer_cnt; ++ly)
+   for (ly=ly_fore; ly<sc->layer_cnt; ++ly)
       for (refs=sc->layers[ly].refs; refs != NULL; refs=refs->next)
 	 refs->use_my_metrics=false;
 }
@@ -2025,9 +2025,9 @@ static AnchorClass *AnchorClassMatch(SplineChar *sc1,SplineChar *sc2,
    AnchorPoint *ap1, *ap2;
 
    for (ap1=sc1->anchor; ap1 != NULL; ap1=ap1->next)
-      if (restrict_==(AnchorClass *) - 1 || ap1->anchor==restrict_) {
+      if (restrict_==(AnchorClass *)-1 || ap1->anchor==restrict_) {
 	 for (ap2=sc2->anchor; ap2 != NULL; ap2=ap2->next)
-	    if (restrict_==(AnchorClass *) - 1 || ap2->anchor==restrict_) {
+	    if (restrict_==(AnchorClass *)-1 || ap2->anchor==restrict_) {
 	       if (ap1->anchor==ap2->anchor &&
 		   ((ap1->type >= at_basechar && ap1->type <= at_basemark
 		     && ap2->type==at_mark) || (ap1->type==at_cexit
@@ -2085,50 +2085,50 @@ static void _BCCenterAccent(BDFFont *bdf,int gid,int rgid,int ch,int basech,int 
    IBounds ibb, irb;
 
    if ((rbc=bdf->glyphs[rgid]) != NULL && (bc=bdf->glyphs[gid]) != NULL) {
-      if ((ispacing=(bdf->pixelsize * accent_offset + 50) / 100) <= 1)
+      if ((ispacing=(bdf->pixelsize * accent_offset+50)/100) <= 1)
 	 ispacing=2;
       BCFlattenFloat(rbc);
       BCCompressBitmap(rbc);
       BDFCharQuickBounds(bc, &ibb, 0, 0, false, true);
       BDFCharQuickBounds(rbc, &irb, 0, 0, false, true);
 
-      if ((pos & ____ABOVE) && (pos & (____LEFT | ____RIGHT)))
-	 iyoff=ibb.maxy - irb.maxy;
-      else if (pos & ____ABOVE)
-	 iyoff=ibb.maxy + ispacing - irb.miny;
-      else if (pos & ____BELOW) {
-	 iyoff=ibb.miny - irb.maxy;
-	 if (!(pos & ____TOUCHING))
+      if ((pos&____ABOVE) && (pos&(____LEFT|____RIGHT)))
+	 iyoff=ibb.maxy-irb.maxy;
+      else if (pos&____ABOVE)
+	 iyoff=ibb.maxy+ispacing-irb.miny;
+      else if (pos&____BELOW) {
+	 iyoff=ibb.miny-irb.maxy;
+	 if (!(pos&____TOUCHING))
 	    iyoff -= ispacing;
-      } else if (pos & ____OVERSTRIKE)
+      } else if (pos&____OVERSTRIKE)
 	 iyoff =
-	    ibb.miny - irb.miny + ((ibb.maxy - ibb.miny) -
-				   (irb.maxy - irb.miny)) / 2;
+	    ibb.miny-irb.miny+((ibb.maxy-ibb.miny) -
+				   (irb.maxy-irb.miny))/2;
       else
-	 iyoff=ibb.miny - irb.miny;
+	 iyoff=ibb.miny-irb.miny;
       if (isupper(basech) && ch==0x342)
-	 ixoff=ibb.minx - irb.minx;
-      else if (pos & ____LEFT)
-	 ixoff=ibb.minx - ispacing - irb.maxx;
-      else if (pos & ____RIGHT) {
-	 ixoff=ibb.maxx - irb.minx + ispacing / 2;
-	 if (!(pos & ____TOUCHING))
+	 ixoff=ibb.minx-irb.minx;
+      else if (pos&____LEFT)
+	 ixoff=ibb.minx-ispacing-irb.maxx;
+      else if (pos&____RIGHT) {
+	 ixoff=ibb.maxx-irb.minx+ispacing/2;
+	 if (!(pos&____TOUCHING))
 	    ixoff += ispacing;
       } else {
-	 if (pos & ____CENTERLEFT)
-	    ixoff=ibb.minx + (ibb.maxx - ibb.minx) / 2 - irb.maxx;
-	 else if (pos & ____LEFTEDGE)
-	    ixoff=ibb.minx - irb.minx;
-	 else if (pos & ____CENTERRIGHT)
-	    ixoff=ibb.minx + (ibb.maxx - ibb.minx) / 2 - irb.minx;
-	 else if (pos & ____RIGHTEDGE)
-	    ixoff=ibb.maxx - irb.maxx;
+	 if (pos&____CENTERLEFT)
+	    ixoff=ibb.minx+(ibb.maxx-ibb.minx)/2-irb.maxx;
+	 else if (pos&____LEFTEDGE)
+	    ixoff=ibb.minx-irb.minx;
+	 else if (pos&____CENTERRIGHT)
+	    ixoff=ibb.minx+(ibb.maxx-ibb.minx)/2-irb.minx;
+	 else if (pos&____RIGHTEDGE)
+	    ixoff=ibb.maxx-irb.maxx;
 	 else
 	    ixoff =
-	       ibb.minx - irb.minx + ((ibb.maxx - ibb.minx) -
-				      (irb.maxx - irb.minx)) / 2;
+	       ibb.minx-irb.minx+((ibb.maxx-ibb.minx) -
+				      (irb.maxx-irb.minx))/2;
       }
-      ixoff += rint(italicoff * bdf->pixelsize / em);
+      ixoff += rint(italicoff * bdf->pixelsize/em);
       BCAddReference(bc, rbc, rgid, ixoff, iyoff);
    }
 }
@@ -2143,7 +2143,7 @@ static void _SCCenterAccent(SplineChar *sc,SplineChar *basersc,
    double transform[6];
    DBounds bb, rbb, bbb;
    double xoff, yoff;
-   double spacing=(sf->ascent + sf->descent) * accent_offset / 100;
+   double spacing=(sf->ascent+sf->descent)*accent_offset/100;
    double ybase, italicoff;
    const unichar_t *temp;
    int baserch=basech;
@@ -2169,14 +2169,14 @@ static void _SCCenterAccent(SplineChar *sc,SplineChar *basersc,
    if (ch==0x328 || ch==0x327) {	/* cedilla and ogonek */
       SCFindTopBounds(rsc, layer, &rbb, ia);
       /* should do more than touch, should overlap a tiny bit... */
-      rbb.maxy -= (rbb.maxy - rbb.miny) / 30;
+      rbb.maxy -= (rbb.maxy-rbb.miny)/30;
    } else if (ch==0x345) {	/* ypogegrammeni */
       SCFindTopBounds(rsc, layer, &rbb, ia);
    } else if ((GraveAcuteCenterBottom && (ch==0x300 || ch==0x301 || ch==0x30b || ch==0x30f)) || ch==0x309)	/* grave, acute, hungarian, Floating hook */
       SCFindBottomBounds(rsc, layer, &rbb, ia);
    else if (basech=='A' && ch==0x30a)
       /* Again, a tiny bit of overlap is usual for Aring */
-      rbb.miny += (rbb.maxy - rbb.miny) / 30;
+      rbb.miny += (rbb.maxy-rbb.miny)/30;
    ybase=SplineCharFindSlantedBounds(sc, layer, &bb, ia);
    if (basersc==NULL) {
       if (baserch != basech
@@ -2190,12 +2190,12 @@ static void _SCCenterAccent(SplineChar *sc,SplineChar *basersc,
    }
    if (ia==0 && baserch != basech && basersc != NULL) {
       ybase=SplineCharFindSlantedBounds(basersc, layer, &bbb, ia);
-      if (____utype2[1 + ch] & (____ABOVE | ____BELOW)) {
+      if (____utype2[1+ch]&(____ABOVE|____BELOW)) {
 	 /* if unicode.org character definition matches ABOVE or BELOW, then... */
 	 bbb.maxy=bb.maxy;
 	 bbb.miny=bb.miny;
       }
-      if (____utype2[1 + ch] & (____RIGHT | ____LEFT)) {
+      if (____utype2[1+ch]&(____RIGHT|____LEFT)) {
 	 /* if unicode.org character definition matches RIGHT or LEFT, then... */
 	 bbb.maxx=bb.maxx;
 	 bbb.minx=bb.minx;
@@ -2215,14 +2215,14 @@ static void _SCCenterAccent(SplineChar *sc,SplineChar *basersc,
       /* Do we have a mark to mark attachment to the last anchor we added? */
       /*  (or a cursive exit to entry match?) */
       /*  If so then figure offsets relative to it. */
-      xoff=ap1->me.x - ap2->me.x + sc->layers[layer].refs->transform[4];
-      yoff=ap1->me.y - ap2->me.y + sc->layers[layer].refs->transform[5];
-      pos=____utype2[1 + ch];	/* init with unicode.org position information */
-   } else if (AnchorClassMatch(basersc, rsc, (AnchorClass *) - 1, &ap1, &ap2)
+      xoff=ap1->me.x-ap2->me.x+sc->layers[layer].refs->transform[4];
+      yoff=ap1->me.y-ap2->me.y+sc->layers[layer].refs->transform[5];
+      pos=____utype2[1+ch];	/* init with unicode.org position information */
+   } else if (AnchorClassMatch(basersc, rsc, (AnchorClass *)-1, &ap1, &ap2)
 	      != NULL && ap2->type==at_mark) {
-      xoff=ap1->me.x - ap2->me.x;
-      yoff=ap1->me.y - ap2->me.y;
-      pos=____utype2[1 + ch];	/* init with unicode.org position information */
+      xoff=ap1->me.x-ap2->me.x;
+      yoff=ap1->me.y-ap2->me.y;
+      pos=____utype2[1+ch];	/* init with unicode.org position information */
    } else {
       /* try to establish a common line on which all accents lie. The problem being */
       /*  that an accent above a,e,o will usually be slightly higher than an accent */
@@ -2233,12 +2233,12 @@ static void _SCCenterAccent(SplineChar *sc,SplineChar *basersc,
       /*  be consistant with latin */
       if (islower(basech) || isupper(basech)) {
 	 SplineChar *common =
-	    SFGetChar(sf, islower(basech) ? 'o' : 'O', NULL);
+	    SFGetChar(sf, islower(basech)?'o':'O', NULL);
 	 if (common != NULL) {
 	    double top=SplineCharQuickTop(common, layer);
 
-	    if (bb.maxy < top) {
-	       bb.maxx += tan(ia) * (top - bb.maxy);
+	    if (bb.maxy<top) {
+	       bb.maxx += tan(ia)*(top-bb.maxy);
 	       bb.maxy=top;
 	    }
 	 }
@@ -2251,22 +2251,22 @@ static void _SCCenterAccent(SplineChar *sc,SplineChar *basersc,
 	 eta=true;
 	 if (basersc != NULL && basersc->vstem != NULL) {
 	    bb.minx=basersc->vstem->start;
-	    bb.maxx=bb.minx + basersc->vstem->width;
+	    bb.maxx=bb.minx+basersc->vstem->width;
 	 } else
-	    bb.maxx -= (bb.maxx - bb.minx) / 3;	/* Should also be centered on left stem of eta, but I don't know how to do that..., hence this hack */
+	    bb.maxx -= (bb.maxx-bb.minx)/3;	/* Should also be centered on left stem of eta, but I don't know how to do that..., hence this hack */
       }
 
       if (invert) {
 	 /* yes, this transform does a vertical flip from the vertical midpoint of the breve */
 	 transform[3]=-1;
-	 transform[5]=rbb.maxy + rbb.miny;
+	 transform[5]=rbb.maxy+rbb.miny;
       }
       if (pos==____NOPOSDATAGIVEN) {
 	 /* if here, then we need to initialize some type of position info for the accent */
-	 if (ch < 0 || ch >= 0x10000)	/* makeutype.c only built data in utype.c for {0...MAXC} */
+	 if (ch<0 || ch >= 0x10000)	/* makeutype.c only built data in utype.c for {0...MAXC} */
 	    pos=____ABOVE;
 	 else
-	    pos=____utype2[1 + ch];	/* init with unicode.org position information */
+	    pos=____utype2[1+ch];	/* init with unicode.org position information */
 	 /* In greek, PSILI and friends are centered above lower case, and kern left */
 	 /*  for upper case */
 	 if ((basech >= 0x390 && basech <= 0x3ff)
@@ -2274,7 +2274,7 @@ static void _SCCenterAccent(SplineChar *sc,SplineChar *basersc,
 	    if ((basech==0x1fbf || basech==0x1fef || basech==0x1ffe)
 		&& (ch==0x1fbf || ch==0x1fef || ch==0x1ffe
 		    || ch==0x1fbd || ch==0x1ffd)) {
-	       pos=____ABOVE | ____RIGHT;
+	       pos=____ABOVE|____RIGHT;
 	    } else if (isupper(basech) &&
 		       (ch==0x313 || ch==0x314 || ch==0x301
 			|| ch==0x300 || ch==0x30d || ch==0x1ffe
@@ -2282,7 +2282,7 @@ static void _SCCenterAccent(SplineChar *sc,SplineChar *basersc,
 			|| ch==0x1fbd || ch==0x1fef || ch==0x1ffd
 			|| ch==0x1fcd || ch==0x1fdd || ch==0x1fce
 			|| ch==0x1fde))
-	       pos=____ABOVE | ____LEFT;
+	       pos=____ABOVE|____LEFT;
 	    else if (isupper(basech) && ch==0x1fbe)
 	       pos=____RIGHT;
 	    else if (ch==0x1fcd || ch==0x1fdd || ch==0x1fce
@@ -2295,62 +2295,62 @@ static void _SCCenterAccent(SplineChar *sc,SplineChar *basersc,
 	 else if (sc->unicodeenc==0x1fbe && ch==0x345)
 	    pos=____RIGHT;
 	 else if (basech=='l' && ch==0xb7)
-	    pos=____RIGHT | ____OVERSTRIKE;
+	    pos=____RIGHT|____OVERSTRIKE;
 	 else if (basech=='L' && ch==0xb7)
 	    pos=____OVERSTRIKE;
 	 else if (ch==0xb7)
 	    pos=____RIGHT;
 	 else if (basech=='A' && ch==0x30a)	/* Aring usually touches */
-	    pos=____ABOVE | ____TOUCHING;
+	    pos=____ABOVE|____TOUCHING;
 	 else
 	    if ((basech=='A' || basech=='a' || basech=='E'
 		 || basech=='u') && ch==0x328)
-	    pos=____BELOW | ____CENTERRIGHT | ____TOUCHING;	/* ogonek off to the right for these in polish (but not lc e) */
+	    pos=____BELOW|____CENTERRIGHT|____TOUCHING;	/* ogonek off to the right for these in polish (but not lc e) */
 	 else
 	    if ((basech=='N' || basech=='n' || basech=='K'
 		 || basech=='k' || basech=='R' || basech=='r'
 		 || basech=='H' || basech=='h') && ch==0x327)
-	    pos=____BELOW | ____CENTERLEFT | ____TOUCHING;	/* cedilla off under left stem for these guys */
-	 if (basech==0x391 && pos==(____ABOVE | ____LEFT)) {
-	    bb.minx += (bb.maxx - bb.minx) / 4;
+	    pos=____BELOW|____CENTERLEFT|____TOUCHING;	/* cedilla off under left stem for these guys */
+	 if (basech==0x391 && pos==(____ABOVE|____LEFT)) {
+	    bb.minx += (bb.maxx-bb.minx)/4;
 	 }
       }
       if (sc->unicodeenc==0x0149)
-	 pos=____ABOVE | ____LEFT;
+	 pos=____ABOVE|____LEFT;
       else if (sc->unicodeenc==0x013d || sc->unicodeenc==0x013e)
-	 pos=____ABOVE | ____RIGHT;
+	 pos=____ABOVE|____RIGHT;
       else if (sc->unicodeenc==0x010f || sc->unicodeenc==0x013d ||
 	       sc->unicodeenc==0x013e || sc->unicodeenc==0x0165)
-	 pos=____ABOVE | ____RIGHT;
+	 pos=____ABOVE|____RIGHT;
       else if ((sc->unicodeenc==0x1fbd || sc->unicodeenc==0x1fbf ||
 		sc->unicodeenc==0x1ffe || sc->unicodeenc==0x1fc0) &&
 	       bb.maxy==0 && bb.miny==0) {
 	 /* Building accents on top of space */
-	 bb.maxy=7 * sf->ascent / 10;
+	 bb.maxy=7*sf->ascent/10;
       }
 
-      if ((pos & ____ABOVE) && (pos & (____LEFT | ____RIGHT)))
-	 yoff=bb.maxy - rbb.maxy;
-      else if (pos & ____ABOVE) {
-	 yoff=bb.maxy - rbb.miny;
-	 if (!(pos & ____TOUCHING))
+      if ((pos&____ABOVE) && (pos&(____LEFT|____RIGHT)))
+	 yoff=bb.maxy-rbb.maxy;
+      else if (pos&____ABOVE) {
+	 yoff=bb.maxy-rbb.miny;
+	 if (!(pos&____TOUCHING))
 	    yoff += spacing;
-      } else if (pos & ____BELOW) {
-	 yoff=bb.miny - rbb.maxy;
-	 if (!(pos & ____TOUCHING))
+      } else if (pos&____BELOW) {
+	 yoff=bb.miny-rbb.maxy;
+	 if (!(pos&____TOUCHING))
 	    yoff -= spacing;
-      } else if (pos & ____OVERSTRIKE)
+      } else if (pos&____OVERSTRIKE)
 	 yoff =
-	    bb.miny - rbb.miny + ((bb.maxy - bb.miny) -
-				  (rbb.maxy - rbb.miny)) / 2;
+	    bb.miny-rbb.miny+((bb.maxy-bb.miny) -
+				  (rbb.maxy-rbb.miny))/2;
       else			/* If neither Above, Below, nor overstrike then should use the same baseline */
-	 yoff=bb.miny - rbb.miny;
+	 yoff=bb.miny-rbb.miny;
 
-      if (pos & (____ABOVE | ____BELOW)) {
+      if (pos&(____ABOVE|____BELOW)) {
 	 /* When we center an accent above an asymetric character like "C" we */
 	 /*  should not pick the mid point of the char. Rather we should pick */
 	 /*  the highest point (mostly anyway, there are exceptions) */
-	 if (pos & ____ABOVE) {
+	 if (pos&____ABOVE) {
 	    static DBounds pointless;
 
 	    if (CharCenterHighest) {
@@ -2370,64 +2370,64 @@ static void _SCCenterAccent(SplineChar *sc,SplineChar *basersc,
 				   pos)) != 0x70000000)
 		  bb.minx=bb.maxx=xoff;	/* While on "t" we should center over the stem */
 	    }
-	 } else if ((pos & ____BELOW) && !eta)
+	 } else if ((pos&____BELOW) && !eta)
 	    if (CharCenterHighest)
 	       ybase=SCFindBottomXRange(sc, layer, &bb, ia);
       }
 
       if (isupper(basech) && ch==0x342)	/* While this guy rides above PSILI on left */
-	 xoff=bb.minx - rbb.minx;
-      else if (pos & ____LEFT)
-	 xoff=bb.minx - spacing - rbb.maxx;
-      else if (pos & ____RIGHT) {
-	 xoff=bb.maxx - rbb.minx + spacing / 2;
-	 if (!(pos & ____TOUCHING))
+	 xoff=bb.minx-rbb.minx;
+      else if (pos&____LEFT)
+	 xoff=bb.minx-spacing-rbb.maxx;
+      else if (pos&____RIGHT) {
+	 xoff=bb.maxx-rbb.minx+spacing/2;
+	 if (!(pos&____TOUCHING))
 	    xoff += spacing;
       } else {
-	 if ((pos & (____CENTERLEFT | ____CENTERRIGHT)) &&
+	 if ((pos&(____CENTERLEFT|____CENTERRIGHT)) &&
 	     (xoff =
 	      SCStemCheck(sf, layer, basech, &bb, &rbb, pos)) != 0x70000000)
 	    /* Done */ ;
-	 else if (pos & ____CENTERLEFT)
-	    xoff=bb.minx + (bb.maxx - bb.minx) / 2 - rbb.maxx;
-	 else if (pos & ____LEFTEDGE)
-	    xoff=bb.minx - rbb.minx;
-	 else if (pos & ____CENTERRIGHT)
-	    xoff=bb.minx + (bb.maxx - bb.minx) / 2 - rbb.minx;
-	 else if (pos & ____RIGHTEDGE)
-	    xoff=bb.maxx - rbb.maxx;
+	 else if (pos&____CENTERLEFT)
+	    xoff=bb.minx+(bb.maxx-bb.minx)/2-rbb.maxx;
+	 else if (pos&____LEFTEDGE)
+	    xoff=bb.minx-rbb.minx;
+	 else if (pos&____CENTERRIGHT)
+	    xoff=bb.minx+(bb.maxx-bb.minx)/2-rbb.minx;
+	 else if (pos&____RIGHTEDGE)
+	    xoff=bb.maxx-rbb.maxx;
 	 else
 	    xoff =
-	       bb.minx - rbb.minx + ((bb.maxx - bb.minx) -
-				     (rbb.maxx - rbb.minx)) / 2;
+	       bb.minx-rbb.minx+((bb.maxx-bb.minx) -
+				     (rbb.maxx-rbb.minx))/2;
       }
       if (ia != 0)
-	 xoff += (italicoff=tan(-ia) * (rbb.miny + yoff - ybase));
+	 xoff += (italicoff=tan(-ia)*(rbb.miny+yoff-ybase));
    }				/* Anchor points */
    transform[4]=xoff;
    /*if (invert ) transform[5] -= yoff; else */ transform[5] += yoff;
 
    if (bdf==NULL || !disp_only) {
       _SCAddRef(sc, rsc, layer, transform);
-      if (pos != ____NOPOSDATAGIVEN && (pos & ____RIGHT))
-	 SCSynchronizeWidth(sc, sc->width + rbb.maxx - rbb.minx + spacing,
+      if (pos != ____NOPOSDATAGIVEN && (pos&____RIGHT))
+	 SCSynchronizeWidth(sc, sc->width+rbb.maxx-rbb.minx+spacing,
 			    sc->width, NULL);
       if (pos != ____NOPOSDATAGIVEN
 	  && (pos &
-	      (____LEFT | ____RIGHT | ____CENTERLEFT | ____LEFTEDGE |
-	       ____CENTERRIGHT | ____RIGHTEDGE)))
+	      (____LEFT|____RIGHT|____CENTERLEFT|____LEFTEDGE |
+	       ____CENTERRIGHT|____RIGHTEDGE)))
 	 TurnOffUseMyMetrics(sc);
    }
    if (!disp_only) {
-      for (bdf=sf->cidmaster ? sf->cidmaster->bitmaps : sf->bitmaps;
+      for (bdf=sf->cidmaster?sf->cidmaster->bitmaps:sf->bitmaps;
 	   bdf != NULL; bdf=bdf->next) {
 	 if (bdf->glyphs[rsc->orig_pos] != NULL)
 	    _BCCenterAccent(bdf, sc->orig_pos, rsc->orig_pos, ch, basech,
-			    italicoff, pos, sf->ascent + sf->descent);
+			    italicoff, pos, sf->ascent+sf->descent);
       }
    } else if (bdf != NULL && bdf->glyphs[rsc->orig_pos] != NULL)
       _BCCenterAccent(bdf, sc->orig_pos, rsc->orig_pos, ch, basech, italicoff,
-		      pos, sf->ascent + sf->descent);
+		      pos, sf->ascent+sf->descent);
 }
 
 static void SCCenterAccent(SplineChar *sc,SplineChar *basersc,
@@ -2454,17 +2454,17 @@ static void _BCPutRefAfter(BDFFont *bdf,int gid,int rgid,int normal,
       BCFlattenFloat(rbc);
       BCCompressBitmap(rbc);
       BCCompressBitmap(bc);
-      if ((ispacing=(bdf->pixelsize * accent_offset + 50) / 100) <= 1)
+      if ((ispacing=(bdf->pixelsize * accent_offset+50)/100) <= 1)
 	 ispacing=2;
       if (normal) {
 	 BCAddReference(bc, rbc, rgid, bc->width, 0);
 	 bc->width += rbc->width;
       } else if (under) {
 	 BCAddReference(bc, rbc, rgid,
-			(bc->xmax + rbc->xmin - rbc->xmax - rbc->xmin) / 2,
-			bc->ymin - ispacing - rbc->ymax);
+			(bc->xmax+rbc->xmin-rbc->xmax-rbc->xmin)/2,
+			bc->ymin-ispacing-rbc->ymax);
       } else {
-	 BCAddReference(bc, rbc, rgid, bc->xmax - ispacing - rbc->xmin, 0);
+	 BCAddReference(bc, rbc, rgid, bc->xmax-ispacing-rbc->xmin, 0);
       }
    }
 }
@@ -2475,7 +2475,7 @@ static void SCPutRefAfter(SplineChar *sc,SplineFont *sf,int layer,int ch,
    int full=sc->unicodeenc, normal=false, under =
       false /*, stationary=false */ ;
    DBounds bb, rbb;
-   double spacing=(sf->ascent + sf->descent) * accent_offset / 100;
+   double spacing=(sf->ascent+sf->descent)*accent_offset/100;
    char buffer[300], namebuf[300];
 
    if (bdf==NULL || !disp_only) {
@@ -2489,7 +2489,7 @@ static void SCPutRefAfter(SplineChar *sc,SplineFont *sf,int layer,int ch,
 	 rsc=SFGetChar(sf, -1, buffer);
       }
 
-      if (full < 0x1100 || full > 0x11ff) {
+      if (full<0x1100 || full>0x11ff) {
 	 SCAddRef(sc, rsc, layer, sc->width, 0);
 	 sc->width += rsc->width;
 	 normal=true;
@@ -2507,17 +2507,17 @@ static void SCPutRefAfter(SplineChar *sc,SplineFont *sf,int layer,int ch,
 	 SplineCharQuickBounds(sc, &bb);
 	 SplineCharQuickBounds(rsc, &rbb);
 	 SCAddRef(sc, rsc, layer,
-		  (bb.maxx + bb.minx) / 2 - (rbb.maxx + rbb.minx) / 2,
-		  bb.miny - spacing - rbb.maxy);
+		  (bb.maxx+bb.minx)/2-(rbb.maxx+rbb.minx)/2,
+		  bb.miny-spacing-rbb.maxy);
 	 under=true;
       } else {			/* Jamo should snuggle right up to one another, and ignore the width */
 	 SplineCharQuickBounds(sc, &bb);
 	 SplineCharQuickBounds(rsc, &rbb);
-	 SCAddRef(sc, rsc, layer, bb.maxx + spacing - rbb.minx, 0);
+	 SCAddRef(sc, rsc, layer, bb.maxx+spacing-rbb.minx, 0);
       }
    }
    if (!disp_only) {
-      for (bdf=sf->cidmaster ? sf->cidmaster->bitmaps : sf->bitmaps;
+      for (bdf=sf->cidmaster?sf->cidmaster->bitmaps:sf->bitmaps;
 	   bdf != NULL; bdf=bdf->next) {
 	 _BCPutRefAfter(bdf, sc->orig_pos, rsc->orig_pos, normal, under);
       }
@@ -2539,9 +2539,9 @@ static void BCMakeSpace(BDFFont *bdf,int gid,int width,int em) {
       bc->ymin=0;
       bc->ymax=1;
       bc->bytes_per_line=1;
-      bc->width=rint(width * bdf->pixelsize / (double) em);
+      bc->width=rint(width * bdf->pixelsize/(double) em);
       bc->bitmap =
-	 calloc(bc->bytes_per_line * (bc->ymax - bc->ymin + 1), sizeof(char));
+	 calloc(bc->bytes_per_line * (bc->ymax-bc->ymin+1), sizeof(char));
    }
 }
 
@@ -2549,7 +2549,7 @@ static void DoSpaces(SplineFont *sf,SplineChar *sc,int layer,
 		     BDFFont * bdf, int disp_only) {
    int width;
    int uni=sc->unicodeenc;
-   int em=sf->ascent + sf->descent;
+   int em=sf->ascent+sf->descent;
    SplineChar *tempsc;
 
    if (iszerowidth(uni))
@@ -2558,26 +2558,26 @@ static void DoSpaces(SplineFont *sf,SplineChar *sc,int layer,
       switch (uni) {
 	case 0x2000:
 	case 0x2002:
-	   width=em / 2;
+	   width=em/2;
 	   break;
 	case 0x2001:
 	case 0x2003:
 	   width=em;
 	   break;
 	case 0x2004:
-	   width=em / 3;
+	   width=em/3;
 	   break;
 	case 0x2005:
-	   width=em / 4;
+	   width=em/4;
 	   break;
 	case 0x2006:
-	   width=em / 6;
+	   width=em/6;
 	   break;
 	case 0x2009:
-	   width=em / 10;
+	   width=em/10;
 	   break;
 	case 0x200a:
-	   width=em / 100;
+	   width=em/100;
 	   break;
 	case 0x2007:
 	   tempsc=SFGetChar(sf, '0', NULL);
@@ -2585,7 +2585,7 @@ static void DoSpaces(SplineFont *sf,SplineChar *sc,int layer,
 	       && tempsc->layers[layer].refs==NULL)
 	      tempsc=NULL;
 	   if (tempsc==NULL)
-	      width=em / 2;
+	      width=em/2;
 	   else
 	      width=tempsc->width;
 	   break;
@@ -2595,7 +2595,7 @@ static void DoSpaces(SplineFont *sf,SplineChar *sc,int layer,
 	       && tempsc->layers[layer].refs==NULL)
 	      tempsc=NULL;
 	   if (tempsc==NULL)
-	      width=em / 4;
+	      width=em/4;
 	   else
 	      width=tempsc->width;
 	   break;
@@ -2605,12 +2605,12 @@ static void DoSpaces(SplineFont *sf,SplineChar *sc,int layer,
 	       && tempsc->layers[layer].refs==NULL)
 	      tempsc=NULL;
 	   if (tempsc==NULL)
-	      width=em / 4;
+	      width=em/4;
 	   else
 	      width=tempsc->width;
 	   break;
 	default:
-	   width=em / 3;
+	   width=em/3;
 	   break;
       }
 
@@ -2621,7 +2621,7 @@ static void DoSpaces(SplineFont *sf,SplineChar *sc,int layer,
    }
 
    if (!disp_only) {
-      for (bdf=sf->cidmaster ? sf->cidmaster->bitmaps : sf->bitmaps;
+      for (bdf=sf->cidmaster?sf->cidmaster->bitmaps:sf->bitmaps;
 	   bdf != NULL; bdf=bdf->next) {
 	 BCMakeSpace(bdf, sc->orig_pos, width, em);
 	 BCCharChangedUpdate(bdf->glyphs[sc->orig_pos]);
@@ -2670,7 +2670,7 @@ static void DoRules(SplineFont *sf,SplineChar *sc,int layer,
 		    BDFFont * bdf, int disp_only) {
    int width;
    int uni=sc->unicodeenc;
-   int em=sf->ascent + sf->descent;
+   int em=sf->ascent+sf->descent;
    SplineChar *tempsc;
    DBounds b;
    double lbearing, rbearing, height, ypos;
@@ -2678,7 +2678,7 @@ static void DoRules(SplineFont *sf,SplineChar *sc,int layer,
 
    switch (uni) {
      case '-':
-	width=em / 3;
+	width=em/3;
 	break;
      case 0x2010:
      case 0x2011:
@@ -2687,7 +2687,7 @@ static void DoRules(SplineFont *sf,SplineChar *sc,int layer,
 	    && tempsc->layers[layer].refs==NULL)
 	   tempsc=NULL;
 	if (tempsc==NULL)
-	   width=(4 * em) / 10;
+	   width=(4*em)/10;
 	else
 	   width=tempsc->width;
 	break;
@@ -2697,22 +2697,22 @@ static void DoRules(SplineFont *sf,SplineChar *sc,int layer,
 	    && tempsc->layers[layer].refs==NULL)
 	   tempsc=NULL;
 	if (tempsc==NULL)
-	   width=em / 2;
+	   width=em/2;
 	else
 	   width=tempsc->width;
 	break;
      case 0x2013:
-	width=em / 2;
+	width=em/2;
 	break;
      case 0x2014:
      case 0x30fc:
 	width=em;
 	break;
      case 0x2015:		/* French quotation dash */
-	width=2 * em;
+	width=2*em;
 	break;
      default:
-	width=em / 3;
+	width=em/3;
 	break;
    }
 
@@ -2720,25 +2720,25 @@ static void DoRules(SplineFont *sf,SplineChar *sc,int layer,
    if (tempsc==NULL
        || (tempsc->layers[layer].splines==NULL
 	   && tempsc->layers[layer].refs==NULL)) {
-      height=em / 10;
-      lbearing=rbearing=em / 10;
-      if (lbearing + rbearing > 2 * width / 3)
-	 lbearing=rbearing=width / 4;
-      ypos=em / 4;
+      height=em/10;
+      lbearing=rbearing=em/10;
+      if (lbearing+rbearing>2*width/3)
+	 lbearing=rbearing=width/4;
+      ypos=em/4;
    } else {
       SplineCharFindBounds(tempsc, &b);
-      height=b.maxy - b.miny;
-      rbearing=tempsc->width - b.maxx;
+      height=b.maxy-b.miny;
+      rbearing=tempsc->width-b.maxx;
       lbearing=b.minx;
       ypos=b.miny;
    }
    if (bdf==NULL || !disp_only) {
       first=sp=MakeSP(lbearing, ypos, NULL, sc->layers[layer].order2);
-      sp=MakeSP(lbearing, ypos + height, sp, sc->layers[layer].order2);
+      sp=MakeSP(lbearing, ypos+height, sp, sc->layers[layer].order2);
       sp =
-	 MakeSP(width - rbearing, ypos + height, sp,
+	 MakeSP(width-rbearing, ypos+height, sp,
 		sc->layers[layer].order2);
-      sp=MakeSP(width - rbearing, ypos, sp, sc->layers[layer].order2);
+      sp=MakeSP(width-rbearing, ypos, sp, sc->layers[layer].order2);
       SplineMake(sp, first, sc->layers[layer].order2);
       sc->layers[layer].splines=chunkalloc(sizeof(SplinePointList));
       sc->layers[layer].splines->first=sc->layers[layer].splines->last =
@@ -2749,7 +2749,7 @@ static void DoRules(SplineFont *sf,SplineChar *sc,int layer,
    }
 
    if (!disp_only) {
-      for (bdf=sf->cidmaster ? sf->cidmaster->bitmaps : sf->bitmaps;
+      for (bdf=sf->cidmaster?sf->cidmaster->bitmaps:sf->bitmaps;
 	   bdf != NULL; bdf=bdf->next) {
 	 BCMakeRule(bdf, sc->orig_pos, layer);
 	 BCCharChangedUpdate(bdf->glyphs[sc->orig_pos]);
@@ -2787,7 +2787,7 @@ static void DoRotation(SplineFont *sf,SplineChar *sc,int layer,
    int j, cid;
 
    if (sf->cidmaster != NULL && strncmp(sc->name, "vertcid_", 8)==0) {
-      cid=strtol(sc->name + 8, &end, 10);
+      cid=strtol(sc->name+8, &end, 10);
       if (*end != '\0' || (j=SFHasCID(sf, cid))==-1)
 	 return;		/* Can't happen */
       scbase=sf->cidmaster->subfonts[j]->glyphs[cid];
@@ -2799,20 +2799,20 @@ static void DoRotation(SplineFont *sf,SplineChar *sc,int layer,
    } else {
       if (strncmp(sc->name, "vertuni", 7)==0 && strlen(sc->name)==11) {
 	 char *end;
-	 int uni=strtol(sc->name + 7, &end, 16);
+	 int uni=strtol(sc->name+7, &end, 16);
 
 	 if (*end != '\0'
 	     || (cid=SFCIDFindExistingChar(sf, uni, NULL))==-1)
 	    return;		/* Can't happen */
       } else if (strncmp(sc->name, "uni", 3)==0
 		 && strstr(sc->name, ".vert") != NULL) {
-	 int uni=strtol(sc->name + 3, &end, 16);
+	 int uni=strtol(sc->name+3, &end, 16);
 
 	 if (*end != '.'
 	     || (cid=SFCIDFindExistingChar(sf, uni, NULL))==-1)
 	    return;
       } else if (sc->name[0]=='u' && strstr(sc->name, ".vert") != NULL) {
-	 int uni=strtol(sc->name + 1, &end, 16);
+	 int uni=strtol(sc->name+1, &end, 16);
 
 	 if (*end != '.'
 	     || (cid=SFCIDFindExistingChar(sf, uni, NULL))==-1)
@@ -2822,7 +2822,7 @@ static void DoRotation(SplineFont *sf,SplineChar *sc,int layer,
 	 char *temp;
 
 	 end=strchr(sc->name, '.');
-	 temp=copyn(sc->name, end - sc->name);
+	 temp=copyn(sc->name, end-sc->name);
 	 cid=SFFindExistingSlot(sf, -1, temp);
 	 free(temp);
 	 if (cid==-1)
@@ -2864,12 +2864,12 @@ static void DoRotation(SplineFont *sf,SplineChar *sc,int layer,
 	 if (temp != NULL)
 	    for (last=temp; last->next != NULL; last=last->next);
       }
-      sc->width=sc->parent->ascent + sc->parent->descent;
+      sc->width=sc->parent->ascent+sc->parent->descent;
       SCCharChangedUpdate(sc, layer, true);
    }
 
    if (!disp_only) {
-      for (bdf=sf->cidmaster ? sf->cidmaster->bitmaps : sf->bitmaps;
+      for (bdf=sf->cidmaster?sf->cidmaster->bitmaps:sf->bitmaps;
 	   bdf != NULL; bdf=bdf->next) {
 	 BCDoRotation(bdf, sc->orig_pos);
       }
@@ -2885,7 +2885,7 @@ static int SCMakeRightToLeftLig(SplineChar *sc,SplineFont *sf,
    int ret, ch, alt_ch;
    const unichar_t *pt;
 
-   pt=start + cnt - 1;
+   pt=start+cnt-1;
    ch=*pt;
    if (ch >= 0x621 && ch <= 0x6ff) {
       alt_ch=arabic_forms_lookup(ch).final;
@@ -2922,11 +2922,11 @@ static void SCBuildHangul(SplineFont *sf,SplineChar *sc,int layer,
       if (rsc != NULL) {
 	 if (bdf==NULL || !disp_only) {
 	    SCAddRef(sc, rsc, layer, 0, 0);
-	    if (rsc->width > sc->width)
+	    if (rsc->width>sc->width)
 	       sc->width=rsc->width;
 	 }
 	 if (!disp_only) {
-	    for (bdf=sf->cidmaster ? sf->cidmaster->bitmaps : sf->bitmaps;
+	    for (bdf=sf->cidmaster?sf->cidmaster->bitmaps:sf->bitmaps;
 		 bdf != NULL; bdf=bdf->next) {
 	       if (first)
 		  BCClearAll(bdf->glyphs[sc->orig_pos]);
@@ -2952,7 +2952,7 @@ static int _SCMakeDotless(SplineFont *sf,SplineChar *dotless,int layer,
    SplineSet *head=NULL, *last=NULL, *test, *cur, *next;
    DBounds b;
 
-   sc=SFGetChar(sf, dotless->unicodeenc==0x131 ? 'i' : 'j', NULL);
+   sc=SFGetChar(sf, dotless->unicodeenc==0x131?'i':'j', NULL);
    xsc=SFGetChar(sf, 'x', NULL);
    if (sc==NULL || sc->layers[layer].splines==NULL
        || sc->layers[layer].refs != NULL || xsc==NULL)
@@ -2965,7 +2965,7 @@ static int _SCMakeDotless(SplineFont *sf,SplineChar *dotless,int layer,
       test->next=NULL;
       SplineSetQuickBounds(test, &b);
       test->next=next;
-      if (b.miny < bd.xheight) {
+      if (b.miny<bd.xheight) {
 	 if (!doit)
 	    return (true);
 	 cur=SplinePointListCopy1(test);
@@ -3002,7 +3002,7 @@ int SCMakeDotless(SplineFont *sf, SplineChar * dotless, int layer,
        && dotless->unicodeenc != 0x237)
       return (ret);
 
-   sc=SFGetChar(sf, dotless->unicodeenc==0x131 ? 'i' : 'j', NULL);
+   sc=SFGetChar(sf, dotless->unicodeenc==0x131?'i':'j', NULL);
    if (sc==NULL)
       return (ret);
    if (bdf==NULL || !disp_only)
@@ -3041,15 +3041,15 @@ static void SCSetReasonableLBearing(SplineChar *sc,SplineChar *base,
    SplineCharLayerFindBounds(base, layer, &b);
 
    sf=sc->parent;
-   emsize=sf->ascent + sf->descent;
+   emsize=sf->ascent+sf->descent;
 
    /* Now don't get excited if we have a very thin glyph (I in a sans-serif) */
    /*  and a centered accent spills off to the left a little */
-   if (full.minx >= 0 || full.minx >= b.minx || full.minx >= -(emsize / 20))
+   if (full.minx >= 0 || full.minx >= b.minx || full.minx >= -(emsize/20))
       return;
    /* ok. let's say we want an lbearing that's the same as that of the base */
    /*  glyph */
-   xoff=b.minx - full.minx;
+   xoff=b.minx-full.minx;
    memset(transform, 0, sizeof(transform));
    transform[0]=transform[3]=1.0;
    transform[4]=xoff;
@@ -3060,7 +3060,7 @@ static void SCSetReasonableLBearing(SplineChar *sc,SplineChar *base,
       SplinePointListTransform(ref->layers[0].splines, transform,
 			       tpt_AllPoints);
    }
-   SCSynchronizeWidth(sc, sc->width + xoff, sc->width, NULL);
+   SCSynchronizeWidth(sc, sc->width+xoff, sc->width, NULL);
 }
 
 void SCBuildComposite(SplineFont *sf, SplineChar * sc, int layer,
@@ -3083,7 +3083,7 @@ void SCBuildComposite(SplineFont *sf, SplineChar * sc, int layer,
       sc->width=0;
    }
    if (!disp_only) {
-      for (bdf=sf->cidmaster ? sf->cidmaster->bitmaps : sf->bitmaps;
+      for (bdf=sf->cidmaster?sf->cidmaster->bitmaps:sf->bitmaps;
 	   bdf != NULL; bdf=bdf->next)
 	 if (bdf->glyphs[sc->orig_pos] != NULL)
 	    BCClearAll(bdf->glyphs[sc->orig_pos]);
@@ -3110,7 +3110,7 @@ void SCBuildComposite(SplineFont *sf, SplineChar * sc, int layer,
 
    if ((ia=sf->italicangle)==0)
       ia=SFGuessItalicAngle(sf);
-   ia *= M_PI / 180;	/* convert degrees to radians */
+   ia *= M_PI/180;	/* convert degrees to radians */
 
    dot=strchr(sc->name, '.');
 
@@ -3132,9 +3132,9 @@ void SCBuildComposite(SplineFont *sf, SplineChar * sc, int layer,
       }
    }
    if (sc->unicodeenc >= 0xac00 && sc->unicodeenc <= 0xd7a3)
-      SCBuildHangul(sf, sc, layer, pt - 1, bdf, disp_only);
+      SCBuildHangul(sf, sc, layer, pt-1, bdf, disp_only);
    else if (isrighttoleft(ch) && !iscombining(*pt)) {
-      SCMakeRightToLeftLig(sc, sf, layer, pt - 1, bdf, disp_only);
+      SCMakeRightToLeftLig(sc, sf, layer, pt-1, bdf, disp_only);
    } else {
       RefChar *base;
 
@@ -3149,7 +3149,7 @@ void SCBuildComposite(SplineFont *sf, SplineChar * sc, int layer,
 	 base->use_my_metrics=true;
       while (iscombining(*pt) || (ch=='L' && *pt==0xb7) ||	/* b7, centered dot is used as a combining accent for Ldot but as a lig for ldot */
 	     *pt==0x384 || *pt==0x385 || (*pt >= 0x1fbd && *pt <= 0x1fff))	/* Special greek accents */
-	 SCCenterAccent(sc, base != NULL ? base->sc : NULL, sf, layer, *pt++,
+	 SCCenterAccent(sc, base != NULL?base->sc:NULL, sf, layer, *pt++,
 			bdf, disp_only, ia, ch, dot);
       while (*pt) {
 	 if (base != NULL)
@@ -3165,7 +3165,7 @@ void SCBuildComposite(SplineFont *sf, SplineChar * sc, int layer,
    if (!disp_only || bdf==NULL)
       SCCharChangedUpdate(sc, layer, true);
    if (!disp_only) {
-      for (bdf=sf->cidmaster ? sf->cidmaster->bitmaps : sf->bitmaps;
+      for (bdf=sf->cidmaster?sf->cidmaster->bitmaps:sf->bitmaps;
 	   bdf != NULL; bdf=bdf->next)
 	 if (bdf->glyphs[sc->orig_pos] != NULL)
 	    BCCharChangedUpdate(bdf->glyphs[sc->orig_pos]);
@@ -3197,7 +3197,7 @@ int SCAppendAccent(SplineChar * sc, int layer, char *glyph_name,	/* unicode char
 
    if ((ia=sf->italicangle)==0)
       ia=SFGuessItalicAngle(sf);
-   ia *= M_PI / 180;	/* convert degrees to radians */
+   ia *= M_PI/180;	/* convert degrees to radians */
 
    SCPreserveLayer(sc, layer, true);
 
@@ -3209,11 +3209,11 @@ int SCAppendAccent(SplineChar * sc, int layer, char *glyph_name,	/* unicode char
    if (asc==NULL)
       return (2);		/* Could not find that accent */
    if (uni==-1 && (pt=strchr(asc->name, '.')) != NULL
-       && pt - asc->name < 100) {
+       && pt-asc->name<100) {
       char buffer[101];
 
-      strncpy(buffer, asc->name, pt - asc->name);
-      buffer[(pt - asc->name)]='\0';
+      strncpy(buffer, asc->name, pt-asc->name);
+      buffer[(pt-asc->name)]='\0';
       uni=UniFromName(buffer, ui_none, NULL);
    }
 
@@ -3221,11 +3221,11 @@ int SCAppendAccent(SplineChar * sc, int layer, char *glyph_name,	/* unicode char
       /* Find the real combining character that maps to this glyph */
       /* that's where we store positioning info */
       for (i=BottomAccent; i <= TopAccent; ++i) {
-	 apt=accents[i - BottomAccent];
-	 end=apt + sizeof(accents[0]) / sizeof(accents[0][0]);
-	 while (apt < end && *apt != uni)
+	 apt=accents[i-BottomAccent];
+	 end=apt+sizeof(accents[0])/sizeof(accents[0][0]);
+	 while (apt<end && *apt != uni)
 	    ++apt;
-	 if (apt < end) {
+	 if (apt<end) {
 	    uni=i;
 	    break;
 	 }

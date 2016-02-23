@@ -128,7 +128,8 @@ PL_LOG_COMPILER = '@PERL@'
 
 TESTS = \
   test/rmo-loop2.sh \
-  test/arithmetic.pe test/feamerge.pe test/ocrblue.pe test/unilib.pe \
+  test/arithmetic.pe test/autotrace.pe test/feamerge.pe test/ocrblue.pe \
+  test/unilib.pe \
   test/test001.pe test/test002.pe test/test003.pe test/test004.pe \
   test/test005.pe test/test006.pe test/test007.pe test/test008.pe \
   test/test009.pe test/test010.pe test/test101.pe test/test102.pe \
@@ -236,32 +237,25 @@ dist_man_MANS = \
   fontanvil/sfddiff.1
 
 noinst_HEADERS = \
-  inc/fontanvil.h \
-  inc/chardata.h inc/charset.h inc/fileutil.h \
-  inc/fontanvil-config.h inc/gfile.h \
-  inc/gimage.h \
-  inc/gresource.h inc/ustring.h \
-  inc/utype.h \
-  inc/afile.h \
+  inc/PfEd.h \
+  inc/SFMT-common.h inc/SFMT-params.h inc/SFMT-params19937.h inc/SFMT.h \
+  inc/afile.h inc/autowidth.h inc/autowidth2.h \
+  inc/baseviews.h inc/bezctx_ff.h inc/bitmapcontrol.h \
+  inc/chardata.h inc/charset.h \
+  inc/edgelist.h inc/edgelist2.h \
+  inc/fffreetype.h inc/fileutil.h inc/flaglist.h inc/fontanvil.h \
+    inc/fontanvil-config.h inc/fontanvilvw.h inc/fvmetrics.h \
+  inc/gb12345.h inc/gfile.h inc/gimage.h inc/gresource.h \
+  inc/mm.h \
+  inc/namehash.h inc/nonlineartrans.h \
+  inc/potrace.h inc/print.h inc/psfont.h \
+  inc/savefont.h inc/scriptfuncs.h inc/scripting.h inc/sd.h inc/sfd1.h \
+    inc/sflayoutP.h inc/splinefont.h inc/stemdb.h \
+  inc/ttf.h inc/ttfinstrs.h \
+  inc/uiinterface.h inc/unicodelibinfo.h inc/ustring.h inc/utype.h \
   inc/views.h \
-  inc/flaglist.h \
-  inc/autowidth2.h inc/fontanvil.h \
-  inc/psfont.h inc/stemdb.h \
-  inc/autowidth.h inc/fontanvilvw.h \
-  inc/savefont.h inc/ttf.h \
-  inc/baseviews.h inc/fvmetrics.h inc/mm.h \
-  inc/scriptfuncs.h inc/ttfinstrs.h inc/edgelist2.h \
-  inc/namehash.h inc/scripting.h inc/uiinterface.h \
-  inc/bezctx_ff.h inc/edgelist.h \
-  inc/nonlineartrans.h inc/sd.h \
-  inc/bitmapcontrol.h \
-  inc/fffreetype.h \
-  inc/PfEd.h inc/SFMT.h inc/SFMT-params.h inc/SFMT-params19937.h \
-  inc/SFMT-common.h inc/sfd1.h \
-  inc/sflayoutP.h inc/print.h inc/splinefont.h \
-  inc/gb12345.h \
-  inc/unicodelibinfo.h \
-  fontanvil/feascan.h $(ICEMAP_INPUTS:.im=.h)
+  fontanvil/feascan.h \
+  $(ICEMAP_INPUTS:.im=.h)
 
 noinst_LIBRARIES = \
   Unicode/libgunicode.a
@@ -289,8 +283,8 @@ fontanvil_fontanvil_SOURCES = \
  fontanvil/othersubrs.c \
  fontanvil/palmfonts.c fontanvil/parsepdf.c fontanvil/parsepfa.c \
    fontanvil/parsettfatt.c fontanvil/parsettfbmf.c fontanvil/parsettf.c \
-   fontanvil/parsettfvar.c fontanvil/print.c fontanvil/psread.c \
-   fontanvil/pua.c fontanvil/python.c \
+   fontanvil/parsettfvar.c fontanvil/potrace.c fontanvil/print.c \
+   fontanvil/psread.c fontanvil/pua.c fontanvil/python.c \
  fontanvil/savefont.c fontanvil/scripting.c fontanvil/scstyles.c \
    fontanvil/scvalid.c fontanvil/search.c fontanvil/SFMT.c \
    fontanvil/sfd1.c fontanvil/sfd.c fontanvil/sflayout.c inc/sfundo.h \
@@ -348,7 +342,7 @@ EXTRA_DIST:= \
   test/fonts/OmittedCharBugs.sfd test/fonts/OverlapBugs.sfd \
   test/fonts/QuadraticConversionBug.sfd test/fonts/SimplifyBugs.sfd \
   test/fonts/SplineOverlapBug1.sfd test/fonts/VKern.sfd \
-  test/fonts/dvng10a-crash.sfd test/fonts/feta20.pfb \
+  test/fonts/dvng10a-crash.sfd test/fonts/feta20.pfb test/fonts/i11.png \
   test/fonts/rmo-loop2.sfd
 
 STANDALONE_FPEVCGF:=

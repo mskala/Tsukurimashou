@@ -1,41 +1,41 @@
-/* $Id: othersubrs.c 4155 2015-09-02 07:43:27Z mskala $ */
+/* $Id: othersubrs.c 4532 2015-12-22 13:18:53Z mskala $ */
 #include "fontanvil.h"		/* For LogError */
 
 /* These subroutines are code by Adobe for this exact use (from T1_Spec.pdf) */
 
 	/* 3 0 callothersubr pop pop setcurrentpoint return */
 static const uint8_t subrs0[] =
-   { 3 + 139, 0 + 139, 12, 16, 12, 17, 12, 17, 12, 33, 11 };
+   { 3+139, 0+139, 12, 16, 12, 17, 12, 17, 12, 33, 11 };
 	/* 0 1 callothersubr return */
-static const uint8_t subrs1[]={ 0 + 139,1 + 139,12,16,11 };
+static const uint8_t subrs1[]={ 0+139,1+139,12,16,11 };
 
 	/* 0 2 callothersubr return */
-static const uint8_t subrs2[]={ 0 + 139,2 + 139,12,16,11 };
+static const uint8_t subrs2[]={ 0+139,2+139,12,16,11 };
 
 	/* return */
 static const uint8_t subrs3[]={ 11 };
 
 	/* This one I created myself to do hint substitution */
 	/* <subr number presumed to be on stack> 1 3 callother pop callsubr */
-static const uint8_t subrs4[]={ 1 + 139,3 + 139,12,16,12,17,10,11 };
+static const uint8_t subrs4[]={ 1+139,3+139,12,16,12,17,10,11 };
 
 	/* These others from adobe for multiple master */
 	/* They need some fix up before they are used (the stack count depends on the # instances). */
 	/* <n> 14 callothersubr pop return */
-static const uint8_t subrs5[]={ 139,14 + 139,12,16,12,17,11 };
+static const uint8_t subrs5[]={ 139,14+139,12,16,12,17,11 };
 
 	/* 2*<n> 15 callothersubr pop pop return */
-static const uint8_t subrs6[]={ 139,15 + 139,12,16,12,17,12,17,11 };
+static const uint8_t subrs6[]={ 139,15+139,12,16,12,17,12,17,11 };
 
 	/* 3*<n> 16 callothersubr pop pop pop return */
 static const uint8_t subrs7[] =
-   { 139, 16 + 139, 12, 16, 12, 17, 12, 17, 12, 17, 11 };
+   { 139, 16+139, 12, 16, 12, 17, 12, 17, 12, 17, 11 };
 	/* 4*<n> 17 callothersubr pop pop pop pop return */
 static const uint8_t subrs8[] =
-   { 139, 17 + 139, 12, 16, 12, 17, 12, 17, 12, 17, 12, 17, 11 };
+   { 139, 17+139, 12, 16, 12, 17, 12, 17, 12, 17, 12, 17, 11 };
 	/* 6*<n> 18 callothersubr pop pop pop pop  pop pop return */
 static const uint8_t subrs9[] =
-   { 139, 18 + 139, 12, 16, 12, 17, 12, 17, 12, 17, 12, 17, 12, 17, 12, 17,
+   { 139, 18+139, 12, 16, 12, 17, 12, 17, 12, 17, 12, 17, 12, 17, 12, 17,
 11 };
 
 
@@ -472,14 +472,14 @@ static const char **CopyLines(char **lines,int l,int is_copyright) {
    int i;
 
    if (l==0 && !is_copyright) {
-      ret=malloc(2 * sizeof(char *));
+      ret=malloc(2*sizeof(char *));
       ret[0]=fastrdup("{}");
       ret[1]=NULL;
       return (ret);
    }
 
-   ret=malloc((l + 1) * sizeof(char *));
-   for (i=0; i < l; ++i)
+   ret=malloc((l+1)*sizeof(char *));
+   for (i=0; i<l; ++i)
       ret[i]=lines[i];
    ret[l]=NULL;
    return (ret);
@@ -518,17 +518,17 @@ int ReadOtherSubrsFile(char *filename) {
    while (afgets(buffer, sizeof(buffer), os) != NULL) {
       int len=strlen(buffer);
 
-      if (len > 0 && (buffer[len - 1]=='\r' || buffer[len - 1]=='\n')) {
-	 if (len > 1 && (buffer[len - 2]=='\r' || buffer[len - 2]=='\n'))
-	    buffer[len - 2]='\0';
+      if (len>0 && (buffer[len-1]=='\r' || buffer[len-1]=='\n')) {
+	 if (len>1 && (buffer[len-2]=='\r' || buffer[len-2]=='\n'))
+	    buffer[len-2]='\0';
 	 else
-	    buffer[len - 1]='\0';
+	    buffer[len-1]='\0';
       }
       if (buffer[0]=='%' && buffer[1]=='%' && buffer[2]=='%'
 	  && buffer[3]=='%') {
 	 if (sub_num==-1)
 	    co=CopyLines(lines, l, true);
-	 else if (sub_num < 14)
+	 else if (sub_num<14)
 	    osubs[sub_num]=CopyLines(lines, l, false);
 	 else if (sub_num==14)
 	    ErrorMsg(2,"Too many subroutines. We can deal with at most 14 (0-13)\n");
@@ -546,14 +546,14 @@ int ReadOtherSubrsFile(char *filename) {
    /* we just read a copyright notice? That's no use */
    if (sub_num <= 0)
       return (false);
-   while (sub_num < 14) {
+   while (sub_num<14) {
       osubs[sub_num]=calloc(2, sizeof(char *));
       osubs[sub_num][0]=fastrdup("{}");
       ++sub_num;
    }
    DefaultOtherSubrs();
    othersubrs_copyright[0]=co;
-   for (i=0; i < 14; ++i)
+   for (i=0; i<14; ++i)
       othersubrs[i]=osubs[i];
    free(lines);
    return (true);

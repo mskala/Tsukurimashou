@@ -1,4 +1,4 @@
-/* $Id: cvundoes.c 4525 2015-12-20 19:51:59Z mskala $ */
+/* $Id: cvundoes.c 4532 2015-12-22 13:18:53Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -1360,7 +1360,7 @@ static void PasteToSC(SplineChar *sc,int layer,Undoes *paster,
       } else
 	 start=sc->layer_cnt;
       if (start+lc>sc->layer_cnt) {
-	 sc->layers=realloc(sc->layers, (start+lc) * sizeof(Layer));
+	 sc->layers=realloc(sc->layers, (start+lc)*sizeof(Layer));
 	 for (layer=sc->layer_cnt; layer<start+lc; ++layer)
 	    LayerDefault(&sc->layers[layer]);
 	 sc->layer_cnt=start+lc;
@@ -1681,7 +1681,7 @@ static OTLookup **GetLookupsToCopy(SplineFont *sf,OTLookup *** backpairlist,
       return (NULL);
    }
    ftot=cnt;
-   choices=malloc((cnt+bcnt+2) * sizeof(char *));
+   choices=malloc((cnt+bcnt+2)*sizeof(char *));
    sel=calloc(cnt+bcnt+1, 1);
    list1=malloc(cnt * sizeof(OTLookup *));
    if (bcnt==0) {
@@ -1739,7 +1739,7 @@ static OTLookup **GetLookupsToCopy(SplineFont *sf,OTLookup *** backpairlist,
 	 if (sel[i])
 	    ++cnt;
       }
-      list=malloc((cnt+1) * sizeof(OTLookup *));
+      list=malloc((cnt+1)*sizeof(OTLookup *));
       for (i=cnt=0; i<ftot; ++i) {
 	 if (sel[i])
 	    list[cnt++]=list1[i];
@@ -1752,7 +1752,7 @@ static OTLookup **GetLookupsToCopy(SplineFont *sf,OTLookup *** backpairlist,
 	       ++cnt;
 	 }
 	 if (cnt != 0) {
-	    blist=malloc((cnt+1) * sizeof(OTLookup *));
+	    blist=malloc((cnt+1)*sizeof(OTLookup *));
 	    for (i=cnt=0; i<bcnt; ++i) {
 	       if (sel[i+ftot+1])
 		  blist[cnt++]=list2[i];

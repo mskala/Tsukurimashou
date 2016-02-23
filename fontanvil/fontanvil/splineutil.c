@@ -1,4 +1,4 @@
-/* $Id: splineutil.c 4525 2015-12-20 19:51:59Z mskala $ */
+/* $Id: splineutil.c 4532 2015-12-22 13:18:53Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -77,7 +77,7 @@ void chunktest(void) {
    int i;
    struct chunk2 *c;
 
-   for (i=2; i < CHUNK_MAX; ++i)
+   for (i=2; i<CHUNK_MAX; ++i)
       for (c=(struct chunk2 *) chunklists[i]; c != NULL; c=c->next)
 	 if (c->flag != FLAG) {
 	    ErrorMsg(3,"Chunk memory list has been corrupted\n");
@@ -90,9 +90,9 @@ char *strconcat(const char *str1, const char *str2) {
    char *ret;
    int len1=strlen(str1);
 
-   if ((ret=malloc(len1 + strlen(str2) + 1)) != NULL) {
+   if ((ret=malloc(len1+strlen(str2)+1)) != NULL) {
       strcpy(ret, str1);
-      strcpy(ret + len1, str2);
+      strcpy(ret+len1, str2);
    }
    return (ret);
 }
@@ -101,10 +101,10 @@ char *strconcat3(const char *str1, const char *str2, const char *str3) {
    char *ret;
    int len1=strlen(str1), len2=strlen(str2);
 
-   if ((ret=malloc(len1 + len2 + strlen(str3) + 1)) != NULL) {
+   if ((ret=malloc(len1+len2+strlen(str3)+1)) != NULL) {
       strcpy(ret, str1);
-      strcpy(ret + len1, str2);
-      strcpy(ret + len1 + len2, str3);
+      strcpy(ret+len1, str2);
+      strcpy(ret+len1+len2, str3);
    }
    return (ret);
 }
@@ -285,7 +285,7 @@ void RefCharFree(RefChar * ref) {
 
    if (ref==NULL)
       return;
-   for (i=0; i < ref->layer_cnt; ++i) {
+   for (i=0; i<ref->layer_cnt; ++i) {
       SplinePointListsFree(ref->layers[i].splines);
       ImageListsFree(ref->layers[i].images);
       GradientFree(ref->layers[i].fill_brush.gradient);
@@ -337,10 +337,10 @@ static void SimplifyLineList(LineList *prev) {
       if ((prev->here.x==lines->here.x && prev->here.y==lines->here.y) ||
 	  (prev->here.x==lines->here.x && lines->here.x==next->here.x) ||
 	  (prev->here.y==lines->here.y && lines->here.y==next->here.y) ||
-	  ((prev->here.x==next->here.x + 1
-	    || prev->here.x==next->here.x - 1)
-	   && (prev->here.y==next->here.y + 1
-	       || prev->here.y==next->here.y - 1))) {
+	  ((prev->here.x==next->here.x+1
+	    || prev->here.x==next->here.x-1)
+	   && (prev->here.y==next->here.y+1
+	       || prev->here.y==next->here.y-1))) {
 	 lines->here=next->here;
 	 lines->next=next->next;
 	 chunkfree(next, sizeof(*next));
@@ -360,10 +360,10 @@ static void SimplifyLineList(LineList *prev) {
       while ((next=lines->next) != NULL) {
 	 if (prev->here.x != next->here.x) {
 	    double slope =
-	       (next->here.y - prev->here.y) / (double) (next->here.x -
+	       (next->here.y-prev->here.y)/(double) (next->here.x -
 							  prev->here.x);
-	    double inter=prev->here.y - slope * prev->here.x;
-	    int y=rint(lines->here.x * slope + inter);
+	    double inter=prev->here.y-slope * prev->here.x;
+	    int y=rint(lines->here.x * slope+inter);
 
 	    if (y==lines->here.y) {
 	       lines->here=next->here;
@@ -384,20 +384,20 @@ typedef struct spline1 {
 
 static void FigureSpline1(Spline1 *sp1,double t0,double t1,
 			  Spline1D * sp) {
-   double s=(t1 - t0);
+   double s=(t1-t0);
 
    if (sp->a==0 && sp->b==0) {
-      sp1->sp.d=sp->d + t0 * sp->c;
+      sp1->sp.d=sp->d+t0*sp->c;
       sp1->sp.c=s * sp->c;
       sp1->sp.b=sp1->sp.a=0;
    } else {
-      sp1->sp.d=sp->d + t0 * (sp->c + t0 * (sp->b + t0 * sp->a));
-      sp1->sp.c=s * (sp->c + t0 * (2 * sp->b + 3 * sp->a * t0));
-      sp1->sp.b=s * s * (sp->b + 3 * sp->a * t0);
+      sp1->sp.d=sp->d+t0*(sp->c+t0*(sp->b+t0*sp->a));
+      sp1->sp.c=s * (sp->c+t0*(2*sp->b+3*sp->a * t0));
+      sp1->sp.b=s * s * (sp->b+3*sp->a * t0);
       sp1->sp.a=s * s * s * sp->a;
    }
-   sp1->c0=sp1->sp.c / 3 + sp1->sp.d;
-   sp1->c1=sp1->c0 + (sp1->sp.b + sp1->sp.c) / 3;
+   sp1->c0=sp1->sp.c/3+sp1->sp.d;
+   sp1->c1=sp1->c0+(sp1->sp.b+sp1->sp.c)/3;
 }
 
 static LineList *SplineSegApprox(LineList *last,Spline *spline,
@@ -418,78 +418,78 @@ static LineList *SplineSegApprox(LineList *last,Spline *spline,
       /* No different from the latter case, except we can optimize here */
       /*  and it's easier to understand what is happening in the simple */
       /*  case */
-      slope.x=spline->to->me.x - spline->from->me.x;
-      slope.y=spline->to->me.y - spline->from->me.y;
-      len=slope.x * slope.x + slope.y * slope.y;
+      slope.x=spline->to->me.x-spline->from->me.x;
+      slope.y=spline->to->me.y-spline->from->me.y;
+      len=slope.x * slope.x+slope.y * slope.y;
       if (len==0)
 	 return (last);
       len=sqrt(len);
       slope.x /= len;
       slope.y /= len;
-      off.x=spline->from->nextcp.x - spline->from->me.x;
-      off.y=spline->from->nextcp.y - spline->from->me.y;
-      temp=(off.x * slope.y - off.y * slope.x) * scale;
-      if (temp < 0)
+      off.x=spline->from->nextcp.x-spline->from->me.x;
+      off.y=spline->from->nextcp.y-spline->from->me.y;
+      temp=(off.x * slope.y-off.y * slope.x)*scale;
+      if (temp<0)
 	 temp=-temp;
-      if (temp > n)
+      if (temp>n)
 	 n=temp;
-      off.x=spline->to->prevcp.x - spline->from->me.x;
-      off.y=spline->to->prevcp.y - spline->from->me.y;
-      temp=(off.x * slope.y - off.y * slope.x) * scale;
-      if (temp < 0)
+      off.x=spline->to->prevcp.x-spline->from->me.x;
+      off.y=spline->to->prevcp.y-spline->from->me.y;
+      temp=(off.x * slope.y-off.y * slope.x)*scale;
+      if (temp<0)
 	 temp=-temp;
-      if (temp > n)
+      if (temp>n)
 	 n=temp;
    } else {
       Spline1 xsp, ysp;
 
       startp.x =
-	 ((spline->splines[0].a * start + spline->splines[0].b) * start +
-	  spline->splines[0].c) * start + spline->splines[0].d;
+	 ((spline->splines[0].a * start+spline->splines[0].b)*start +
+	  spline->splines[0].c)*start+spline->splines[0].d;
       startp.y =
-	 ((spline->splines[1].a * start + spline->splines[1].b) * start +
-	  spline->splines[1].c) * start + spline->splines[1].d;
+	 ((spline->splines[1].a * start+spline->splines[1].b)*start +
+	  spline->splines[1].c)*start+spline->splines[1].d;
       endp.x =
-	 ((spline->splines[0].a * end + spline->splines[0].b) * end +
-	  spline->splines[0].c) * end + spline->splines[0].d;
+	 ((spline->splines[0].a * end+spline->splines[0].b)*end +
+	  spline->splines[0].c)*end+spline->splines[0].d;
       endp.y =
-	 ((spline->splines[1].a * end + spline->splines[1].b) * end +
-	  spline->splines[1].c) * end + spline->splines[1].d;
-      slope.x=endp.x - startp.x;
-      slope.y=endp.y - startp.y;
+	 ((spline->splines[1].a * end+spline->splines[1].b)*end +
+	  spline->splines[1].c)*end+spline->splines[1].d;
+      slope.x=endp.x-startp.x;
+      slope.y=endp.y-startp.y;
       FigureSpline1(&xsp, start, end, &spline->splines[0]);
       FigureSpline1(&ysp, start, end, &spline->splines[1]);
-      len=slope.x * slope.x + slope.y * slope.y;
+      len=slope.x * slope.x+slope.y * slope.y;
       if (len==0)
 	 return (last);
       len=sqrt(len);
       slope.x /= len;
       slope.y /= len;
-      off.x=xsp.c0 - startp.x;
-      off.y=ysp.c0 - startp.y;
-      temp=(off.x * slope.y - off.y * slope.x) * scale;
-      if (temp < 0)
+      off.x=xsp.c0-startp.x;
+      off.y=ysp.c0-startp.y;
+      temp=(off.x * slope.y-off.y * slope.x)*scale;
+      if (temp<0)
 	 temp=-temp;
-      if (temp > n)
+      if (temp>n)
 	 n=temp;
-      off.x=xsp.c1 - endp.x;
-      off.y=ysp.c1 - endp.y;
-      temp=(off.x * slope.y - off.y * slope.x) * scale;
-      if (temp < 0)
+      off.x=xsp.c1-endp.x;
+      off.y=ysp.c1-endp.y;
+      temp=(off.x * slope.y-off.y * slope.x)*scale;
+      if (temp<0)
 	 temp=-temp;
-      if (temp > n)
+      if (temp>n)
 	 n=temp;
    }
 
-   diff=(end - start) / n;
-   for (t=start + diff, i=1; i <= n; ++i, t += diff) {
+   diff=(end-start)/n;
+   for (t=start+diff, i=1; i <= n; ++i, t += diff) {
       if (i==n)
 	 t=end;		/* Avoid rounding errors */
       cur=chunkalloc(sizeof(LineList));
-      x=((spline->splines[0].a * t + spline->splines[0].b) * t +
-	   spline->splines[0].c) * t + spline->splines[0].d;
-      y=((spline->splines[1].a * t + spline->splines[1].b) * t +
-	   spline->splines[1].c) * t + spline->splines[1].d;
+      x=((spline->splines[0].a * t+spline->splines[0].b)*t +
+	   spline->splines[0].c)*t+spline->splines[0].d;
+      y=((spline->splines[1].a * t+spline->splines[1].b)*t +
+	   spline->splines[1].c)*t+spline->splines[1].d;
       cur->here.x=rint(x * scale);
       cur->here.y=rint(y * scale);
       last->next=cur;
@@ -529,7 +529,7 @@ LinearApprox *SplineApproximate(Spline * spline, double scale) {
    } else {
       n=Spline2DFindPointsOfInflection(spline, poi);
       lastt=0;
-      for (i=0; i < n; ++i) {
+      for (i=0; i<n; ++i) {
 	 last=SplineSegApprox(last, spline, lastt, poi[i], scale);
 	 lastt=poi[i];
       }
@@ -552,19 +552,19 @@ static void SplineFindBounds(const Spline *sp,DBounds *bounds) {
    int i;
 
    /* first try the end points */
-   for (i=0; i < 2; ++i) {
+   for (i=0; i<2; ++i) {
       sp1=&sp->splines[i];
       if (i==0) {
-	 if (sp->to->me.x < bounds->minx)
+	 if (sp->to->me.x<bounds->minx)
 	    bounds->minx=sp->to->me.x;
-	 if (sp->to->me.x > bounds->maxx)
+	 if (sp->to->me.x>bounds->maxx)
 	    bounds->maxx=sp->to->me.x;
 	 min=bounds->minx;
 	 max=bounds->maxx;
       } else {
-	 if (sp->to->me.y < bounds->miny)
+	 if (sp->to->me.y<bounds->miny)
 	    bounds->miny=sp->to->me.y;
-	 if (sp->to->me.y > bounds->maxy)
+	 if (sp->to->me.y>bounds->maxy)
 	    bounds->maxy=sp->to->me.y;
 	 min=bounds->miny;
 	 max=bounds->maxy;
@@ -574,33 +574,33 @@ static void SplineFindBounds(const Spline *sp,DBounds *bounds) {
       /* (I don't bother fixing up for tiny rounding errors here. they don't matter */
       /* But we could call CheckExtremaForSingleBitErrors */
       if (sp1->a != 0) {
-	 b2_fourac=4 * sp1->b * sp1->b - 12 * sp1->a * sp1->c;
+	 b2_fourac=4*sp1->b * sp1->b-12*sp1->a * sp1->c;
 	 if (b2_fourac >= 0) {
 	    b2_fourac=sqrt(b2_fourac);
-	    t=(-2 * sp1->b + b2_fourac) / (6 * sp1->a);
-	    if (t > 0 && t < 1) {
-	       v=((sp1->a * t + sp1->b) * t + sp1->c) * t + sp1->d;
-	       if (v < min)
+	    t=(-2*sp1->b+b2_fourac)/(6*sp1->a);
+	    if (t>0 && t<1) {
+	       v=((sp1->a * t+sp1->b)*t+sp1->c)*t+sp1->d;
+	       if (v<min)
 		  min=v;
-	       if (v > max)
+	       if (v>max)
 		  max=v;
 	    }
-	    t=(-2 * sp1->b - b2_fourac) / (6 * sp1->a);
-	    if (t > 0 && t < 1) {
-	       v=((sp1->a * t + sp1->b) * t + sp1->c) * t + sp1->d;
-	       if (v < min)
+	    t=(-2*sp1->b-b2_fourac)/(6*sp1->a);
+	    if (t>0 && t<1) {
+	       v=((sp1->a * t+sp1->b)*t+sp1->c)*t+sp1->d;
+	       if (v<min)
 		  min=v;
-	       if (v > max)
+	       if (v>max)
 		  max=v;
 	    }
 	 }
       } else if (sp1->b != 0) {
-	 t=-sp1->c / (2.0 * sp1->b);
-	 if (t > 0 && t < 1) {
-	    v=(sp1->b * t + sp1->c) * t + sp1->d;
-	    if (v < min)
+	 t=-sp1->c/(2.0*sp1->b);
+	 if (t>0 && t<1) {
+	    v=(sp1->b * t+sp1->c)*t+sp1->d;
+	    if (v<min)
 	       min=v;
-	    if (v > max)
+	    if (v>max)
 	       max=v;
 	 }
       }
@@ -629,13 +629,13 @@ static void _SplineSetFindBounds(const SplinePointList *spl,
 	    bounds->minx=bounds->maxx=spl->first->me.x;
 	    bounds->miny=bounds->maxy=spl->first->me.y;
 	 } else {
-	    if (spl->first->me.x < bounds->minx)
+	    if (spl->first->me.x<bounds->minx)
 	       bounds->minx=spl->first->me.x;
-	    if (spl->first->me.x > bounds->maxx)
+	    if (spl->first->me.x>bounds->maxx)
 	       bounds->maxx=spl->first->me.x;
-	    if (spl->first->me.y < bounds->miny)
+	    if (spl->first->me.y<bounds->miny)
 	       bounds->miny=spl->first->me.y;
-	    if (spl->first->me.y > bounds->maxy)
+	    if (spl->first->me.y>bounds->maxy)
 	       bounds->maxy=spl->first->me.y;
 	 }
 	 for (spline=spl->first->next; spline != NULL && spline != first;
@@ -663,13 +663,13 @@ static void _SplineSetFindClippedBounds(const SplinePointList *spl,
 	       bounds->minx=bounds->maxx=spl->first->me.x;
 	       bounds->miny=bounds->maxy=spl->first->me.y;
 	    } else {
-	       if (spl->first->me.x < bounds->minx)
+	       if (spl->first->me.x<bounds->minx)
 		  bounds->minx=spl->first->me.x;
-	       if (spl->first->me.x > bounds->maxx)
+	       if (spl->first->me.x>bounds->maxx)
 		  bounds->maxx=spl->first->me.x;
-	       if (spl->first->me.y < bounds->miny)
+	       if (spl->first->me.y<bounds->miny)
 		  bounds->miny=spl->first->me.y;
-	       if (spl->first->me.y > bounds->maxy)
+	       if (spl->first->me.y>bounds->maxy)
 		  bounds->maxy=spl->first->me.y;
 	    }
 	    for (spline=spl->first->next; spline != NULL && spline != first;
@@ -684,13 +684,13 @@ static void _SplineSetFindClippedBounds(const SplinePointList *spl,
 	       clipb->minx=clipb->maxx=spl->first->me.x;
 	       clipb->miny=clipb->maxy=spl->first->me.y;
 	    } else {
-	       if (spl->first->me.x < clipb->minx)
+	       if (spl->first->me.x<clipb->minx)
 		  clipb->minx=spl->first->me.x;
-	       if (spl->first->me.x > clipb->maxx)
+	       if (spl->first->me.x>clipb->maxx)
 		  clipb->maxx=spl->first->me.x;
-	       if (spl->first->me.y < clipb->miny)
+	       if (spl->first->me.y<clipb->miny)
 		  clipb->miny=spl->first->me.y;
-	       if (spl->first->me.y > clipb->maxy)
+	       if (spl->first->me.y>clipb->maxy)
 		  clipb->maxy=spl->first->me.y;
 	    }
 	    for (spline=spl->first->next; spline != NULL && spline != first;
@@ -711,13 +711,13 @@ void SplineSetFindBounds(const SplinePointList * spl, DBounds * bounds) {
    _SplineSetFindClippedBounds(spl, bounds, &clipb);
    if (clipb.minx != 0 || clipb.miny != 0 || clipb.maxx != 0
        || clipb.maxy != 0) {
-      if (bounds->minx < clipb.minx)
+      if (bounds->minx<clipb.minx)
 	 bounds->minx=clipb.minx;
-      if (bounds->miny < clipb.miny)
+      if (bounds->miny<clipb.miny)
 	 bounds->miny=clipb.miny;
-      if (bounds->maxx > clipb.maxx)
+      if (bounds->maxx>clipb.maxx)
 	 bounds->maxx=clipb.maxx;
-      if (bounds->maxy > clipb.maxy)
+      if (bounds->maxy>clipb.maxy)
 	 bounds->maxy=clipb.maxy;
    }
 }
@@ -728,13 +728,13 @@ static void _ImageFindBounds(ImageList *img,DBounds *bounds) {
       *bounds=img->bb;
    else if (img->bb.minx != 0 || img->bb.maxx != 0 || img->bb.maxy != 0
 	    || img->bb.miny != 0) {
-      if (img->bb.minx < bounds->minx)
+      if (img->bb.minx<bounds->minx)
 	 bounds->minx=img->bb.minx;
-      if (img->bb.miny < bounds->miny)
+      if (img->bb.miny<bounds->miny)
 	 bounds->miny=img->bb.miny;
-      if (img->bb.maxx > bounds->maxx)
+      if (img->bb.maxx>bounds->maxx)
 	 bounds->maxx=img->bb.maxx;
-      if (img->bb.maxy > bounds->maxy)
+      if (img->bb.maxy>bounds->maxy)
 	 bounds->maxy=img->bb.maxy;
    }
 }
@@ -752,13 +752,13 @@ static void _SplineCharLayerFindBounds(SplineChar *sc,int layer,
 	 *bounds=rf->bb;
       else if (rf->bb.minx != 0 || rf->bb.maxx != 0 || rf->bb.maxy != 0
 	       || rf->bb.miny != 0) {
-	 if (rf->bb.minx < bounds->minx)
+	 if (rf->bb.minx<bounds->minx)
 	    bounds->minx=rf->bb.minx;
-	 if (rf->bb.miny < bounds->miny)
+	 if (rf->bb.miny<bounds->miny)
 	    bounds->miny=rf->bb.miny;
-	 if (rf->bb.maxx > bounds->maxx)
+	 if (rf->bb.maxx>bounds->maxx)
 	    bounds->maxx=rf->bb.maxx;
-	 if (rf->bb.maxy > bounds->maxy)
+	 if (rf->bb.maxy>bounds->maxy)
 	    bounds->maxy=rf->bb.maxy;
       }
    }
@@ -780,26 +780,26 @@ static void _SplineCharLayerFindBounds(SplineChar *sc,int layer,
    }
    if (clipb.minx != 0 || clipb.miny != 0 || clipb.maxx != 0
        || clipb.maxy != 0) {
-      if (b.minx < clipb.minx)
+      if (b.minx<clipb.minx)
 	 b.minx=clipb.minx;
-      if (b.miny < clipb.miny)
+      if (b.miny<clipb.miny)
 	 b.miny=clipb.miny;
-      if (b.maxx > clipb.maxx)
+      if (b.maxx>clipb.maxx)
 	 b.maxx=clipb.maxx;
-      if (b.maxy > clipb.maxy)
+      if (b.maxy>clipb.maxy)
 	 b.maxy=clipb.maxy;
    }
    if (bounds->minx==0 && bounds->maxx==0 && bounds->miny==0
        && bounds->maxy==0)
       *bounds=b;
    else if (b.minx != 0 || b.maxx != 0 || b.maxy != 0 || b.miny != 0) {
-      if (b.minx < bounds->minx)
+      if (b.minx<bounds->minx)
 	 bounds->minx=b.minx;
-      if (b.miny < bounds->miny)
+      if (b.miny<bounds->miny)
 	 bounds->miny=b.miny;
-      if (b.maxx > bounds->maxx)
+      if (b.maxx>bounds->maxx)
 	 bounds->maxx=b.maxx;
-      if (b.maxy > bounds->maxy)
+      if (b.maxy>bounds->maxy)
 	 bounds->maxy=b.maxy;
    }
 
@@ -838,7 +838,7 @@ void SplineCharFindBounds(SplineChar * sc, DBounds * bounds) {
 
    first=last=ly_fore;
    if (sc->parent != NULL && sc->parent->multilayer)
-      last=sc->layer_cnt - 1;
+      last=sc->layer_cnt-1;
    for (i=first; i <= last; ++i)
       _SplineCharLayerFindBounds(sc, i, bounds);
 }
@@ -854,13 +854,13 @@ void SplineFontLayerFindBounds(SplineFont *sf, int layer, DBounds * bounds) {
    bounds->minx=bounds->maxx=0;
    bounds->miny=bounds->maxy=0;
 
-   for (i=0; i < sf->glyphcnt; ++i) {
+   for (i=0; i<sf->glyphcnt; ++i) {
       SplineChar *sc=sf->glyphs[i];
 
       if (sc != NULL) {
 	 first=last=ly_fore;
 	 if (sc->parent != NULL && sc->parent->multilayer)
-	    last=sc->layer_cnt - 1;
+	    last=sc->layer_cnt-1;
 	 for (k=first; k <= last; ++k)
 	    _SplineCharLayerFindBounds(sc, k, bounds);
       }
@@ -873,13 +873,13 @@ void SplineFontFindBounds(SplineFont *sf, DBounds * bounds) {
    bounds->minx=bounds->maxx=0;
    bounds->miny=bounds->maxy=0;
 
-   for (i=0; i < sf->glyphcnt; ++i) {
+   for (i=0; i<sf->glyphcnt; ++i) {
       SplineChar *sc=sf->glyphs[i];
 
       if (sc != NULL) {
 	 first=last=ly_fore;
 	 if (sf->multilayer)
-	    last=sc->layer_cnt - 1;
+	    last=sc->layer_cnt-1;
 	 for (k=first; k <= last; ++k)
 	    _SplineCharLayerFindBounds(sc, k, bounds);
       }
@@ -901,26 +901,26 @@ void CIDLayerFindBounds(SplineFont *cidmaster, int layer, DBounds * bounds) {
 
    sf=cidmaster->subfonts[0];
    SplineFontLayerFindBounds(sf, layer, bounds);
-   factor=1000.0 / (sf->ascent + sf->descent);
+   factor=1000.0/(sf->ascent+sf->descent);
    bounds->maxx *= factor;
    bounds->minx *= factor;
    bounds->miny *= factor;
    bounds->maxy *= factor;
-   for (i=1; i < cidmaster->subfontcnt; ++i) {
+   for (i=1; i<cidmaster->subfontcnt; ++i) {
       sf=cidmaster->subfonts[i];
       SplineFontLayerFindBounds(sf, layer, &b);
-      factor=1000.0 / (sf->ascent + sf->descent);
+      factor=1000.0/(sf->ascent+sf->descent);
       b.maxx *= factor;
       b.minx *= factor;
       b.miny *= factor;
       b.maxy *= factor;
-      if (b.maxx > bounds->maxx)
+      if (b.maxx>bounds->maxx)
 	 bounds->maxx=b.maxx;
-      if (b.maxy > bounds->maxy)
+      if (b.maxy>bounds->maxy)
 	 bounds->maxy=b.maxy;
-      if (b.miny < bounds->miny)
+      if (b.miny<bounds->miny)
 	 bounds->miny=b.miny;
-      if (b.minx < bounds->minx)
+      if (b.minx<bounds->minx)
 	 bounds->minx=b.minx;
    }
 }
@@ -930,7 +930,7 @@ static void _SplineSetFindTop(SplineSet *ss,BasePoint *top) {
 
    for (; ss != NULL; ss=ss->next) {
       for (sp=ss->first;;) {
-	 if (sp->me.y > top->y)
+	 if (sp->me.y>top->y)
 	    *top=sp->me;
 	 if (sp->next==NULL)
 	    break;
@@ -948,13 +948,13 @@ void SplineSetQuickBounds(SplineSet * ss, DBounds * b) {
    b->maxx=b->maxy=-1e10; /* FLOATMAGIC */
    for (; ss != NULL; ss=ss->next) {
       for (sp=ss->first;;) {
-	 if (sp->me.y < b->miny)
+	 if (sp->me.y<b->miny)
 	    b->miny=sp->me.y;
-	 if (sp->me.x < b->minx)
+	 if (sp->me.x<b->minx)
 	    b->minx=sp->me.x;
-	 if (sp->me.y > b->maxy)
+	 if (sp->me.y>b->maxy)
 	    b->maxy=sp->me.y;
-	 if (sp->me.x > b->maxx)
+	 if (sp->me.x>b->maxx)
 	    b->maxx=sp->me.x;
 	 if (sp->next==NULL)
 	    break;
@@ -963,13 +963,13 @@ void SplineSetQuickBounds(SplineSet * ss, DBounds * b) {
 	    break;
       }
    }
-   if (b->minx > 65536)
+   if (b->minx>65536)
       b->minx=0;
-   if (b->miny > 65536)
+   if (b->miny>65536)
       b->miny=0;
-   if (b->maxx < -65536)
+   if (b->maxx<-65536)
       b->maxx=0;
-   if (b->maxy < -65536)
+   if (b->maxy<-65536)
       b->maxy=0;
 }
 
@@ -984,7 +984,7 @@ void SplineCharQuickBounds(SplineChar * sc, DBounds * b) {
    b->maxx=b->maxy=-1e10; /* FLOATMAGIC */
    first=last=ly_fore;
    if (sc->parent != NULL && sc->parent->multilayer)
-      last=sc->layer_cnt - 1;
+      last=sc->layer_cnt-1;
    for (i=first; i <= last; ++i) {
       SplineSetQuickBounds(sc->layers[i].splines, &temp);
       for (img=sc->layers[i].images; img != NULL; img=img->next)
@@ -1002,13 +1002,13 @@ void SplineCharQuickBounds(SplineChar * sc, DBounds * b) {
       }
       if (temp.minx != 0 || temp.maxx != 0 || temp.maxy != 0
 	  || temp.miny != 0) {
-	 if (temp.minx < b->minx)
+	 if (temp.minx<b->minx)
 	    b->minx=temp.minx;
-	 if (temp.miny < b->miny)
+	 if (temp.miny<b->miny)
 	    b->miny=temp.miny;
-	 if (temp.maxx > b->maxx)
+	 if (temp.maxx>b->maxx)
 	    b->maxx=temp.maxx;
-	 if (temp.maxy > b->maxy)
+	 if (temp.maxy>b->maxy)
 	    b->maxy=temp.maxy;
       }
       for (ref=sc->layers[i].refs; ref != NULL; ref=ref->next) {
@@ -1017,13 +1017,13 @@ void SplineCharQuickBounds(SplineChar * sc, DBounds * b) {
 	    *b=ref->bb;
 	 else if (ref->bb.minx != 0 || ref->bb.maxx != 0 || ref->bb.maxy != 0
 		  || ref->bb.miny != 0) {
-	    if (ref->bb.minx < b->minx)
+	    if (ref->bb.minx<b->minx)
 	       b->minx=ref->bb.minx;
-	    if (ref->bb.miny < b->miny)
+	    if (ref->bb.miny<b->miny)
 	       b->miny=ref->bb.miny;
-	    if (ref->bb.maxx > b->maxx)
+	    if (ref->bb.maxx>b->maxx)
 	       b->maxx=ref->bb.maxx;
-	    if (ref->bb.maxy > b->maxy)
+	    if (ref->bb.maxy>b->maxy)
 	       b->maxy=ref->bb.maxy;
 	 }
       }
@@ -1037,7 +1037,7 @@ void SplineCharQuickBounds(SplineChar * sc, DBounds * b) {
       b->maxx += sw;
       b->maxy += sw;
    }
-   if (b->minx > 1e9) /* FLOATMAGIC */
+   if (b->minx>1e9) /* FLOATMAGIC */
       memset(b, 0, sizeof(*b));
 }
 
@@ -1062,18 +1062,18 @@ void SplineCharLayerQuickBounds(SplineChar * sc, int layer, DBounds * bounds) {
 	 *bounds=temp;
       else if (temp.minx != 0 || temp.maxx != 0 || temp.maxy != 0
 	       || temp.miny != 0) {
-	 if (temp.minx < bounds->minx)
+	 if (temp.minx<bounds->minx)
 	    bounds->minx=temp.minx;
-	 if (temp.miny < bounds->miny)
+	 if (temp.miny<bounds->miny)
 	    bounds->miny=temp.miny;
-	 if (temp.maxx > bounds->maxx)
+	 if (temp.maxx>bounds->maxx)
 	    bounds->maxx=temp.maxx;
-	 if (temp.maxy > bounds->maxy)
+	 if (temp.maxy>bounds->maxy)
 	    bounds->maxy=temp.maxy;
       }
    }
    /* a char with no splines (ie. a space) must have an lbearing of 0 */
-   if (bounds->minx > 1e9) /* FLOATMAGIC */
+   if (bounds->minx>1e9) /* FLOATMAGIC */
       memset(bounds, 0, sizeof(*bounds));
 }
 
@@ -1084,29 +1084,29 @@ static void SplineSetQuickConservativeBounds(SplineSet *ss,DBounds *b) {
    b->maxx=b->maxy=-1e10; /* FLOATMAGIC */
    for (; ss != NULL; ss=ss->next) {
       for (sp=ss->first;;) {
-	 if (sp->me.y < b->miny)
+	 if (sp->me.y<b->miny)
 	    b->miny=sp->me.y;
-	 if (sp->me.x < b->minx)
+	 if (sp->me.x<b->minx)
 	    b->minx=sp->me.x;
-	 if (sp->me.y > b->maxy)
+	 if (sp->me.y>b->maxy)
 	    b->maxy=sp->me.y;
-	 if (sp->me.x > b->maxx)
+	 if (sp->me.x>b->maxx)
 	    b->maxx=sp->me.x;
-	 if (sp->nextcp.y < b->miny)
+	 if (sp->nextcp.y<b->miny)
 	    b->miny=sp->nextcp.y;
-	 if (sp->nextcp.x < b->minx)
+	 if (sp->nextcp.x<b->minx)
 	    b->minx=sp->nextcp.x;
-	 if (sp->nextcp.y > b->maxy)
+	 if (sp->nextcp.y>b->maxy)
 	    b->maxy=sp->nextcp.y;
-	 if (sp->nextcp.x > b->maxx)
+	 if (sp->nextcp.x>b->maxx)
 	    b->maxx=sp->nextcp.x;
-	 if (sp->prevcp.y < b->miny)
+	 if (sp->prevcp.y<b->miny)
 	    b->miny=sp->prevcp.y;
-	 if (sp->prevcp.x < b->minx)
+	 if (sp->prevcp.x<b->minx)
 	    b->minx=sp->prevcp.x;
-	 if (sp->prevcp.y > b->maxy)
+	 if (sp->prevcp.y>b->maxy)
 	    b->maxy=sp->prevcp.y;
-	 if (sp->prevcp.x > b->maxx)
+	 if (sp->prevcp.x>b->maxx)
 	    b->maxx=sp->prevcp.x;
 	 if (sp->next==NULL)
 	    break;
@@ -1115,13 +1115,13 @@ static void SplineSetQuickConservativeBounds(SplineSet *ss,DBounds *b) {
 	    break;
       }
    }
-   if (b->minx > 65536)
+   if (b->minx>65536)
       b->minx=0;
-   if (b->miny > 65536)
+   if (b->miny>65536)
       b->miny=0;
-   if (b->maxx < -65536)
+   if (b->maxx<-65536)
       b->maxx=0;
-   if (b->maxy < -65536)
+   if (b->maxy<-65536)
       b->maxy=0;
 }
 
@@ -1135,7 +1135,7 @@ void SplineCharQuickConservativeBounds(SplineChar * sc, DBounds * b) {
    memset(b, 0, sizeof(*b));
    first=last=ly_fore;
    if (sc->parent != NULL && sc->parent->multilayer)
-      last=sc->layer_cnt - 1;
+      last=sc->layer_cnt-1;
    for (i=first; i <= last; ++i) {
       SplineSetQuickConservativeBounds(sc->layers[i].splines, &temp);
       for (img=sc->layers[i].images; img != NULL; img=img->next)
@@ -1153,13 +1153,13 @@ void SplineCharQuickConservativeBounds(SplineChar * sc, DBounds * b) {
       }
       if (temp.minx != 0 || temp.maxx != 0 || temp.maxy != 0
 	  || temp.miny != 0) {
-	 if (temp.minx < b->minx)
+	 if (temp.minx<b->minx)
 	    b->minx=temp.minx;
-	 if (temp.miny < b->miny)
+	 if (temp.miny<b->miny)
 	    b->miny=temp.miny;
-	 if (temp.maxx > b->maxx)
+	 if (temp.maxx>b->maxx)
 	    b->maxx=temp.maxx;
-	 if (temp.maxy > b->maxy)
+	 if (temp.maxy>b->maxy)
 	    b->maxy=temp.maxy;
       }
       for (ref=sc->layers[i].refs; ref != NULL; ref=ref->next) {
@@ -1168,13 +1168,13 @@ void SplineCharQuickConservativeBounds(SplineChar * sc, DBounds * b) {
 	    *b=ref->bb;
 	 else if (ref->bb.minx != 0 || ref->bb.maxx != 0 || ref->bb.maxy != 0
 		  || ref->bb.miny != 0) {
-	    if (ref->bb.minx < b->minx)
+	    if (ref->bb.minx<b->minx)
 	       b->minx=ref->bb.minx;
-	    if (ref->bb.miny < b->miny)
+	    if (ref->bb.miny<b->miny)
 	       b->miny=ref->bb.miny;
-	    if (ref->bb.maxx > b->maxx)
+	    if (ref->bb.maxx>b->maxx)
 	       b->maxx=ref->bb.maxx;
-	    if (ref->bb.maxy > b->maxy)
+	    if (ref->bb.maxy>b->maxy)
 	       b->maxy=ref->bb.maxy;
 	 }
       }
@@ -1195,25 +1195,25 @@ void SplineFontQuickConservativeBounds(SplineFont *sf, DBounds * b) {
 
    b->minx=b->miny=1e10; /* FLOATMAGIC */
    b->maxx=b->maxy=-1e10; /* FLOATMAGIC */
-   for (i=0; i < sf->glyphcnt; ++i)
+   for (i=0; i<sf->glyphcnt; ++i)
       if (sf->glyphs[i] != NULL) {
 	 SplineCharQuickConservativeBounds(sf->glyphs[i], &bb);
-	 if (bb.minx < b->minx)
+	 if (bb.minx<b->minx)
 	    b->minx=bb.minx;
-	 if (bb.miny < b->miny)
+	 if (bb.miny<b->miny)
 	    b->miny=bb.miny;
-	 if (bb.maxx > b->maxx)
+	 if (bb.maxx>b->maxx)
 	    b->maxx=bb.maxx;
-	 if (bb.maxy > b->maxy)
+	 if (bb.maxy>b->maxy)
 	    b->maxy=bb.maxy;
       }
-   if (b->minx > 65536)
+   if (b->minx>65536)
       b->minx=0;
-   if (b->miny > 65536)
+   if (b->miny>65536)
       b->miny=0;
-   if (b->maxx < -65536)
+   if (b->maxx<-65536)
       b->maxx=0;
-   if (b->maxy < -65536)
+   if (b->maxy<-65536)
       b->maxy=0;
 }
 
@@ -1230,9 +1230,9 @@ void SplinePointCategorize(SplinePoint * sp) {
 						  && sp->prev->from->me.y ==
 						  sp->me.y));
    else if (sp->next==NULL) {
-      sp->pointtype=sp->noprevcp ? pt_corner : pt_curve;
+      sp->pointtype=sp->noprevcp?pt_corner:pt_curve;
    } else if (sp->prev==NULL) {
-      sp->pointtype=sp->nonextcp ? pt_corner : pt_curve;
+      sp->pointtype=sp->nonextcp?pt_corner:pt_curve;
    } else if (sp->nonextcp && sp->noprevcp) {
       ;
    } else {
@@ -1240,23 +1240,23 @@ void SplinePointCategorize(SplinePoint * sp) {
       double nlen, nclen, plen, pclen;
       double cross, bounds;
 
-      ncdir.x=sp->nextcp.x - sp->me.x;
-      ncdir.y=sp->nextcp.y - sp->me.y;
-      pcdir.x=sp->prevcp.x - sp->me.x;
-      pcdir.y=sp->prevcp.y - sp->me.y;
+      ncdir.x=sp->nextcp.x-sp->me.x;
+      ncdir.y=sp->nextcp.y-sp->me.y;
+      pcdir.x=sp->prevcp.x-sp->me.x;
+      pcdir.y=sp->prevcp.y-sp->me.y;
       ndir.x=ndir.y=pdir.x=pdir.y=0;
       if (sp->next != NULL) {
-	 ndir.x=sp->next->to->me.x - sp->me.x;
-	 ndir.y=sp->next->to->me.y - sp->me.y;
+	 ndir.x=sp->next->to->me.x-sp->me.x;
+	 ndir.y=sp->next->to->me.y-sp->me.y;
       }
       if (sp->prev != NULL) {
-	 pdir.x=sp->prev->from->me.x - sp->me.x;
-	 pdir.y=sp->prev->from->me.y - sp->me.y;
+	 pdir.x=sp->prev->from->me.x-sp->me.x;
+	 pdir.y=sp->prev->from->me.y-sp->me.y;
       }
-      nclen=sqrt(ncdir.x * ncdir.x + ncdir.y * ncdir.y);
-      pclen=sqrt(pcdir.x * pcdir.x + pcdir.y * pcdir.y);
-      nlen=sqrt(ndir.x * ndir.x + ndir.y * ndir.y);
-      plen=sqrt(pdir.x * pdir.x + pdir.y * pdir.y);
+      nclen=sqrt(ncdir.x * ncdir.x+ncdir.y * ncdir.y);
+      pclen=sqrt(pcdir.x * pcdir.x+pcdir.y * pcdir.y);
+      nlen=sqrt(ndir.x * ndir.x+ndir.y * ndir.y);
+      plen=sqrt(pdir.x * pdir.x+pdir.y * pdir.y);
       ncunit=ncdir;
       pcunit=pcdir;
       if (nclen != 0) {
@@ -1287,24 +1287,24 @@ void SplinePointCategorize(SplinePoint * sp) {
 	 bounds=1.0;
       if (nclen != 0 && pclen != 0 &&
 	  ((nclen >= pclen
-	    && (cross=pcdir.x * ncunit.y - pcdir.y * ncunit.x) < bounds
-	    && cross > -bounds) || (pclen > nclen
+	    && (cross=pcdir.x * ncunit.y-pcdir.y * ncunit.x)<bounds
+	    && cross>-bounds) || (pclen>nclen
 				    && (cross =
 					ncdir.x * pcunit.y -
-					ncdir.y * pcunit.x) < bounds
-				    && cross > -bounds))
-	  && ncdir.x * pcdir.x + ncdir.y * pcdir.y < 0)
+					ncdir.y * pcunit.x)<bounds
+				    && cross>-bounds))
+	  && ncdir.x * pcdir.x+ncdir.y * pcdir.y<0)
 	 sp->pointtype=pt_curve;
       /* Cross product of control point with unit vector normal to line in */
       /*  opposite direction should be less than an em-unit for a tangent */
       else
 	 if ((nclen==0 && pclen != 0
-	      && (cross=pcdir.x * ndir.y - pcdir.y * ndir.x) < bounds
-	      && cross > -bounds) || (pclen==0 && nclen != 0
+	      && (cross=pcdir.x * ndir.y-pcdir.y * ndir.x)<bounds
+	      && cross>-bounds) || (pclen==0 && nclen != 0
 				      && (cross =
 					  ncdir.x * pdir.y -
-					  ncdir.y * pdir.x) < bounds
-				      && cross > -bounds))
+					  ncdir.y * pdir.x)<bounds
+				      && cross>-bounds))
 	 sp->pointtype=pt_tangent;
 
       /* If a point started out hv, and could still be hv, them make it so */
@@ -1340,16 +1340,16 @@ void SPLCategorizePoints(SplinePointList * spl) {
 void SCCategorizePoints(SplineChar * sc) {
    int i;
 
-   for (i=ly_fore; i < sc->layer_cnt; ++i)
+   for (i=ly_fore; i<sc->layer_cnt; ++i)
       SPLCategorizePoints(sc->layers[i].splines);
 }
 
 static int CharsNotInEncoding(FontDict *fd) {
    int i, cnt, j;
 
-   for (i=cnt=0; i < fd->chars->cnt; ++i) {
+   for (i=cnt=0; i<fd->chars->cnt; ++i) {
       if (fd->chars->keys[i] != NULL) {
-	 for (j=0; j < 256; ++j)
+	 for (j=0; j<256; ++j)
 	    if (fd->encoding[j] != NULL &&
 		strcmp(fd->encoding[j], fd->chars->keys[i])==0)
 	       break;
@@ -1359,9 +1359,9 @@ static int CharsNotInEncoding(FontDict *fd) {
    }
    /* And for type 3 fonts... */
    if (fd->charprocs != NULL)
-      for (i=0; i < fd->charprocs->cnt; ++i) {
+      for (i=0; i<fd->charprocs->cnt; ++i) {
 	 if (fd->charprocs->keys[i] != NULL) {
-	    for (j=0; j < 256; ++j)
+	    for (j=0; j<256; ++j)
 	       if (fd->encoding[j] != NULL &&
 		   strcmp(fd->encoding[j], fd->charprocs->keys[i])==0)
 		  break;
@@ -1378,7 +1378,7 @@ static int LookupCharString(char *encname,struct pschars *chars) {
    if (encname==NULL)
       encname=".notdef";	/* In case of an incomplete encoding array */
 
-   for (k=0; k < chars->cnt; ++k) {
+   for (k=0; k<chars->cnt; ++k) {
       if (chars->keys[k] != NULL)
 	 if (strcmp(encname, chars->keys[k])==0)
 	    return (k);
@@ -1487,27 +1487,27 @@ static ImageList *ImageListTransform(ImageList *img,double transform[6],
 	    double x=img->xoff;
 
 	    img->xoff =
-	       transform[0] * x + transform[2] * img->yoff + transform[4];
+	       transform[0] * x+transform[2] * img->yoff+transform[4];
 	    img->yoff =
-	       transform[1] * x + transform[3] * img->yoff + transform[5];
-	    if ((img->xscale *= transform[0]) < 0) {
+	       transform[1] * x+transform[3] * img->yoff+transform[5];
+	    if ((img->xscale *= transform[0])<0) {
 	       img->xoff += img->xscale *
 		  (img->image->list_len ==
-		   0 ? img->image->u.image : img->image->u.images[0])->width;
+		   0?img->image->u.image:img->image->u.images[0])->width;
 	       img->xscale=-img->xscale;
 	    }
-	    if ((img->yscale *= transform[3]) < 0) {
+	    if ((img->yscale *= transform[3])<0) {
 	       img->yoff += img->yscale *
 		  (img->image->list_len ==
-		   0 ? img->image->u.image : img->image->u.images[0])->height;
+		   0?img->image->u.image:img->image->u.images[0])->height;
 	       img->yscale=-img->yscale;
 	    }
 	    img->bb.minx=img->xoff;
 	    img->bb.maxy=img->yoff;
 	    img->bb.maxx =
-	       img->xoff + GImageGetWidth(img->image) * img->xscale;
+	       img->xoff+GImageGetWidth(img->image)*img->xscale;
 	    img->bb.miny =
-	       img->yoff - GImageGetHeight(img->image) * img->yscale;
+	       img->yoff-GImageGetHeight(img->image)*img->yscale;
 	 }
 	 img=img->next;
       }
@@ -1518,10 +1518,10 @@ static ImageList *ImageListTransform(ImageList *img,double transform[6],
 static void BpTransform(BasePoint *to,BasePoint *from,double transform[6]) {
    BasePoint p;
 
-   p.x=transform[0] * from->x + transform[2] * from->y + transform[4];
-   p.y=transform[1] * from->x + transform[3] * from->y + transform[5];
-   to->x=rint(1024 * p.x) / 1024;
-   to->y=rint(1024 * p.y) / 1024;
+   p.x=transform[0] * from->x+transform[2] * from->y+transform[4];
+   p.y=transform[1] * from->x+transform[3] * from->y+transform[5];
+   to->x=rint(1024*p.x)/1024;
+   to->y=rint(1024*p.y)/1024;
 }
 
 void ApTransform(AnchorPoint * ap, double transform[6]) {
@@ -1529,7 +1529,7 @@ void ApTransform(AnchorPoint * ap, double transform[6]) {
 }
 
 static void SPTouchControl(SplinePoint *sp,BasePoint *which, int order2) {
-    BasePoint to = *which;
+    BasePoint to=*which;
 
     SPAdjustControl(sp, which, &to, order2 );
 }
@@ -1540,15 +1540,15 @@ static void TransformPointExtended(SplinePoint *sp,double transform[6],
      * If we are to transform selected BCP instead of their base splinepoint
      * then lets do that.
      */
-   if (tpmask & tpmask_operateOnSelectedBCP
+   if (tpmask&tpmask_operateOnSelectedBCP
        && (sp->nextcpselected || sp->prevcpselected)) {
       if (sp->nextcpselected) {
-	 int order2=sp->next ? sp->next->order2 : 0;
+	 int order2=sp->next?sp->next->order2:0;
 
 	 BpTransform(&sp->nextcp, &sp->nextcp, transform);
 	 SPTouchControl(sp, &sp->nextcp, order2);
       } else if (sp->prevcpselected) {
-	 int order2=sp->next ? sp->next->order2 : 0;
+	 int order2=sp->next?sp->next->order2:0;
 
 	 BpTransform(&sp->prevcp, &sp->prevcp, transform);
 	 SPTouchControl(sp, &sp->prevcp, order2);
@@ -1593,8 +1593,8 @@ static void TransformPoint(SplinePoint *sp,double transform[6]) {
 static void TransformSpiro(spiro_cp *cp,double transform[6]) {
    double x;
 
-   x=transform[0] * cp->x + transform[2] * cp->y + transform[4];
-   cp->y=transform[1] * cp->x + transform[3] * cp->y + transform[5];
+   x=transform[0] * cp->x+transform[2] * cp->y+transform[4];
+   cp->y=transform[1] * cp->x+transform[3] * cp->y+transform[5];
    cp->x=x;
 }
 
@@ -1616,13 +1616,13 @@ static void TransformPTsInterpolateCPs(BasePoint *fromorig,Spline *spline,
    /* None of the control points will have been transformed yet */
    if (fromorig->x != toorig->x) {
       fraction =
-	 (spline->from->nextcp.x - fromorig->x) / (toorig->x - fromorig->x);
+	 (spline->from->nextcp.x-fromorig->x)/(toorig->x-fromorig->x);
       spline->from->nextcp.x =
-	 spline->from->me.x + fraction * (totrans.x - spline->from->me.x);
+	 spline->from->me.x+fraction * (totrans.x-spline->from->me.x);
       fraction =
-	 (spline->to->prevcp.x - fromorig->x) / (toorig->x - fromorig->x);
+	 (spline->to->prevcp.x-fromorig->x)/(toorig->x-fromorig->x);
       spline->to->prevcp.x =
-	 spline->from->me.x + fraction * (totrans.x - spline->from->me.x);
+	 spline->from->me.x+fraction * (totrans.x-spline->from->me.x);
    } else {
       BpTransform(&temp, &spline->from->nextcp, transform);
       spline->from->nextcp.x=temp.x;
@@ -1631,13 +1631,13 @@ static void TransformPTsInterpolateCPs(BasePoint *fromorig,Spline *spline,
    }
    if (fromorig->y != toorig->y) {
       fraction =
-	 (spline->from->nextcp.y - fromorig->y) / (toorig->y - fromorig->y);
+	 (spline->from->nextcp.y-fromorig->y)/(toorig->y-fromorig->y);
       spline->from->nextcp.y =
-	 spline->from->me.y + fraction * (totrans.y - spline->from->me.y);
+	 spline->from->me.y+fraction * (totrans.y-spline->from->me.y);
       fraction =
-	 (spline->to->prevcp.y - fromorig->y) / (toorig->y - fromorig->y);
+	 (spline->to->prevcp.y-fromorig->y)/(toorig->y-fromorig->y);
       spline->to->prevcp.y =
-	 spline->from->me.y + fraction * (totrans.y - spline->from->me.y);
+	 spline->from->me.y+fraction * (totrans.y-spline->from->me.y);
    } else {
       BpTransform(&temp, &spline->from->nextcp, transform);
       spline->from->nextcp.y=temp.y;
@@ -1686,7 +1686,7 @@ static SplinePointList *SplinePointListTransformExtended(SplinePointList *base,
 	       TransformPTsInterpolateCPs(&lastpointorig, spline,
 					  spl->first ==
 					  spline->
-					  to ? &firstpointorig : &spline->to->
+					  to?&firstpointorig:&spline->to->
 					  me, transform);
 	    }
 	    lastpointorig=orig;
@@ -1709,8 +1709,8 @@ static SplinePointList *SplinePointListTransformExtended(SplinePointList *base,
 		     SplinePoint *to=spt->next->to;
 
 		     to->prevcp=spt->nextcp;
-		     to->me.x=(to->prevcp.x + to->nextcp.x) / 2;
-		     to->me.y=(to->prevcp.y + to->nextcp.y) / 2;
+		     to->me.x=(to->prevcp.x+to->nextcp.x)/2;
+		     to->me.y=(to->prevcp.y+to->nextcp.y)/2;
 		  }
 		  if (spt->prev != NULL && spt->prev->order2
 		      && !spt->prev->from->selected
@@ -1718,8 +1718,8 @@ static SplinePointList *SplinePointListTransformExtended(SplinePointList *base,
 		     SplinePoint *from=spt->prev->from;
 
 		     from->nextcp=spt->prevcp;
-		     from->me.x=(from->prevcp.x + from->nextcp.x) / 2;
-		     from->me.y=(from->prevcp.y + from->nextcp.y) / 2;
+		     from->me.x=(from->prevcp.x+from->nextcp.x)/2;
+		     from->me.y=(from->prevcp.y+from->nextcp.y)/2;
 		  }
 	       }
 	       anysel=true;
@@ -1737,7 +1737,7 @@ static SplinePointList *SplinePointListTransformExtended(SplinePointList *base,
       if (allsel) {
 	 int i;
 
-	 for (i=0; i < spl->spiro_cnt - 1; ++i)
+	 for (i=0; i<spl->spiro_cnt-1; ++i)
 	    TransformSpiro(&spl->spiros[i], transform);
       } else
 	 SplineSetSpirosClear(spl);
@@ -1747,7 +1747,7 @@ static SplinePointList *SplinePointListTransformExtended(SplinePointList *base,
       /* Figuring out where the edges of the selection are is difficult */
       /*  so let's just tweak all points, it shouldn't matter */
       /* It does matter. Let's tweak all default points */
-      if (!(tpmask & tpmask_dontFixControlPoints)) {
+      if (!(tpmask&tpmask_dontFixControlPoints)) {
 	 if (tpt != tpt_AllPoints && !allsel && spl->first->next != NULL
 	     && !spl->first->next->order2) {
 	    pfirst=NULL;
@@ -1818,29 +1818,29 @@ HintMask *HintMaskFromTransformedRef(RefChar * ref, BasePoint * trans,
 
    memset(hm, 0, sizeof(HintMask));
    for (st=ref->sc->hstem; st != NULL; st=st->next) {
-      start=st->start * ref->transform[3] + ref->transform[5] + trans->y;
+      start=st->start * ref->transform[3]+ref->transform[5]+trans->y;
       width=st->width * ref->transform[3];
       for (st2=basesc->hstem, bcnt=0; st2 != NULL;
 	   st2=st2->next, bcnt++)
 	 if (st2->start==start && st2->width==width)
 	    break;
       if (st2 != NULL)
-	 (*hm)[bcnt >> 3] |= (0x80 >> (bcnt & 7));
+	 (*hm)[bcnt >> 3] |= (0x80 >> (bcnt&7));
    }
    for (st2=basesc->hstem, hst_cnt=0; st2 != NULL;
 	st2=st2->next, hst_cnt++);
 
    for (st=ref->sc->vstem; st != NULL; st=st->next) {
-      start=st->start * ref->transform[0] + ref->transform[4] + trans->x;
+      start=st->start * ref->transform[0]+ref->transform[4]+trans->x;
       width=st->width * ref->transform[0];
       for (st2=basesc->vstem, bcnt=hst_cnt; st2 != NULL;
 	   st2=st2->next, bcnt++)
 	 if (st2->start==start && st2->width==width)
 	    break;
       if (st2 != NULL)
-	 (*hm)[bcnt >> 3] |= (0x80 >> (bcnt & 7));
+	 (*hm)[bcnt >> 3] |= (0x80 >> (bcnt&7));
    }
-   for (i=0; i < HntMax / 8; ++i)
+   for (i=0; i<HntMax/8; ++i)
       if ((*hm)[i] != 0)
 	 return (hm);
 
@@ -1859,30 +1859,30 @@ static HintMask *HintMaskTransform(HintMask *oldhm,double transform[6],
 
    newhm=chunkalloc(sizeof(HintMask));
    for (st=subsc->hstem, cnt=0; st != NULL; st=st->next, cnt++) {
-      if ((*oldhm)[cnt >> 3] & (0x80 >> (cnt & 7))) {
-	 start=st->start * transform[3] + transform[5];
+      if ((*oldhm)[cnt >> 3]&(0x80 >> (cnt&7))) {
+	 start=st->start * transform[3]+transform[5];
 	 width=st->width * transform[3];
 	 for (st2=basesc->hstem, bcnt=0; st2 != NULL;
 	      st2=st2->next, bcnt++)
 	    if (st2->start==start && st2->width==width)
 	       break;
 	 if (st2 != NULL)
-	    (*newhm)[bcnt >> 3] |= (0x80 >> (bcnt & 7));
+	    (*newhm)[bcnt >> 3] |= (0x80 >> (bcnt&7));
       }
    }
    for (st2=basesc->hstem, hst_cnt=0; st2 != NULL;
 	st2=st2->next, hst_cnt++);
 
    for (st=subsc->vstem; st != NULL; st=st->next, cnt++) {
-      if ((*oldhm)[cnt >> 3] & (0x80 >> (cnt & 7))) {
-	 start=st->start * transform[0] + transform[4];
+      if ((*oldhm)[cnt >> 3]&(0x80 >> (cnt&7))) {
+	 start=st->start * transform[0]+transform[4];
 	 width=st->width * transform[0];
 	 for (st2=basesc->vstem, bcnt=hst_cnt; st2 != NULL;
 	      st2=st2->next, bcnt++)
 	    if (st2->start==start && st2->width==width)
 	       break;
 	 if (st2 != NULL)
-	    (*newhm)[bcnt >> 3] |= (0x80 >> (bcnt & 7));
+	    (*newhm)[bcnt >> 3] |= (0x80 >> (bcnt&7));
       }
    }
    return (newhm);
@@ -1978,9 +1978,9 @@ static SplinePointList *_SPLCopyTransformedHintMasks(SplineChar *subsc,
       trans[3]=rf->transform[2] * transform[1] +
 	 rf->transform[3] * transform[3];
       trans[4]=rf->transform[4] * transform[0] +
-	 rf->transform[5] * transform[2] + transform[4];
+	 rf->transform[5] * transform[2]+transform[4];
       trans[5]=rf->transform[4] * transform[1] +
-	 rf->transform[5] * transform[3] + transform[5];
+	 rf->transform[5] * transform[3]+transform[5];
       cur=_SPLCopyTransformedHintMasks(rf->sc, layer, trans, basesc);
       if (head==NULL)
 	 head=cur;
@@ -2050,7 +2050,7 @@ static void InstantiateReference(SplineFont *sf,RefChar *topref,
       if (refs->sc != NULL)
 	 i=refs->sc->orig_pos;	/* Can happen in type3 fonts */
       else
-	 for (i=0; i < sf->glyphcnt; ++i)
+	 for (i=0; i<sf->glyphcnt; ++i)
 	    if (sf->glyphs[i] != NULL)
 	       if (strcmp
 		   (sf->glyphs[i]->name,
@@ -2083,9 +2083,9 @@ static void InstantiateReference(SplineFont *sf,RefChar *topref,
       trans[3]=rf->transform[2] * transform[1] +
 	 rf->transform[3] * transform[3];
       trans[4]=rf->transform[4] * transform[0] +
-	 rf->transform[5] * transform[2] + transform[4];
+	 rf->transform[5] * transform[2]+transform[4];
       trans[5]=rf->transform[4] * transform[1] +
-	 rf->transform[5] * transform[3] + transform[5];
+	 rf->transform[5] * transform[3]+transform[5];
       InstantiateReference(sf, topref, rf, trans, rsc, layer);
    }
    rsc->ticked=false;
@@ -2094,29 +2094,29 @@ static void InstantiateReference(SplineFont *sf,RefChar *topref,
       int lbase=topref->layer_cnt;
 
       if (topref->layer_cnt==0) {
-	 topref->layers=calloc(rsc->layer_cnt - 1, sizeof(struct reflayer));
-	 topref->layer_cnt=rsc->layer_cnt - 1;
+	 topref->layers=calloc(rsc->layer_cnt-1, sizeof(struct reflayer));
+	 topref->layer_cnt=rsc->layer_cnt-1;
       } else {
-	 topref->layer_cnt += rsc->layer_cnt - 1;
+	 topref->layer_cnt += rsc->layer_cnt-1;
 	 topref->layers =
 	    realloc(topref->layers,
 		    topref->layer_cnt * sizeof(struct reflayer));
-	 memset(topref->layers + lbase, 0,
-		(rsc->layer_cnt - 1) * sizeof(struct reflayer));
+	 memset(topref->layers+lbase, 0,
+		(rsc->layer_cnt-1)*sizeof(struct reflayer));
       }
-      for (i=ly_fore; i < rsc->layer_cnt; ++i) {
-	 topref->layers[i - ly_fore + lbase].splines =
+      for (i=ly_fore; i<rsc->layer_cnt; ++i) {
+	 topref->layers[i-ly_fore+lbase].splines =
 	    SplinePointListTransform(SplinePointListCopy
 				     (rsc->layers[i].splines), transform,
 				     tpt_AllPoints);
-	 BrushCopy(&topref->layers[i - ly_fore + lbase].fill_brush,
+	 BrushCopy(&topref->layers[i-ly_fore+lbase].fill_brush,
 		   &rsc->layers[i].fill_brush, transform);
-	 PenCopy(&topref->layers[i - ly_fore + lbase].stroke_pen,
+	 PenCopy(&topref->layers[i-ly_fore+lbase].stroke_pen,
 		 &rsc->layers[i].stroke_pen, transform);
-	 topref->layers[i - ly_fore + lbase].dofill=rsc->layers[i].dofill;
-	 topref->layers[i - ly_fore + lbase].dostroke =
+	 topref->layers[i-ly_fore+lbase].dofill=rsc->layers[i].dofill;
+	 topref->layers[i-ly_fore+lbase].dostroke =
 	    rsc->layers[i].dostroke;
-	 topref->layers[i - ly_fore + lbase].fillfirst =
+	 topref->layers[i-ly_fore+lbase].fillfirst =
 	    rsc->layers[i].fillfirst;
 	 /* ??? and images?  */
       }
@@ -2144,7 +2144,7 @@ static char *copyparse(char *str) {
    if (str==NULL)
       return (str);
 
-   rpt=ret=malloc(strlen(str) + 1);
+   rpt=ret=malloc(strlen(str)+1);
    while (*str) {
       if (*str=='\\') {
 	 ++str;
@@ -2165,8 +2165,8 @@ static char *copyparse(char *str) {
 	 else if (*str==')')
 	    ch=')';
 	 else if (*str >= '0' && *str <= '7') {
-	    for (i=ch=0; i < 3 && *str >= '0' && *str <= '7'; ++i)
-	       ch=(ch << 3) + *str++ - '0';
+	    for (i=ch=0; i<3 && *str >= '0' && *str <= '7'; ++i)
+	       ch=(ch << 3)+*str++-'0';
 	    --str;
 	 } else
 	    ch=*str;
@@ -2199,7 +2199,7 @@ char *XUIDFromFD(int xuid[20]) {
       int j;
       char *pt;
 
-      ret=malloc(2 + 20 * (i + 1));
+      ret=malloc(2+20*(i+1));
       pt=ret;
       *pt++='[';
       for (j=0; j <= i; ++j) {
@@ -2216,7 +2216,7 @@ static void SplineFontMetaData(SplineFont *sf,struct fontdict *fd) {
 
    if (fd->cidfontname || fd->fontname)
       sf->fontname =
-	 utf8_verify_copy(fd->cidfontname ? fd->cidfontname : fd->fontname);
+	 utf8_verify_copy(fd->cidfontname?fd->cidfontname:fd->fontname);
    sf->display_size=-default_fv_font_size;
    sf->display_antialias=default_fv_antialias;
    if (fd->fontinfo != NULL) {
@@ -2259,17 +2259,17 @@ static void SplineFontMetaData(SplineFont *sf,struct fontdict *fd) {
    if (fd->fontmatrix[0]==0)
       em=1000;
    else
-      em=rint(1 / fd->fontmatrix[0]);
+      em=rint(1/fd->fontmatrix[0]);
    if (sf->ascent==0 && sf->descent != 0)
-      sf->ascent=em - sf->descent;
-   else if (fd->fontbb[3] - fd->fontbb[1]==em) {
+      sf->ascent=em-sf->descent;
+   else if (fd->fontbb[3]-fd->fontbb[1]==em) {
       if (sf->ascent==0)
 	 sf->ascent=fd->fontbb[3];
       if (sf->descent==0)
 	 sf->descent=fd->fontbb[1];
    } else if (sf->ascent==0)
-      sf->ascent=8 * em / 10;
-   sf->descent=em - sf->ascent;
+      sf->ascent=8*em/10;
+   sf->descent=em-sf->ascent;
 
    sf->private=fd->private->private;
    fd->private->private=NULL;
@@ -2293,7 +2293,7 @@ static void SplineFontMetaData(SplineFont *sf,struct fontdict *fd) {
 
 static void TransByFontMatrix(SplineFont *sf,double fontmatrix[6]) {
    double trans[6];
-   int em=sf->ascent + sf->descent, i;
+   int em=sf->ascent+sf->descent, i;
    SplineChar *sc;
    RefChar *refs;
 
@@ -2312,7 +2312,7 @@ static void TransByFontMatrix(SplineFont *sf,double fontmatrix[6]) {
    trans[4]=rint(fontmatrix[4] * em);
    trans[5]=rint(fontmatrix[5] * em);
 
-   for (i=0; i < sf->glyphcnt; ++i)
+   for (i=0; i<sf->glyphcnt; ++i)
       if ((sc=sf->glyphs[i]) != NULL) {
 	 SplinePointListTransform(sc->layers[ly_fore].splines, trans,
 				  tpt_AllPoints);
@@ -2331,7 +2331,7 @@ static void TransByFontMatrix(SplineFont *sf,double fontmatrix[6]) {
 	 sc->changedsincelasthinted=true;
 	 sc->manualhints=false;
       }
-   for (i=0; i < sf->glyphcnt; ++i)
+   for (i=0; i<sf->glyphcnt; ++i)
       if ((sc=sf->glyphs[i]) != NULL) {
 	 for (refs=sc->layers[ly_fore].refs; refs != NULL;
 	      refs=refs->next)
@@ -2343,15 +2343,15 @@ void SFInstantiateRefs(SplineFont *sf) {
    int i, layer;
    RefChar *refs, *next, *pr;
 
-   for (i=0; i < sf->glyphcnt; ++i)
+   for (i=0; i<sf->glyphcnt; ++i)
       if (sf->glyphs[i] != NULL)
 	 sf->glyphs[i]->ticked=false;
 
-   for (i=0; i < sf->glyphcnt; ++i)
+   for (i=0; i<sf->glyphcnt; ++i)
       if (sf->glyphs[i] != NULL) {
 	 SplineChar *sc=sf->glyphs[i];
 
-	 for (layer=ly_back; layer < sc->layer_cnt; ++layer) {
+	 for (layer=ly_back; layer<sc->layer_cnt; ++layer) {
 	    for (pr=NULL, refs=sc->layers[layer].refs; refs != NULL;
 		 refs=next) {
 	       next=refs->next;
@@ -2388,13 +2388,13 @@ static void _SplineFontFromType1(SplineFont *sf,FontDict *fd,
    EncMap *map;
 
    if (istype2)
-      fd->private->subrs->bias=fd->private->subrs->cnt < 1240 ? 107 :
-	 fd->private->subrs->cnt < 33900 ? 1131 : 32768;
+      fd->private->subrs->bias=fd->private->subrs->cnt<1240?107 :
+	 fd->private->subrs->cnt<33900?1131:32768;
    sf->glyphmax=sf->glyphcnt =
-      istype3 ? fd->charprocs->next : fd->chars->next;
+      istype3?fd->charprocs->next:fd->chars->next;
    if (sf->map==NULL) {
       sf->map=map =
-	 EncMapNew(256 + CharsNotInEncoding(fd), sf->glyphcnt,
+	 EncMapNew(256+CharsNotInEncoding(fd), sf->glyphcnt,
 		   fd->encoding_name);
    } else
       map=sf->map;
@@ -2406,7 +2406,7 @@ static void _SplineFontFromType1(SplineFont *sf,FontDict *fd,
 	 LookupCharString(".notdef", (struct pschars *) (fd->charprocs));
    else
       notdefpos=LookupCharString(".notdef", fd->chars);
-   for (i=0; i < 256; ++i) {
+   for (i=0; i<256; ++i) {
       int k;
 
       if (istype3) {
@@ -2421,12 +2421,12 @@ static void _SplineFontFromType1(SplineFont *sf,FontDict *fd,
       if (k != -1 && map->backmap[k]==-1)
 	 map->backmap[k]=i;
    }
-   if (map->enccount > 256) {
+   if (map->enccount>256) {
       int k, j;
 
-      for (k=0; k < fd->chars->cnt; ++k) {
+      for (k=0; k<fd->chars->cnt; ++k) {
 	 if (fd->chars->keys[k] != NULL) {
-	    for (j=0; j < 256; ++j)
+	    for (j=0; j<256; ++j)
 	       if (fd->encoding[j] != NULL &&
 		   strcmp(fd->encoding[j], fd->chars->keys[k])==0)
 		  break;
@@ -2439,9 +2439,9 @@ static void _SplineFontFromType1(SplineFont *sf,FontDict *fd,
 	 }
       }
       /* And for type3s */
-      for (k=0; k < fd->charprocs->cnt; ++k) {
+      for (k=0; k<fd->charprocs->cnt; ++k) {
 	 if (fd->charprocs->keys[k] != NULL) {
-	    for (j=0; j < 256; ++j)
+	    for (j=0; j<256; ++j)
 	       if (fd->encoding[j] != NULL &&
 		   strcmp(fd->encoding[j], fd->charprocs->keys[k])==0)
 		  break;
@@ -2454,11 +2454,11 @@ static void _SplineFontFromType1(SplineFont *sf,FontDict *fd,
 	 }
       }
    }
-   for (i=0; i < map->enccount; ++i)
+   for (i=0; i<map->enccount; ++i)
       if (map->map[i]==-1)
 	 map->map[i]=notdefpos;
 
-   for (i=0; i < sf->glyphcnt; ++i) {
+   for (i=0; i<sf->glyphcnt; ++i) {
       if (!istype3)
 	 sf->glyphs[i] =
 	    PSCharStringToSplines(fd->chars->values[i], fd->chars->lens[i],
@@ -2468,7 +2468,7 @@ static void _SplineFontFromType1(SplineFont *sf,FontDict *fd,
 	 sf->glyphs[i]=fd->charprocs->values[i];
       if (sf->glyphs[i] != NULL) {
 	 sf->glyphs[i]->orig_pos=i;
-	 sf->glyphs[i]->vwidth=sf->ascent + sf->descent;
+	 sf->glyphs[i]->vwidth=sf->ascent+sf->descent;
 	 sf->glyphs[i]->unicodeenc =
 	    UniFromName(sf->glyphs[i]->name, sf->uni_interp, map->enc);
 	 sf->glyphs[i]->parent=sf;
@@ -2477,10 +2477,10 @@ static void _SplineFontFromType1(SplineFont *sf,FontDict *fd,
    }
    SFInstantiateRefs(sf);
    if (fd->metrics != NULL) {
-      for (i=0; i < fd->metrics->next; ++i) {
+      for (i=0; i<fd->metrics->next; ++i) {
 	 int width=strtol(fd->metrics->values[i], NULL, 10);
 
-	 for (j=sf->glyphcnt - 1; j >= 0; --j) {
+	 for (j=sf->glyphcnt-1; j >= 0; --j) {
 	    if (sf->glyphs[j] != NULL && sf->glyphs[j]->name != NULL &&
 		strcmp(fd->metrics->keys[i], sf->glyphs[j]->name)==0) {
 	       sf->glyphs[j]->width=width;
@@ -2489,7 +2489,7 @@ static void _SplineFontFromType1(SplineFont *sf,FontDict *fd,
 	 }
       }
    }
-   for (i=0; i < sf->glyphcnt; ++i)
+   for (i=0; i<sf->glyphcnt; ++i)
       if (sf->glyphs[i] != NULL)
 	 for (refs=sf->glyphs[i]->layers[ly_fore].refs; refs != NULL;
 	      refs=next) {
@@ -2518,7 +2518,7 @@ static void SplineFontFromType1(SplineFont *sf,FontDict *fd,
 
    /* Clean up the hint masks, We create an initial hintmask whether we need */
    /*  it or not */
-   for (i=0; i < sf->glyphcnt; ++i) {
+   for (i=0; i<sf->glyphcnt; ++i) {
       if ((sc=sf->glyphs[i]) != NULL && !sc->hconflicts && !sc->vconflicts
 	  && sc->layers[ly_fore].splines != NULL) {
 	 chunkfree(sc->layers[ly_fore].splines->first->hintmask,
@@ -2572,7 +2572,7 @@ static SplineFont *SplineFontFromMMType1(SplineFont *sf,FontDict *fd,
    mm->normal=sf;
    _SplineFontFromType1(mm->normal, fd, pscontext);
    map=sf->map;
-   for (i=0; i < sf->glyphcnt; ++i)
+   for (i=0; i<sf->glyphcnt; ++i)
       if (sf->glyphs[i] != NULL)
 	 sf->glyphs[i]->blended=true;
    sf->mm=mm;
@@ -2586,20 +2586,20 @@ static SplineFont *SplineFontFromMMType1(SplineFont *sf,FontDict *fd,
       for (end=pt; *end != ' ' && *end != ']' && *end != '\0'; ++end);
       if (pt==end)
 	 break;
-      if (mm->axis_count >= sizeof(mm->axes) / sizeof(mm->axes[0])) {
+      if (mm->axis_count >= sizeof(mm->axes)/sizeof(mm->axes[0])) {
 	 ErrorMsg(2,"Multiple master font with more than 4 axes\n");
 	 break;
       }
-      mm->axes[mm->axis_count++]=copyn(pt, end - pt);
+      mm->axes[mm->axis_count++]=copyn(pt, end-pt);
       for (pt=end; *pt==' '; ++pt);
    }
 
-   if (mm->instance_count < (1 << mm->axis_count))
+   if (mm->instance_count<(1 << mm->axis_count))
       ErrorMsg(2,"This multiple master font has %1$d instance fonts, "
                  "but it needs at least %2$d master fonts for %3$d axes.  "
                  "FontAnvil will not be able to edit this correctly.\n",
                  mm->instance_count,1<<mm->axis_count,mm->axis_count);
-   else if (mm->instance_count > (1 << mm->axis_count))
+   else if (mm->instance_count>(1 << mm->axis_count))
       ErrorMsg(2,"This multiple master font has %1$d instance fonts, "
                  "but FontAnvil can only handle %2$d master fonts for %3$d axes.  "
                  "FontAnvil will not be able to edit this correctly.\n",
@@ -2626,7 +2626,7 @@ static SplineFont *SplineFontFromMMType1(SplineFont *sf,FontDict *fd,
 	       ErrorMsg(2,"Too many axis positions specified in /BlendDesignPositions.\n");
 	       break;
 	    }
-	    mm->positions[ipos * mm->axis_count + apos]=strtod(pt, &end);
+	    mm->positions[ipos * mm->axis_count+apos]=strtod(pt, &end);
 	    if (pt==end)
 	       break;
 	    ++apos;
@@ -2668,12 +2668,12 @@ static SplineFont *SplineFontFromMMType1(SplineFont *sf,FontDict *fd,
 	       ++pt;
 	       designs[ppos]=strtod(pt, &end);
 	       blends[ppos]=strtod(end, &end);
-	       if (blends[ppos] < 0 || blends[ppos] > 1) {
+	       if (blends[ppos]<0 || blends[ppos]>1) {
 		  ErrorMsg(2,"Bad value for blend in /BlendDesignMap for axis %s.\n",
 			   mm->axes[apos]);
-		  if (blends[ppos] < 0)
+		  if (blends[ppos]<0)
 		     blends[ppos]=0;
-		  if (blends[ppos] > 1)
+		  if (blends[ppos]>1)
 		     blends[ppos]=1;
 	       }
 	       pt=end;
@@ -2687,7 +2687,7 @@ static SplineFont *SplineFontFromMMType1(SplineFont *sf,FontDict *fd,
 	 }
 	 if (*pt==']')
 	    ++pt;
-	 if (ppos < 2)
+	 if (ppos<2)
 	    ErrorMsg(2,"Bad few values in /BlendDesignMap for axis %s.\n",
 		     mm->axes[apos]);
 	 mm->axismaps[apos].points=ppos;
@@ -2708,13 +2708,13 @@ static SplineFont *SplineFontFromMMType1(SplineFont *sf,FontDict *fd,
    /* Now figure out the master designs, being careful to interpolate */
    /* BlueValues, ForceBold, UnderlinePosition etc. We need to copy private */
    /* generate a font name */
-   for (ipos=0; ipos < mm->instance_count; ++ipos) {
+   for (ipos=0; ipos<mm->instance_count; ++ipos) {
       free(fd->fontname);
       free(fd->fontinfo->fullname);
       fd->fontname=MMMakeMasterFontname(mm, ipos, &fd->fontinfo->fullname);
       fd->fontinfo->weight=MMGuessWeight(mm, ipos, fastrdup(origweight));
       if (fd->blendfontinfo != NULL) {
-	 for (item=0; item < 3; ++item) {
+	 for (item=0; item<3; ++item) {
 	    static char *names[] =
 	       { "ItalicAngle", "UnderlinePosition", "UnderlineThickness" };
 	    pt=PSDictHasEntry(fd->blendfontinfo, names[item]);
@@ -2763,7 +2763,7 @@ static SplineFont *SplineFontFromMMType1(SplineFont *sf,FontDict *fd,
 	    }
 	 }
       }
-      for (item=0; item < mm->instance_count; ++item)
+      for (item=0; item<mm->instance_count; ++item)
 	 pscontext->blend_values[item]=0;
       pscontext->blend_values[ipos]=1;
 
@@ -2778,15 +2778,15 @@ static SplineFont *SplineFontFromMMType1(SplineFont *sf,FontDict *fd,
 
    /* Clean up hintmasks. We always create a hintmask on the first point */
    /*  only keep them if we actually have conflicts.                     */
-   for (i=0; i < mm->normal->glyphcnt; ++i)
+   for (i=0; i<mm->normal->glyphcnt; ++i)
       if (mm->normal->glyphs[i] != NULL &&
 	  mm->normal->glyphs[i]->layers[ly_fore].splines != NULL) {
-	 for (item=0; item < mm->instance_count; ++item)
+	 for (item=0; item<mm->instance_count; ++item)
 	    if (mm->instances[item]->glyphs[i]->vconflicts ||
 		mm->instances[item]->glyphs[i]->hconflicts)
 	       break;
 	 if (item==mm->instance_count) {	/* No conflicts */
-	    for (item=0; item < mm->instance_count; ++item) {
+	    for (item=0; item<mm->instance_count; ++item) {
 	       chunkfree(mm->instances[item]->glyphs[i]->layers[ly_fore].
 			 splines->first->hintmask, sizeof(HintMask));
 	       mm->instances[item]->glyphs[i]->layers[ly_fore].splines->
@@ -2813,13 +2813,13 @@ static SplineFont *SplineFontFromCIDType1(SplineFont *sf,FontDict *fd,
    EncMap *encmap;
 
    bad=0x80000000;
-   for (i=0; i < fd->fdcnt; ++i)
+   for (i=0; i<fd->fdcnt; ++i)
       if (fd->fds[i]->fonttype != 1 && fd->fds[i]->fonttype != 2)
 	 bad=fd->fds[i]->fonttype;
    if (bad != 0x80000000 || fd->cidfonttype != 0) {
       ErrorMsg(2,"Could not parse a CID font, %sCIDFontType %d, %sfonttype %d\n",
-	       (fd->cidfonttype != 0) ? "unexpected " : "",
-	       (bad != 0x80000000) ? "unexpected " : "", fd->cidfonttype,
+	       (fd->cidfonttype != 0)?"unexpected ":"",
+	       (bad != 0x80000000)?"unexpected ":"", fd->cidfonttype,
 	       bad);
       SplineFontFree(sf);
       return (NULL);
@@ -2833,8 +2833,8 @@ static SplineFont *SplineFontFromCIDType1(SplineFont *sf,FontDict *fd,
    encmap=EncMap1to1(fd->cidcnt);
 
    sf->subfontcnt=fd->fdcnt;
-   sf->subfonts=malloc((sf->subfontcnt + 1) * sizeof(SplineFont *));
-   for (i=0; i < fd->fdcnt; ++i) {
+   sf->subfonts=malloc((sf->subfontcnt+1)*sizeof(SplineFont *));
+   for (i=0; i<fd->fdcnt; ++i) {
       if (fd->fontmatrix[0] != 0) {
 	 MatMultiply(fd->fontmatrix, fd->fds[i]->fontmatrix,
 		     fd->fds[i]->fontmatrix);
@@ -2846,15 +2846,15 @@ static SplineFont *SplineFontFromCIDType1(SplineFont *sf,FontDict *fd,
       sf->subfonts[i]->map=encmap;
       if (fd->fds[i]->fonttype==2)
 	 fd->fds[i]->private->subrs->bias =
-	    fd->fds[i]->private->subrs->cnt < 1240 ? 107 :
-	    fd->fds[i]->private->subrs->cnt < 33900 ? 1131 : 32768;
+	    fd->fds[i]->private->subrs->cnt<1240?107 :
+	    fd->fds[i]->private->subrs->cnt<33900?1131:32768;
    }
 
    map=FindCidMap(sf->cidregistry, sf->ordering, sf->supplement, sf);
 
    chars=calloc(fd->cidcnt, sizeof(SplineChar *));
-   for (i=0; i < fd->cidcnt; ++i)
-      if (fd->cidlens[i] > 0) {
+   for (i=0; i<fd->cidcnt; ++i)
+      if (fd->cidlens[i]>0) {
 	 j=fd->cidfds[i];	/* We get font indexes of 255 for non-existant chars */
 	 uni=CID2NameUni(map, i, buffer, sizeof(buffer));
 	 pscontext->is_type2=fd->fds[j]->fonttype==2;
@@ -2863,7 +2863,7 @@ static SplineFont *SplineFontFromCIDType1(SplineFont *sf,FontDict *fd,
 					  fd->fds[j]->private->subrs, NULL,
 					  buffer);
 	 chars[i]->vwidth =
-	    sf->subfonts[j]->ascent + sf->subfonts[j]->descent;
+	    sf->subfonts[j]->ascent+sf->subfonts[j]->descent;
 	 chars[i]->unicodeenc=uni;
 	 chars[i]->orig_pos=i;
 	 chars[i]->altuni=CIDSetAltUnis(map, i);
@@ -2871,15 +2871,15 @@ static SplineFont *SplineFontFromCIDType1(SplineFont *sf,FontDict *fd,
 	 /*  encoding on which to base any fixups */
 	 if (chars[i]->layers[ly_fore].refs != NULL)
 	    ErrorMsg(2,"Reference found in CID font. Can't fix it up\n");
-	 sf->subfonts[j]->glyphcnt=sf->subfonts[j]->glyphmax=i + 1;
+	 sf->subfonts[j]->glyphcnt=sf->subfonts[j]->glyphmax=i+1;
       }
-   for (i=0; i < fd->fdcnt; ++i)
+   for (i=0; i<fd->fdcnt; ++i)
       sf->subfonts[i]->glyphs =
 	 calloc(sf->subfonts[i]->glyphcnt, sizeof(SplineChar *));
-   for (i=0; i < fd->cidcnt; ++i)
+   for (i=0; i<fd->cidcnt; ++i)
       if (chars[i] != NULL) {
 	 j=fd->cidfds[i];
-	 if (j < sf->subfontcnt) {
+	 if (j<sf->subfontcnt) {
 	    sf->subfonts[j]->glyphs[i]=chars[i];
 	    chars[i]->parent=sf->subfonts[j];
 	 }
@@ -2890,8 +2890,8 @@ static SplineFont *SplineFontFromCIDType1(SplineFont *sf,FontDict *fd,
    /*  need it or not */
    k=0;
    do {
-      _sf=k < sf->subfontcnt ? sf->subfonts[k] : sf;
-      for (i=0; i < _sf->glyphcnt; ++i) {
+      _sf=k<sf->subfontcnt?sf->subfonts[k]:sf;
+      for (i=0; i<_sf->glyphcnt; ++i) {
 	 if ((sc=_sf->glyphs[i]) != NULL && !sc->hconflicts
 	     && !sc->vconflicts && sc->layers[ly_fore].splines != NULL) {
 	    chunkfree(sc->layers[ly_fore].splines->first->hintmask,
@@ -2900,7 +2900,7 @@ static SplineFont *SplineFontFromCIDType1(SplineFont *sf,FontDict *fd,
 	 }
       }
       ++k;
-   } while (k < sf->subfontcnt);
+   } while (k<sf->subfontcnt);
    return (sf);
 }
 
@@ -2951,7 +2951,7 @@ void RefCharFindBounds(RefChar * rf) {
 
    memset(&rf->bb, '\0', sizeof(rf->bb));
    rf->top.y=-1e10; /* FLOATMAGIC */
-   for (i=0; i < rf->layer_cnt; ++i) {
+   for (i=0; i<rf->layer_cnt; ++i) {
       _SplineSetFindBounds(rf->layers[i].splines, &rf->bb);
       _SplineSetFindTop(rf->layers[i].splines, &rf->top);
       if (rsc->layers[i].dostroke) {
@@ -2960,11 +2960,11 @@ void RefCharFindBounds(RefChar * rf) {
 	       rf->layers[i].stroke_pen.trans[0];
 	 else
 	    e=rf->layers[i].stroke_pen.trans[0];
-	 if (e > extra)
+	 if (e>extra)
 	    extra=e;
       }
    }
-   if (rf->top.y < -65536)
+   if (rf->top.y<-65536)
       rf->top.y=rf->top.x=0;
    rf->bb.minx -= extra;
    rf->bb.miny -= extra;
@@ -2979,7 +2979,7 @@ void SCReinstantiateRefChar(SplineChar * sc, RefChar * rf, int layer) {
    SplineChar *rsc=rf->sc;
    double extra=0, e;
 
-   for (i=0; i < rf->layer_cnt; ++i) {
+   for (i=0; i<rf->layer_cnt; ++i) {
       SplinePointListsFree(rf->layers[i].splines);
       GradientFree(rf->layers[i].fill_brush.gradient);
       PatternFree(rf->layers[i].fill_brush.pattern);
@@ -2997,7 +2997,7 @@ void SCReinstantiateRefChar(SplineChar * sc, RefChar * rf, int layer) {
       int cnt=0;
       RefChar *subref;
 
-      for (i=ly_fore; i < rsc->layer_cnt; ++i) {
+      for (i=ly_fore; i<rsc->layer_cnt; ++i) {
 	 if (rsc->layers[i].splines != NULL || rsc->layers[i].images != NULL)
 	    ++cnt;
 	 for (subref=rsc->layers[i].refs; subref != NULL;
@@ -3008,7 +3008,7 @@ void SCReinstantiateRefChar(SplineChar * sc, RefChar * rf, int layer) {
       rf->layer_cnt=cnt;
       rf->layers=calloc(cnt, sizeof(struct reflayer));
       cnt=0;
-      for (i=ly_fore; i < rsc->layer_cnt; ++i) {
+      for (i=ly_fore; i<rsc->layer_cnt; ++i) {
 	 if (rsc->layers[i].splines != NULL || rsc->layers[i].images != NULL) {
 	    rf->layers[cnt].splines =
 	       SplinePointListTransform(SplinePointListCopy
@@ -3022,7 +3022,7 @@ void SCReinstantiateRefChar(SplineChar * sc, RefChar * rf, int layer) {
 	 }
 	 for (subref=rsc->layers[i].refs; subref != NULL;
 	      subref=subref->next) {
-	    for (j=0; j < subref->layer_cnt; ++j)
+	    for (j=0; j<subref->layer_cnt; ++j)
 	       if (subref->layers[j].images != NULL
 		   || subref->layers[j].splines != NULL) {
 		  rf->layers[cnt]=subref->layers[j];
@@ -3041,7 +3041,7 @@ void SCReinstantiateRefChar(SplineChar * sc, RefChar * rf, int layer) {
 
       memset(&rf->bb, '\0', sizeof(rf->bb));
       rf->top.y=-1e10; /* FLOATMAGIC */
-      for (i=0; i < rf->layer_cnt; ++i) {
+      for (i=0; i<rf->layer_cnt; ++i) {
 	 _SplineSetFindBounds(rf->layers[i].splines, &rf->bb);
 	 _SplineSetFindTop(rf->layers[i].splines, &rf->top);
 	 if (rsc->layers[i].dostroke) {
@@ -3050,18 +3050,18 @@ void SCReinstantiateRefChar(SplineChar * sc, RefChar * rf, int layer) {
 		  rf->layers[i].stroke_pen.trans[0];
 	    else
 	       e=rf->layers[i].stroke_pen.trans[0];
-	    if (e > extra)
+	    if (e>extra)
 	       extra=e;
 	 }
       }
-      if (rf->top.y < -65536)
+      if (rf->top.y<-65536)
 	 rf->top.y=rf->top.x=0;
       rf->bb.minx -= extra;
       rf->bb.miny -= extra;
       rf->bb.maxx += extra;
       rf->bb.maxy += extra;
    } else {
-      if (rf->layer_cnt > 0) {
+      if (rf->layer_cnt>0) {
 	 SplinePointListsFree(rf->layers[0].splines);
 	 rf->layers[0].splines=NULL;
       }
@@ -3107,7 +3107,7 @@ void SCRemoveDependent(SplineChar * dependent, RefChar * rf, int layer) {
    /* Check for multiple dependencies (colon has two refs to period) */
    /* Also check other layers (they may include references to the same glyph as well */
    /*  if there are none, then remove dependent from ref->sc's dependents list */
-   for (i=0; i < dependent->layer_cnt; i++) {
+   for (i=0; i<dependent->layer_cnt; i++) {
       for (prev=dependent->layers[i].refs;
 	   prev != NULL && (prev==rf || prev->sc != rf->sc);
 	   prev=prev->next);
@@ -3148,27 +3148,27 @@ void SCRefToSplines(SplineChar * sc, RefChar * rf, int layer) {
       Layer *old=sc->layers;
 
       sc->layers =
-	 realloc(sc->layers, (sc->layer_cnt + rf->layer_cnt) * sizeof(Layer));
-      for (rlayer=0; rlayer < rf->layer_cnt; ++rlayer) {
-	 LayerDefault(&sc->layers[sc->layer_cnt + rlayer]);
-	 sc->layers[sc->layer_cnt + rlayer].splines =
+	 realloc(sc->layers, (sc->layer_cnt+rf->layer_cnt)*sizeof(Layer));
+      for (rlayer=0; rlayer<rf->layer_cnt; ++rlayer) {
+	 LayerDefault(&sc->layers[sc->layer_cnt+rlayer]);
+	 sc->layers[sc->layer_cnt+rlayer].splines =
 	    rf->layers[rlayer].splines;
 	 rf->layers[rlayer].splines=NULL;
-	 sc->layers[sc->layer_cnt + rlayer].images =
+	 sc->layers[sc->layer_cnt+rlayer].images =
 	    rf->layers[rlayer].images;
 	 rf->layers[rlayer].images=NULL;
-	 sc->layers[sc->layer_cnt + rlayer].refs=NULL;
-	 sc->layers[sc->layer_cnt + rlayer].undoes=NULL;
-	 sc->layers[sc->layer_cnt + rlayer].redoes=NULL;
-	 BrushCopy(&sc->layers[sc->layer_cnt + rlayer].fill_brush,
+	 sc->layers[sc->layer_cnt+rlayer].refs=NULL;
+	 sc->layers[sc->layer_cnt+rlayer].undoes=NULL;
+	 sc->layers[sc->layer_cnt+rlayer].redoes=NULL;
+	 BrushCopy(&sc->layers[sc->layer_cnt+rlayer].fill_brush,
 		   &rf->layers[rlayer].fill_brush, rf->transform);
-	 PenCopy(&sc->layers[sc->layer_cnt + rlayer].stroke_pen,
+	 PenCopy(&sc->layers[sc->layer_cnt+rlayer].stroke_pen,
 		 &rf->layers[rlayer].stroke_pen, rf->transform);
-	 sc->layers[sc->layer_cnt + rlayer].dofill =
+	 sc->layers[sc->layer_cnt+rlayer].dofill =
 	    rf->layers[rlayer].dofill;
-	 sc->layers[sc->layer_cnt + rlayer].dostroke =
+	 sc->layers[sc->layer_cnt+rlayer].dostroke =
 	    rf->layers[rlayer].dostroke;
-	 sc->layers[sc->layer_cnt + rlayer].fillfirst =
+	 sc->layers[sc->layer_cnt+rlayer].fillfirst =
 	    rf->layers[rlayer].fillfirst;
       }
       sc->layer_cnt += rf->layer_cnt;
@@ -3192,7 +3192,7 @@ void SCRefToSplines(SplineChar * sc, RefChar * rf, int layer) {
 /* Sigh. When solutions are near 0, the rounding errors are appalling. */
 int _CubicSolve(const Spline1D * sp, double sought, double ts[3]) {
    double d, xN, yN, delta2, temp, delta, h, t2, t3, theta;
-   double sa=sp->a, sb=sp->b, sc=sp->c, sd=sp->d - sought;
+   double sa=sp->a, sb=sp->b, sc=sp->c, sd=sp->d-sought;
    int i=0;
 
    ts[0]=ts[1]=ts[2]=-999999; /* FLOATMAGIC */
@@ -3200,81 +3200,81 @@ int _CubicSolve(const Spline1D * sp, double sought, double ts[3]) {
       /* one of the roots is 0, the other two are the soln of a quadratic */
       ts[0]=0;
       if (sc==0) {
-	 ts[1]=-sb / (double) sa;	/* two zero roots */
+	 ts[1]=-sb/(double) sa;	/* two zero roots */
       } else {
-	 temp=sb * (double) sb - 4 * (double) sa *sc;
+	 temp=sb * (double) sb-4*(double) sa *sc;
 
 	 if (RealNear(temp, 0))
-	    ts[1]=-sb / (2 * (double) sa);
+	    ts[1]=-sb/(2*(double) sa);
 	 else if (temp >= 0) {
 	    temp=sqrt(temp);
-	    ts[1]=(-sb + temp) / (2 * (double) sa);
-	    ts[2]=(-sb - temp) / (2 * (double) sa);
+	    ts[1]=(-sb+temp)/(2*(double) sa);
+	    ts[2]=(-sb-temp)/(2*(double) sa);
 	 }
       }
    } else if (sa != 0) {
       /* http://www.m-a.org.uk/eb/mg/mg077ch.pdf */
       /* this nifty solution to the cubic neatly avoids complex arithmatic */
-      xN=-sb / (3 * (double) sa);
-      yN=((sa * xN + sb) * xN + sc) * xN + sd;
+      xN=-sb/(3*(double) sa);
+      yN=((sa * xN+sb)*xN+sc)*xN+sd;
 
       delta2 =
 	 (sb * (double) sb -
-	  3 * (double) sa * sc) / (9 * (double) sa * sa);
+	  3*(double) sa * sc)/(9*(double) sa * sa);
       /*if (RealWithin(delta2,0,.00000001) ) delta2=0; */
 
       /* the descriminant is yN^2-h^2, but delta might be <0 so avoid using h */
-      d=yN * yN - 4 * sa * sa * delta2 * delta2 * delta2;
-      if (((yN > .01 || yN < -.01) && RealNear(d / yN, 0)) /* FLOATMAGIC */
+      d=yN * yN-4*sa * sa * delta2*delta2*delta2;
+      if (((yN>.01 || yN<-.01) && RealNear(d/yN, 0)) /* FLOATMAGIC */
 	  || ((yN <= .01 && yN >= -.01) && RealNear(d, 0))) /* FLOATMAGIC */
 	 d=0;
-      if (d > 0) {
+      if (d>0) {
 	 temp=sqrt(d);
-	 t2=(-yN - temp) / (2 * sa);
+	 t2=(-yN-temp)/(2*sa);
 	 t2 =
-	    (t2==0) ? 0 : (t2 < 0) ? -pow(-t2, 1. / 3.) : pow(t2, 1. / 3.);
-	 t3=(-yN + temp) / (2 * sa);
-	 t3=t3==0 ? 0 : (t3 < 0) ? -pow(-t3, 1. / 3.) : pow(t3, 1. / 3.);
-	 ts[0]=xN + t2 + t3;
-      } else if (d < 0) {
+	    (t2==0)?0:(t2<0)?-pow(-t2, 1./3.):pow(t2, 1./3.);
+	 t3=(-yN+temp)/(2*sa);
+	 t3=t3==0?0:(t3<0)?-pow(-t3, 1./3.):pow(t3, 1./3.);
+	 ts[0]=xN+t2+t3;
+      } else if (d<0) {
 	 if (delta2 >= 0) {
 	    delta=sqrt(delta2);
-	    h=2 * sa * delta2 * delta;
-	    temp=-yN / h;
+	    h=2*sa * delta2*delta;
+	    temp=-yN/h;
 	    if (temp >= -1.0001 && temp <= 1.0001) { /* FLOATMAGIC */
-	       if (temp < -1)
+	       if (temp<-1)
 		  temp=-1;
-	       else if (temp > 1)
+	       else if (temp>1)
 		  temp=1;
-	       theta=acos(temp) / 3;
-	       ts[i++]=xN + 2 * delta * cos(theta);
-	       ts[i++]=xN + 2 * delta * cos(2.0943951 + theta);	/* 2*pi/3 FLOATMAGIC */
-	       ts[i++]=xN + 2 * delta * cos(4.1887902 + theta);	/* 4*pi/3 FLOATMAGIC */
+	       theta=acos(temp)/3;
+	       ts[i++]=xN+2*delta * cos(theta);
+	       ts[i++]=xN+2*delta * cos(2.0943951+theta);	/* 2*pi/3 FLOATMAGIC */
+	       ts[i++]=xN+2*delta * cos(4.1887902+theta);	/* 4*pi/3 FLOATMAGIC */
 	    }
 	 }
       } else if (/* d==0 && */ delta2 != 0) {
-	 delta=yN / (2 * sa);
+	 delta=yN/(2*sa);
 	 delta =
-	    delta==0 ? 0 : delta > 0 ? pow(delta, 1. / 3.) : -pow(-delta,
-								    1. / 3.);
-	 ts[i++]=xN + delta;	/* this root twice, but that's irrelevant to me */
-	 ts[i++]=xN - 2 * delta;
+	    delta==0?0:delta>0?pow(delta, 1./3.):-pow(-delta,
+								    1./3.);
+	 ts[i++]=xN+delta;	/* this root twice, but that's irrelevant to me */
+	 ts[i++]=xN-2*delta;
       } else if (/* d==0 && */ delta2==0) {
 	 if (xN >= -0.0001 && xN <= 1.0001) /* FLOATMAGIC */
 	    ts[0]=xN;
       }
    } else if (sb != 0) {
-      double d=sc * (double) sc - 4 * (double) sb * sd;
+      double d=sc * (double) sc-4*(double) sb * sd;
 
-      if (d < 0 && RealNear(d, 0))
+      if (d<0 && RealNear(d, 0))
 	 d=0;
-      if (d < 0)
+      if (d<0)
 	 return (false);	/* All roots imaginary */
       d=sqrt(d);
-      ts[0]=(-sc - d) / (2 * (double) sb);
-      ts[1]=(-sc + d) / (2 * (double) sb);
+      ts[0]=(-sc-d)/(2*(double) sb);
+      ts[1]=(-sc+d)/(2*(double) sb);
    } else if (sc != 0) {
-      ts[0]=-sd / (double) sc;
+      ts[0]=-sd/(double) sc;
    } else {
       /* If it's a point then either everything is a solution, or nothing */
    }
@@ -3294,11 +3294,11 @@ int CubicSolve(const Spline1D * sp, double sought, double ts[3]) {
       return (false);
    }
 
-   for (i=j=0; i < 3; ++i) {
-      if (ts2[i] > -.0001 && ts2[i] < 1.0001) { /* FLOATMAGIC */
-	 if (ts2[i] < 0)
+   for (i=j=0; i<3; ++i) {
+      if (ts2[i]>-.0001 && ts2[i]<1.0001) { /* FLOATMAGIC */
+	 if (ts2[i]<0)
 	    ts[j++]=0;
-	 else if (ts2[i] > 1)
+	 else if (ts2[i]>1)
 	    ts[j++]=1;
 	 else
 	    ts[j++]=ts2[i];
@@ -3307,17 +3307,17 @@ int CubicSolve(const Spline1D * sp, double sought, double ts[3]) {
    if (j==0)
       return (false);
 
-   if (ts[0] > ts[2] && ts[2] != -1) {
+   if (ts[0]>ts[2] && ts[2] != -1) {
       t=ts[0];
       ts[0]=ts[2];
       ts[2]=t;
    }
-   if (ts[0] > ts[1] && ts[1] != -1) {
+   if (ts[0]>ts[1] && ts[1] != -1) {
       t=ts[0];
       ts[0]=ts[1];
       ts[1]=t;
    }
-   if (ts[1] > ts[2] && ts[2] != -1) {
+   if (ts[1]>ts[2] && ts[2] != -1) {
       t=ts[1];
       ts[1]=ts[2];
       ts[2]=t;
@@ -3335,12 +3335,12 @@ double SplineSolve(const Spline1D * sp, double tmin, double tmax,
    double t;
 
    CubicSolve(sp, sought, ts);
-   if (tmax < tmin) {
+   if (tmax<tmin) {
       t=tmax;
       tmax=tmin;
       tmin=t;
    }
-   for (i=0; i < 3; ++i)
+   for (i=0; i<3; ++i)
       if (ts[i] >= tmin && ts[i] <= tmax)
 	 return (ts[i]);
 
@@ -3386,16 +3386,16 @@ return(-1 ); /* FLOATMAGIC */
     }
     t=ts[i];
 
-    if ((val=(((sp->a*t+sp->b)*t+sp->c)*t+sp->d) - sought)<0 )
+    if ((val=(((sp->a*t+sp->b)*t+sp->c)*t+sp->d)-sought)<0 )
 	val=-val;
     if (val!=0 ) {
 	for (factor=1024.0*1024.0*1024.0*1024.0*1024.0; /* FLOATMAGIC */
 	      factor>.5; factor/=2.0 ) {
-	    double tp=t + (factor*t)/D_RE_Factor;
-	    double tm=t - (factor*t)/D_RE_Factor;
-	    if ((valp=(((sp->a*tp+sp->b)*tp+sp->c)*tp+sp->d) - sought)<0 )
+	    double tp=t+(factor*t)/D_RE_Factor;
+	    double tm=t-(factor*t)/D_RE_Factor;
+	    if ((valp=(((sp->a*tp+sp->b)*tp+sp->c)*tp+sp->d)-sought)<0 )
 		valp=-valp;
-	    if ((valm=(((sp->a*tm+sp->b)*tm+sp->c)*tm+sp->d) - sought)<0 )
+	    if ((valm=(((sp->a*tm+sp->b)*tm+sp->c)*tm+sp->d)-sought)<0 )
 		valm=-valm;
 	    if (valp<val && valp<valm ) {
 		if (factor==1024.0*1024.0*1024.0*1024*1024 ) { /* FLOATMAGIC */
@@ -3432,7 +3432,7 @@ double IterateSplineSolve(const Spline1D * sp, double tmin, double tmax,
    /* Now the closed form CubicSolver can have rounding errors so if we know */
    /*  the spline to be monotonic, an iterative approach is more accurate */
 
-   if (tmin > tmax) {
+   if (tmin>tmax) {
       t=tmin;
       tmin=tmax;
       tmax=t;
@@ -3442,37 +3442,37 @@ double IterateSplineSolve(const Spline1D * sp, double tmin, double tmax,
    temp.d -= sought;
 
    if (temp.a==0 && temp.b==0 && temp.c != 0) {
-      t=-temp.d / (double) temp.c;
+      t=-temp.d/(double) temp.c;
       if (!isfinite(t))
 	return -1; /* FLOATMAGIC */
-      if (t < tmin || t > tmax)
+      if (t<tmin || t>tmax)
 	 return (-1); /* FLOATMAGIC */
       return t;
    }
 
-   low=((temp.a * tmin + temp.b) * tmin + temp.c) * tmin + temp.d;
-   high=((temp.a * tmax + temp.b) * tmax + temp.c) * tmax + temp.d;
+   low=((temp.a * tmin+temp.b)*tmin+temp.c)*tmin+temp.d;
+   high=((temp.a * tmax+temp.b)*tmax+temp.c)*tmax+temp.d;
    if (low==0)
       return (tmin);
    if (high==0)
       return (tmax);
-   if ((low < 0 && high > 0) || (low > 0 && high < 0)) {
+   if ((low<0 && high>0) || (low>0 && high<0)) {
 
       while (1) {
-	 t=(tmax + tmin) / 2;
+	 t=(tmax+tmin)/2;
 	 if (t==tmax || t==tmin)
 	    return (t);
-	 test=((temp.a * t + temp.b) * t + temp.c) * t + temp.d;
+	 test=((temp.a * t+temp.b)*t+temp.c)*t+temp.d;
 	 if (test==0)
 	    return (t);
-	 if ((low < 0 && test < 0) || (low > 0 && test > 0))
+	 if ((low<0 && test<0) || (low>0 && test>0))
 	    tmin=t;
 	 else
 	    tmax=t;
       }
-   } else if (low < .0001 && low > -.0001) /* FLOATMAGIC */
+   } else if (low<.0001 && low>-.0001) /* FLOATMAGIC */
       return (tmin);		/* Rounding errors */
-   else if (high < .0001 && high > -.0001) /* FLOATMAGIC */
+   else if (high<.0001 && high>-.0001) /* FLOATMAGIC */
       return (tmax);
 
    return (-1); /* FLOATMAGIC */
@@ -3484,7 +3484,7 @@ double IterateSplineSolveFixup(const Spline1D * sp, double tmin,
    double factor;
    double val, valp, valm;
 
-   if (tmin > tmax) {
+   if (tmin>tmax) {
       t=tmin;
       tmin=tmax;
       tmax=t;
@@ -3495,46 +3495,46 @@ double IterateSplineSolveFixup(const Spline1D * sp, double tmin,
    if (t==-1)
       return (-1); /* FLOATMAGIC */
 
-   if ((val=(((sp->a * t + sp->b) * t + sp->c) * t + sp->d) - sought) < 0)
+   if ((val=(((sp->a * t+sp->b)*t+sp->c)*t+sp->d)-sought)<0)
       val=-val;
    if (val != 0) {
-      for (factor=1024.0 * 1024.0 * 1024.0 * 1024.0 * 1024.0; /* FLOATMAGIC */
-	   factor > .5;
+      for (factor=1024.0*1024.0*1024.0*1024.0*1024.0; /* FLOATMAGIC */
+	   factor>.5;
 	   factor /= 2.0) {
-	 double tp=t + (factor * t) / D_RE_Factor;
-	 double tm=t - (factor * t) / D_RE_Factor;
+	 double tp=t+(factor * t)/D_RE_Factor;
+	 double tm=t-(factor * t)/D_RE_Factor;
 
-	 if (tp > tmax)
+	 if (tp>tmax)
 	    tp=tmax;
-	 if (tm < tmin)
+	 if (tm<tmin)
 	    tm=tmin;
 	 if ((valp =
-	      (((sp->a * tp + sp->b) * tp + sp->c) * tp + sp->d) - sought) <
+	      (((sp->a * tp+sp->b)*tp+sp->c)*tp+sp->d)-sought) <
 	     0)
 	    valp=-valp;
 	 if ((valm =
-	      (((sp->a * tm + sp->b) * tm + sp->c) * tm + sp->d) - sought) <
+	      (((sp->a * tm+sp->b)*tm+sp->c)*tm+sp->d)-sought) <
 	     0)
 	    valm=-valm;
-	 if (valp < val && valp < valm) {
+	 if (valp<val && valp<valm) {
 	    t=tp;
 	    val=valp;
-	 } else if (valm < val) {
+	 } else if (valm<val) {
 	    t=tm;
 	    val=valm;
 	 }
       }
    }
-   if (t==0 && !Within16RoundingErrors(sought, sought + val))
+   if (t==0 && !Within16RoundingErrors(sought, sought+val))
       return (-1); /* FLOATMAGIC */
    /* if t!=0 then we we get the chance of far worse rounding errors */
    else if (t==tmax || t==tmin) {
-      if (Within16RoundingErrors(sought, sought + val) ||
-	  Within16RoundingErrors(sp->a, sp->a + val) ||
-	  Within16RoundingErrors(sp->b, sp->b + val) ||
-	  Within16RoundingErrors(sp->c, sp->c + val) ||
-	  Within16RoundingErrors(sp->c, sp->c + val) ||
-	  Within16RoundingErrors(sp->d, sp->d + val))
+      if (Within16RoundingErrors(sought, sought+val) ||
+	  Within16RoundingErrors(sp->a, sp->a+val) ||
+	  Within16RoundingErrors(sp->b, sp->b+val) ||
+	  Within16RoundingErrors(sp->c, sp->c+val) ||
+	  Within16RoundingErrors(sp->c, sp->c+val) ||
+	  Within16RoundingErrors(sp->d, sp->d+val))
 	 return (t);
       else
 	 return (-1); /* FLOATMAGIC */
@@ -3554,33 +3554,33 @@ double CheckExtremaForSingleBitErrors(const Spline1D * sp, double t,
    int err;
    double diff, factor;
 
-   if (t < 0 || t > 1)
+   if (t<0 || t>1)
       return (t);
 
-   factor=t * 0x40000 / D_RE_Factor;
-   if ((diff=t - othert) < 0)
+   factor=t*0x40000/D_RE_Factor;
+   if ((diff=t-othert)<0)
       diff=-diff;
-   if (factor > diff / 4 && diff != 0)	/* This little check is to insure we don't skip beyond the well of this extremum into the next */
-      factor=diff / 4;
+   if (factor>diff/4 && diff != 0)	/* This little check is to insure we don't skip beyond the well of this extremum into the next */
+      factor=diff/4;
 
-   slope=(3 * (double) sp->a * t + 2 * sp->b) * t + sp->c;
-   if (slope < 0)
+   slope=(3*(double) sp->a * t+2*sp->b)*t+sp->c;
+   if (slope<0)
       slope=-slope;
 
    for (err=0x40000; err != 0; err >>= 1) {
-      u1=t + factor;
-      slope1=(3 * (double) sp->a * u1 + 2 * sp->b) * u1 + sp->c;
-      if (slope1 < 0)
+      u1=t+factor;
+      slope1=(3*(double) sp->a * u1+2*sp->b)*u1+sp->c;
+      if (slope1<0)
 	 slope1=-slope1;
 
-      um1=t - factor;
-      slopem1=(3 * (double) sp->a * um1 + 2 * sp->b) * um1 + sp->c;
-      if (slopem1 < 0)
+      um1=t-factor;
+      slopem1=(3*(double) sp->a * um1+2*sp->b)*um1+sp->c;
+      if (slopem1<0)
 	 slopem1=-slopem1;
 
-      if (slope1 < slope && slope1 <= slopem1 && u1 <= 1.0) {
+      if (slope1<slope && slope1 <= slopem1 && u1 <= 1.0) {
 	 t=u1;
-      } else if (slopem1 < slope && slopem1 <= slope1 && um1 >= 0.0) {
+      } else if (slopem1<slope && slopem1 <= slope1 && um1 >= 0.0) {
 	 t=um1;
       }
       factor /= 2.0;
@@ -3604,14 +3604,14 @@ static void _SplineFindExtrema(const Spline1D *sp,double *_t1,
    if (sp->a != 0) {
       /* cubic, possibly 2 extrema (possibly none) */
       b2_fourac =
-	 4 * (double) sp->b * sp->b - 12 * (double) sp->a * sp->c;
+	 4*(double) sp->b * sp->b-12*(double) sp->a * sp->c;
       if (b2_fourac >= 0) {
 	 b2_fourac=sqrt(b2_fourac);
-	 t1=(-2 * sp->b - b2_fourac) / (6 * sp->a);
-	 t2=(-2 * sp->b + b2_fourac) / (6 * sp->a);
+	 t1=(-2*sp->b-b2_fourac)/(6*sp->a);
+	 t2=(-2*sp->b+b2_fourac)/(6*sp->a);
 	 t1=CheckExtremaForSingleBitErrors(sp, t1, t2);
 	 t2=CheckExtremaForSingleBitErrors(sp, t2, t1);
-	 if (t1 > t2) {
+	 if (t1>t2) {
 	    double temp=t1;
 
 	    t1=t2;
@@ -3629,7 +3629,7 @@ static void _SplineFindExtrema(const Spline1D *sp,double *_t1,
       }
    } else if (sp->b != 0) {
       /* Quadratic, at most one extremum */
-      t1=-sp->c / (2.0 * (double) sp->b);
+      t1=-sp->c/(2.0*(double) sp->b);
    } else {			/*if (sp->c!=0 ) */
 
       /* linear, no extrema */
@@ -3651,14 +3651,14 @@ void SplineFindExtrema(const Spline1D * sp, double * _t1, double * _t2) {
    if (sp->a != 0) {
       /* cubic, possibly 2 extrema (possibly none) */
       b2_fourac =
-	 4 * (double) sp->b * sp->b - 12 * (double) sp->a * sp->c;
+	 4*(double) sp->b * sp->b-12*(double) sp->a * sp->c;
       if (b2_fourac >= 0) {
 	 b2_fourac=sqrt(b2_fourac);
-	 t1=(-2 * sp->b - b2_fourac) / (6 * sp->a);
-	 t2=(-2 * sp->b + b2_fourac) / (6 * sp->a);
+	 t1=(-2*sp->b-b2_fourac)/(6*sp->a);
+	 t2=(-2*sp->b+b2_fourac)/(6*sp->a);
 	 t1=CheckExtremaForSingleBitErrors(sp, t1, t2);
 	 t2=CheckExtremaForSingleBitErrors(sp, t2, t1);
-	 if (t1 > t2) {
+	 if (t1>t2) {
 	    double temp=t1;
 
 	    t1=t2;
@@ -3682,7 +3682,7 @@ void SplineFindExtrema(const Spline1D * sp, double * _t1, double * _t2) {
       }
    } else if (sp->b != 0) {
       /* Quadratic, at most one extremum */
-      t1=-sp->c / (2.0 * (double) sp->b);
+      t1=-sp->c/(2.0*(double) sp->b);
       if (t1 <= 0 || t1 >= 1)
 	 t1=-1;
    } else {			/*if (sp->c!=0 ) */
@@ -3694,39 +3694,39 @@ void SplineFindExtrema(const Spline1D * sp, double * _t1, double * _t2) {
 }
 
 double SplineCurvature(Spline * s, double t) {
-   /* Kappa=(x'y'' - y'x'') / (x'^2 + y'^2)^(3/2) */
+   /* Kappa=(x'y''-y'x'')/(x'^2+y'^2)^(3/2) */
    double dxdt, dydt, d2xdt2, d2ydt2, denom, numer;
 
    if (s==NULL)
       return (CURVATURE_ERROR);
 
    dxdt =
-      (3 * s->splines[0].a * t + 2 * s->splines[0].b) * t + s->splines[0].c;
+      (3*s->splines[0].a * t+2*s->splines[0].b)*t+s->splines[0].c;
    dydt =
-      (3 * s->splines[1].a * t + 2 * s->splines[1].b) * t + s->splines[1].c;
-   d2xdt2=6 * s->splines[0].a * t + 2 * s->splines[0].b;
-   d2ydt2=6 * s->splines[1].a * t + 2 * s->splines[1].b;
-   denom=pow(dxdt * dxdt + dydt * dydt, 3.0 / 2.0);
-   numer=dxdt * d2ydt2 - dydt * d2xdt2;
+      (3*s->splines[1].a * t+2*s->splines[1].b)*t+s->splines[1].c;
+   d2xdt2=6*s->splines[0].a * t+2*s->splines[0].b;
+   d2ydt2=6*s->splines[1].a * t+2*s->splines[1].b;
+   denom=pow(dxdt * dxdt+dydt * dydt, 3.0/2.0);
+   numer=dxdt * d2ydt2-dydt * d2xdt2;
 
    if (numer==0)
       return (0);
    if (denom==0)
       return (CURVATURE_ERROR);
 
-   return (numer / denom);
+   return (numer/denom);
 }
 
 static int SplineAtInflection(Spline1D *sp,double t) {
    /* It's a point of inflection if d sp/dt==0 and d2 sp/dt^2==0 */
-   return (RealNear((3 * sp->a * t + 2 * sp->b) * t + sp->c, 0) &&
-	   RealNear(6 * sp->a * t + 2 * sp->b, 0));
+   return (RealNear((3*sp->a * t+2*sp->b)*t+sp->c, 0) &&
+	   RealNear(6*sp->a * t+2*sp->b, 0));
 }
 
 static int SplineAtMinMax(Spline1D *sp,double t) {
    /* It's a point of inflection if d sp/dt==0 and d2 sp/dt^2!=0 */
-   return (RealNear((3 * sp->a * t + 2 * sp->b) * t + sp->c, 0) &&
-	   !RealNear(6 * sp->a * t + 2 * sp->b, 0));
+   return (RealNear((3*sp->a * t+2*sp->b)*t+sp->c, 0) &&
+	   !RealNear(6*sp->a * t+2*sp->b, 0));
 }
 
 int Spline2DFindExtrema(const Spline * sp, double extrema[4]) {
@@ -3745,56 +3745,56 @@ int Spline2DFindExtrema(const Spline * sp, double extrema[4]) {
    else
       extrema[2]=extrema[3]=-1;
 
-   for (i=0; i < 3; ++i)
-      for (j=i + 1; j < 4; ++j) {
+   for (i=0; i<3; ++i)
+      for (j=i+1; j<4; ++j) {
 	 if ((extrema[i]==-1 && extrema[j] != -1)
-	     || (extrema[i] > extrema[j] && extrema[j] != -1)) {
+	     || (extrema[i]>extrema[j] && extrema[j] != -1)) {
 	    double temp=extrema[i];
 
 	    extrema[i]=extrema[j];
 	    extrema[j]=temp;
 	 }
       }
-   for (i=j=0; i < 3 && extrema[i] != -1; ++i) {
-      if (extrema[i]==extrema[i + 1]) {
-	 for (j=i + 1; j < 3; ++j)
-	    extrema[j]=extrema[j + 1];
+   for (i=j=0; i<3 && extrema[i] != -1; ++i) {
+      if (extrema[i]==extrema[i+1]) {
+	 for (j=i+1; j<3; ++j)
+	    extrema[j]=extrema[j+1];
 	 extrema[3]=-1;
       }
    }
 
    /* Extrema which are too close together are not interesting */
    last=sp->from->me;
-   for (i=0; i < 4 && extrema[i] != -1; ++i) {
+   for (i=0; i<4 && extrema[i] != -1; ++i) {
       cur.x =
-	 ((sp->splines[0].a * extrema[i] + sp->splines[0].b) * extrema[i] +
-	  sp->splines[0].c) * extrema[i] + sp->splines[0].d;
+	 ((sp->splines[0].a * extrema[i]+sp->splines[0].b)*extrema[i] +
+	  sp->splines[0].c)*extrema[i]+sp->splines[0].d;
       cur.y =
-	 ((sp->splines[1].a * extrema[i] + sp->splines[1].b) * extrema[i] +
-	  sp->splines[1].c) * extrema[i] + sp->splines[1].d;
-      mid.x=(last.x + cur.x) / 2;
-      mid.y=(last.y + cur.y) / 2;
+	 ((sp->splines[1].a * extrema[i]+sp->splines[1].b)*extrema[i] +
+	  sp->splines[1].c)*extrema[i]+sp->splines[1].d;
+      mid.x=(last.x+cur.x)/2;
+      mid.y=(last.y+cur.y)/2;
       if ((mid.x==last.x || mid.x==cur.x) &&
 	  (mid.y==last.y || mid.y==cur.y)) {
-	 for (j=i; j < 3; ++j)
-	    extrema[j]=extrema[j + 1];
+	 for (j=i; j<3; ++j)
+	    extrema[j]=extrema[j+1];
 	 extrema[3]=-1;
 	 --i;
       } else
 	 last=cur;
    }
    if (extrema[0] != -1) {
-      mid.x=(last.x + sp->to->me.x) / 2;
-      mid.y=(last.y + sp->to->me.y) / 2;
+      mid.x=(last.x+sp->to->me.x)/2;
+      mid.y=(last.y+sp->to->me.y)/2;
       if ((mid.x==last.x || mid.x==cur.x) &&
 	  (mid.y==last.y || mid.y==cur.y))
-	 extrema[i - 1]=-1;
+	 extrema[i-1]=-1;
    }
-   for (i=0; i < 4 && extrema[i] != -1; ++i);
+   for (i=0; i<4 && extrema[i] != -1; ++i);
    if (i != 0) {
       cur=sp->to->me;
-      mid.x=(last.x + cur.x) / 2;
-      mid.y=(last.y + cur.y) / 2;
+      mid.x=(last.x+cur.x)/2;
+      mid.y=(last.y+cur.y)/2;
       if ((mid.x==last.x || mid.x==cur.x) &&
 	  (mid.y==last.y || mid.y==cur.y))
 	 extrema[--i]=-1;
@@ -3807,33 +3807,33 @@ int Spline2DFindPointsOfInflection(const Spline * sp, double poi[2]) {
    int cnt=0;
    double a, b, c, b2_fourac, t;
 
-   /* A POI happens when d2 y/dx2 is zero. This is not the same as d2y/dt2 / d2x/dt2 */
-   /* d2 y/dx^2=d/dt (dy/dt / dx/dt ) / dx/dt */
-   /*          =((dx/dt) * d2 y/dt2 - ((dy/dt) * d2 x/dt2) )/ (dx/dt)^3 */
-   /* (3ax*t^2+2bx*t+cx) * (6ay*t+2by) - (3ay*t^2+2by*t+cy) * (6ax*t+2bx)==0 */
-   /* (3ax*t^2+2bx*t+cx) * (3ay*t+by) - (3ay*t^2+2by*t+cy) * (3ax*t+bx)==0 */
-   /*   9*ax*ay*t^3 + (3ax*by+6bx*ay)*t^2 + (2bx*by+3cx*ay)*t + cx*by     */
-   /* -(9*ax*ay*t^3 + (3ay*bx+6by*ax)*t^2 + (2by*bx+3cy*ax)*t + cy*bx)==0 */
-   /* 3*(ax*by-ay*bx)*t^2 + 3*(cx*ay-cy*ax)*t+ (cx*by-cy*bx)==0         */
+   /* A POI happens when d2 y/dx2 is zero. This is not the same as d2y/dt2/d2x/dt2 */
+   /* d2 y/dx^2=d/dt (dy/dt/dx/dt )/dx/dt */
+   /*          =((dx/dt)*d2 y/dt2-((dy/dt)*d2 x/dt2) )/ (dx/dt)^3 */
+   /* (3ax*t^2+2bx*t+cx)*(6ay*t+2by)-(3ay*t^2+2by*t+cy)*(6ax*t+2bx)==0 */
+   /* (3ax*t^2+2bx*t+cx)*(3ay*t+by)-(3ay*t^2+2by*t+cy)*(3ax*t+bx)==0 */
+   /*   9*ax*ay*t^3+(3ax*by+6bx*ay)*t^2+(2bx*by+3cx*ay)*t+cx*by     */
+   /* -(9*ax*ay*t^3+(3ay*bx+6by*ax)*t^2+(2by*bx+3cy*ax)*t+cy*bx)==0 */
+   /* 3*(ax*by-ay*bx)*t^2+3*(cx*ay-cy*ax)*t+ (cx*by-cy*bx)==0         */
 
-   a=3 * ((double) sp->splines[1].a * sp->splines[0].b -
+   a=3*((double) sp->splines[1].a * sp->splines[0].b -
 	    (double) sp->splines[0].a * sp->splines[1].b);
-   b=3 * ((double) sp->splines[0].c * sp->splines[1].a -
+   b=3*((double) sp->splines[0].c * sp->splines[1].a -
 	    (double) sp->splines[1].c * sp->splines[0].a);
    c=(double) sp->splines[0].c * sp->splines[1].b -
       (double) sp->splines[1].c * sp->splines[0].b;
    if (!RealNear(a, 0)) {
-      b2_fourac=b * b - 4 * a * c;
+      b2_fourac=b * b-4*a * c;
       poi[0]=poi[1]=-1;
-      if (b2_fourac < 0)
+      if (b2_fourac<0)
 	 return (0);
       b2_fourac=sqrt(b2_fourac);
-      t=(-b + b2_fourac) / (2 * a);
+      t=(-b+b2_fourac)/(2*a);
       if (t >= 0 && t <= 1.0)
 	 poi[cnt++]=t;
-      t=(-b - b2_fourac) / (2 * a);
+      t=(-b-b2_fourac)/(2*a);
       if (t >= 0 && t <= 1.0) {
-	 if (cnt==1 && poi[0] > t) {
+	 if (cnt==1 && poi[0]>t) {
 	    poi[1]=poi[0];
 	    poi[0]=t;
 	    ++cnt;
@@ -3841,11 +3841,11 @@ int Spline2DFindPointsOfInflection(const Spline * sp, double poi[2]) {
 	    poi[cnt++]=t;
       }
    } else if (!RealNear(b, 0)) {
-      t=-c / b;
+      t=-c/b;
       if (t >= 0 && t <= 1.0)
 	 poi[cnt++]=t;
    }
-   if (cnt < 2)
+   if (cnt<2)
       poi[cnt]=-1;
 
    return (cnt);
@@ -3860,27 +3860,27 @@ void SplineRemoveExtremaTooClose(Spline1D * sp, double * _t1,
    double last, test;
    double t1=*_t1, t2=*_t2;
 
-   if (t1 > t2 && t2 != -1) {
+   if (t1>t2 && t2 != -1) {
       t1=t2;
       t2=*_t1;
    }
    last=sp->d;
    if (t1 != -1) {
-      test=((sp->a * t1 + sp->b) * t1 + sp->c) * t1 + sp->d;
-      if ((test - last) * (test - last) < 1)
+      test=((sp->a * t1+sp->b)*t1+sp->c)*t1+sp->d;
+      if ((test-last)*(test-last)<1)
 	 t1=-1;
       else
 	 last=test;
    }
    if (t2 != -1) {
-      test=((sp->a * t2 + sp->b) * t2 + sp->c) * t2 + sp->d;
-      if ((test - last) * (test - last) < 1)
+      test=((sp->a * t2+sp->b)*t2+sp->c)*t2+sp->d;
+      if ((test-last)*(test-last)<1)
 	 t2=-1;
       else
 	 last=test;
    }
-   test=sp->a + sp->b + sp->c + sp->d;
-   if ((test - last) * (test - last) < 1) {
+   test=sp->a+sp->b+sp->c+sp->d;
+   if ((test-last)*(test-last)<1) {
       if (t2 != -1)
 	 t2=-1;
       else if (t1 != -1)
@@ -3904,34 +3904,34 @@ int IntersectLines(BasePoint * inter,
       if (line2_1->x==line2_2->x) {
 	 if (line2_1->x != line1_1->x)
 	    return (false);	/* Parallel vertical lines */
-	 inter->y=(line1_1->y + line2_1->y) / 2;
+	 inter->y=(line1_1->y+line2_1->y)/2;
       } else
 	 inter->y =
-	    line2_1->y + (inter->x - line2_1->x) * (line2_2->y -
+	    line2_1->y+(inter->x-line2_1->x)*(line2_2->y -
 						    line2_1->y) /
-	    (line2_2->x - line2_1->x);
+	    (line2_2->x-line2_1->x);
       return (true);
    } else if (line2_1->x==line2_2->x) {
       inter->x=line2_1->x;
       inter->y =
-	 line1_1->y + (inter->x - line1_1->x) * (line1_2->y -
-						 line1_1->y) / (line1_2->x -
+	 line1_1->y+(inter->x-line1_1->x)*(line1_2->y -
+						 line1_1->y)/(line1_2->x -
 								line1_1->x);
       return (true);
    } else {
-      s1=(line1_2->y - line1_1->y) / (line1_2->x - line1_1->x);
-      s2=(line2_2->y - line2_1->y) / (line2_2->x - line2_1->x);
+      s1=(line1_2->y-line1_1->y)/(line1_2->x-line1_1->x);
+      s2=(line2_2->y-line2_1->y)/(line2_2->x-line2_1->x);
       if (RealNear(s1, s2)) {
 	 if (!RealNear
-	     (line1_1->y + (line2_1->x - line1_1->x) * s1, line2_1->y))
+	     (line1_1->y+(line2_1->x-line1_1->x)*s1, line2_1->y))
 	    return (false);
-	 inter->x=(line1_2->x + line2_2->x) / 2;
-	 inter->y=(line1_2->y + line2_2->y) / 2;
+	 inter->x=(line1_2->x+line2_2->x)/2;
+	 inter->y=(line1_2->y+line2_2->y)/2;
       } else {
 	 inter->x =
-	    (s1 * line1_1->x - s2 * line2_1->x - line1_1->y +
-	     line2_1->y) / (s1 - s2);
-	 inter->y=line1_1->y + (inter->x - line1_1->x) * s1;
+	    (s1*line1_1->x-s2*line2_1->x-line1_1->y +
+	     line2_1->y)/(s1-s2);
+	 inter->y=line1_1->y+(inter->x-line1_1->x)*s1;
       }
       return (true);
    }
@@ -3946,16 +3946,16 @@ int IntersectLinesClip(BasePoint * inter,
    if (!IntersectLines(inter, line1_1, line1_2, line2_1, line2_2))
       return (false);
    else {
-      unit.x=line2_2->x - line1_2->x;
-      unit.y=line2_2->y - line1_2->y;
-      len=sqrt(unit.x * unit.x + unit.y * unit.y);
+      unit.x=line2_2->x-line1_2->x;
+      unit.y=line2_2->y-line1_2->y;
+      len=sqrt(unit.x * unit.x+unit.y * unit.y);
       if (len==0)
 	 return (false);
       else {
 	 unit.x /= len;
 	 unit.y /= len;
 	 val =
-	    unit.x * (inter->x - line1_2->x) + unit.y * (inter->y -
+	    unit.x * (inter->x-line1_2->x)+unit.y * (inter->y -
 							 line1_2->y);
 	 if (val <= 0 || val >= len) {
 	    *inter=old;
@@ -3970,7 +3970,7 @@ int IntersectLinesSlopes(BasePoint * inter,
 			 BasePoint * line1, BasePoint * slope1,
 			 BasePoint * line2, BasePoint * slope2) {
    double denom =
-      slope1->y * (double) slope2->x - slope1->x * (double) slope2->y;
+      slope1->y * (double) slope2->x-slope1->x * (double) slope2->y;
    double x, y;
 
    if (denom==0)
@@ -3982,12 +3982,12 @@ int IntersectLinesSlopes(BasePoint * inter,
 
    x=(slope1->y * (double) slope2->x * line1->x -
 	slope2->y * (double) slope1->x * line2->x +
-	slope2->x * (double) slope1->x * (line2->y - line1->y)) / denom;
+	slope2->x * (double) slope1->x * (line2->y-line1->y))/denom;
    if (slope1->x==0)
-      y=slope2->y * (x - line2->x) / slope2->x + line2->y;
+      y=slope2->y * (x-line2->x)/slope2->x+line2->y;
    else
-      y=slope1->y * (x - line1->x) / slope1->x + line1->y;
-   if (x < -16000 || x > 16000 || y < -16000 || y > 16000)
+      y=slope1->y * (x-line1->x)/slope1->x+line1->y;
+   if (x<-16000 || x>16000 || y<-16000 || y>16000)
       return (false);		/* Effectively parallel */
 
    inter->x=x;
@@ -4000,7 +4000,7 @@ static int AddPoint(double x,double y,double t,double s,
 		    int soln) {
    int i;
 
-   for (i=0; i < soln; ++i)
+   for (i=0; i<soln; ++i)
       if (x==pts[i].x && y==pts[i].y)
 	 return (soln);
    if (soln >= 9)
@@ -4009,7 +4009,7 @@ static int AddPoint(double x,double y,double t,double s,
    t2s[soln]=s;
    pts[soln].x=x;
    pts[soln].y=y;
-   return (soln + 1);
+   return (soln+1);
 }
 
 static void IterateSolve(const Spline1D *sp,double ts[3]) {
@@ -4028,21 +4028,21 @@ static void IterateSolve(const Spline1D *sp,double ts[3]) {
 	 e[1]=1;
       if (e[2]==-1)
 	 e[2]=1;
-      for (i=j=0; i < 3; ++i) {
-	 ts[j]=IterateSplineSolve(sp, e[i], e[i + 1], 0);
+      for (i=j=0; i<3; ++i) {
+	 ts[j]=IterateSplineSolve(sp, e[i], e[i+1], 0);
 	 if (ts[j] != -1)
 	    ++j;
-	 if (e[i + 1]==1.0)
+	 if (e[i+1]==1.0)
 	    break;
       }
    } else if (sp->b != 0) {
       double b2_4ac =
-	 sp->c * (double) sp->c - 4 * sp->b * (double) sp->d;
+	 sp->c * (double) sp->c-4*sp->b * (double) sp->d;
       if (b2_4ac >= 0) {
 	 b2_4ac=sqrt(b2_4ac);
-	 ts[0]=(-sp->c - b2_4ac) / (2 * sp->b);
-	 ts[1]=(-sp->c + b2_4ac) / (2 * sp->b);
-	 if (ts[0] > ts[1]) {
+	 ts[0]=(-sp->c-b2_4ac)/(2*sp->b);
+	 ts[1]=(-sp->c+b2_4ac)/(2*sp->b);
+	 if (ts[0]>ts[1]) {
 	    double t=ts[0];
 
 	    ts[0]=ts[1];
@@ -4050,48 +4050,48 @@ static void IterateSolve(const Spline1D *sp,double ts[3]) {
 	 }
       }
    } else if (sp->c != 0) {
-      ts[0]=-sp->d / (double) sp->c;
+      ts[0]=-sp->d/(double) sp->c;
    } else {
       /* No solutions, or all solutions */
       ;
    }
 
-   for (i=j=0; i < 3; ++i)
+   for (i=j=0; i<3; ++i)
       if (ts[i] >= 0 && ts[i] <= 1)
 	 ts[j++]=ts[i];
-   for (i=0; i < j - 1; ++i)
-      if (ts[i] + .0000001 > ts[i + 1]) {
-	 ts[i]=(ts[i] + ts[i + 1]) / 2;
+   for (i=0; i<j-1; ++i)
+      if (ts[i]+.0000001>ts[i+1]) {
+	 ts[i]=(ts[i]+ts[i+1])/2;
 	 --j;
-	 for (++i; i < j; ++i)
-	    ts[i]=ts[i + 1];
+	 for (++i; i<j; ++i)
+	    ts[i]=ts[i+1];
       }
    if (j != 0) {
       if (ts[0] != 0) {
 	 double d0=sp->d;
 	 double dt =
-	    ((sp->a * ts[0] + sp->b) * ts[0] + sp->c) * ts[0] + sp->d;
-	 if (d0 < 0)
+	    ((sp->a * ts[0]+sp->b)*ts[0]+sp->c)*ts[0]+sp->d;
+	 if (d0<0)
 	    d0=-d0;
-	 if (dt < 0)
+	 if (dt<0)
 	    dt=-dt;
-	 if (d0 < dt)
+	 if (d0<dt)
 	    ts[0]=0;
       }
-      if (ts[j - 1] != 1.0) {
-	 double d1=sp->a + (double) sp->b + sp->c + sp->d;
+      if (ts[j-1] != 1.0) {
+	 double d1=sp->a+(double) sp->b+sp->c+sp->d;
 	 double dt =
-	    ((sp->a * ts[j - 1] + sp->b) * ts[j - 1] + sp->c) * ts[j - 1] +
+	    ((sp->a * ts[j-1]+sp->b)*ts[j-1]+sp->c)*ts[j-1] +
 	    sp->d;
-	 if (d1 < 0)
+	 if (d1<0)
 	    d1=-d1;
-	 if (dt < 0)
+	 if (dt<0)
 	    dt=-dt;
-	 if (d1 < dt)
-	    ts[j - 1]=1;
+	 if (d1<dt)
+	    ts[j-1]=1;
       }
    }
-   for (; j < 3; ++j)
+   for (; j<3; ++j)
       ts[j]=-1;
 }
 
@@ -4113,24 +4113,24 @@ static double ISolveWithin(const Spline *spline,int major,
    temp=*sp;
    temp.d -= val;
    IterateSolve(&temp, ts);
-   if (tlow < thigh) {
-      for (i=0; i < 3; ++i)
+   if (tlow<thigh) {
+      for (i=0; i<3; ++i)
 	 if (ts[i] >= tlow && ts[i] <= thigh)
 	    return (ts[i]);
-      for (i=0; i < 3; ++i) {
-	 if (ts[i] >= tlow - 1. / 1024. && ts[i] <= tlow)
+      for (i=0; i<3; ++i) {
+	 if (ts[i] >= tlow-1./1024. && ts[i] <= tlow)
 	    return (tlow);
-	 if (ts[i] >= thigh && ts[i] <= thigh + 1. / 1024)
+	 if (ts[i] >= thigh && ts[i] <= thigh+1./1024)
 	    return (thigh);
       }
    } else {
-      for (i=0; i < 3; ++i)
+      for (i=0; i<3; ++i)
 	 if (ts[i] >= thigh && ts[i] <= tlow)
 	    return (ts[i]);
-      for (i=0; i < 3; ++i) {
-	 if (ts[i] >= thigh - 1. / 1024. && ts[i] <= thigh)
+      for (i=0; i<3; ++i) {
+	 if (ts[i] >= thigh-1./1024. && ts[i] <= thigh)
 	    return (thigh);
-	 if (ts[i] >= tlow && ts[i] <= tlow + 1. / 1024)
+	 if (ts[i] >= tlow && ts[i] <= tlow+1./1024)
 	    return (tlow);
       }
    }
@@ -4147,11 +4147,11 @@ static int ICAddInter(int cnt,BasePoint *foundpos,double *foundt1,
 
    foundt1[cnt]=t1;
    foundt2[cnt]=t2;
-   foundpos[cnt].x=((s1->splines[0].a * t1 + s1->splines[0].b) * t1 +
-		      s1->splines[0].c) * t1 + s1->splines[0].d;
-   foundpos[cnt].y=((s1->splines[1].a * t1 + s1->splines[1].b) * t1 +
-		      s1->splines[1].c) * t1 + s1->splines[1].d;
-   return (cnt + 1);
+   foundpos[cnt].x=((s1->splines[0].a * t1+s1->splines[0].b)*t1 +
+		      s1->splines[0].c)*t1+s1->splines[0].d;
+   foundpos[cnt].y=((s1->splines[1].a * t1+s1->splines[1].b)*t1 +
+		      s1->splines[1].c)*t1+s1->splines[1].d;
+   return (cnt+1);
 }
 
 static int ICBinarySearch(int cnt,BasePoint *foundpos,double *foundt1,
@@ -4163,27 +4163,27 @@ static int ICBinarySearch(int cnt,BasePoint *foundpos,double *foundt1,
    double o1o, o2o, o1n, o2n, m;
 
    major=!other;
-   o1o=((s1->splines[other].a * t1low + s1->splines[other].b) * t1low +
-	  s1->splines[other].c) * t1low + s1->splines[other].d;
-   o2o=((s2->splines[other].a * t2low + s2->splines[other].b) * t2low +
-	  s2->splines[other].c) * t2low + s2->splines[other].d;
+   o1o=((s1->splines[other].a * t1low+s1->splines[other].b)*t1low +
+	  s1->splines[other].c)*t1low+s1->splines[other].d;
+   o2o=((s2->splines[other].a * t2low+s2->splines[other].b)*t2low +
+	  s2->splines[other].c)*t2low+s2->splines[other].d;
    while (1) {
-      t1=(t1low + t1high) / 2;
-      m=((s1->splines[major].a * t1 + s1->splines[major].b) * t1 +
-	   s1->splines[major].c) * t1 + s1->splines[major].d;
+      t1=(t1low+t1high)/2;
+      m=((s1->splines[major].a * t1+s1->splines[major].b)*t1 +
+	   s1->splines[major].c)*t1+s1->splines[major].d;
       t2=ISolveWithin(s2, major, m, t2low, t2high);
       if (t2==-1)
 	 return (cnt);
 
-      o1n=((s1->splines[other].a * t1 + s1->splines[other].b) * t1 +
-	     s1->splines[other].c) * t1 + s1->splines[other].d;
-      o2n=((s2->splines[other].a * t2 + s2->splines[other].b) * t2 +
-	     s2->splines[other].c) * t2 + s2->splines[other].d;
-      if ((o1n - o2n < .001 && o1n - o2n > -.001) ||
-	  (t1 - t1low < .0001 && t1 - t1low > -.0001))
+      o1n=((s1->splines[other].a * t1+s1->splines[other].b)*t1 +
+	     s1->splines[other].c)*t1+s1->splines[other].d;
+      o2n=((s2->splines[other].a * t2+s2->splines[other].b)*t2 +
+	     s2->splines[other].c)*t2+s2->splines[other].d;
+      if ((o1n-o2n<.001 && o1n-o2n>-.001) ||
+	  (t1-t1low<.0001 && t1-t1low>-.0001))
 	 return (ICAddInter
 		 (cnt, foundpos, foundt1, foundt2, s1, s2, t1, t2, maxcnt));
-      if ((o1o > o2o && o1n < o2n) || (o1o < o2o && o1n > o2n)) {
+      if ((o1o>o2o && o1n<o2n) || (o1o<o2o && o1n>o2n)) {
 	 t1high=t1;
 	 t2high=t2;
       } else {
@@ -4205,21 +4205,21 @@ static int CubicsIntersect(const Spline *s1,double lowt1,double hight1,
    double o1o, o2o, o1n, o2n, m;
    int cnt=0;
 
-   if ((min.x=min1->x) < min2->x)
+   if ((min.x=min1->x)<min2->x)
       min.x=min2->x;
-   if ((min.y=min1->y) < min2->y)
+   if ((min.y=min1->y)<min2->y)
       min.y=min2->y;
-   if ((max.x=max1->x) > max2->x)
+   if ((max.x=max1->x)>max2->x)
       max.x=max2->x;
-   if ((max.y=max1->y) > max2->y)
+   if ((max.y=max1->y)>max2->y)
       max.y=max2->y;
-   if (max.x < min.x || max.y < min.y)
+   if (max.x<min.x || max.y<min.y)
       return (0);
-   if (max.x - min.x > max.y - min.y)
+   if (max.x-min.x>max.y-min.y)
       major=0;
    else
       major=1;
-   other=1 - major;
+   other=1-major;
 
    t1max=ISolveWithin(s1, major, (&max.x)[major], lowt1, hight1);
    t1min=ISolveWithin(s1, major, (&min.x)[major], lowt1, hight1);
@@ -4227,20 +4227,20 @@ static int CubicsIntersect(const Spline *s1,double lowt1,double hight1,
    t2min=ISolveWithin(s2, major, (&min.x)[major], lowt2, hight2);
    if (t1max==-1 || t1min==-1 || t2max==-1 || t1min==-1)
       return (0);
-   t1diff=(t1max - t1min) / 64.0;
+   t1diff=(t1max-t1min)/64.0;
    if (RealNear(t1diff, 0))
       return (0);
 
    t1=t1min;
    t2=t2min;
-   o1o=t1==0 ? (&s1->from->me.x)[other] :
-      t1==1.0 ? (&s1->to->me.x)[other] :
-      ((s1->splines[other].a * t1 + s1->splines[other].b) * t1 +
-       s1->splines[other].c) * t1 + s1->splines[other].d;
-   o2o=t2==0 ? (&s2->from->me.x)[other] :
-      t2==1.0 ? (&s2->to->me.x)[other] :
-      ((s2->splines[other].a * t2 + s2->splines[other].b) * t2 +
-       s2->splines[other].c) * t2 + s2->splines[other].d;
+   o1o=t1==0?(&s1->from->me.x)[other] :
+      t1==1.0?(&s1->to->me.x)[other] :
+      ((s1->splines[other].a * t1+s1->splines[other].b)*t1 +
+       s1->splines[other].c)*t1+s1->splines[other].d;
+   o2o=t2==0?(&s2->from->me.x)[other] :
+      t2==1.0?(&s2->to->me.x)[other] :
+      ((s2->splines[other].a * t2+s2->splines[other].b)*t2 +
+       s2->splines[other].c)*t2+s2->splines[other].d;
    if (o1o==o2o)
       cnt =
 	 ICAddInter(cnt, foundpos, foundt1, foundt2, s1, s2, t1, t2, maxcnt);
@@ -4248,33 +4248,33 @@ static int CubicsIntersect(const Spline *s1,double lowt1,double hight1,
       if (cnt >= maxcnt)
 	 break;
       t1 += t1diff;
-      if ((t1max > t1min && t1 > t1max) || (t1max < t1min && t1 < t1max)
-	  || cnt > 3)
+      if ((t1max>t1min && t1>t1max) || (t1max<t1min && t1<t1max)
+	  || cnt>3)
 	 break;
-      m=t1==0 ? (&s1->from->me.x)[major] :
-	 t1==1.0 ? (&s1->to->me.x)[major] :
-	 ((s1->splines[major].a * t1 + s1->splines[major].b) * t1 +
-	  s1->splines[major].c) * t1 + s1->splines[major].d;
+      m=t1==0?(&s1->from->me.x)[major] :
+	 t1==1.0?(&s1->to->me.x)[major] :
+	 ((s1->splines[major].a * t1+s1->splines[major].b)*t1 +
+	  s1->splines[major].c)*t1+s1->splines[major].d;
       oldt2=t2;
       t2=ISolveWithin(s2, major, m, lowt2, hight2);
       if (t2==-1)
 	 continue;
 
-      o1n=t1==0 ? (&s1->from->me.x)[other] :
-	 t1==1.0 ? (&s1->to->me.x)[other] :
-	 ((s1->splines[other].a * t1 + s1->splines[other].b) * t1 +
-	  s1->splines[other].c) * t1 + s1->splines[other].d;
-      o2n=t2==0 ? (&s2->from->me.x)[other] :
-	 t2==1.0 ? (&s2->to->me.x)[other] :
-	 ((s2->splines[other].a * t2 + s2->splines[other].b) * t2 +
-	  s2->splines[other].c) * t2 + s2->splines[other].d;
+      o1n=t1==0?(&s1->from->me.x)[other] :
+	 t1==1.0?(&s1->to->me.x)[other] :
+	 ((s1->splines[other].a * t1+s1->splines[other].b)*t1 +
+	  s1->splines[other].c)*t1+s1->splines[other].d;
+      o2n=t2==0?(&s2->from->me.x)[other] :
+	 t2==1.0?(&s2->to->me.x)[other] :
+	 ((s2->splines[other].a * t2+s2->splines[other].b)*t2 +
+	  s2->splines[other].c)*t2+s2->splines[other].d;
       if (o1n==o2n)
 	 cnt =
 	    ICAddInter(cnt, foundpos, foundt1, foundt2, s1, s2, t1, t2,
 		       maxcnt);
-      if ((o1o > o2o && o1n < o2n) || (o1o < o2o && o1n > o2n))
+      if ((o1o>o2o && o1n<o2n) || (o1o<o2o && o1n>o2n))
 	 cnt=ICBinarySearch(cnt, foundpos, foundt1, foundt2, other,
-			      s1, s2, t1 - t1diff, t1, oldt2, t2, maxcnt);
+			      s1, s2, t1-t1diff, t1, oldt2, t2, maxcnt);
       o1o=o1n;
       o2o=o2n;
    }
@@ -4284,33 +4284,33 @@ static int CubicsIntersect(const Spline *s1,double lowt1,double hight1,
 static int Closer(const Spline *s1,const Spline *s2,double t1,
 		  double t2, double t1p, double t2p) {
    double x1 =
-      ((s1->splines[0].a * t1 + s1->splines[0].b) * t1 +
-       s1->splines[0].c) * t1 + s1->splines[0].d;
+      ((s1->splines[0].a * t1+s1->splines[0].b)*t1 +
+       s1->splines[0].c)*t1+s1->splines[0].d;
    double y1 =
-      ((s1->splines[1].a * t1 + s1->splines[1].b) * t1 +
-       s1->splines[1].c) * t1 + s1->splines[1].d;
+      ((s1->splines[1].a * t1+s1->splines[1].b)*t1 +
+       s1->splines[1].c)*t1+s1->splines[1].d;
    double x2 =
-      ((s2->splines[0].a * t2 + s2->splines[0].b) * t2 +
-       s2->splines[0].c) * t2 + s2->splines[0].d;
+      ((s2->splines[0].a * t2+s2->splines[0].b)*t2 +
+       s2->splines[0].c)*t2+s2->splines[0].d;
    double y2 =
-      ((s2->splines[1].a * t2 + s2->splines[1].b) * t2 +
-       s2->splines[1].c) * t2 + s2->splines[1].d;
-   double diff=(x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2);
+      ((s2->splines[1].a * t2+s2->splines[1].b)*t2 +
+       s2->splines[1].c)*t2+s2->splines[1].d;
+   double diff=(x1-x2)*(x1-x2)+(y1-y2)*(y1-y2);
    double x1p =
-      ((s1->splines[0].a * t1p + s1->splines[0].b) * t1p +
-       s1->splines[0].c) * t1p + s1->splines[0].d;
+      ((s1->splines[0].a * t1p+s1->splines[0].b)*t1p +
+       s1->splines[0].c)*t1p+s1->splines[0].d;
    double y1p =
-      ((s1->splines[1].a * t1p + s1->splines[1].b) * t1p +
-       s1->splines[1].c) * t1p + s1->splines[1].d;
+      ((s1->splines[1].a * t1p+s1->splines[1].b)*t1p +
+       s1->splines[1].c)*t1p+s1->splines[1].d;
    double x2p =
-      ((s2->splines[0].a * t2p + s2->splines[0].b) * t2p +
-       s2->splines[0].c) * t2p + s2->splines[0].d;
+      ((s2->splines[0].a * t2p+s2->splines[0].b)*t2p +
+       s2->splines[0].c)*t2p+s2->splines[0].d;
    double y2p =
-      ((s2->splines[1].a * t2p + s2->splines[1].b) * t2p +
-       s2->splines[1].c) * t2p + s2->splines[1].d;
-   double diffp=(x1p - x2p) * (x1p - x2p) + (y1p - y2p) * (y1p - y2p);
+      ((s2->splines[1].a * t2p+s2->splines[1].b)*t2p +
+       s2->splines[1].c)*t2p+s2->splines[1].d;
+   double diffp=(x1p-x2p)*(x1p-x2p)+(y1p-y2p)*(y1p-y2p);
 
-   if (diff < diffp)
+   if (diff<diffp)
       return (false);
 
    return (true);
@@ -4368,57 +4368,57 @@ int SplinesIntersect(const Spline * s1, const Spline * s2, BasePoint pts[9], dou
    max1=min1;
    min2=s2->from->me;
    max2=min2;
-   if (s1->from->nextcp.x > max1.x)
+   if (s1->from->nextcp.x>max1.x)
       max1.x=s1->from->nextcp.x;
-   else if (s1->from->nextcp.x < min1.x)
+   else if (s1->from->nextcp.x<min1.x)
       min1.x=s1->from->nextcp.x;
-   if (s1->from->nextcp.y > max1.y)
+   if (s1->from->nextcp.y>max1.y)
       max1.y=s1->from->nextcp.y;
-   else if (s1->from->nextcp.y < min1.y)
+   else if (s1->from->nextcp.y<min1.y)
       min1.y=s1->from->nextcp.y;
-   if (s1->to->prevcp.x > max1.x)
+   if (s1->to->prevcp.x>max1.x)
       max1.x=s1->to->prevcp.x;
-   else if (s1->to->prevcp.x < min1.x)
+   else if (s1->to->prevcp.x<min1.x)
       min1.x=s1->to->prevcp.x;
-   if (s1->to->prevcp.y > max1.y)
+   if (s1->to->prevcp.y>max1.y)
       max1.y=s1->to->prevcp.y;
-   else if (s1->to->prevcp.y < min1.y)
+   else if (s1->to->prevcp.y<min1.y)
       min1.y=s1->to->prevcp.y;
-   if (s1->to->me.x > max1.x)
+   if (s1->to->me.x>max1.x)
       max1.x=s1->to->me.x;
-   else if (s1->to->me.x < min1.x)
+   else if (s1->to->me.x<min1.x)
       min1.x=s1->to->me.x;
-   if (s1->to->me.y > max1.y)
+   if (s1->to->me.y>max1.y)
       max1.y=s1->to->me.y;
-   else if (s1->to->me.y < min1.y)
+   else if (s1->to->me.y<min1.y)
       min1.y=s1->to->me.y;
 
-   if (s2->from->nextcp.x > max2.x)
+   if (s2->from->nextcp.x>max2.x)
       max2.x=s2->from->nextcp.x;
-   else if (s2->from->nextcp.x < min2.x)
+   else if (s2->from->nextcp.x<min2.x)
       min2.x=s2->from->nextcp.x;
-   if (s2->from->nextcp.y > max2.y)
+   if (s2->from->nextcp.y>max2.y)
       max2.y=s2->from->nextcp.y;
-   else if (s2->from->nextcp.y < min2.y)
+   else if (s2->from->nextcp.y<min2.y)
       min2.y=s2->from->nextcp.y;
-   if (s2->to->prevcp.x > max2.x)
+   if (s2->to->prevcp.x>max2.x)
       max2.x=s2->to->prevcp.x;
-   else if (s2->to->prevcp.x < min2.x)
+   else if (s2->to->prevcp.x<min2.x)
       min2.x=s2->to->prevcp.x;
-   if (s2->to->prevcp.y > max2.y)
+   if (s2->to->prevcp.y>max2.y)
       max2.y=s2->to->prevcp.y;
-   else if (s2->to->prevcp.y < min2.y)
+   else if (s2->to->prevcp.y<min2.y)
       min2.y=s2->to->prevcp.y;
-   if (s2->to->me.x > max2.x)
+   if (s2->to->me.x>max2.x)
       max2.x=s2->to->me.x;
-   else if (s2->to->me.x < min2.x)
+   else if (s2->to->me.x<min2.x)
       min2.x=s2->to->me.x;
-   if (s2->to->me.y > max2.y)
+   if (s2->to->me.y>max2.y)
       max2.y=s2->to->me.y;
-   else if (s2->to->me.y < min2.y)
+   else if (s2->to->me.y<min2.y)
       min2.y=s2->to->me.y;
-   if (min1.x > max2.x || min2.x > max1.x || min1.y > max2.y
-       || min2.y > max1.y)
+   if (min1.x>max2.x || min2.x>max1.x || min1.y>max2.y
+       || min2.y>max1.y)
       return (false);		/* no intersection of bounding boxes */
 
    if (s1->knownlinear) {
@@ -4439,50 +4439,50 @@ int SplinesIntersect(const Spline * s1, const Spline * s2, BasePoint pts[9], dou
       IterateSolve(&spline, tempts);
       if (tempts[0]==-1)
 	 return (false);
-      for (i=0; i < 3 && tempts[i] != -1; ++i) {
-	 x=((s2->splines[0].a * tempts[i] + s2->splines[0].b) * tempts[i] +
-	      s2->splines[0].c) * tempts[i] + s2->splines[0].d;
-	 y=((s2->splines[1].a * tempts[i] + s2->splines[1].b) * tempts[i] +
-	      s2->splines[1].c) * tempts[i] + s2->splines[1].d;
+      for (i=0; i<3 && tempts[i] != -1; ++i) {
+	 x=((s2->splines[0].a * tempts[i]+s2->splines[0].b)*tempts[i] +
+	      s2->splines[0].c)*tempts[i]+s2->splines[0].d;
+	 y=((s2->splines[1].a * tempts[i]+s2->splines[1].b)*tempts[i] +
+	      s2->splines[1].c)*tempts[i]+s2->splines[1].d;
 	 if (s1->splines[0].c==0)
 	    x=s1->splines[0].d;
 	 if (s1->splines[1].c==0)
 	    y=s1->splines[1].d;
-	 if ((ac0=s1->splines[0].c) < 0)
+	 if ((ac0=s1->splines[0].c)<0)
 	    ac0=-ac0;
-	 if ((ac1=s1->splines[1].c) < 0)
+	 if ((ac1=s1->splines[1].c)<0)
 	    ac1=-ac1;
-	 if (ac0 > ac1)
-	    t=(x - s1->splines[0].d) / s1->splines[0].c;
+	 if (ac0>ac1)
+	    t=(x-s1->splines[0].d)/s1->splines[0].c;
 	 else
-	    t=(y - s1->splines[1].d) / s1->splines[1].c;
-	 if (tempts[i] > .99996 && Closer(s1, s2, t, tempts[i], t, 1)) {
+	    t=(y-s1->splines[1].d)/s1->splines[1].c;
+	 if (tempts[i]>.99996 && Closer(s1, s2, t, tempts[i], t, 1)) {
 	    tempts[i]=1;
 	    x=s2->to->me.x;
 	    y=s2->to->me.y;
-	 } else if (tempts[i] < .00001 && Closer(s1, s2, t, tempts[i], t, 0)) {
+	 } else if (tempts[i]<.00001 && Closer(s1, s2, t, tempts[i], t, 0)) {
 	    tempts[i]=0;
 	    x=s2->from->me.x;
 	    y=s2->from->me.y;
 	 }
 	 /* I know we just did this, but we might have changed x,y so redo */
-	 if (ac0 > ac1)
-	    t=(x - s1->splines[0].d) / s1->splines[0].c;
+	 if (ac0>ac1)
+	    t=(x-s1->splines[0].d)/s1->splines[0].c;
 	 else
-	    t=(y - s1->splines[1].d) / s1->splines[1].c;
-	 if (t > .99996 && t < 1.001
+	    t=(y-s1->splines[1].d)/s1->splines[1].c;
+	 if (t>.99996 && t<1.001
 	     && Closer(s1, s2, t, tempts[i], 1, tempts[i])) {
 	    t=1;
 	    x=s1->to->me.x;
 	    y=s1->to->me.y;
-	 } else if (t < .00001 && t > -.001
+	 } else if (t<.00001 && t>-.001
 		    && Closer(s1, s2, t, tempts[i], 0, tempts[i])) {
 	    t=0;
 	    x=s1->from->me.x;
 	    y=s1->from->me.y;
 	 }
-	 if (t < -.001 || t > 1.001 || x < min1.x - .01 || y < min1.y - .01
-	     || x > max1.x + .01 || y > max1.y + .01)
+	 if (t<-.001 || t>1.001 || x<min1.x-.01 || y<min1.y-.01
+	     || x>max1.x+.01 || y>max1.y+.01)
 	    continue;
 	 if (t <= 0) {
 	    t=0;
@@ -4521,89 +4521,89 @@ int SplinesIntersect(const Spline * s1, const Spline * s2, BasePoint pts[9], dou
    /*  where they are monotonic in both dimensions, then check these for */
    /*  possible intersections */
    extrema1[0]=extrema2[0]=0;
-   ecnt1=Spline2DFindExtrema(s1, extrema1 + 1);
-   ecnt2=Spline2DFindExtrema(s2, extrema2 + 1);
+   ecnt1=Spline2DFindExtrema(s1, extrema1+1);
+   ecnt2=Spline2DFindExtrema(s2, extrema2+1);
    extrema1[++ecnt1]=1.0;
    extrema2[++ecnt2]=1.0;
    found=0;
-   for (i=0; i < ecnt1; ++i) {
+   for (i=0; i<ecnt1; ++i) {
       min1.x =
-	 ((s1->splines[0].a * extrema1[i] + s1->splines[0].b) * extrema1[i] +
-	  s1->splines[0].c) * extrema1[i] + s1->splines[0].d;
+	 ((s1->splines[0].a * extrema1[i]+s1->splines[0].b)*extrema1[i] +
+	  s1->splines[0].c)*extrema1[i]+s1->splines[0].d;
       min1.y =
-	 ((s1->splines[1].a * extrema1[i] + s1->splines[1].b) * extrema1[i] +
-	  s1->splines[1].c) * extrema1[i] + s1->splines[1].d;
+	 ((s1->splines[1].a * extrema1[i]+s1->splines[1].b)*extrema1[i] +
+	  s1->splines[1].c)*extrema1[i]+s1->splines[1].d;
       max1.x =
-	 ((s1->splines[0].a * extrema1[i + 1] +
-	   s1->splines[0].b) * extrema1[i + 1] +
-	  s1->splines[0].c) * extrema1[i + 1] + s1->splines[0].d;
+	 ((s1->splines[0].a * extrema1[i+1] +
+	   s1->splines[0].b)*extrema1[i+1] +
+	  s1->splines[0].c)*extrema1[i+1]+s1->splines[0].d;
       max1.y =
-	 ((s1->splines[1].a * extrema1[i + 1] +
-	   s1->splines[1].b) * extrema1[i + 1] +
-	  s1->splines[1].c) * extrema1[i + 1] + s1->splines[1].d;
-      if (max1.x < min1.x) {
+	 ((s1->splines[1].a * extrema1[i+1] +
+	   s1->splines[1].b)*extrema1[i+1] +
+	  s1->splines[1].c)*extrema1[i+1]+s1->splines[1].d;
+      if (max1.x<min1.x) {
 	 double temp=max1.x;
 
 	 max1.x=min1.x;
 	 min1.x=temp;
       }
-      if (max1.y < min1.y) {
+      if (max1.y<min1.y) {
 	 double temp=max1.y;
 
 	 max1.y=min1.y;
 	 min1.y=temp;
       }
-      for (j=(s1==s2) ? i + 1 : 0; j < ecnt2; ++j) {
+      for (j=(s1==s2)?i+1:0; j<ecnt2; ++j) {
 	 min2.x =
 	    ((s2->splines[0].a * extrema2[j] +
-	      s2->splines[0].b) * extrema2[j] +
-	     s2->splines[0].c) * extrema2[j] + s2->splines[0].d;
+	      s2->splines[0].b)*extrema2[j] +
+	     s2->splines[0].c)*extrema2[j]+s2->splines[0].d;
 	 min2.y =
 	    ((s2->splines[1].a * extrema2[j] +
-	      s2->splines[1].b) * extrema2[j] +
-	     s2->splines[1].c) * extrema2[j] + s2->splines[1].d;
+	      s2->splines[1].b)*extrema2[j] +
+	     s2->splines[1].c)*extrema2[j]+s2->splines[1].d;
 	 max2.x =
-	    ((s2->splines[0].a * extrema2[j + 1] +
-	      s2->splines[0].b) * extrema2[j + 1] +
-	     s2->splines[0].c) * extrema2[j + 1] + s2->splines[0].d;
+	    ((s2->splines[0].a * extrema2[j+1] +
+	      s2->splines[0].b)*extrema2[j+1] +
+	     s2->splines[0].c)*extrema2[j+1]+s2->splines[0].d;
 	 max2.y =
-	    ((s2->splines[1].a * extrema2[j + 1] +
-	      s2->splines[1].b) * extrema2[j + 1] +
-	     s2->splines[1].c) * extrema2[j + 1] + s2->splines[1].d;
-	 if (max2.x < min2.x) {
+	    ((s2->splines[1].a * extrema2[j+1] +
+	      s2->splines[1].b)*extrema2[j+1] +
+	     s2->splines[1].c)*extrema2[j+1]+s2->splines[1].d;
+	 if (max2.x<min2.x) {
 	    double temp=max2.x;
 
 	    max2.x=min2.x;
 	    min2.x=temp;
 	 }
-	 if (max2.y < min2.y) {
+	 if (max2.y<min2.y) {
 	    double temp=max2.y;
 
 	    max2.y=min2.y;
 	    min2.y=temp;
 	 }
-	 if (min1.x > max2.x || min2.x > max1.x || min1.y > max2.y
-	     || min2.y > max1.y)
+	 if (min1.x>max2.x || min2.x>max1.x || min1.y>max2.y
+	     || min2.y>max1.y)
 	    /* No possible intersection */ ;
 	 else if (s1 != s2)
 	    found +=
-	       CubicsIntersect(s1, extrema1[i], extrema1[i + 1], &min1, &max1,
-			       s2, extrema2[j], extrema2[j + 1], &min2, &max2,
+	       CubicsIntersect(s1, extrema1[i], extrema1[i+1], &min1, &max1,
+			       s2, extrema2[j], extrema2[j+1], &min2, &max2,
 			       &pts[found], &t1s[found], &t2s[found],
-			       9 - found);
+			       9-found);
 	 else {
 	    int k, l;
 	    int cnt =
-	       CubicsIntersect(s1, extrema1[i], extrema1[i + 1], &min1, &max1,
-			       s2, extrema2[j], extrema2[j + 1], &min2, &max2,
+	       CubicsIntersect(s1, extrema1[i], extrema1[i+1], &min1, &max1,
+			       s2, extrema2[j], extrema2[j+1], &min2, &max2,
 			       &pts[found], &t1s[found], &t2s[found],
-			       9 - found);
-	    for (k=0; k < cnt; ++k) {
-	       if (RealNear(t1s[found + k], t2s[found + k])) {
-		  for (l=k + 1; l < cnt; ++l) {
-		     pts[found + l - 1]=pts[found + l];
-		     t1s[found + l - 1]=t1s[found + l];
-		     t2s[found + l - 1]=t2s[found + l];
+			       9-found);
+	    for (k=0; k<cnt; ++k) {
+	       if (RealNear(t1s[found+k], t2s[found+k])) {
+		  for (l=k+1; l<cnt; ++l) {
+		     pts[found+l-1]=pts[found+l];
+		     t1s[found+l-1]=t1s[found+l];
+		     t2s[found+l-1]=t2s[found+l];
 		  }
 		  --cnt;
 		  --k;
@@ -4683,8 +4683,8 @@ int SplineSetIntersect(SplineSet * spl, Spline ** _spline, Spline ** _spline2) {
 	 if (first==NULL)
 	    first=spline;
 	 for (test2=test; test2 != NULL; test2=test2->next) {
-	    first2=test2==test && first != spline ? first : NULL;
-	    for (spline2=(test2==test) ? spline : test2->first->next;
+	    first2=test2==test && first != spline?first:NULL;
+	    for (spline2=(test2==test)?spline:test2->first->next;
 		 spline2 != NULL && spline2 != first2;
 		 spline2=spline2->to->next) {
 	       if (first2==NULL)
@@ -4694,9 +4694,9 @@ int SplineSetIntersect(SplineSet * spl, Spline ** _spline, Spline ** _spline2) {
 		      && spline->from->prev != spline2)
 		     found=true;
 		  else
-		     for (i=0; i < 10 && t1s[i] != -1; ++i) {
-			if ((t1s[i] < .999 && t1s[i] > .001)
-			    || (t2s[i] < .999 && t2s[i] > .001)) {
+		     for (i=0; i<10 && t1s[i] != -1; ++i) {
+			if ((t1s[i]<.999 && t1s[i]>.001)
+			    || (t2s[i]<.999 && t2s[i]>.001)) {
 			   found=true;
 			   break;
 			}
@@ -4727,16 +4727,16 @@ static int XSolve(Spline *spline,double tmin,double tmax,FindSel *fs) {
 
    fs->p->t=t=SplineSolve(xspline, tmin, tmax, fs->p->cx);
    if (t >= 0 && t <= 1) {
-      y=((yspline->a * t + yspline->b) * t + yspline->c) * t + yspline->d;
-      if (fs->yl < y && fs->yh > y)
+      y=((yspline->a * t+yspline->b)*t+yspline->c)*t+yspline->d;
+      if (fs->yl<y && fs->yh>y)
 	 return (true);
    }
    /* Although we know that globaly there's more x change, locally there */
    /*  maybe more y change */
    fs->p->t=t=SplineSolve(yspline, tmin, tmax, fs->p->cy);
    if (t >= 0 && t <= 1) {
-      x=((xspline->a * t + xspline->b) * t + xspline->c) * t + xspline->d;
-      if (fs->xl < x && fs->xh > x)
+      x=((xspline->a * t+xspline->b)*t+xspline->c)*t+xspline->d;
+      if (fs->xl<x && fs->xh>x)
 	 return (true);
    }
    return (false);
@@ -4748,16 +4748,16 @@ static int YSolve(Spline *spline,double tmin,double tmax,FindSel *fs) {
 
    fs->p->t=t=SplineSolve(yspline, tmin, tmax, fs->p->cy);
    if (t >= 0 && t <= 1) {
-      x=((xspline->a * t + xspline->b) * t + xspline->c) * t + xspline->d;
-      if (fs->xl < x && fs->xh > x)
+      x=((xspline->a * t+xspline->b)*t+xspline->c)*t+xspline->d;
+      if (fs->xl<x && fs->xh>x)
 	 return (true);
    }
    /* Although we know that globaly there's more y change, locally there */
    /*  maybe more x change */
    fs->p->t=t=SplineSolve(xspline, tmin, tmax, fs->p->cx);
    if (t >= 0 && t <= 1) {
-      y=((yspline->a * t + yspline->b) * t + yspline->c) * t + yspline->d;
-      if (fs->yl < y && fs->yh > y)
+      y=((yspline->a * t+yspline->b)*t+yspline->c)*t+yspline->d;
+      if (fs->yl<y && fs->yh>y)
 	 return (true);
    }
    return (false);
@@ -4789,29 +4789,29 @@ static int NearXSpline(FindSel *fs,Spline *spline) {
 	 return (true);
    } else if (xspline->b != 0) {
       double root =
-	 xspline->c * xspline->c - 4 * xspline->b * (xspline->d - fs->p->cx);
-      if (root < 0)
+	 xspline->c * xspline->c-4*xspline->b * (xspline->d-fs->p->cx);
+      if (root<0)
 	 return (false);
       root=sqrt(root);
-      fs->p->t=t=(-xspline->c + root) / (2 * xspline->b);
+      fs->p->t=t=(-xspline->c+root)/(2*xspline->b);
       if (t >= 0 && t <= 1) {
-	 y=((yspline->a * t + yspline->b) * t + yspline->c) * t +
+	 y=((yspline->a * t+yspline->b)*t+yspline->c)*t +
 	    yspline->d;
-	 if (fs->yl < y && fs->yh > y)
+	 if (fs->yl<y && fs->yh>y)
 	    return (true);
       }
-      fs->p->t=t=(-xspline->c - root) / (2 * xspline->b);
+      fs->p->t=t=(-xspline->c-root)/(2*xspline->b);
       if (t >= 0 && t <= 1) {
-	 y=((yspline->a * t + yspline->b) * t + yspline->c) * t +
+	 y=((yspline->a * t+yspline->b)*t+yspline->c)*t +
 	    yspline->d;
-	 if (fs->yl < y && fs->yh > y)
+	 if (fs->yl<y && fs->yh>y)
 	    return (true);
       }
    } else {			/* xspline->c can't be 0 because dx>dy => dx!=0 => xspline->c!=0 */
 
-      fs->p->t=t=(fs->p->cx - xspline->d) / xspline->c;
-      y=((yspline->a * t + yspline->b) * t + yspline->c) * t + yspline->d;
-      if (fs->yl < y && fs->yh > y)
+      fs->p->t=t=(fs->p->cx-xspline->d)/xspline->c;
+      y=((yspline->a * t+yspline->b)*t+yspline->c)*t+yspline->d;
+      if (fs->yl<y && fs->yh>y)
 	 return (true);
    }
    return (false);
@@ -4822,74 +4822,74 @@ static int NearSpline(FindSel *fs,Spline *spline) {
    Spline1D *yspline=&spline->splines[1], *xspline=&spline->splines[0];
    double dx, dy;
 
-   if ((dx=spline->to->me.x - spline->from->me.x) < 0)
+   if ((dx=spline->to->me.x-spline->from->me.x)<0)
       dx=-dx;
-   if ((dy=spline->to->me.y - spline->from->me.y) < 0)
+   if ((dy=spline->to->me.y-spline->from->me.y)<0)
       dy=-dy;
 
    if (spline->knownlinear) {
-      if (fs->xl > spline->from->me.x && fs->xl > spline->to->me.x)
+      if (fs->xl>spline->from->me.x && fs->xl>spline->to->me.x)
 	 return (false);
-      if (fs->xh < spline->from->me.x && fs->xh < spline->to->me.x)
+      if (fs->xh<spline->from->me.x && fs->xh<spline->to->me.x)
 	 return (false);
-      if (fs->yl > spline->from->me.y && fs->yl > spline->to->me.y)
+      if (fs->yl>spline->from->me.y && fs->yl>spline->to->me.y)
 	 return (false);
-      if (fs->yh < spline->from->me.y && fs->yh < spline->to->me.y)
+      if (fs->yh<spline->from->me.y && fs->yh<spline->to->me.y)
 	 return (false);
       if (xspline->c==0 && yspline->c==0)	/* It's a point. */
 	 return (true);
-      if (dy > dx) {
-	 t=(fs->p->cy - yspline->d) / yspline->c;
+      if (dy>dx) {
+	 t=(fs->p->cy-yspline->d)/yspline->c;
 	 fs->p->t=t;
-	 x=xspline->c * t + xspline->d;
-	 if (fs->xl < x && fs->xh > x && t >= 0 && t <= 1)
+	 x=xspline->c * t+xspline->d;
+	 if (fs->xl<x && fs->xh>x && t >= 0 && t <= 1)
 	    return (true);
       } else {
-	 t=(fs->p->cx - xspline->d) / xspline->c;
+	 t=(fs->p->cx-xspline->d)/xspline->c;
 	 fs->p->t=t;
-	 y=yspline->c * t + yspline->d;
-	 if (fs->yl < y && fs->yh > y && t >= 0 && t <= 1)
+	 y=yspline->c * t+yspline->d;
+	 if (fs->yl<y && fs->yh>y && t >= 0 && t <= 1)
 	    return (true);
       }
       return (false);
    } else {
-      if (fs->xl > spline->from->me.x && fs->xl > spline->to->me.x &&
-	  fs->xl > spline->from->nextcp.x && fs->xl > spline->to->prevcp.x)
+      if (fs->xl>spline->from->me.x && fs->xl>spline->to->me.x &&
+	  fs->xl>spline->from->nextcp.x && fs->xl>spline->to->prevcp.x)
 	 return (false);
-      if (fs->xh < spline->from->me.x && fs->xh < spline->to->me.x &&
-	  fs->xh < spline->from->nextcp.x && fs->xh < spline->to->prevcp.x)
+      if (fs->xh<spline->from->me.x && fs->xh<spline->to->me.x &&
+	  fs->xh<spline->from->nextcp.x && fs->xh<spline->to->prevcp.x)
 	 return (false);
-      if (fs->yl > spline->from->me.y && fs->yl > spline->to->me.y &&
-	  fs->yl > spline->from->nextcp.y && fs->yl > spline->to->prevcp.y)
+      if (fs->yl>spline->from->me.y && fs->yl>spline->to->me.y &&
+	  fs->yl>spline->from->nextcp.y && fs->yl>spline->to->prevcp.y)
 	 return (false);
-      if (fs->yh < spline->from->me.y && fs->yh < spline->to->me.y &&
-	  fs->yh < spline->from->nextcp.y && fs->yh < spline->to->prevcp.y)
+      if (fs->yh<spline->from->me.y && fs->yh<spline->to->me.y &&
+	  fs->yh<spline->from->nextcp.y && fs->yh<spline->to->prevcp.y)
 	 return (false);
 
-      if (dx > dy)
+      if (dx>dy)
 	 return (NearXSpline(fs, spline));
       else if (yspline->a==0 && yspline->b==0) {
-	 fs->p->t=t=(fs->p->cy - yspline->d) / yspline->c;
-	 x=((xspline->a * t + xspline->b) * t + xspline->c) * t +
+	 fs->p->t=t=(fs->p->cy-yspline->d)/yspline->c;
+	 x=((xspline->a * t+xspline->b)*t+xspline->c)*t +
 	    xspline->d;
-	 if (fs->xl < x && fs->xh > x && t >= 0 && t <= 1)
+	 if (fs->xl<x && fs->xh>x && t >= 0 && t <= 1)
 	    return (true);
       } else if (yspline->a==0) {
 	 double root =
-	    yspline->c * yspline->c - 4 * yspline->b * (yspline->d -
+	    yspline->c * yspline->c-4*yspline->b * (yspline->d -
 							fs->p->cy);
-	 if (root < 0)
+	 if (root<0)
 	    return (false);
 	 root=sqrt(root);
-	 fs->p->t=t=(-yspline->c + root) / (2 * yspline->b);
-	 x=((xspline->a * t + xspline->b) * t + xspline->c) * t +
+	 fs->p->t=t=(-yspline->c+root)/(2*yspline->b);
+	 x=((xspline->a * t+xspline->b)*t+xspline->c)*t +
 	    xspline->d;
-	 if (fs->xl < x && fs->xh > x && t > 0 && t < 1)
+	 if (fs->xl<x && fs->xh>x && t>0 && t<1)
 	    return (true);
-	 fs->p->t=t=(-yspline->c - root) / (2 * yspline->b);
-	 x=((xspline->a * t + xspline->b) * t + xspline->c) * t +
+	 fs->p->t=t=(-yspline->c-root)/(2*yspline->b);
+	 x=((xspline->a * t+xspline->b)*t+xspline->c)*t +
 	    xspline->d;
-	 if (fs->xl < x && fs->xh > x && t >= 0 && t <= 1)
+	 if (fs->xl<x && fs->xh>x && t >= 0 && t <= 1)
 	    return (true);
       } else {
 	 double t1, t2, tbase;
@@ -4923,10 +4923,10 @@ double SplineNearPoint(Spline * spline, BasePoint * bp, double fudge) {
    p.cx=bp->x;
    p.cy=bp->y;
    fs.fudge=fudge;
-   fs.xl=p.cx - fudge;
-   fs.xh=p.cx + fudge;
-   fs.yl=p.cy - fudge;
-   fs.yh=p.cy + fudge;
+   fs.xl=p.cx-fudge;
+   fs.xh=p.cx+fudge;
+   fs.yl=p.cy-fudge;
+   fs.yh=p.cy+fudge;
    if (!NearSpline(&fs, spline))
       return (-1);
 
@@ -4941,9 +4941,9 @@ static int SplinePrevMinMax(Spline *s,int up) {
    s=s->from->prev;
    while (s->from->me.y==s->to->me.y && s->islinear)
       s=s->from->prev;
-   y=((s->splines[1].a * t + s->splines[1].b) * t + s->splines[1].c) * t +
+   y=((s->splines[1].a * t+s->splines[1].b)*t+s->splines[1].c)*t +
       s->splines[1].d;
-   pup=s->to->me.y > y;
+   pup=s->to->me.y>y;
    return (pup != up);
 }
 
@@ -4955,9 +4955,9 @@ static int SplineNextMinMax(Spline *s,int up) {
    s=s->to->next;
    while (s->from->me.y==s->to->me.y && s->islinear)
       s=s->to->next;
-   y=((s->splines[1].a * t + s->splines[1].b) * t + s->splines[1].c) * t +
+   y=((s->splines[1].a * t+s->splines[1].b)*t+s->splines[1].c)*t +
       s->splines[1].d;
-   nup=y > s->from->me.y;
+   nup=y>s->from->me.y;
    return (nup != up);
 }
 
@@ -4982,22 +4982,22 @@ static int Crossings(Spline *s,BasePoint *pt) {
    yi=s->splines[1].d;
    for (i=0; ext[i] != 1.0; ++i, yi=yi1) {
       yi1 =
-	 ((s->splines[1].a * ext[i + 1] + s->splines[1].b) * ext[i + 1] +
-	  s->splines[1].c) * ext[i + 1] + s->splines[1].d;
+	 ((s->splines[1].a * ext[i+1]+s->splines[1].b)*ext[i+1] +
+	  s->splines[1].c)*ext[i+1]+s->splines[1].d;
       if (yi==yi1)
 	 continue;		/* Ignore horizontal lines */
-      if ((yi > yi1 && (pt->y < yi1 || pt->y > yi)) ||
-	  (yi < yi1 && (pt->y < yi || pt->y > yi1)))
+      if ((yi>yi1 && (pt->y<yi1 || pt->y>yi)) ||
+	  (yi<yi1 && (pt->y<yi || pt->y>yi1)))
 	 continue;
-      t=IterateSplineSolve(&s->splines[1], ext[i], ext[i + 1], pt->y);
+      t=IterateSplineSolve(&s->splines[1], ext[i], ext[i+1], pt->y);
       if (t==-1)
 	 continue;
-      x=((s->splines[0].a * t + s->splines[0].b) * t +
-	   s->splines[0].c) * t + s->splines[0].d;
+      x=((s->splines[0].a * t+s->splines[0].b)*t +
+	   s->splines[0].c)*t+s->splines[0].d;
       if (x >= pt->x)		/* Things on the edge are not inside */
 	 continue;
       if ((ext[i] != 0 && RealApprox(t, ext[i])
-	   && SplineAtMinMax(&s->splines[1], ext[i])) || (ext[i + 1] != 1
+	   && SplineAtMinMax(&s->splines[1], ext[i])) || (ext[i+1] != 1
 							  && RealApprox(t,
 									ext[i
 									    +
@@ -5010,13 +5010,13 @@ static int Crossings(Spline *s,BasePoint *pt) {
 									     +
 									     1])))
 	 continue;		/* Min/Max points don't add to count */
-      if ((RealApprox(t, 0) && SplinePrevMinMax(s, yi1 > yi)) ||
-	  (RealApprox(t, 1) && SplineNextMinMax(s, yi1 > yi)))
+      if ((RealApprox(t, 0) && SplinePrevMinMax(s, yi1>yi)) ||
+	  (RealApprox(t, 1) && SplineNextMinMax(s, yi1>yi)))
 	 continue;		/* ditto */
       if (pt->y==yi1)		/* Not a min/max. prev/next spline continues same direction */
 	 continue;		/* If it's at an endpoint we don't want to count it twice */
       /* So only add to count at start endpoint, never at final */
-      if (yi1 > yi)
+      if (yi1>yi)
 	 ++cnt;
       else
 	 --cnt;
@@ -5036,12 +5036,12 @@ int SSPointWithin(SplineSet * spl, BasePoint * pt) {
 	 for (s=spl->first->next; s != first; s=s->to->next) {
 	    if (first==NULL)
 	       first=s;
-	    if ((s->from->me.x > pt->x && s->from->nextcp.x > pt->x &&
-		 s->to->me.x > pt->x && s->to->prevcp.x > pt->x) ||
-		(s->from->me.y > pt->y && s->from->nextcp.y > pt->y &&
-		 s->to->me.y > pt->y && s->to->prevcp.y > pt->y) ||
-		(s->from->me.y < pt->y && s->from->nextcp.y < pt->y &&
-		 s->to->me.y < pt->y && s->to->prevcp.y < pt->y))
+	    if ((s->from->me.x>pt->x && s->from->nextcp.x>pt->x &&
+		 s->to->me.x>pt->x && s->to->prevcp.x>pt->x) ||
+		(s->from->me.y>pt->y && s->from->nextcp.y>pt->y &&
+		 s->to->me.y>pt->y && s->to->prevcp.y>pt->y) ||
+		(s->from->me.y<pt->y && s->from->nextcp.y<pt->y &&
+		 s->to->me.y<pt->y && s->to->prevcp.y<pt->y))
 	       continue;
 	    cnt += Crossings(s, pt);
 	 }
@@ -5189,7 +5189,7 @@ static AnchorPoint *AnchorPointsRemoveName(AnchorPoint *alist,
 	     || (an->type==act_mklg && ap->type==at_mark))
 	    next=NULL;	/* Only one instance of an anchor class in a glyph for mark to base anchors */
 	 /*  Or for the mark glyphs of ligature classes */
-	 /*  Mark to mark & cursive will (probably) have 2 occurances */
+	 /*  Mark to mark&cursive will (probably) have 2 occurances */
 	 /*  and ligatures may have lots */
       } else
 	 prev=ap;
@@ -5221,7 +5221,7 @@ void SFRemoveAnchorClass(SplineFont *sf, AnchorClass * an) {
 
    PasteRemoveAnchorClass(sf, an);
 
-   for (i=0; i < sf->glyphcnt; ++i)
+   for (i=0; i<sf->glyphcnt; ++i)
       SCRemoveAnchorClass(sf->glyphs[i], an);
    prev=NULL;
    for (test=sf->anchor; test != NULL; test=test->next) {
@@ -5276,13 +5276,13 @@ AnchorPoint *AnchorPointsCopy(AnchorPoint * alist) {
       *ap=*alist;
       if (ap->xadjust.corrections != NULL) {
 	 int len =
-	    ap->xadjust.last_pixel_size - ap->xadjust.first_pixel_size + 1;
+	    ap->xadjust.last_pixel_size-ap->xadjust.first_pixel_size+1;
 	 ap->xadjust.corrections=malloc(len);
 	 memcpy(ap->xadjust.corrections, alist->xadjust.corrections, len);
       }
       if (ap->yadjust.corrections != NULL) {
 	 int len =
-	    ap->yadjust.last_pixel_size - ap->yadjust.first_pixel_size + 1;
+	    ap->yadjust.last_pixel_size-ap->yadjust.first_pixel_size+1;
 	 ap->yadjust.corrections=malloc(len);
 	 memcpy(ap->yadjust.corrections, alist->yadjust.corrections, len);
       }
@@ -5324,11 +5324,11 @@ ValDevTab *ValDevTabCopy(ValDevTab * orig) {
    if (orig==NULL)
       return (NULL);
    new=chunkalloc(sizeof(ValDevTab));
-   for (i=0; i < 4; ++i) {
+   for (i=0; i<4; ++i) {
       if ((&orig->xadjust)[i].corrections != NULL) {
 	 int len =
 	    (&orig->xadjust)[i].last_pixel_size -
-	    (&orig->xadjust)[i].first_pixel_size + 1;
+	    (&orig->xadjust)[i].first_pixel_size+1;
 	 (&new->xadjust)[i]=(&orig->xadjust)[i];
 	 (&new->xadjust)[i].corrections=malloc(len);
 	 memcpy((&new->xadjust)[i].corrections,
@@ -5355,7 +5355,7 @@ DeviceTable *DeviceTableCopy(DeviceTable * orig) {
       return (NULL);
    new=chunkalloc(sizeof(DeviceTable));
    *new=*orig;
-   len=orig->last_pixel_size - orig->first_pixel_size + 1;
+   len=orig->last_pixel_size-orig->first_pixel_size+1;
    new->corrections=malloc(len);
    memcpy(new->corrections, orig->corrections, len);
    return (new);
@@ -5399,13 +5399,13 @@ static void FPSTRuleContentsFree(struct fpst_rule *r,enum fpossub_format format)
      case pst_reversecoverage:
 	free(r->u.rcoverage.replacements);
      case pst_coverage:
-	for (j=0; j < r->u.coverage.ncnt; ++j)
+	for (j=0; j<r->u.coverage.ncnt; ++j)
 	   free(r->u.coverage.ncovers[j]);
 	free(r->u.coverage.ncovers);
-	for (j=0; j < r->u.coverage.bcnt; ++j)
+	for (j=0; j<r->u.coverage.bcnt; ++j)
 	   free(r->u.coverage.bcovers[j]);
 	free(r->u.coverage.bcovers);
-	for (j=0; j < r->u.coverage.fcnt; ++j)
+	for (j=0; j<r->u.coverage.fcnt; ++j)
 	   free(r->u.coverage.fcovers[j]);
 	free(r->u.coverage.fcovers);
 	break;
@@ -5422,9 +5422,9 @@ static struct fpst_rule *RulesCopy(struct fpst_rule *from,int cnt,
       return (NULL);
 
    to=calloc(cnt, sizeof(struct fpst_rule));
-   for (i=0; i < cnt; ++i) {
-      f=from + i;
-      t=to + i;
+   for (i=0; i<cnt; ++i) {
+      f=from+i;
+      t=to+i;
       switch (format) {
 	case pst_glyphs:
 	   t->u.glyph.names=fastrdup(f->u.glyph.names);
@@ -5457,18 +5457,18 @@ static struct fpst_rule *RulesCopy(struct fpst_rule *from,int cnt,
 	   t->u.coverage.fcnt=f->u.coverage.fcnt;
 	   t->u.coverage.ncovers =
 	      malloc(f->u.coverage.ncnt * sizeof(char *));
-	   for (j=0; j < t->u.coverage.ncnt; ++j)
+	   for (j=0; j<t->u.coverage.ncnt; ++j)
 	      t->u.coverage.ncovers[j]=fastrdup(f->u.coverage.ncovers[j]);
 	   if (t->u.coverage.bcnt != 0) {
 	      t->u.coverage.bcovers =
 		 malloc(f->u.coverage.bcnt * sizeof(char *));
-	      for (j=0; j < t->u.coverage.bcnt; ++j)
+	      for (j=0; j<t->u.coverage.bcnt; ++j)
 		 t->u.coverage.bcovers[j]=fastrdup(f->u.coverage.bcovers[j]);
 	   }
 	   if (t->u.coverage.fcnt != 0) {
 	      t->u.coverage.fcovers =
 		 malloc(f->u.coverage.fcnt * sizeof(char *));
-	      for (j=0; j < t->u.coverage.fcnt; ++j)
+	      for (j=0; j<t->u.coverage.fcnt; ++j)
 		 t->u.coverage.fcovers[j]=fastrdup(f->u.coverage.fcovers[j]);
 	   }
 	   break;
@@ -5493,7 +5493,7 @@ FPST *FPSTCopy(FPST * fpst) {
    if (nfpst->nccnt != 0) {
       nfpst->nclass=malloc(nfpst->nccnt * sizeof(char *));
       nfpst->nclassnames=malloc(nfpst->nccnt * sizeof(char *));
-      for (i=0; i < nfpst->nccnt; ++i) {
+      for (i=0; i<nfpst->nccnt; ++i) {
 	 nfpst->nclass[i]=fastrdup(fpst->nclass[i]);
 	 nfpst->nclassnames[i]=fastrdup(fpst->nclassnames[i]);
       }
@@ -5501,7 +5501,7 @@ FPST *FPSTCopy(FPST * fpst) {
    if (nfpst->bccnt != 0) {
       nfpst->bclass=malloc(nfpst->bccnt * sizeof(char *));
       nfpst->bclassnames=malloc(nfpst->bccnt * sizeof(char *));
-      for (i=0; i < nfpst->bccnt; ++i) {
+      for (i=0; i<nfpst->bccnt; ++i) {
 	 nfpst->bclass[i]=fastrdup(fpst->bclass[i]);
 	 nfpst->bclassnames[i]=fastrdup(fpst->bclassnames[i]);
       }
@@ -5509,7 +5509,7 @@ FPST *FPSTCopy(FPST * fpst) {
    if (nfpst->fccnt != 0) {
       nfpst->fclass=malloc(nfpst->fccnt * sizeof(char *));
       nfpst->fclassnames=malloc(nfpst->fccnt * sizeof(char *));
-      for (i=0; i < nfpst->fccnt; ++i) {
+      for (i=0; i<nfpst->fccnt; ++i) {
 	 nfpst->fclass[i]=fastrdup(fpst->fclass[i]);
 	 nfpst->fclassnames[i]=fastrdup(fpst->fclassnames[i]);
       }
@@ -5521,15 +5521,15 @@ FPST *FPSTCopy(FPST * fpst) {
 static void FPSTClassesFree(FPST *fpst) {
    int i;
 
-   for (i=0; i < fpst->nccnt; ++i) {
+   for (i=0; i<fpst->nccnt; ++i) {
       free(fpst->nclass[i]);
       free(fpst->nclassnames[i]);
    }
-   for (i=0; i < fpst->bccnt; ++i) {
+   for (i=0; i<fpst->bccnt; ++i) {
       free(fpst->bclass[i]);
       free(fpst->bclassnames[i]);
    }
-   for (i=0; i < fpst->fccnt; ++i) {
+   for (i=0; i<fpst->fccnt; ++i) {
       free(fpst->fclass[i]);
       free(fpst->fclassnames[i]);
    }
@@ -5552,7 +5552,7 @@ void FPSTFree(FPST * fpst) {
    while (fpst != NULL) {
       next=fpst->next;
       FPSTClassesFree(fpst);
-      for (i=0; i < fpst->rule_cnt; ++i) {
+      for (i=0; i<fpst->rule_cnt; ++i) {
 	 FPSTRuleContentsFree(&fpst->rules[i], fpst->format);
       }
       free(fpst->rules);
@@ -5577,7 +5577,7 @@ static void TTFLangNamesFree(struct ttflangname *l) {
 
    while (l != NULL) {
       next=l->next;
-      for (i=0; i < ttf_namemax; ++i)
+      for (i=0; i<ttf_namemax; ++i)
 	 free(l->names[i]);
       chunkfree(l, sizeof(*l));
       l=next;
@@ -5617,7 +5617,7 @@ SplineChar *SplineCharCreate(int layer_cnt) {
    sc->unicodeenc=-1;
    sc->layer_cnt=layer_cnt;
    sc->layers=calloc(layer_cnt, sizeof(Layer));
-   for (i=0; i < layer_cnt; ++i)
+   for (i=0; i<layer_cnt; ++i)
       LayerDefault(&sc->layers[i]);
    sc->tex_height=sc->tex_depth=sc->italic_correction =
       sc->top_accent_horiz=TEX_UNDEF;
@@ -5625,14 +5625,14 @@ SplineChar *SplineCharCreate(int layer_cnt) {
 }
 
 SplineChar *SFSplineCharCreate(SplineFont *sf) {
-   SplineChar *sc=SplineCharCreate(sf==NULL ? 2 : sf->layer_cnt);
+   SplineChar *sc=SplineCharCreate(sf==NULL?2:sf->layer_cnt);
    int i;
 
    if (sf==NULL) {
       sc->layers[ly_back].background=true;
       sc->layers[ly_fore].background=false;
    } else {
-      for (i=0; i < sf->layer_cnt; ++i) {
+      for (i=0; i<sf->layer_cnt; ++i) {
 	 sc->layers[i].background=sf->layers[i].background;
 	 sc->layers[i].order2=sf->layers[i].order2;
       }
@@ -5648,7 +5648,7 @@ static void GlyphVariantsFree(struct glyphvariants *gv) {
       return;
    free(gv->variants);
    DeviceTableFree(gv->italic_adjusts);
-   for (i=0; i < gv->part_cnt; ++i)
+   for (i=0; i<gv->part_cnt; ++i)
       free(gv->parts[i].component);
    free(gv->parts);
    chunkfree(gv, sizeof(*gv));
@@ -5657,7 +5657,7 @@ static void GlyphVariantsFree(struct glyphvariants *gv) {
 static void MathKernVContentsFree(struct mathkernvertex *mk) {
    int i;
 
-   for (i=0; i < mk->cnt; ++i) {
+   for (i=0; i<mk->cnt; ++i) {
       DeviceTableFree(mk->mkd[i].height_adjusts);
       DeviceTableFree(mk->mkd[i].kern_adjusts);
    }
@@ -5669,7 +5669,7 @@ static void MathKernFree(struct mathkern *mk) {
 
    if (mk==NULL)
       return;
-   for (i=0; i < 4; ++i)
+   for (i=0; i<4; ++i)
       MathKernVContentsFree(&(&mk->top_right)[i]);
    chunkfree(mk, sizeof(*mk));
 }
@@ -5765,7 +5765,7 @@ static void SplineCharFreeContents(SplineChar *sc) {
       free(sc->name);
    if (sc->comment != NULL)
       free(sc->comment);
-   for (i=0; i < sc->layer_cnt; ++i)
+   for (i=0; i<sc->layer_cnt; ++i)
       LayerFreeContents(sc, i);
    StemInfosFree(sc->hstem);
    StemInfosFree(sc->vstem);
@@ -5878,20 +5878,20 @@ KernClass *KernClassCopy(KernClass * kc) {
    new->offsets=malloc(new->first_cnt * new->second_cnt * sizeof(int16_t));
    memcpy(new->offsets, kc->offsets,
 	  new->first_cnt * new->second_cnt * sizeof(int16_t));
-   for (i=0; i < new->first_cnt; ++i)
+   for (i=0; i<new->first_cnt; ++i)
       new->firsts[i]=fastrdup(kc->firsts[i]);
-   for (i=0; i < new->second_cnt; ++i)
+   for (i=0; i<new->second_cnt; ++i)
       new->seconds[i]=fastrdup(kc->seconds[i]);
    new->adjusts =
       calloc(new->first_cnt * new->second_cnt, sizeof(DeviceTable));
    memcpy(new->adjusts, kc->adjusts,
 	  new->first_cnt * new->second_cnt * sizeof(DeviceTable));
-   for (i=new->first_cnt * new->second_cnt - 1; i >= 0; --i) {
+   for (i=new->first_cnt * new->second_cnt-1; i >= 0; --i) {
       if (new->adjusts[i].corrections != NULL) {
 	 int8_t *old=new->adjusts[i].corrections;
 	 int len =
 	    new->adjusts[i].last_pixel_size -
-	    new->adjusts[i].first_pixel_size + 1;
+	    new->adjusts[i].first_pixel_size+1;
 	 new->adjusts[i].corrections=malloc(len);
 	 memcpy(new->adjusts[i].corrections, old, len);
       }
@@ -5903,14 +5903,14 @@ KernClass *KernClassCopy(KernClass * kc) {
 static void KernClassFreeContents(KernClass *kc) {
    int i;
 
-   for (i=1; i < kc->first_cnt; ++i)
+   for (i=1; i<kc->first_cnt; ++i)
       free(kc->firsts[i]);
-   for (i=1; i < kc->second_cnt; ++i)
+   for (i=1; i<kc->second_cnt; ++i)
       free(kc->seconds[i]);
    free(kc->firsts);
    free(kc->seconds);
    free(kc->offsets);
-   for (i=kc->first_cnt * kc->second_cnt - 1; i >= 0; --i)
+   for (i=kc->first_cnt * kc->second_cnt-1; i >= 0; --i)
       free(kc->adjusts[i].corrections);
    free(kc->adjusts);
 }
@@ -5967,16 +5967,16 @@ void ASMFree(ASM * sm) {
    while (sm != NULL) {
       next=sm->next;
       if (sm->type==asm_insert) {
-	 for (i=0; i < sm->class_cnt * sm->state_cnt; ++i) {
+	 for (i=0; i<sm->class_cnt * sm->state_cnt; ++i) {
 	    free(sm->state[i].u.insert.mark_ins);
 	    free(sm->state[i].u.insert.cur_ins);
 	 }
       } else if (sm->type==asm_kern) {
-	 for (i=0; i < sm->class_cnt * sm->state_cnt; ++i) {
+	 for (i=0; i<sm->class_cnt * sm->state_cnt; ++i) {
 	    free(sm->state[i].u.kern.kerns);
 	 }
       }
-      for (i=4; i < sm->class_cnt; ++i)
+      for (i=4; i<sm->class_cnt; ++i)
 	 free(sm->classes[i]);
       free(sm->state);
       free(sm->classes);
@@ -6027,7 +6027,7 @@ EncMap *EncMap1to1(int enccount) {
    map->enccount=map->encmax=map->backmax=enccount;
    map->map=malloc(enccount * sizeof(int));
    map->backmap=malloc(enccount * sizeof(int));
-   for (i=0; i < enccount; ++i)
+   for (i=0; i<enccount; ++i)
       map->map[i]=map->backmap[i]=i;
    map->enc=&custom;
    return (map);
@@ -6041,7 +6041,7 @@ static void EncodingFree(Encoding *enc) {
    free(enc->enc_name);
    free(enc->unicode);
    if (enc->psnames != NULL) {
-      for (i=0; i < enc->char_cnt; ++i)
+      for (i=0; i<enc->char_cnt; ++i)
 	 free(enc->psnames[i]);
       free(enc->psnames);
    }
@@ -6082,7 +6082,7 @@ EncMap *EncMapCopy(EncMap * map) {
 static void MarkClassFree(int cnt,char **classes,char **names) {
    int i;
 
-   for (i=1; i < cnt; ++i) {
+   for (i=1; i<cnt; ++i) {
       free(classes[i]);
       free(names[i]);
    }
@@ -6093,7 +6093,7 @@ static void MarkClassFree(int cnt,char **classes,char **names) {
 static void MarkSetFree(int cnt,char **classes,char **names) {
    int i;
 
-   for (i=0; i < cnt; ++i) {
+   for (i=0; i<cnt; ++i) {
       free(classes[i]);
       free(names[i]);
    }
@@ -6157,7 +6157,7 @@ static void JstfLangFree(struct jstf_lang *jl) {
 
    while (jl != NULL) {
       next=jl->next;
-      for (i=0; i < jl->cnt; ++i) {
+      for (i=0; i<jl->cnt; ++i) {
 	 struct jstf_prio *jp=&jl->prios[i];
 
 	 free(jp->enableShrink);
@@ -6193,7 +6193,7 @@ static void MMSetFreeContents(MMSet *mm) {
    free(mm->positions);
    free(mm->defweights);
 
-   for (i=0; i < mm->axis_count; ++i) {
+   for (i=0; i<mm->axis_count; ++i) {
       free(mm->axes[i]);
       free(mm->axismaps[i].blends);
       free(mm->axismaps[i].designs);
@@ -6202,7 +6202,7 @@ static void MMSetFreeContents(MMSet *mm) {
    free(mm->axismaps);
    free(mm->cdv);
    free(mm->ndv);
-   for (i=0; i < mm->named_instance_count; ++i) {
+   for (i=0; i<mm->named_instance_count; ++i) {
       free(mm->named_instances[i].coords);
       MacNameListFree(mm->named_instances[i].names);
    }
@@ -6212,7 +6212,7 @@ static void MMSetFreeContents(MMSet *mm) {
 static void MMSetFree(MMSet *mm) {
    int i;
 
-   for (i=0; i < mm->instance_count; ++i) {
+   for (i=0; i<mm->instance_count; ++i) {
       mm->instances[i]->mm=NULL;
       mm->instances[i]->map=NULL;
       SplineFontFree(mm->instances[i]);
@@ -6240,7 +6240,7 @@ void SplineFontFree(SplineFont *sf) {
       bnext=bdf->next;
       BDFFontFree(bdf);
    }
-   for (i=0; i < sf->glyphcnt; ++i)
+   for (i=0; i<sf->glyphcnt; ++i)
       if (sf->glyphs[i] != NULL)
 	 SplineCharFree(sf->glyphs[i]);
    free(sf->glyphs);
@@ -6266,7 +6266,7 @@ void SplineFontFree(SplineFont *sf) {
    UndoesFree(sf->grid.redoes);
    PSDictFree(sf->private);
    TTFLangNamesFree(sf->names);
-   for (i=0; i < sf->subfontcnt; ++i)
+   for (i=0; i<sf->subfontcnt; ++i)
       SplineFontFree(sf->subfonts[i]);
    free(sf->subfonts);
    GlyphHashFree(sf);
@@ -6292,9 +6292,9 @@ static int xcmp(const void *_p1,const void *_p2) {
    const SplinePoint *const *_spt1=_p1, *const *_spt2=_p2;
    const SplinePoint *sp1=*_spt1, *sp2=*_spt2;
 
-   if (sp1->me.x > sp2->me.x)
+   if (sp1->me.x>sp2->me.x)
       return (1);
-   else if (sp1->me.x < sp2->me.x)
+   else if (sp1->me.x<sp2->me.x)
       return (-1);
 
    return (0);
@@ -6304,9 +6304,9 @@ static int ycmp(const void *_p1,const void *_p2) {
    const SplinePoint *const *_spt1=_p1, *const *_spt2=_p2;
    const SplinePoint *sp1=*_spt1, *sp2=*_spt2;
 
-   if (sp1->me.y > sp2->me.y)
+   if (sp1->me.y>sp2->me.y)
       return (1);
-   else if (sp1->me.y < sp2->me.y)
+   else if (sp1->me.y<sp2->me.y)
       return (-1);
 
    return (0);
@@ -6324,21 +6324,21 @@ static void countcluster(SplinePoint ** ptspace,struct cluster *cspace,
 
    cspace[i].cnt=1;		/* current point is always within its own cluster */
    cspace[i].first=cspace[i].last=i;
-   for (j=i - 1; j >= 0; --j) {
+   for (j=i-1; j >= 0; --j) {
       if (cspace[j].cnt==0)	/* Already allocated to a different cluster */
 	 break;
-      if ((&ptspace[j + 1]->me.x)[is_y] - (&ptspace[j]->me.x)[is_y] < within
-	  && (&ptspace[i]->me.x)[is_y] - (&ptspace[j]->me.x)[is_y] < max) {
+      if ((&ptspace[j+1]->me.x)[is_y]-(&ptspace[j]->me.x)[is_y]<within
+	  && (&ptspace[i]->me.x)[is_y]-(&ptspace[j]->me.x)[is_y]<max) {
 	 ++cspace[i].cnt;
 	 cspace[i].first=j;
       } else
 	 break;
    }
-   for (j=i + 1; j < ptcnt; ++j) {
+   for (j=i+1; j<ptcnt; ++j) {
       if (cspace[j].cnt==0)	/* Already allocated to a different cluster */
 	 break;
-      if ((&ptspace[j]->me.x)[is_y] - (&ptspace[j - 1]->me.x)[is_y] < within
-	  && (&ptspace[j]->me.x)[is_y] - (&ptspace[i]->me.x)[is_y] < max) {
+      if ((&ptspace[j]->me.x)[is_y]-(&ptspace[j-1]->me.x)[is_y]<within
+	  && (&ptspace[j]->me.x)[is_y]-(&ptspace[i]->me.x)[is_y]<max) {
 	 ++cspace[i].cnt;
 	 cspace[i].last=j;
       } else
@@ -6354,25 +6354,25 @@ static int _SplineCharRoundToCluster(SplineChar *sc,SplinePoint ** ptspace,
    int i, j, best;
    double low, high, cur;
 
-   for (i=0; i < ptcnt; ++i)
+   for (i=0; i<ptcnt; ++i)
       cspace[i].cnt=1;	/* Initialize to non-zero */
-   for (i=0; i < ptcnt; ++i)
+   for (i=0; i<ptcnt; ++i)
       countcluster(ptspace, cspace, ptcnt, is_y, i, within, max);
 
    while (1) {
       j=0;
       best=cspace[0].cnt;
-      for (i=1; i < ptcnt; ++i) {
-	 if (cspace[i].cnt > best) {
+      for (i=1; i<ptcnt; ++i) {
+	 if (cspace[i].cnt>best) {
 	    j=i;
 	    best=cspace[i].cnt;
 	 }
       }
       if (best <= 1)		/* No more clusters */
 	 return (changed);
-      for (i=j + 1; i <= cspace[j].last && cspace[i].cnt==cspace[j].cnt;
+      for (i=j+1; i <= cspace[j].last && cspace[i].cnt==cspace[j].cnt;
 	   ++i);
-      j=(j + i - 1) / 2;	/* There are probably several points with the */
+      j=(j+i-1)/2;	/* There are probably several points with the */
       /* same values for cspace. Pick one in the */
       /* middle, so that when round we round to the */
       /* middle rather than to an edge */
@@ -6392,19 +6392,19 @@ static int _SplineCharRoundToCluster(SplineChar *sc,SplinePoint ** ptspace,
 	 changed=true;
       }
       for (i=cspace[j].first; i <= cspace[j].last; ++i) {
-	 double off=(&ptspace[i]->me.x)[is_y] - cur;
+	 double off=(&ptspace[i]->me.x)[is_y]-cur;
 
 	 (&ptspace[i]->nextcp.x)[is_y] -= off;
 	 (&ptspace[i]->prevcp.x)[is_y] -= off;
 	 (&ptspace[i]->me.x)[is_y] -= off;
-	 if ((&ptspace[i]->prevcp.x)[is_y] - cur > -within &&
-	     (&ptspace[i]->prevcp.x)[is_y] - cur < within) {
+	 if ((&ptspace[i]->prevcp.x)[is_y]-cur>-within &&
+	     (&ptspace[i]->prevcp.x)[is_y]-cur<within) {
 	    (&ptspace[i]->prevcp.x)[is_y]=cur;
 	    if ((&ptspace[i]->prevcp.x)[!is_y]==(&ptspace[i]->me.x)[!is_y])
 	       ptspace[i]->noprevcp=true;
 	 }
-	 if ((&ptspace[i]->nextcp.x)[is_y] - cur > -within &&
-	     (&ptspace[i]->nextcp.x)[is_y] - cur < within) {
+	 if ((&ptspace[i]->nextcp.x)[is_y]-cur>-within &&
+	     (&ptspace[i]->nextcp.x)[is_y]-cur<within) {
 	    (&ptspace[i]->nextcp.x)[is_y]=cur;
 	    if ((&ptspace[i]->nextcp.x)[!is_y]==(&ptspace[i]->me.x)[!is_y])
 	       ptspace[i]->nonextcp=true;
@@ -6412,27 +6412,27 @@ static int _SplineCharRoundToCluster(SplineChar *sc,SplinePoint ** ptspace,
 	 cspace[i].cnt=0;
       }
       if (dohints) {
-	 StemInfo *h=is_y ? sc->hstem : sc->vstem;
+	 StemInfo *h=is_y?sc->hstem:sc->vstem;
 
 	 while (h != NULL && h->start <= high) {
 	    if (h->start >= low) {
-	       h->width -= (h->start - cur);
+	       h->width -= (h->start-cur);
 	       h->start=cur;
 	    }
-	    if (h->start + h->width >= low && h->start + h->width <= high)
-	       h->width=cur - h->start;
+	    if (h->start+h->width >= low && h->start+h->width <= high)
+	       h->width=cur-h->start;
 	    h=h->next;
 	 }
       }
       /* Ok, surrounding points can no longer use the ones allocated to */
       /*  this cluster. So refigure them */
-      for (i=cspace[j].first - 1; i >= 0 &&
-	   ((&ptspace[i]->me.x)[is_y] - cur > -max
-	    && (&ptspace[i]->me.x)[is_y] - cur < max); --i)
+      for (i=cspace[j].first-1; i >= 0 &&
+	   ((&ptspace[i]->me.x)[is_y]-cur>-max
+	    && (&ptspace[i]->me.x)[is_y]-cur<max); --i)
 	 countcluster(ptspace, cspace, ptcnt, is_y, i, within, max);
-      for (i=cspace[j].last + 1; i < ptcnt &&
-	   ((&ptspace[i]->me.x)[is_y] - cur > -max
-	    && (&ptspace[i]->me.x)[is_y] - cur < max); ++i)
+      for (i=cspace[j].last+1; i<ptcnt &&
+	   ((&ptspace[i]->me.x)[is_y]-cur>-max
+	    && (&ptspace[i]->me.x)[is_y]-cur<max); ++i)
 	 countcluster(ptspace, cspace, ptcnt, is_y, i, within, max);
    }
 }
@@ -6441,13 +6441,13 @@ int SCRoundToCluster(SplineChar * sc, int layer, int sel, double within,
 		     double max) {
    /* Do a cluster analysis on the points in this character. Look at each */
    /* axis in turn. Order all points in char along this axis. For each pt: */
-   /*  look at the two points before & after it. If those to pts are within */
+   /*  look at the two points before&after it. If those to pts are within */
    /*  the error bound (within) then continue until we reach a point that */
    /*  is further from its nearest point than "within" or is further from */
    /*  the center point than "max". Count all the points we have found. */
    /*  These points make up the cluster centered on this point. */
-   /* Then find the largest cluster & round everything to the center point */
-   /*  (shift each point & its cps to center point. Then if cps are "within" */
+   /* Then find the largest cluster&round everything to the center point */
+   /*  (shift each point&its cps to center point. Then if cps are "within" */
    /*  set the cps to the center point too) */
    /* Refigure all clusters within "max" of this one, Find the next largest */
    /* cluster, and continue. We stop when the largest cluster has only one */
@@ -6465,10 +6465,10 @@ int SCRoundToCluster(SplineChar * sc, int layer, int sel, double within,
    Spline *s, *first;
 
    /* First figure out what points we will need */
-   for (k=0; k < 2; ++k) {
+   for (k=0; k<2; ++k) {
       ptcnt=selcnt=0;
       if (layer==ly_all) {
-	 for (l=ly_fore; l < sc->layer_cnt; ++l) {
+	 for (l=ly_fore; l<sc->layer_cnt; ++l) {
 	    for (spl=sc->layers[l].splines; spl != NULL; spl=spl->next) {
 	       for (sp=spl->first;;) {
 		  if (k && (!sel || (sel && sp->selected)))
@@ -6516,7 +6516,7 @@ int SCRoundToCluster(SplineChar * sc, int layer, int sel, double within,
 	 return (false);	/* Can't be any clusters */
       }
       if (k==0)
-	 ptspace=malloc((ptcnt + 1) * sizeof(SplinePoint *));
+	 ptspace=malloc((ptcnt+1)*sizeof(SplinePoint *));
       else
 	 ptspace[ptcnt]=NULL;
    }
@@ -6538,7 +6538,7 @@ int SCRoundToCluster(SplineChar * sc, int layer, int sel, double within,
 
    if (changed) {
       if (layer==-2) {
-	 for (l=ly_fore; l < sc->layer_cnt; ++l) {
+	 for (l=ly_fore; l<sc->layer_cnt; ++l) {
 	    for (spl=sc->layers[l].splines; spl != NULL; spl=spl->next) {
 	       first=NULL;
 	       SplineSetSpirosClear(spl);
@@ -6586,30 +6586,30 @@ static int SplineRemoveAnnoyingExtrema1(Spline *s,int which,double err_sq) {
 
    SplineFindExtrema(&s->splines[which], &ts[0], &ts[1]);
 
-   for (i=0; i < 2; ++i)
+   for (i=0; i<2; ++i)
       if (ts[i] != -1 && ts[i] != 0 && ts[i] != 1) {
 	 pos.x =
-	    ((s->splines[0].a * ts[i] + s->splines[0].b) * ts[i] +
-	     s->splines[0].c) * ts[i] + s->splines[0].d;
+	    ((s->splines[0].a * ts[i]+s->splines[0].b)*ts[i] +
+	     s->splines[0].c)*ts[i]+s->splines[0].d;
 	 pos.y =
-	    ((s->splines[1].a * ts[i] + s->splines[1].b) * ts[i] +
-	     s->splines[1].c) * ts[i] + s->splines[1].d;
+	    ((s->splines[1].a * ts[i]+s->splines[1].b)*ts[i] +
+	     s->splines[1].c)*ts[i]+s->splines[1].d;
 	 df =
-	    (pos.x - s->from->me.x) * (pos.x - s->from->me.x) + (pos.y -
+	    (pos.x-s->from->me.x)*(pos.x-s->from->me.x)+(pos.y -
 								 s->from->me.
-								 y) * (pos.y -
+								 y)*(pos.y -
 								       s->
 								       from->
 								       me.y);
 	 dt =
-	    (pos.x - s->to->me.x) * (pos.x - s->to->me.x) + (pos.y -
+	    (pos.x-s->to->me.x)*(pos.x-s->to->me.x)+(pos.y -
 							     s->to->me.y) *
-	    (pos.y - s->to->me.y);
-	 if (df < dt && df < err_sq) {
+	    (pos.y-s->to->me.y);
+	 if (df<dt && df<err_sq) {
 	    close=s->from;
 	    ccp=&s->from->nextcp;
 	    other=s->to;
-	 } else if (dt < df && dt < err_sq) {
+	 } else if (dt<df && dt<err_sq) {
 	    close=s->to;
 	    ccp=&s->to->prevcp;
 	    other=s->from;
@@ -6618,12 +6618,12 @@ static int SplineRemoveAnnoyingExtrema1(Spline *s,int which,double err_sq) {
 	 if (ccp->x==close->me.x && ccp->y==close->me.y)
 	    continue;
 
-	 norm.x=(ccp->y - close->me.y);
-	 norm.y=-(ccp->x - close->me.x);
-	 dp=(pos.x - close->me.x) * norm.x + (pos.y - close->me.y) * norm.y;
+	 norm.x=(ccp->y-close->me.y);
+	 norm.y=-(ccp->x-close->me.x);
+	 dp=(pos.x-close->me.x)*norm.x+(pos.y-close->me.y)*norm.y;
 	 d_o =
-	    (other->me.x - close->me.x) * norm.x + (other->me.y -
-						    close->me.y) * norm.y;
+	    (other->me.x-close->me.x)*norm.x+(other->me.y -
+						    close->me.y)*norm.y;
 	 if (dp != 0 && dp * d_o >= 0)
 	    continue;
 
@@ -6648,45 +6648,45 @@ static int SplineRemoveAnnoyingExtrema1(Spline *s,int which,double err_sq) {
 	 /*  root so that that extremum is exactly on an end point */
 	 /*  Figure out the new slope quadratic, from that what the cubic must */
 	 /*  be, and from that what the control points must be */
-	 /* Quad=3at^2 + 2bt + c */
-	 /* New quad=3a * (t^2 -(t1+t2)t + t1*t2) */
+	 /* Quad=3at^2+2bt+c */
+	 /* New quad=3a * (t^2 -(t1+t2)t+t1*t2) */
 	 /* a'=a, b'=-(t1+t2)/6a, c'=t1*t2/3a, d'=d */
-	 /* nextcp=from + c'/3, prevcp=nextcp + (b' + c')/3 */
+	 /* nextcp=from+c'/3, prevcp=nextcp+(b'+c')/3 */
 	 /* Then for each cp figure what percentage of the original cp vector */
 	 /*  (or at least this one dimension of that vector) this represents */
 	 /*  and scale both dimens by this amount */
-	 b_=-(t1 + t2) * 3 * s->splines[which].a / 2;
-	 c_=(t1 * t2) * 3 * s->splines[which].a;
-	 nextcp=(&s->from->me.x)[which] + c_ / 3;
-	 prevcp=nextcp + (b_ + c_) / 3;
+	 b_=-(t1+t2)*3*s->splines[which].a/2;
+	 c_=(t1*t2)*3*s->splines[which].a;
+	 nextcp=(&s->from->me.x)[which]+c_/3;
+	 prevcp=nextcp+(b_+c_)/3;
 
 	 if ((&s->from->nextcp.x)[which] != (&s->from->me.x)[which]) {
 	    prop =
-	       (c_ / 3) / ((&s->from->nextcp.x)[which] -
+	       (c_/3)/((&s->from->nextcp.x)[which] -
 			   (&s->from->me.x)[which]);
-	    if (prop < 0 && (c_ / 3 < .1 && c_ / 3 > -.1))
+	    if (prop<0 && (c_/3<.1 && c_/3>-.1))
 	       (&s->to->prevcp.x)[which]=nextcp;
 	    else if (prop >= 0 && prop <= 10) {
 	       s->from->nextcp.x =
-		  s->from->me.x + prop * (s->from->nextcp.x - s->from->me.x);
+		  s->from->me.x+prop * (s->from->nextcp.x-s->from->me.x);
 	       s->from->nextcp.y =
-		  s->from->me.y + prop * (s->from->nextcp.y - s->from->me.y);
+		  s->from->me.y+prop * (s->from->nextcp.y-s->from->me.y);
 	       s->from->nonextcp=(prop==0);
 	    }
 	 }
 
 	 if ((&s->to->prevcp.x)[which] != (&s->to->me.x)[which]) {
-	    prop=(prevcp - (&s->to->me.x)[which]) /
-	       ((&s->to->prevcp.x)[which] - (&s->to->me.x)[which]);
-	    if (prop < 0
-		&& (prevcp - (&s->to->me.x)[which] < .1
-		    && prevcp - (&s->to->me.x)[which] > -.1))
+	    prop=(prevcp-(&s->to->me.x)[which]) /
+	       ((&s->to->prevcp.x)[which]-(&s->to->me.x)[which]);
+	    if (prop<0
+		&& (prevcp-(&s->to->me.x)[which]<.1
+		    && prevcp-(&s->to->me.x)[which]>-.1))
 	       (&s->to->prevcp.x)[which]=prevcp;
 	    else if (prop >= 0 && prop <= 10) {
 	       s->to->prevcp.x =
-		  s->to->me.x + prop * (s->to->prevcp.x - s->to->me.x);
+		  s->to->me.x+prop * (s->to->prevcp.x-s->to->me.x);
 	       s->to->prevcp.y =
-		  s->to->me.y + prop * (s->to->prevcp.y - s->to->me.y);
+		  s->to->me.y+prop * (s->to->prevcp.y-s->to->me.y);
 	       s->to->noprevcp=(prop==0);
 	    }
 	 }
@@ -6734,15 +6734,15 @@ SplinePoint *SplineBisect(Spline * spline, double t) {
    int order2=spline->order2;
 
 #ifdef DEBUG
-   if (t <= 1e-3 || t >= 1 - 1e-3)
+   if (t <= 1e-3 || t >= 1-1e-3)
       ErrorMsg(2,"Bisection to create a zero length spline\n");
 #endif
    xstart.s0=xsp->d;
    ystart.s0=ysp->d;
-   xend.s1=(double) xsp->a + xsp->b + xsp->c + xsp->d;
-   yend.s1=(double) ysp->a + ysp->b + ysp->c + ysp->d;
-   xstart.s1=xend.s0=((xsp->a * t + xsp->b) * t + xsp->c) * t + xsp->d;
-   ystart.s1=yend.s0=((ysp->a * t + ysp->b) * t + ysp->c) * t + ysp->d;
+   xend.s1=(double) xsp->a+xsp->b+xsp->c+xsp->d;
+   yend.s1=(double) ysp->a+ysp->b+ysp->c+ysp->d;
+   xstart.s1=xend.s0=((xsp->a * t+xsp->b)*t+xsp->c)*t+xsp->d;
+   ystart.s1=yend.s0=((ysp->a * t+ysp->b)*t+ysp->c)*t+ysp->d;
    FigureSpline1(&xstart, 0, t, xsp);
    FigureSpline1(&xend, t, 1, xsp);
    FigureSpline1(&ystart, 0, t, ysp);
@@ -6752,10 +6752,10 @@ SplinePoint *SplineBisect(Spline * spline, double t) {
    mid->me.x=xstart.s1;
    mid->me.y=ystart.s1;
    if (order2) {
-      mid->nextcp.x=xend.sp.d + xend.sp.c / 2;
-      mid->nextcp.y=yend.sp.d + yend.sp.c / 2;
-      mid->prevcp.x=xstart.sp.d + xstart.sp.c / 2;
-      mid->prevcp.y=ystart.sp.d + ystart.sp.c / 2;
+      mid->nextcp.x=xend.sp.d+xend.sp.c/2;
+      mid->nextcp.y=yend.sp.d+yend.sp.c/2;
+      mid->prevcp.x=xstart.sp.d+xstart.sp.c/2;
+      mid->prevcp.y=ystart.sp.d+ystart.sp.c/2;
    } else {
       mid->nextcp.x=xend.c0;
       mid->nextcp.y=yend.c0;
@@ -6841,28 +6841,28 @@ int SSHasDrawn(SplineSet * ss) {
 void GrowBuffer(GrowBuf * gb) {
    if (gb->base==NULL) {
       gb->base=gb->pt=malloc(200);
-      gb->end=gb->base + 200;
+      gb->end=gb->base+200;
    } else {
-      int len=(gb->end - gb->base) + 400;
-      int off=gb->pt - gb->base;
+      int len=(gb->end-gb->base)+400;
+      int off=gb->pt-gb->base;
 
       gb->base=realloc(gb->base, len);
-      gb->end=gb->base + len;
-      gb->pt=gb->base + off;
+      gb->end=gb->base+len;
+      gb->pt=gb->base+off;
    }
 }
 
 void GrowBufferAdd(GrowBuf * gb, int ch) {
    if (gb->base==NULL) {
       gb->base=gb->pt=malloc(200);
-      gb->end=gb->base + 200;
+      gb->end=gb->base+200;
    } else if (gb->pt >= gb->end) {
-      int len=(gb->end - gb->base) + 400;
-      int off=gb->pt - gb->base;
+      int len=(gb->end-gb->base)+400;
+      int off=gb->pt-gb->base;
 
       gb->base=realloc(gb->base, len);
-      gb->end=gb->base + len;
-      gb->pt=gb->base + off;
+      gb->end=gb->base+len;
+      gb->pt=gb->base+off;
    }
    *gb->pt++=ch;
 }
@@ -6875,15 +6875,15 @@ void GrowBufferAddStr(GrowBuf * gb, char *str) {
    n=strlen(str);
 
    if (gb->base==NULL) {
-      gb->base=gb->pt=malloc(200 + n);
-      gb->end=gb->base + 200 + n;
-   } else if (gb->pt + n + 1 >= gb->end) {
-      int len=(gb->end - gb->base) + n + 200;
-      int off=gb->pt - gb->base;
+      gb->base=gb->pt=malloc(200+n);
+      gb->end=gb->base+200+n;
+   } else if (gb->pt+n+1 >= gb->end) {
+      int len=(gb->end-gb->base)+n+200;
+      int off=gb->pt-gb->base;
 
       gb->base=realloc(gb->base, len);
-      gb->end=gb->base + len;
-      gb->pt=gb->base + off;
+      gb->end=gb->base+len;
+      gb->pt=gb->base+off;
    }
    strcpy((char *) gb->pt, str);
    gb->pt += n;

@@ -1,4 +1,4 @@
-/* $Id: effects.c 4525 2015-12-20 19:51:59Z mskala $ */
+/* $Id: effects.c 4532 2015-12-22 13:18:53Z mskala $ */
 /* Copyright (C) 2003-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -235,17 +235,17 @@ static SplineSet *AddVerticalExtremaAndMove(SplineSet *base,
 	    p=0;
 	    if (s->splines[1].a != 0) {
 	       double d =
-		  4 * s->splines[1].b * s->splines[1].b -
-		  4 * 3 * s->splines[1].a * s->splines[1].c;
+		  4*s->splines[1].b * s->splines[1].b -
+		  4*3*s->splines[1].a * s->splines[1].c;
 	       if (d>0) {
 		  d=sqrt(d);
 		  t[p++] =
-		     (-2 * s->splines[1].b+d)/(2 * 3 * s->splines[1].a);
+		     (-2*s->splines[1].b+d)/(2*3*s->splines[1].a);
 		  t[p++] =
-		     (-2 * s->splines[1].b-d)/(2 * 3 * s->splines[1].a);
+		     (-2*s->splines[1].b-d)/(2*3*s->splines[1].a);
 	       }
 	    } else if (s->splines[1].b != 0)
-	       t[p++]=-s->splines[1].c/(2 * s->splines[1].b);
+	       t[p++]=-s->splines[1].c/(2*s->splines[1].b);
 	    if (p==2 && (t[1] <= 0.0001 || t[1] >= .9999))
 	       --p;
 	    if (p >= 1 && (t[0] <= 0.0001 || t[0] >= .9999)) {
@@ -350,12 +350,12 @@ static void SSCleanup(SplineSet *spl) {
 
    while (spl != NULL) {
       for (sp=spl->first;;) {
-	 sp->me.x=rint(sp->me.x * 64)/64.;
-	 sp->me.y=rint(sp->me.y * 64)/64.;
-	 sp->nextcp.x=rint(sp->nextcp.x * 64)/64.;
-	 sp->nextcp.y=rint(sp->nextcp.y * 64)/64.;
-	 sp->prevcp.x=rint(sp->prevcp.x * 64)/64.;
-	 sp->prevcp.y=rint(sp->prevcp.y * 64)/64.;
+	 sp->me.x=rint(sp->me.x*64)/64.;
+	 sp->me.y=rint(sp->me.y*64)/64.;
+	 sp->nextcp.x=rint(sp->nextcp.x*64)/64.;
+	 sp->nextcp.y=rint(sp->nextcp.y*64)/64.;
+	 sp->prevcp.x=rint(sp->prevcp.x*64)/64.;
+	 sp->prevcp.y=rint(sp->prevcp.y*64)/64.;
 	 if (sp->next==NULL)
 	    break;
 	 sp=sp->next->to;
@@ -578,10 +578,10 @@ static int LineAtPointCompletes(SplineSet *lines,BasePoint *pt) {
 }
 
 static SplinePoint *SplinePointMidCreate(Spline *s,double t) {
-   return (SplinePointCreate(((s->splines[0].a * t+s->splines[0].b) * t +
-			      s->splines[0].c) * t+s->splines[0].d,
-			     ((s->splines[1].a * t+s->splines[1].b) * t +
-			      s->splines[1].c) * t+s->splines[1].d));
+   return (SplinePointCreate(((s->splines[0].a * t+s->splines[0].b)*t +
+			      s->splines[0].c)*t+s->splines[0].d,
+			     ((s->splines[1].a * t+s->splines[1].b)*t +
+			      s->splines[1].c)*t+s->splines[1].d));
 }
 
 static int MidLineCompetes(Spline *s,double t,double shadow_length,
@@ -611,9 +611,9 @@ static void SplineComplete(SplineSet *cur,Spline *s,double t_of_from,
    x.d=cur->last->me.x;
    x.c =
       dt * (s->splines[0].c +
-	    t_of_from * (2 * s->splines[0].b +
-			 3 * s->splines[0].a * t_of_from));
-   x.b=dt * dt * (s->splines[0].b+3 * s->splines[0].a * t_of_from);
+	    t_of_from * (2*s->splines[0].b +
+			 3*s->splines[0].a * t_of_from));
+   x.b=dt * dt * (s->splines[0].b+3*s->splines[0].a * t_of_from);
    x.a=dt * dt * dt * s->splines[0].a;
    cur->last->nextcp.x=x.c/3+x.d;
    to->prevcp.x=cur->last->nextcp.x+(x.b+x.c)/3;
@@ -621,9 +621,9 @@ static void SplineComplete(SplineSet *cur,Spline *s,double t_of_from,
    y.d=cur->last->me.y;
    y.c =
       dt * (s->splines[1].c +
-	    t_of_from * (2 * s->splines[1].b +
-			 3 * s->splines[1].a * t_of_from));
-   y.b=dt * dt * (s->splines[1].b+3 * s->splines[1].a * t_of_from);
+	    t_of_from * (2*s->splines[1].b +
+			 3*s->splines[1].a * t_of_from));
+   y.b=dt * dt * (s->splines[1].b+3*s->splines[1].a * t_of_from);
    y.a=dt * dt * dt * s->splines[1].a;
    cur->last->nextcp.y=y.c/3+y.d;
    to->prevcp.y=cur->last->nextcp.y+(y.b+y.c)/3;

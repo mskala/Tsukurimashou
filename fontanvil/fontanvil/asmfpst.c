@@ -1,4 +1,4 @@
-/* $Id: asmfpst.c 4525 2015-12-20 19:51:59Z mskala $ */
+/* $Id: asmfpst.c 4532 2015-12-22 13:18:53Z mskala $ */
 /* Copyright (C) 2003-2007  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -742,7 +742,7 @@ static SplineChar **morx_cg_FigureClasses(SplineChar *** tables,
 	 max=k;
    }
    next=calloc(1 << match_len, sizeof(int));
-   temp=malloc((1 << match_len) * sizeof(SplineChar **));
+   temp=malloc((1 << match_len)*sizeof(SplineChar **));
 
    for (i=0; i<sf->glyphcnt; ++i)
       if (sf->glyphs[i] != NULL) {
@@ -789,8 +789,8 @@ static SplineChar **morx_cg_FigureClasses(SplineChar *** tables,
       ++class_cnt;		/* Add a class for the marks so we can ignore them */
    }
    *cc=class_cnt+4;
-   glyphs=malloc((gcnt+1) * sizeof(SplineChar *));
-   map=malloc((gcnt+1) * sizeof(uint16_t));
+   glyphs=malloc((gcnt+1)*sizeof(SplineChar *));
+   map=malloc((gcnt+1)*sizeof(uint16_t));
    gcnt=0;
    for (i=0; i<gtot; ++i)
       if (gall[i] != NULL) {
@@ -804,9 +804,9 @@ static SplineChar **morx_cg_FigureClasses(SplineChar *** tables,
    *mp=map;
 
    nc=calloc(match_len, sizeof(int));
-   *classes=malloc((match_len+1) * sizeof(int *));
+   *classes=malloc((match_len+1)*sizeof(int *));
    for (i=0; i<match_len; ++i)
-      (*classes)[i]=malloc((class_cnt+1) * sizeof(int));
+      (*classes)[i]=malloc((class_cnt+1)*sizeof(int));
    (*classes)[i]=NULL;
 
    class_cnt=0;
@@ -849,7 +849,7 @@ static ASM *ASMFromCoverageFPST(SplineFont *sf,FPST *fpst,int ordered) {
 
    tables =
       malloc((r->u.coverage.ncnt+r->u.coverage.bcnt+r->u.coverage.fcnt +
-	      1) * sizeof(SplineChar **));
+	      1)*sizeof(SplineChar **));
    for (j=0, i=r->u.coverage.bcnt-1; i >= 0; --i, ++j)
       tables[j]=SFGlyphsFromNames(sf, r->u.coverage.bcovers[i]);
    for (i=0; i<r->u.coverage.ncnt; ++i, ++j)
@@ -894,7 +894,7 @@ static ASM *ASMFromCoverageFPST(SplineFont *sf,FPST *fpst,int ordered) {
    sm->state =
       calloc(sm->state_cnt * sm->class_cnt, sizeof(struct asm_state));
    for (j=0; j<match_len; ++j) {
-      int off=(j+1) * sm->class_cnt;
+      int off=(j+1)*sm->class_cnt;
 
       for (i=0; i<class_cnt; ++i) {
 	 for (k=0; classes[j][k] != 0xffff && classes[j][k] != i; ++k);

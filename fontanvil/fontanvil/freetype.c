@@ -1,4 +1,4 @@
-/* $Id: freetype.c 4464 2015-11-30 09:57:27Z mskala $ */
+/* $Id: freetype.c 4532 2015-12-22 13:18:53Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -171,7 +171,7 @@ static int FreeTypeAtLeast(int major,int minor,int patch) {
    if (!hasFreeType())
       return (false);
    FT_Library_Version(ff_ft_context, &ma, &mi, &pa);
-   if (ma > major
+   if (ma>major
        || (ma==major && (mi >= minor || (mi==minor && pa >= patch))))
       return (true);
 
@@ -251,9 +251,9 @@ void *_FreeTypeFontContext(SplineFont *sf, SplineChar * sc,
     */
    FTC *ftc;
    SplineChar **old=sf->glyphs, **new;
-   uint8_t *selected=fv != NULL ? fv->selected : NULL;
+   uint8_t *selected=fv != NULL?fv->selected:NULL;
    EncMap *map =
-      fv != NULL ? fv->map : sf->fv != NULL ? sf->fv->map : sf->map;
+      fv != NULL?fv->map:sf->fv != NULL?sf->fv->map:sf->map;
    int i, cnt, notdefpos;
 
    if (!hasFreeType())
@@ -272,7 +272,7 @@ void *_FreeTypeFontContext(SplineFont *sf, SplineChar * sc,
       ftc->layer=layer;
    } else {
       ftc->sf=sf;
-      ftc->em=sf->ascent + sf->descent;
+      ftc->em=sf->ascent+sf->descent;
       ftc->file=NULL;
       ftc->layer=layer;
 
@@ -290,7 +290,7 @@ void *_FreeTypeFontContext(SplineFont *sf, SplineChar * sc,
 	 if (sc != NULL)
 	    TransitiveClosureAdd(new, old, sc, layer);
 	 else
-	    for (i=0; i < map->enccount; ++i)
+	    for (i=0; i<map->enccount; ++i)
 	       if (selected[i] && map->map[i] != -1 &&
 		   SCWorthOutputting(old[map->map[i]]))
 		  TransitiveClosureAdd(new, old, old[map->map[i]], layer);
@@ -326,7 +326,7 @@ void *_FreeTypeFontContext(SplineFont *sf, SplineChar * sc,
 
 	    preserve_hint_undoes=false;
 	    QuickBlues(sf, layer, &bd);
-	    for (i=0; i < sf->glyphcnt; ++i) {
+	    for (i=0; i<sf->glyphcnt; ++i) {
 	       if ((sc=new[i]) != NULL && sc->changedsincelasthinted &&
 		   !sc->manualhints)
 		  SplineCharAutoHint(sc, layer, &bd);
@@ -362,14 +362,14 @@ void *_FreeTypeFontContext(SplineFont *sf, SplineChar * sc,
 	 /* can only be an otfcid */
 	 int k, max=0;
 
-	 for (k=0; k < sf->subfontcnt; ++k)
-	    if (sf->subfonts[k]->glyphcnt > max)
+	 for (k=0; k<sf->subfontcnt; ++k)
+	    if (sf->subfonts[k]->glyphcnt>max)
 	       max=sf->subfonts[k]->glyphcnt;
 	 ftc->glyph_indices=malloc(max * sizeof(int));
 	 memset(ftc->glyph_indices, -1, max * sizeof(int));
-	 for (i=0; i < max; ++i) {
-	    for (k=0; k < sf->subfontcnt; ++k) {
-	       if (i < sf->subfonts[k]->glyphcnt &&
+	 for (i=0; i<max; ++i) {
+	    for (k=0; k<sf->subfontcnt; ++k) {
+	       if (i<sf->subfonts[k]->glyphcnt &&
 		   SCWorthOutputting(sf->subfonts[k]->glyphs[i])) {
 		  ftc->glyph_indices[i] =
 		     sf->subfonts[k]->glyphs[i]->ttf_glyph;
@@ -384,12 +384,12 @@ void *_FreeTypeFontContext(SplineFont *sf, SplineChar * sc,
 	 if (notdefpos != -1)
 	    ftc->glyph_indices[notdefpos]=0;
 	 if (ff==ff_pfa || ff==ff_pfb) {
-	    for (i=0; i < sf->glyphcnt; ++i) {
+	    for (i=0; i<sf->glyphcnt; ++i) {
 	       if (i != notdefpos && SCWorthOutputting(sf->glyphs[i]))
 		  ftc->glyph_indices[i]=cnt++;
 	    }
 	 } else {
-	    for (i=0; i < sf->glyphcnt; ++i) {
+	    for (i=0; i<sf->glyphcnt; ++i) {
 	       if (SCWorthOutputting(sf->glyphs[i])) {
 		  ftc->glyph_indices[i]=sf->glyphs[i]->ttf_glyph;
 	       }
@@ -428,13 +428,13 @@ void *_FreeTypeFontContext(SplineFont *sf, SplineChar * sc,
 }
 
 static void BCTruncateToDepth(BDFChar *bdfc,int depth) {
-   int div=255 / ((1 << depth) - 1);
+   int div=255/((1 << depth)-1);
    int i, j;
 
-   for (i=0; i <= bdfc->ymax - bdfc->ymin; ++i) {
-      for (j=0; j < bdfc->bytes_per_line; ++j)
-	 bdfc->bitmap[i * bdfc->bytes_per_line + j] =
-	    (bdfc->bitmap[i * bdfc->bytes_per_line + j] + div / 2) / div;
+   for (i=0; i <= bdfc->ymax-bdfc->ymin; ++i) {
+      for (j=0; j<bdfc->bytes_per_line; ++j)
+	 bdfc->bitmap[i * bdfc->bytes_per_line+j] =
+	    (bdfc->bitmap[i * bdfc->bytes_per_line+j]+div/2)/div;
    }
 }
 
@@ -445,12 +445,12 @@ static BDFChar *BdfCFromBitmap(FT_Bitmap *bitmap,int bitmap_left,
 
    bdfc=chunkalloc(sizeof(BDFChar));
    bdfc->sc=sc;
-   bdfc->ymax=bitmap_top - 1;
-   bdfc->ymin=bitmap_top - bitmap->rows;
+   bdfc->ymax=bitmap_top-1;
+   bdfc->ymin=bitmap_top-bitmap->rows;
    if (bitmap->rows==0)
       bdfc->ymax=bdfc->ymin;
    bdfc->xmin=bitmap_left;
-   bdfc->xmax=bitmap_left + bitmap->width - 1;
+   bdfc->xmax=bitmap_left+bitmap->width-1;
    if (bitmap->width==0)
       bdfc->xmax=bdfc->xmin;
    bdfc->byte_data=(depth != 1);
@@ -458,15 +458,15 @@ static BDFChar *BdfCFromBitmap(FT_Bitmap *bitmap,int bitmap_left,
    if (sc != NULL) {
       bdfc->width =
 	 rint(sc->width * pixelsize /
-	      (double) (sc->parent->ascent + sc->parent->descent));
+	      (double) (sc->parent->ascent+sc->parent->descent));
       bdfc->vwidth =
 	 rint(sc->vwidth * pixelsize /
-	      (double) (sc->parent->ascent + sc->parent->descent));
+	      (double) (sc->parent->ascent+sc->parent->descent));
       bdfc->orig_pos=sc->orig_pos;
    }
    if (metrics != NULL) {
-      bdfc->width=rint(metrics->horiAdvance / 64.0);
-      bdfc->vwidth=rint(metrics->vertAdvance / 64.0);
+      bdfc->width=rint(metrics->horiAdvance/64.0);
+      bdfc->vwidth=rint(metrics->vertAdvance/64.0);
    }
    bdfc->bytes_per_line=bitmap->pitch;
    bdfc->refs=NULL;
@@ -474,10 +474,10 @@ static BDFChar *BdfCFromBitmap(FT_Bitmap *bitmap,int bitmap_left,
    if (bdfc->bytes_per_line==0)
       bdfc->bytes_per_line=1;
    bdfc->bitmap =
-      malloc((bdfc->ymax - bdfc->ymin + 1) * bdfc->bytes_per_line);
+      malloc((bdfc->ymax-bdfc->ymin+1)*bdfc->bytes_per_line);
    if (bitmap->rows==0 || bitmap->width==0)
       memset(bdfc->bitmap, 0,
-	     (bdfc->ymax - bdfc->ymin + 1) * bdfc->bytes_per_line);
+	     (bdfc->ymax-bdfc->ymin+1)*bdfc->bytes_per_line);
    else
       memcpy(bdfc->bitmap, bitmap->buffer,
 	     bitmap->rows * bdfc->bytes_per_line);
@@ -494,8 +494,8 @@ static BDFChar *BDFCReClut(BDFChar *bdfc) {
    if (bdfc==NULL)
       return (NULL);
    pt=bdfc->bitmap;
-   end=pt + bdfc->bytes_per_line * (bdfc->ymax - bdfc->ymin + 1);
-   while (pt < end)
+   end=pt+bdfc->bytes_per_line * (bdfc->ymax-bdfc->ymin+1);
+   while (pt<end)
       *pt++ *= 17;
    return (bdfc);
 }
@@ -506,17 +506,17 @@ BDFChar *SplineCharFreeTypeRasterize(void *freetypecontext, int gid,
    BDFChar *bdfc;
    SplineChar *sc;
    FT_GlyphSlot slot;
-   int pixelsize=(int) rint((ptsize * dpi) / 72.0);
+   int pixelsize=(int) rint((ptsize * dpi)/72.0);
 
    if (ftc->glyph_indices[gid]==-1)
       goto fail;
    if (FT_Set_Char_Size
-       (ftc->face, (int) (ptsize * 64), (int) (ptsize * 64), dpi, dpi))
+       (ftc->face, (int) (ptsize*64), (int) (ptsize*64), dpi, dpi))
       goto fail;
    if (FT_Load_Glyph(ftc->face, ftc->glyph_indices[gid],
 		     depth ==
-		     1 ? (FT_LOAD_NO_AUTOHINT | FT_LOAD_RENDER |
-			  FT_LOAD_TARGET_MONO) : (FT_LOAD_NO_AUTOHINT |
+		     1?(FT_LOAD_NO_AUTOHINT | FT_LOAD_RENDER |
+			  FT_LOAD_TARGET_MONO):(FT_LOAD_NO_AUTOHINT |
 						  FT_LOAD_RENDER)))
       goto fail;
 
@@ -544,7 +544,7 @@ BDFFont *SplineFontFreeTypeRasterize(void *freetypecontext, int pixelsize,
    BDFFont *bdf=SplineFontToBDFHeader(sf, pixelsize, true);
 
    if (depth != 1)
-      BDFClut(bdf, 1 << (depth / 2));
+      BDFClut(bdf, 1 << (depth/2));
 
    k=0;
    do {
@@ -555,7 +555,7 @@ BDFFont *SplineFontFreeTypeRasterize(void *freetypecontext, int pixelsize,
 	 subsf=sf->subfonts[k];
 	 subftc=FreeTypeFontContext(subsf, NULL, NULL, ftc->layer);
       }
-      for (i=0; i < subsf->glyphcnt; ++i)
+      for (i=0; i<subsf->glyphcnt; ++i)
 	 if (SCWorthOutputting(subsf->glyphs[i])) {
 	    /* If we could not allocate an ftc for this subfont, the revert to */
 	    /*  our own rasterizer */
@@ -570,14 +570,14 @@ BDFFont *SplineFontFreeTypeRasterize(void *freetypecontext, int pixelsize,
 	    else
 	       bdf->glyphs[i] =
 		  SplineCharAntiAlias(subsf->glyphs[i], ftc->layer, pixelsize,
-				      (1 << (depth / 2)));
+				      (1 << (depth/2)));
 	 } else
 	    bdf->glyphs[i]=NULL;
       if (subftc != NULL && subftc != ftc)
 	 FreeTypeFreeContext(subftc);
       subftc=NULL;
       ++k;
-   } while (k < sf->subfontcnt);
+   } while (k<sf->subfontcnt);
    return (bdf);
 }
 
@@ -759,13 +759,13 @@ SplineSet *FreeType_GridFitChar(void *single_glyph_context, int enc,
    }
 
    if (FT_Set_Char_Size
-       (ftc->face, (int) (ptsizex * 64), (int) (ptsizey * 64), dpi, dpi))
+       (ftc->face, (int) (ptsizex*64), (int) (ptsizey*64), dpi, dpi))
       return (NULL);		/* Error Return */
 
    if (FT_Load_Glyph(ftc->face, ftc->glyph_indices[enc],
 		     depth ==
-		     1 ? (FT_LOAD_NO_AUTOHINT | FT_LOAD_NO_BITMAP |
-			  FT_LOAD_TARGET_MONO) : (FT_LOAD_NO_AUTOHINT |
+		     1?(FT_LOAD_NO_AUTOHINT | FT_LOAD_NO_BITMAP |
+			  FT_LOAD_TARGET_MONO):(FT_LOAD_NO_AUTOHINT |
 						  FT_LOAD_NO_BITMAP)))
       return (NULL);
 
@@ -774,12 +774,12 @@ SplineSet *FreeType_GridFitChar(void *single_glyph_context, int enc,
    if (scaled) {
       /* The outline's position is expressed in 24.6 fixed numbers representing */
       /*  pixels. I want to scale it back to the original coordinate system */
-      outline_context.scalex=ftc->em / (64.0 * rint(ptsizex * dpi / 72.0));
-      outline_context.scaley=ftc->em / (64.0 * rint(ptsizey * dpi / 72.0));
+      outline_context.scalex=ftc->em/(64.0*rint(ptsizex * dpi/72.0));
+      outline_context.scaley=ftc->em/(64.0*rint(ptsizey * dpi/72.0));
    } else {
       /* leave as pixels */
-      outline_context.scalex=1.0 / 64.0;
-      outline_context.scaley=1.0 / 64.0;
+      outline_context.scalex=1.0/64.0;
+      outline_context.scaley=1.0/64.0;
    }
    outline_context.orig_ref=sc->layers[ftc->layer].refs;
    outline_context.orig_cpl=sc->layers[ftc->layer].splines;
@@ -813,19 +813,19 @@ struct freetype_raster *FreeType_GetRaster(void *single_glyph_context,
       return (NULL);
 
    if (FT_Set_Char_Size
-       (ftc->face, (int) (ptsizex * 64), (int) (ptsizey * 64), dpi, dpi))
+       (ftc->face, (int) (ptsizex*64), (int) (ptsizey*64), dpi, dpi))
       return (NULL);		/* Error Return */
 
    if (FT_Load_Glyph(ftc->face, ftc->glyph_indices[enc],
 		     depth ==
-		     1 ? (FT_LOAD_NO_AUTOHINT | FT_LOAD_NO_BITMAP |
-			  FT_LOAD_TARGET_MONO) : (FT_LOAD_NO_AUTOHINT |
+		     1?(FT_LOAD_NO_AUTOHINT | FT_LOAD_NO_BITMAP |
+			  FT_LOAD_TARGET_MONO):(FT_LOAD_NO_AUTOHINT |
 						  FT_LOAD_NO_BITMAP)))
       return (NULL);
 
    slot=((FT_Face) (ftc->face))->glyph;
    if (FT_Render_Glyph
-       (slot, depth==1 ? ft_render_mode_mono : ft_render_mode_normal))
+       (slot, depth==1?ft_render_mode_mono:ft_render_mode_normal))
       return (NULL);
 
    if (slot->bitmap.pixel_mode != ft_pixel_mode_mono &&
@@ -855,7 +855,7 @@ static void FillOutline(SplineSet *spl,FT_Outline *outline,int *pmax,
    SplineSet *ss;
 
    if (order2) {
-      for (k=0; k < 2; ++k) {
+      for (k=0; k<2; ++k) {
 	 pcnt=ccnt=0;
 	 for (ss=spl; ss != NULL; ss=ss->next)
 	    if (ss->first->prev != NULL) {
@@ -865,9 +865,9 @@ static void FillOutline(SplineSet *spl,FT_Outline *outline,int *pmax,
 	       for (sp=ss->first;;) {
 		  if (k) {
 		     outline->points[pcnt].x =
-			rint(sp->me.x * scale) - bb->minx;
+			rint(sp->me.x * scale)-bb->minx;
 		     outline->points[pcnt].y =
-			rint(sp->me.y * scale) - bb->miny;
+			rint(sp->me.y * scale)-bb->miny;
 		     outline->tags[pcnt]=1;	/* On curve */
 		  }
 		  ++pcnt;
@@ -876,9 +876,9 @@ static void FillOutline(SplineSet *spl,FT_Outline *outline,int *pmax,
 		  if (!sp->nonextcp) {
 		     if (k) {
 			outline->points[pcnt].x =
-			   rint(sp->nextcp.x * scale) - bb->minx;
+			   rint(sp->nextcp.x * scale)-bb->minx;
 			outline->points[pcnt].y =
-			   rint(sp->nextcp.y * scale) - bb->miny;
+			   rint(sp->nextcp.y * scale)-bb->miny;
 		     }
 		     ++pcnt;
 		  }
@@ -887,21 +887,21 @@ static void FillOutline(SplineSet *spl,FT_Outline *outline,int *pmax,
 		     break;
 	       }
 	       if (k)
-		  outline->contours[ccnt]=pcnt - 1;
+		  outline->contours[ccnt]=pcnt-1;
 	       ++ccnt;
 	    }
 	 if (!k) {
 	    outline->n_contours=ccnt;
 	    outline->n_points=pcnt;
-	    if (pcnt > *pmax || *pmax==0) {
-	       *pmax=pcnt==0 ? 1 : pcnt;
+	    if (pcnt>*pmax || *pmax==0) {
+	       *pmax=pcnt==0?1:pcnt;
 	       outline->points =
 		  realloc(outline->points, *pmax * sizeof(FT_Vector));
 	       outline->tags=realloc(outline->tags, *pmax * sizeof(char));
 	    }
 	    memset(outline->tags, 0, pcnt);
-	    if (ccnt > *cmax || *cmax==0) {
-	       *cmax=ccnt==0 ? 1 : ccnt;
+	    if (ccnt>*cmax || *cmax==0) {
+	       *cmax=ccnt==0?1:ccnt;
 	       outline->contours =
 		  realloc(outline->contours, *cmax * sizeof(short));
 	    }
@@ -909,16 +909,16 @@ static void FillOutline(SplineSet *spl,FT_Outline *outline,int *pmax,
 	 }
       }
    } else {
-      for (k=0; k < 2; ++k) {
+      for (k=0; k<2; ++k) {
 	 pcnt=ccnt=0;
 	 for (ss=spl; ss != NULL; ss=ss->next)
 	    if (ss->first->prev != NULL) {
 	       for (sp=ss->first;;) {
 		  if (k) {
 		     outline->points[pcnt].x =
-			rint(sp->me.x * scale) - bb->minx;
+			rint(sp->me.x * scale)-bb->minx;
 		     outline->points[pcnt].y =
-			rint(sp->me.y * scale) - bb->miny;
+			rint(sp->me.y * scale)-bb->miny;
 		     outline->tags[pcnt]=1;	/* On curve */
 		  }
 		  ++pcnt;
@@ -927,15 +927,15 @@ static void FillOutline(SplineSet *spl,FT_Outline *outline,int *pmax,
 		  if (!sp->nonextcp || !sp->next->to->noprevcp) {
 		     if (k) {
 			outline->points[pcnt].x =
-			   rint(sp->nextcp.x * scale) - bb->minx;
+			   rint(sp->nextcp.x * scale)-bb->minx;
 			outline->points[pcnt].y =
-			   rint(sp->nextcp.y * scale) - bb->miny;
+			   rint(sp->nextcp.y * scale)-bb->miny;
 			outline->tags[pcnt]=2;	/* cubic control */
-			outline->points[pcnt + 1].x =
-			   rint(sp->next->to->prevcp.x * scale) - bb->minx;
-			outline->points[pcnt + 1].y =
-			   rint(sp->next->to->prevcp.y * scale) - bb->miny;
-			outline->tags[pcnt + 1]=2;	/* cubic control */
+			outline->points[pcnt+1].x =
+			   rint(sp->next->to->prevcp.x * scale)-bb->minx;
+			outline->points[pcnt+1].y =
+			   rint(sp->next->to->prevcp.y * scale)-bb->miny;
+			outline->tags[pcnt+1]=2;	/* cubic control */
 		     }
 		     pcnt += 2;
 		  }
@@ -944,21 +944,21 @@ static void FillOutline(SplineSet *spl,FT_Outline *outline,int *pmax,
 		     break;
 	       }
 	       if (k)
-		  outline->contours[ccnt]=pcnt - 1;
+		  outline->contours[ccnt]=pcnt-1;
 	       ++ccnt;
 	    }
 	 if (!k) {
 	    outline->n_contours=ccnt;
 	    outline->n_points=pcnt;
-	    if (pcnt > *pmax || *pmax==0) {
-	       *pmax=pcnt==0 ? 1 : pcnt;
+	    if (pcnt>*pmax || *pmax==0) {
+	       *pmax=pcnt==0?1:pcnt;
 	       outline->points =
 		  realloc(outline->points, *pmax * sizeof(FT_Vector));
 	       outline->tags=realloc(outline->tags, *pmax * sizeof(char));
 	    }
 	    memset(outline->tags, 0, pcnt);
-	    if (ccnt > *cmax || *cmax==0) {
-	       *cmax=ccnt==0 ? 1 : ccnt;
+	    if (ccnt>*cmax || *cmax==0) {
+	       *cmax=ccnt==0?1:ccnt;
 	       outline->contours =
 		  realloc(outline->contours, *cmax * sizeof(short));
 	    }
@@ -1003,7 +1003,7 @@ static SplineSet *StrokeOutline(Layer *layer,SplineChar *sc) {
 
    memset(&si, 0, sizeof(si));
    if (sc->parent->strokedfont) {
-      si.radius=sc->parent->strokewidth / 2;
+      si.radius=sc->parent->strokewidth/2;
       si.join=lj_bevel;
       si.cap=lc_butt;
       si.stroke_type=si_std;
@@ -1024,7 +1024,7 @@ static SplineSet *StrokeOutline(Layer *layer,SplineChar *sc) {
       }
       return (head);
    } else {
-      si.radius=layer->stroke_pen.width / 2;
+      si.radius=layer->stroke_pen.width/2;
       si.join=layer->stroke_pen.linejoin;
       si.cap=layer->stroke_pen.linecap;
       si.stroke_type=si_std;
@@ -1036,7 +1036,7 @@ static SplineSet *RStrokeOutline(struct reflayer *layer,SplineChar *sc) {
    StrokeInfo si;
 
    memset(&si, 0, sizeof(si));
-   si.radius=layer->stroke_pen.width / 2;
+   si.radius=layer->stroke_pen.width/2;
    si.join=layer->stroke_pen.linejoin;
    si.cap=layer->stroke_pen.linecap;
    si.stroke_type=si_std;
@@ -1052,31 +1052,31 @@ static void MergeBitmaps(FT_Bitmap *bitmap,FT_Bitmap *newstuff,
    if (col==COLOR_INHERITED)
       col=0x000000;
    col =
-      3 * ((col >> 16) & 0xff) + 6 * ((col >> 8) & 0xff) + 1 * (col & 0xff);
-   col=0xff - col;
+      3*((col >> 16) & 0xff)+6*((col >> 8) & 0xff)+1*(col & 0xff);
+   col=0xff-col;
 
    if (bitmap->num_grays==256) {
       if (clipmask != NULL) {
-	 for (i=0; i < bitmap->rows; ++i)
-	    for (j=0; j < bitmap->pitch; ++j)
-	       newstuff->buffer[i * bitmap->pitch + j] *=
-		  clipmask[i * bitmap->pitch + j];
+	 for (i=0; i<bitmap->rows; ++i)
+	    for (j=0; j<bitmap->pitch; ++j)
+	       newstuff->buffer[i * bitmap->pitch+j] *=
+		  clipmask[i * bitmap->pitch+j];
       }
       PatternPrep(sc, brush, scale);
-      for (i=0; i < bitmap->rows; ++i)
-	 for (j=0; j < bitmap->pitch; ++j) {
-	    bitmap->buffer[i * bitmap->pitch + j] =
-	       (newstuff->buffer[i * bitmap->pitch + j] *
+      for (i=0; i<bitmap->rows; ++i)
+	 for (j=0; j<bitmap->pitch; ++j) {
+	    bitmap->buffer[i * bitmap->pitch+j] =
+	       (newstuff->buffer[i * bitmap->pitch+j] *
 		GradientHere(scale, bbox, i, j, brush->gradient,
 			     brush->pattern,
-			     col) + (255 -
+			     col)+(255 -
 				     newstuff->buffer[i * bitmap->pitch +
-						      j]) * bitmap->buffer[i *
+						      j])*bitmap->buffer[i *
 									   bitmap->
 									   pitch
 									   +
 									   j]
-		+ 127) / 255;
+		+ 127)/255;
 	 }
       if (brush->pattern != NULL) {
 	 BDFCharFree(brush->pattern->pat);
@@ -1084,26 +1084,26 @@ static void MergeBitmaps(FT_Bitmap *bitmap,FT_Bitmap *newstuff,
       }
    } else {
       if (clipmask != NULL) {
-	 for (i=0; i < bitmap->rows; ++i)
-	    for (j=0; j < bitmap->pitch; ++j)
-	       newstuff->buffer[i * bitmap->pitch + j] &=
-		  clipmask[i * bitmap->pitch + j];
+	 for (i=0; i<bitmap->rows; ++i)
+	    for (j=0; j<bitmap->pitch; ++j)
+	       newstuff->buffer[i * bitmap->pitch+j] &=
+		  clipmask[i * bitmap->pitch+j];
       }
       /* A gradient makes no sense on a bitmap, so don't even check */
       /*  (unless we were doing dithering, which we aren't) */
       if (col >= 0x80) {
 	 /* Bitmap set */
-	 for (i=0; i < bitmap->rows; ++i)
-	    for (j=0; j < bitmap->pitch; ++j) {
-	       bitmap->buffer[i * bitmap->pitch + j] |=
-		  newstuff->buffer[i * bitmap->pitch + j];
+	 for (i=0; i<bitmap->rows; ++i)
+	    for (j=0; j<bitmap->pitch; ++j) {
+	       bitmap->buffer[i * bitmap->pitch+j] |=
+		  newstuff->buffer[i * bitmap->pitch+j];
 	    }
       } else {
 	 /* Bitmap clear */
-	 for (i=0; i < bitmap->rows; ++i)
-	    for (j=0; j < bitmap->pitch; ++j) {
-	       bitmap->buffer[i * bitmap->pitch + j] &=
-		  ~newstuff->buffer[i * bitmap->pitch + j];
+	 for (i=0; i<bitmap->rows; ++i)
+	    for (j=0; j<bitmap->pitch; ++j) {
+	       bitmap->buffer[i * bitmap->pitch+j] &=
+		  ~newstuff->buffer[i * bitmap->pitch+j];
 	    }
       }
    }
@@ -1116,7 +1116,7 @@ BDFChar *SplineCharFreeTypeRasterizeNoHints(SplineChar * sc, int layer,
    int i;
    int cmax, pmax;
    double rscale =
-      (ptsize * dpi) / 72.0 / (double) (sc->parent->ascent +
+      (ptsize * dpi)/72.0/(double) (sc->parent->ascent +
 					sc->parent->descent);
    double scale=rscale * (1 << 6);
    BDFChar *bdfc;
@@ -1131,39 +1131,39 @@ BDFChar *SplineCharFreeTypeRasterizeNoHints(SplineChar * sc, int layer,
       return (NULL);
    if (sc->layers[layer].order2 && sc->parent->multilayer) {
       /* I don't support stroking of order2 splines */
-      for (i=ly_fore; i < sc->layer_cnt; ++i) {
+      for (i=ly_fore; i<sc->layer_cnt; ++i) {
 	 if (sc->layers[i].dostroke)
 	    return (NULL);
       }
    }
    if (sc->parent->multilayer) {
       /* I don't support images here */
-      for (i=ly_fore; i < sc->layer_cnt; ++i) {
+      for (i=ly_fore; i<sc->layer_cnt; ++i) {
 	 if (sc->layers[i].images != NULL)
 	    return (NULL);
       }
    }
 
    SplineCharLayerFindBounds(sc, layer, &b);
-   if (b.maxx - b.minx > 32767)
-      b.maxx=b.minx + 32767;
-   if (b.maxy - b.miny > 32767)
-      b.maxy=b.miny + 32767;
+   if (b.maxx-b.minx>32767)
+      b.maxx=b.minx+32767;
+   if (b.maxy-b.miny>32767)
+      b.maxy=b.miny+32767;
    b.minx *= scale;
    b.maxx *= scale;
    b.miny *= scale;
    b.maxy *= scale;
 
-   b.minx=(1 << 6) * floor(b.minx * (1.0 / (1 << 6)));
-   b.miny=(1 << 6) * floor(b.miny * (1.0 / (1 << 6)));
-   b.maxx=(1 << 6) * ceil(b.maxx * (1.0 / (1 << 6)));
-   b.maxy=(1 << 6) * ceil(b.maxy * (1.0 / (1 << 6)));
+   b.minx=(1 << 6)*floor(b.minx * (1.0/(1 << 6)));
+   b.miny=(1 << 6)*floor(b.miny * (1.0/(1 << 6)));
+   b.maxx=(1 << 6)*ceil(b.maxx * (1.0/(1 << 6)));
+   b.maxy=(1 << 6)*ceil(b.maxy * (1.0/(1 << 6)));
 
    memset(&bitmap, 0, sizeof(bitmap));
-   bitmap.rows=(((int) (b.maxy - b.miny)) >> 6);
-   bitmap.width=(((int) (b.maxx - b.minx)) >> 6);
+   bitmap.rows=(((int) (b.maxy-b.miny)) >> 6);
+   bitmap.width=(((int) (b.maxx-b.minx)) >> 6);
    if (depth==1) {
-      bitmap.pitch=(bitmap.width + 7) >> 3;
+      bitmap.pitch=(bitmap.width+7) >> 3;
       bitmap.num_grays=2;
       bitmap.pixel_mode=ft_pixel_mode_mono;
    } else {
@@ -1208,7 +1208,7 @@ BDFChar *SplineCharFreeTypeRasterizeNoHints(SplineChar * sc, int layer,
 
       /* Can only get here if multilayer */
       err=0;
-      for (i=ly_fore; i < sc->layer_cnt; ++i) {
+      for (i=ly_fore; i<sc->layer_cnt; ++i) {
 	 uint8_t *clipmask=NULL;
 
 	 if (SSHasClip(sc->layers[i].splines)) {
@@ -1239,7 +1239,7 @@ BDFChar *SplineCharFreeTypeRasterizeNoHints(SplineChar * sc, int layer,
 	    SplinePointListsFree(stroked);
 	 }
 	 for (r=sc->layers[i].refs; r != NULL; r=r->next) {
-	    for (j=0; j < r->layer_cnt; ++j) {
+	    for (j=0; j<r->layer_cnt; ++j) {
 	       if (r->layers[j].dofill) {
 		  memset(temp.buffer, 0, temp.pitch * temp.rows);
 		  FillOutline(r->layers[j].splines, &outline, &pmax, &cmax,
@@ -1275,9 +1275,9 @@ BDFChar *SplineCharFreeTypeRasterizeNoHints(SplineChar * sc, int layer,
    bdfc=NULL;
    if (!err) {
       bdfc =
-	 BdfCFromBitmap(&bitmap, (((int) b.minx) + 0x20) >> 6,
-			(((int) b.maxy) + 0x20) >> 6,
-			(int) rint((ptsize * dpi) / 72.0), depth, sc, NULL);
+	 BdfCFromBitmap(&bitmap, (((int) b.minx)+0x20) >> 6,
+			(((int) b.maxy)+0x20) >> 6,
+			(int) rint((ptsize * dpi)/72.0), depth, sc, NULL);
    }
    free(bitmap.buffer);
    return (bdfc);
@@ -1290,7 +1290,7 @@ BDFFont *SplineFontFreeTypeRasterizeNoHints(SplineFont *sf, int layer,
    BDFFont *bdf=SplineFontToBDFHeader(sf, pixelsize, true);
 
    if (depth != 1)
-      BDFClut(bdf, 1 << (depth / 2));
+      BDFClut(bdf, 1 << (depth/2));
 
    k=0;
    do {
@@ -1299,7 +1299,7 @@ BDFFont *SplineFontFreeTypeRasterizeNoHints(SplineFont *sf, int layer,
       } else {
 	 subsf=sf->subfonts[k];
       }
-      for (i=0; i < subsf->glyphcnt; ++i)
+      for (i=0; i<subsf->glyphcnt; ++i)
 	 if (SCWorthOutputting(subsf->glyphs[i])) {
 	    bdf->glyphs[i] =
 	       SplineCharFreeTypeRasterizeNoHints(subsf->glyphs[i], layer,
@@ -1312,11 +1312,11 @@ BDFFont *SplineFontFreeTypeRasterizeNoHints(SplineFont *sf, int layer,
 	    else
 	       bdf->glyphs[i] =
 		  SplineCharAntiAlias(subsf->glyphs[i], layer, pixelsize,
-				      (1 << (depth / 2)));
+				      (1 << (depth/2)));
 	 } else
 	    bdf->glyphs[i]=NULL;
       ++k;
-   } while (k < sf->subfontcnt);
+   } while (k<sf->subfontcnt);
    return (bdf);
 }
 #endif
@@ -1326,6 +1326,6 @@ void *FreeTypeFontContext(SplineFont *sf, SplineChar * sc, FontViewBase * fv,
    return (_FreeTypeFontContext
 	   (sf, sc, fv, layer,
 	    sf->subfontcnt !=
-	    0 ? ff_otfcid : sf->layers[layer].order2 ? ff_ttf : ff_cff, 0,
+	    0?ff_otfcid:sf->layers[layer].order2?ff_ttf:ff_cff, 0,
 	    NULL));
 }

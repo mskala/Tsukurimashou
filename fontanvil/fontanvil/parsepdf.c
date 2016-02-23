@@ -1,4 +1,4 @@
-/* $Id: parsepdf.c 4523 2015-12-20 12:30:49Z mskala $ */
+/* $Id: parsepdf.c 4532 2015-12-22 13:18:53Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -65,7 +65,7 @@ static long FindXRef(AFILE *pdf) {
    int ch;
    long xrefpos;
 
-   if (afseek(pdf, -5 - 2 - 8 - 2 - 10 - 2, SEEK_END)==0) {
+   if (afseek(pdf, -5-2-8-2-10-2, SEEK_END)==0) {
       while ((ch=agetc(pdf)) >= 0) {
 	 while (ch=='s' &&
 		(ch=agetc(pdf))=='t' &&
@@ -89,7 +89,7 @@ static int findkeyword(AFILE *pdf,char *keyword,char *end) {
 /* Find Keyword in file pdf. Stop looking if reach end or get a file-error */
    char buffer[60];
    int len=strlen(keyword);
-   int end_len=end==NULL ? 0 : strlen(end);
+   int end_len=end==NULL?0:strlen(end);
    int ch, i;
 
    /* exit with error if 'keyword' or 'end' too big to test */
@@ -98,8 +98,8 @@ static int findkeyword(AFILE *pdf,char *keyword,char *end) {
    }
 
    /* initialize buffer to begin checking for keyword */
-   for (i=0; i < len; ++i) {
-      if ((ch=agetc(pdf)) < 0)
+   for (i=0; i<len; ++i) {
+      if ((ch=agetc(pdf))<0)
 	 return (false);
       buffer[i]=ch;
    }
@@ -111,9 +111,9 @@ static int findkeyword(AFILE *pdf,char *keyword,char *end) {
 	 return (true);
       if (end_len && strncmp(buffer, end, end_len)==0)
 	 return (false);
-      for (i=1; i < len; ++i)
-	 buffer[i - 1]=buffer[i];
-      if ((ch=agetc(pdf)) < 0)
+      for (i=1; i<len; ++i)
+	 buffer[i-1]=buffer[i];
+      if ((ch=agetc(pdf))<0)
 	 return (false);
       buffer[--i]=ch;
    }
@@ -197,14 +197,14 @@ static long *FindObjects(struct pdfcontext *pc) {
    ret=NULL;
    gen=NULL;			/* no objects to return yet */
    while (1) {
-      if (start + num > cnt) {
+      if (start+num>cnt) {
 	 /* increase memory needed for XREFs. Mark last location=-2 */
 	 ret_old=ret;
 	 gen_old=gen;
-	 pc->ocnt=(int) (start + num);
-	 ret=realloc(ret, (start + num + 1) * sizeof(long));
-	 gen=realloc(gen, (start + num) * sizeof(int));
-	 if (ret==NULL || gen==NULL || pc->ocnt != start + num) {
+	 pc->ocnt=(int) (start+num);
+	 ret=realloc(ret, (start+num+1)*sizeof(long));
+	 gen=realloc(gen, (start+num)*sizeof(int));
+	 if (ret==NULL || gen==NULL || pc->ocnt != start+num) {
 	    free(ret);
 	    free(ret_old);
 	    free(gen);
@@ -212,23 +212,23 @@ static long *FindObjects(struct pdfcontext *pc) {
 	    pc->ocnt=0;
 	    return (NULL);
 	 }
-	 memset(ret + cnt, -1, sizeof(long) * (start + num - cnt));
-	 memset(gen + cnt, -1, sizeof(int) * (start + num - cnt));
-	 cnt=start + num;
+	 memset(ret+cnt, -1, sizeof(long)*(start+num-cnt));
+	 memset(gen+cnt, -1, sizeof(int)*(start+num-cnt));
+	 cnt=start+num;
 	 ret[cnt]=-2;
       }
-      for (i=start; i < start + num; ++i) {
+      for (i=start; i<start+num; ++i) {
 	 if (afscanf(pdf, "%ld %d %c", &offset, &gennum, &f) != 3) {
 	    free(gen);
 	    return (ret);
 	 }
 	 if (f=='f') {
-	    if (gennum > gen[i]) {
+	    if (gennum>gen[i]) {
 	       ret[i]=-1;
 	       gen[i]=gennum;
 	    }
 	 } else if (f=='n') {
-	    if (gennum > gen[i]) {
+	    if (gennum>gen[i]) {
 	       ret[i]=offset;
 	       gen[i]=gennum;
 	    }
@@ -262,7 +262,7 @@ static int pdf_peekch(AFILE *pdf) {
 
 static int pdf_skipwhitespace(struct pdfcontext *pc) {
 /* Skip pdf white spaces. Return -1 if EOF or get file error. */
-   AFILE *pdf=pc->compressed ? pc->compressed : pc->pdf;
+   AFILE *pdf=pc->compressed?pc->compressed:pc->pdf;
    int ch;
 
    /* get next char and loop forever until EOF or file error */
@@ -274,16 +274,16 @@ static int pdf_skipwhitespace(struct pdfcontext *pc) {
 	 break;
    }
    /* Done! Now if not EOF or a file error, then unget ch */
-   if (ch < 0 || aungetc(ch, pdf) < 0)
+   if (ch<0 || aungetc(ch, pdf)<0)
       return (-1);
    return (0);
 }
 
 static char *pdf_getname(struct pdfcontext *pc) {
 /* return name. return NULL if errors found */
-   AFILE *pdf=pc->compressed ? pc->compressed : pc->pdf;
+   AFILE *pdf=pc->compressed?pc->compressed:pc->pdf;
    int ch;
-   char *pt=pc->tokbuf, *end=pc->tokbuf + pc->tblen;
+   char *pt=pc->tokbuf, *end=pc->tokbuf+pc->tblen;
 
    /* first, skip any white spaces in front of name */
    if (pdf_skipwhitespace(pc))
@@ -302,9 +302,9 @@ static char *pdf_getname(struct pdfcontext *pc) {
 	    /* error, but don't need to free realloc memory */
 	    return (NULL);
 	 }
-	 pt=temp + (pt - pc->tokbuf);
+	 pt=temp+(pt-pc->tokbuf);
 	 pc->tokbuf=temp;
-	 end=temp + pc->tblen;
+	 end=temp+pc->tblen;
       }
       if (pdf_space(ch) || pdf_oper(ch)) {
 	 aungetc(ch, pdf);
@@ -316,9 +316,9 @@ static char *pdf_getname(struct pdfcontext *pc) {
 }
 
 static char *pdf_getdictvalue(struct pdfcontext *pc) {
-   AFILE *pdf=pc->compressed ? pc->compressed : pc->pdf;
+   AFILE *pdf=pc->compressed?pc->compressed:pc->pdf;
    int ch;
-   char *pt=pc->tokbuf, *end=pc->tokbuf + pc->tblen;
+   char *pt=pc->tokbuf, *end=pc->tokbuf+pc->tblen;
    int dnest=0, anest=0, strnest;
 
    pdf_skipwhitespace(pc);
@@ -327,9 +327,9 @@ static char *pdf_getdictvalue(struct pdfcontext *pc) {
       if (pt >= end) {
 	 char *temp=realloc(pc->tokbuf, (pc->tblen += 300));
 
-	 pt=temp + (pt - pc->tokbuf);
+	 pt=temp+(pt-pc->tokbuf);
 	 pc->tokbuf=temp;
-	 end=temp + pc->tblen;
+	 end=temp+pc->tblen;
       }
       *pt++=ch;
       if (ch=='(') {
@@ -338,9 +338,9 @@ static char *pdf_getdictvalue(struct pdfcontext *pc) {
 	    if (pt >= end) {
 	       char *temp=realloc(pc->tokbuf, (pc->tblen += 300));
 
-	       pt=temp + (pt - pc->tokbuf);
+	       pt=temp+(pt-pc->tokbuf);
 	       pc->tokbuf=temp;
-	       end=temp + pc->tblen;
+	       end=temp+pc->tblen;
 	    }
 	    *pt++=ch;
 	    if (ch=='(')
@@ -352,7 +352,7 @@ static char *pdf_getdictvalue(struct pdfcontext *pc) {
 	 }
       } else if (ch=='[')
 	 ++anest;
-      else if (ch==']' && anest > 0)
+      else if (ch==']' && anest>0)
 	 --anest;
       else if (ch=='<' && pdf_peekch(pdf)=='<')
 	 ++dnest;
@@ -360,18 +360,18 @@ static char *pdf_getdictvalue(struct pdfcontext *pc) {
 	 if (dnest==0) {
 	    aungetc(ch, pdf);
 	    pt[-1]='\0';
-	    if (pt > pc->tokbuf + 1 && pt[-2]==' ')
+	    if (pt>pc->tokbuf+1 && pt[-2]==' ')
 	       pt[-2]='\0';
 	    return (pc->tokbuf);
 	 }
 	 --dnest;
       } else if (ch=='/' && anest==0 && dnest==0
-		 && pt != pc->tokbuf + 1) {
+		 && pt != pc->tokbuf+1) {
 	 /* A name token may be a value if it is the first thing */
 	 /*  otherwise it is the start of the next key */
 	 aungetc(ch, pdf);
 	 pt[-1]='\0';
-	 if (pt > pc->tokbuf + 1 && pt[-2]==' ')
+	 if (pt>pc->tokbuf+1 && pt[-2]==' ')
 	    pt[-2]='\0';
 	 return (pc->tokbuf);
       } else if (ch=='%' || pdf_space(ch)) {
@@ -390,7 +390,7 @@ static void PSDictClear(struct psdict *dict) {
 /* Clear all psdict keys[] and values[] */
    int i;
 
-   for (i=0; i < dict->next; ++i) {
+   for (i=0; i<dict->next; ++i) {
       free(dict->keys[i]);
       free(dict->values[i]);
    }
@@ -398,7 +398,7 @@ static void PSDictClear(struct psdict *dict) {
 }
 
 static int pdf_readdict(struct pdfcontext *pc) {
-   AFILE *pdf=pc->compressed ? pc->compressed : pc->pdf;
+   AFILE *pdf=pc->compressed?pc->compressed:pc->pdf;
    char *key, *value;
    int ch;
 
@@ -427,7 +427,7 @@ static int pdf_readdict(struct pdfcontext *pc) {
 	 if (pc->pdfdict.next >= pc->pdfdict.cnt) {
 	    pc->pdfdict.keys =
 	       realloc(pc->pdfdict.keys,
-		       (pc->pdfdict.cnt += 20) * sizeof(char *));
+		       (pc->pdfdict.cnt += 20)*sizeof(char *));
 	    pc->pdfdict.values =
 	       realloc(pc->pdfdict.values, pc->pdfdict.cnt * sizeof(char *));
 	 }
@@ -450,32 +450,32 @@ static int hex(int ch1,int ch2) {
    if (ch1 >= '0' && ch1 <= '9')
       ch1 -= '0';
    else if (ch1 >= 'A' && ch1 <= 'F')
-      ch1 -= ('A' - 10);
+      ch1 -= ('A'-10);
    else if (ch1 >= 'a' && ch1 <= 'f')
-      ch1 -= ('a' - 10);
+      ch1 -= ('a'-10);
    else
       return (-1);
 
    if (ch2 >= '0' && ch2 <= '9')
       ch2 -= '0';
    else if (ch2 >= 'A' && ch2 <= 'F')
-      ch2 -= ('A' - 10);
+      ch2 -= ('A'-10);
    else if (ch2 >= 'a' && ch2 <= 'f')
-      ch2 -= ('a' - 10);
+      ch2 -= ('a'-10);
    else
       return (-1);
 
-   return ((ch1 << 4) | ch2);
+   return ((ch1 << 4)|ch2);
 }
 
 static int pdf_getprotectedtok(AFILE *stream,char *tokbuf) {
-   char *pt=tokbuf, *end=tokbuf + 100 - 2;
+   char *pt=tokbuf, *end=tokbuf+100-2;
    int ch;
 
    while (isspace(ch=agetc(stream)));
    while (ch >= 0 && !isspace(ch) && ch != '[' && ch != ']' && ch != '{'
 	  && ch != '}' && ch != '<' && ch != '>') {
-      if (pt < end)
+      if (pt<end)
 	 *pt++=ch;
       ch=agetc(stream);
    }
@@ -487,7 +487,7 @@ static int pdf_getprotectedtok(AFILE *stream,char *tokbuf) {
 	 aungetc(ch, stream);
    }
    *pt='\0';
-   return (pt != tokbuf ? 1 : ch < 0 ? -1 : 0);
+   return (pt != tokbuf?1:ch<0?-1:0);
 }
 
 static int pdf_skip_brackets(AFILE *stream,char *tokbuf) {
@@ -517,7 +517,7 @@ static int pdf_findobject(struct pdfcontext *pc,int num) {
       afclose(pc->compressed);
       pc->compressed=NULL;
    }
-   if (num < 0 || num >= pc->ocnt)
+   if (num<0 || num >= pc->ocnt)
       return (false);
    if (pc->subindex==NULL || pc->subindex[num]==-1) {
       if (pc->objs[num]==-1)
@@ -552,13 +552,13 @@ static int pdf_findobject(struct pdfcontext *pc,int num) {
 	 if (data==NULL)
 	    return (false);
 	 afseek(data,0,SEEK_SET);
-	 for (i=0; i < n; ++i) {
+	 for (i=0; i<n; ++i) {
 	    afscanf(data, "%d %d", &o, &offset);
 	    if (o==num)
 	       break;
 	 }
-	 if (i < n) {
-	    afseek(data, first_offset + offset, SEEK_SET);
+	 if (i<n) {
+	    afseek(data, first_offset+offset, SEEK_SET);
 	    pc->compressed=data;
 	    return (true);
 	 }
@@ -582,7 +582,7 @@ static int pdf_getdescendantfont(struct pdfcontext *pc,int num) {
       }
    }
    if ((pt=pdf_getdictvalue(pc)) != NULL && sscanf(pt, "%d", &nnum)
-       && nnum > 0 && nnum < pc->ocnt)
+       && nnum>0 && nnum<pc->ocnt)
       return (pdf_getdescendantfont(pc, nnum));
 
    return (-1);
@@ -598,7 +598,7 @@ static int pdf_findfonts(struct pdfcontext *pc) {
    memset(pc->cmapobjs, -1, sizeof(long));
    pc->fontnames=malloc(pc->ocnt * sizeof(char *));
    /* First look for CID-keyed fonts with a pointer to a ToUnicode CMap */
-   for (i=1; i < pc->ocnt; ++i)
+   for (i=1; i<pc->ocnt; ++i)
       if (pc->objs[i] != -1) {	/* Object 0 is always unused */
 	 if (pdf_findobject(pc, i) && pdf_readdict(pc)) {
 	    if ((pt=PSDictHasEntry(&pc->pdfdict, "Type")) != NULL
@@ -621,7 +621,7 @@ static int pdf_findfonts(struct pdfcontext *pc) {
 	       tpt=fastrdup(pt);
 
 	       dnum=pdf_getdescendantfont(pc, dnum);
-	       if (dnum > 0) {
+	       if (dnum>0) {
 		  pc->fontobjs[k]=dnum;
 		  pc->cmapobjs[k]=cnum;
 		  pc->fontnames[k]=tpt;
@@ -637,7 +637,7 @@ static int pdf_findfonts(struct pdfcontext *pc) {
       }
 
    /* List other fonts, skipping those detected at the first pass */
-   for (i=1; i < pc->ocnt; ++i)
+   for (i=1; i<pc->ocnt; ++i)
       if (pc->objs[i] != -1) {	/* Object 0 is always unused */
 	 if (pdf_findobject(pc, i) && pdf_readdict(pc)) {
 	    if ((pt=PSDictHasEntry(&pc->pdfdict, "Type")) != NULL
@@ -649,8 +649,8 @@ static int pdf_findfonts(struct pdfcontext *pc) {
 		    /* Type3 fonts are named by "Name" rather than BaseFont */
 		    (pt=PSDictHasEntry(&pc->pdfdict, "Name")) != NULL)) {
 
-	       for (j=0; j < k && pc->fontobjs[j] != i; j++);
-	       if (j < k)
+	       for (j=0; j<k && pc->fontobjs[j] != i; j++);
+	       if (j<k)
 		  continue;
 
 	       if ((cmap=PSDictHasEntry(&pc->pdfdict, "ToUnicode")) != NULL) {
@@ -675,7 +675,7 @@ static int pdf_findfonts(struct pdfcontext *pc) {
 	 }
       }
    pc->fcnt=k;
-   return (k > 0);
+   return (k>0);
 }
 
 static int pdf_getinteger(char *pt,struct pdfcontext *pc) {
@@ -686,14 +686,14 @@ static int pdf_getinteger(char *pt,struct pdfcontext *pc) {
    if (pt==NULL)
       return (0);
    val=strtol(pt, NULL, 10);
-   if (pt[strlen(pt) - 1] != 'R')
+   if (pt[strlen(pt)-1] != 'R')
       return (val);
-   if (val < 0 || val >= pc->ocnt || pc->objs[val]==-1)
+   if (val<0 || val >= pc->ocnt || pc->objs[val]==-1)
       return (0);
    here=aftell(pc->pdf);
    if (!pdf_findobject(pc, val))
       return (0);
-   pdf=pc->compressed ? pc->compressed : pc->pdf;
+   pdf=pc->compressed?pc->compressed:pc->pdf;
    ret=afscanf(pdf, "%d", &val);
    if (pc->compressed) {
       afclose(pc->compressed);
@@ -811,15 +811,15 @@ static void pdf_85filter(AFILE *to,AFILE *from) {
 	    ch5='!';
 	 }
 	 val =
-	    ((((ch1 - '!') * 85 + ch2 - '!') * 85 + ch3 - '!') * 85 + ch4 -
-	     '!') * 85 + ch5 - '!';
+	    ((((ch1-'!')*85+ch2-'!')*85+ch3-'!')*85+ch4 -
+	     '!')*85+ch5-'!';
 	 aputc(val >> 24, to);
-	 if (cnt > 1)
-	    aputc((val >> 16) & 0xff, to);
-	 if (cnt > 2)
-	    aputc((val >> 8) & 0xff, to);
-	 if (cnt > 3)
-	    aputc(val & 0xff, to);
+	 if (cnt>1)
+	    aputc((val >> 16)&0xff, to);
+	 if (cnt>2)
+	    aputc((val >> 8)&0xff, to);
+	 if (cnt>3)
+	    aputc(val&0xff, to);
 	 if (cnt != 4)
 	    break;
       }
@@ -881,13 +881,13 @@ static int pdf_zfilter(AFILE *to,AFILE *from) {
 	    ErrorMsg(2,"Flate decompression failed.\n");
 	    return ret;
 	 }
-	 afwrite(out, 1, Z_CHUNK - strm.avail_out, to);
+	 afwrite(out, 1, Z_CHUNK-strm.avail_out, to);
       } while (strm.avail_out==0);
    } while (ret != Z_STREAM_END);
    (void) inflateEnd(&strm);
    free(in);
    free(out);
-   return (ret==Z_STREAM_END ? Z_OK : Z_DATA_ERROR);
+   return (ret==Z_STREAM_END?Z_OK:Z_DATA_ERROR);
 }
 #endif /* _NO_LIBPNG */
 
@@ -905,7 +905,7 @@ static void pdf_rlefilter(AFILE *to,AFILE *from) {
       } else {			/* copy the next by 257-ch1 times */
 	 ch2=agetc(from);
 	 if (ch2 != EOF)
-	    for (i=0; i < 257 - ch1; ++i)
+	    for (i=0; i<257-ch1; ++i)
 	       aputc(ch2, to);
       }
    }
@@ -936,7 +936,7 @@ static AFILE *pdf_defilterstream(struct pdfcontext *pc) {
       ch=agetc(pdf);		/* Skip the newline */
 
    res=atmpfile();
-   for (i=0; i < length; ++i) {
+   for (i=0; i<length; ++i) {
       if ((ch=agetc(pdf)) != EOF)
 	 aputc(ch, res);
    }
@@ -988,9 +988,9 @@ static int getuvalue(AFILE *f,int len,long *val) {
 
    *val=0;
    while (--len >= 0) {
-      if ((ch=agetc(f)) < 0)
+      if ((ch=agetc(f))<0)
 	 return (1);
-      *val=(*val << 8) | ch;
+      *val=(*val << 8)|ch;
    }
    return (0);
 }
@@ -1047,18 +1047,18 @@ static long *FindObjectsFromXREFObject(struct pdfcontext *pc,long prev_xref) {
       cnt=0;
       ret=NULL;
       gen=NULL;		/* no objects to return yet */
-      if (start + num > cnt) {
+      if (start+num>cnt) {
 	 /* increase memory needed for objects. Mark last location=-2 */
 	 ret_old=ret;
 	 gen_old=gen;
 	 sub_old=pc->subindex;
-	 pc->ocnt=(int) (start + num);
-	 ret=realloc(ret, (start + num + 1) * sizeof(long));
+	 pc->ocnt=(int) (start+num);
+	 ret=realloc(ret, (start+num+1)*sizeof(long));
 	 pc->subindex =
-	    realloc(pc->subindex, (start + num + 1) * sizeof(long));
-	 gen=realloc(gen, (start + num) * sizeof(int));
+	    realloc(pc->subindex, (start+num+1)*sizeof(long));
+	 gen=realloc(gen, (start+num)*sizeof(int));
 	 if (ret==NULL || gen==NULL || pc->subindex==NULL
-	     || pc->ocnt != start + num) {
+	     || pc->ocnt != start+num) {
 	    if (ret==NULL)
 	       ret=ret_old;
 	    if (pc->subindex==NULL)
@@ -1067,10 +1067,10 @@ static long *FindObjectsFromXREFObject(struct pdfcontext *pc,long prev_xref) {
 	       gen=gen_old;
 	    goto FindObjectsFromXREFObjectError_ReleaseMemAndExit;
 	 }
-	 memset(ret + cnt, -1, sizeof(long) * (start + num - cnt));
-	 memset(pc->subindex + cnt, -1, sizeof(long) * (start + num - cnt));
-	 memset(gen + cnt, -1, sizeof(int) * (start + num - cnt));
-	 cnt=start + num;
+	 memset(ret+cnt, -1, sizeof(long)*(start+num-cnt));
+	 memset(pc->subindex+cnt, -1, sizeof(long)*(start+num-cnt));
+	 memset(gen+cnt, -1, sizeof(int)*(start+num-cnt));
+	 cnt=start+num;
 	 ret[cnt]=-2;
       }
       /* Now gather the cross references from their stream */
@@ -1080,7 +1080,7 @@ static long *FindObjectsFromXREFObject(struct pdfcontext *pc,long prev_xref) {
 	 afclose(xref_stream);	/* failed to rewind(xref_stream) */
 	 goto FindObjectsFromXREFObjectError_ReleaseMemAndExit;
       }
-      for (i=start; i < start + num; ++i) {
+      for (i=start; i<start+num; ++i) {
 	 if (getuvalue(xref_stream, typewidth, &type) ||
 	     getuvalue(xref_stream, offwidth, &offset) ||
 	     getuvalue(xref_stream, genwidth, &gennum)) {
@@ -1088,17 +1088,17 @@ static long *FindObjectsFromXREFObject(struct pdfcontext *pc,long prev_xref) {
 	    goto FindObjectsFromXREFObjectError_ReleaseMemAndExit;
 	 }
 	 if (type==0) {
-	    if (gennum > gen[i]) {
+	    if (gennum>gen[i]) {
 	       ret[i]=-1;
 	       gen[i]=gennum;
 	    }
 	 } else if (type==1) {
-	    if (gennum > gen[i]) {
+	    if (gennum>gen[i]) {
 	       ret[i]=offset;
 	       gen[i]=gennum;
 	    }
 	 } else if (type==2) {
-	    if (0 > gen[i]) {
+	    if (0>gen[i]) {
 	       ret[i]=offset;	/* containing object # */
 	       pc->subindex[i]=gennum;
 	       gen[i]=0;
@@ -1179,7 +1179,7 @@ static int nextpdftoken(AFILE *file,double *val,char *tokbuf,int tbsize) {
       return (pt_eof);
 
    pt=tokbuf;
-   end=pt + tbsize - 1;
+   end=pt+tbsize-1;
    *pt++=ch;
    *pt='\0';
 
@@ -1187,7 +1187,7 @@ static int nextpdftoken(AFILE *file,double *val,char *tokbuf,int tbsize) {
       int nest=1, quote=0;
 
       while ((ch=agetc(file)) != EOF) {
-	 if (pt < end)
+	 if (pt<end)
 	    *pt++=ch;
 	 if (quote)
 	    quote=0;
@@ -1203,19 +1203,19 @@ static int nextpdftoken(AFILE *file,double *val,char *tokbuf,int tbsize) {
       return (pt_string);
    } else if (ch=='<') {
       ch=agetc(file);
-      if (pt < end)
+      if (pt<end)
 	 *pt++=ch;
       if (ch=='>')
 	 /* Done */ ;
       else if (ch != '~') {
 	 while ((ch=agetc(file)) != EOF && ch != '>')
-	    if (pt < end)
+	    if (pt<end)
 	       *pt++=ch;
       } else {
 	 int twiddle=0;
 
 	 while ((ch=agetc(file)) != EOF) {
-	    if (pt < end)
+	    if (pt<end)
 	       *pt++=ch;
 	    if (ch=='~')
 	       twiddle=1;
@@ -1244,7 +1244,7 @@ static int nextpdftoken(AFILE *file,double *val,char *tokbuf,int tbsize) {
       while ((ch=agetc(file)) != EOF && !isspace(ch) && ch != '%' &&
 	     ch != '(' && ch != ')' && ch != '<' && ch != '>' && ch != '['
 	     && ch != ']' && ch != '{' && ch != '}' && ch != '/')
-	 if (pt < tokbuf + tbsize - 2)
+	 if (pt<tokbuf+tbsize-2)
 	    *pt++=ch;
       *pt='\0';
       aungetc(ch, file);
@@ -1253,7 +1253,7 @@ static int nextpdftoken(AFILE *file,double *val,char *tokbuf,int tbsize) {
       while ((ch=agetc(file)) != EOF && !isspace(ch) && ch != '%' &&
 	     ch != '(' && ch != ')' && ch != '<' && ch != '>' && ch != '['
 	     && ch != ']' && ch != '{' && ch != '}' && ch != '/') {
-	 if (pt < tokbuf + tbsize - 2)
+	 if (pt<tokbuf+tbsize-2)
 	    *pt++=ch;
       }
       *pt='\0';
@@ -1264,7 +1264,7 @@ static int nextpdftoken(AFILE *file,double *val,char *tokbuf,int tbsize) {
 	 *val=r;
 	 return (pt_number);
       } else if (*pt=='#') {
-	 r=strtol(pt + 1, &end, r);
+	 r=strtol(pt+1, &end, r);
 	 if (*end=='\0') {	/* It's a radix integer */
 	    *val=r;
 	    return (pt_number);
@@ -1290,8 +1290,8 @@ static int nextpdftoken(AFILE *file,double *val,char *tokbuf,int tbsize) {
 }
 
 static void Transform(BasePoint *to,BasePoint *from,double trans[6]) {
-   to->x=trans[0] * from->x + trans[2] * from->y + trans[4];
-   to->y=trans[1] * from->x + trans[3] * from->y + trans[5];
+   to->x=trans[0] * from->x+trans[2] * from->y+trans[4];
+   to->y=trans[1] * from->x+trans[3] * from->y+trans[5];
 }
 
 static Entity *EntityCreate(SplinePointList *head,int linecap,int linejoin,
@@ -1307,7 +1307,7 @@ static Entity *EntityCreate(SplinePointList *head,int linecap,int linejoin,
    ent->u.splines.stroke.col=0xffffffff;
    ent->u.splines.fill.opacity=1.0;
    ent->u.splines.stroke.opacity=1.0;
-   memcpy(ent->u.splines.transform, transform, 6 * sizeof(double));
+   memcpy(ent->u.splines.transform, transform, 6*sizeof(double));
    return (ent);
 }
 
@@ -1323,7 +1323,7 @@ static void ECCategorizePoints(EntityChar *ec) {
 static void dictfree(struct pskeydict *dict) {
    int i;
 
-   for (i=0; i < dict->cnt; ++i) {
+   for (i=0; i<dict->cnt; ++i) {
       if (dict->entries[i].type==ps_string
 	  || dict->entries[i].type==ps_instr
 	  || dict->entries[i].type==ps_lit)
@@ -1337,7 +1337,7 @@ static void dictfree(struct pskeydict *dict) {
 static void freestuff(struct psstack *stack,int sp) {
    int i;
 
-   for (i=0; i < sp; ++i) {
+   for (i=0; i<sp; ++i) {
       if (stack[i].type==ps_string || stack[i].type==ps_instr ||
 	  stack[i].type==ps_lit)
 	 free(stack[i].u.str);
@@ -1382,38 +1382,38 @@ static void _InterpretPdf(AFILE *in,struct pdfcontext *pc,EntityChar *ec) {
    while ((tok=nextpdftoken(in, &dval, tokbuf, tokbufsize)) != pt_eof) {
       switch (tok) {
 	case pt_number:
-	   if (sp < sizeof(stack) / sizeof(stack[0])) {
+	   if (sp<sizeof(stack)/sizeof(stack[0])) {
 	      stack[sp].type=ps_num;
 	      stack[sp++].u.val=dval;
 	   }
 	   break;
 	case pt_string:
-	   if (sp < sizeof(stack) / sizeof(stack[0])) {
+	   if (sp<sizeof(stack)/sizeof(stack[0])) {
 	      stack[sp].type=ps_string;
-	      stack[sp++].u.str=copyn(tokbuf + 1, strlen(tokbuf) - 2);
+	      stack[sp++].u.str=copyn(tokbuf+1, strlen(tokbuf)-2);
 	   }
 	   break;
 	case pt_namelit:
-	   if (sp < sizeof(stack) / sizeof(stack[0])) {
+	   if (sp<sizeof(stack)/sizeof(stack[0])) {
 	      stack[sp].type=ps_lit;
 	      stack[sp++].u.str=fastrdup(tokbuf);
 	   }
 	   break;
 	case pt_true:
 	case pt_false:
-	   if (sp < sizeof(stack) / sizeof(stack[0])) {
+	   if (sp<sizeof(stack)/sizeof(stack[0])) {
 	      stack[sp].type=ps_bool;
 	      stack[sp++].u.tf=tok==pt_true;
 	   }
 	   break;
 	case pt_openarray:
-	   if (sp < sizeof(stack) / sizeof(stack[0])) {
+	   if (sp<sizeof(stack)/sizeof(stack[0])) {
 	      stack[sp++].type=ps_mark;
 	   }
 	   break;
 	case pt_closearray:
-	   for (i=0; i < sp; ++i)
-	      if (stack[sp - 1 - i].type==ps_mark)
+	   for (i=0; i<sp; ++i)
+	      if (stack[sp-1-i].type==ps_mark)
 		 break;
 	   if (i==sp)
 	      ErrorMsg(2,"No mark in ] (close array)\n");
@@ -1422,21 +1422,21 @@ static void _InterpretPdf(AFILE *in,struct pdfcontext *pc,EntityChar *ec) {
 
 	      dict.cnt=dict.max=i;
 	      dict.entries=calloc(i, sizeof(struct pskeyval));
-	      for (j=0; j < i; ++j) {
-		 dict.entries[j].type=stack[sp - i + j].type;
-		 dict.entries[j].u=stack[sp - i + j].u;
+	      for (j=0; j<i; ++j) {
+		 dict.entries[j].type=stack[sp-i+j].type;
+		 dict.entries[j].u=stack[sp-i+j].u;
 		 /* don't need to copy because the things on the stack */
 		 /*  are being popped (don't need to free either) */
 	      }
-	      sp=sp - i;
-	      stack[sp - 1].type=ps_array;
-	      stack[sp - 1].u.dict=dict;
+	      sp=sp-i;
+	      stack[sp-1].type=ps_array;
+	      stack[sp-1].u.dict=dict;
 	   }
 	   break;
 	case pt_setcachedevice:
 	   if (sp >= 6) {
-	      ec->width=stack[sp - 6].u.val;
-	      ec->vwidth=stack[sp - 5].u.val;
+	      ec->width=stack[sp-6].u.val;
+	      ec->vwidth=stack[sp-5].u.val;
 	      /* I don't care about the bounding box */
 	      sp -= 6;
 	   }
@@ -1447,9 +1447,9 @@ static void _InterpretPdf(AFILE *in,struct pdfcontext *pc,EntityChar *ec) {
 	   break;
 	case pt_concat:
 	   if (sp >= 1) {
-	      if (stack[sp - 1].type==ps_array) {
-		 if (stack[sp - 1].u.dict.cnt==6
-		     && stack[sp - 1].u.dict.entries[0].type==ps_num) {
+	      if (stack[sp-1].type==ps_array) {
+		 if (stack[sp-1].u.dict.cnt==6
+		     && stack[sp-1].u.dict.entries[0].type==ps_num) {
 		    --sp;
 		    t[5]=stack[sp].u.dict.entries[5].u.val;
 		    t[4]=stack[sp].u.dict.entries[4].u.val;
@@ -1479,48 +1479,48 @@ static void _InterpretPdf(AFILE *in,struct pdfcontext *pc,EntityChar *ec) {
 	      linewidth=stack[--sp].u.val;
 	   break;
 	case pt_setdash:
-	   if (sp >= 2 && stack[sp - 1].type==ps_num
-	       && stack[sp - 2].type==ps_array) {
+	   if (sp >= 2 && stack[sp-1].type==ps_num
+	       && stack[sp-2].type==ps_array) {
 	      sp -= 2;
-	      dash_offset=stack[sp + 1].u.val;
-	      for (i=0; i < DASH_MAX && i < stack[sp].u.dict.cnt; ++i)
+	      dash_offset=stack[sp+1].u.val;
+	      for (i=0; i<DASH_MAX && i<stack[sp].u.dict.cnt; ++i)
 		 dashes[i]=stack[sp].u.dict.entries[i].u.val;
 	      dictfree(&stack[sp].u.dict);
 	   }
 	   break;
 	case pt_setgreystroke:
 	   if (sp >= 1) {
-	      fore_stroke=stack[--sp].u.val * 255;
+	      fore_stroke=stack[--sp].u.val*255;
 	      fore_stroke *= 0x010101;
 	   }
 	   break;
 	case pt_setgreyfill:
 	   if (sp >= 1) {
-	      fore_fill=stack[--sp].u.val * 255;
+	      fore_fill=stack[--sp].u.val*255;
 	      fore_fill *= 0x010101;
 	   }
 	   break;
 	case pt_setrgbstroke:
 	   if (sp >= 3) {
-	      fore_stroke=(((int) (stack[sp - 3].u.val * 255)) << 16) +
-		 (((int) (stack[sp - 2].u.val * 255)) << 8) +
-		 (int) (stack[sp - 1].u.val * 255);
+	      fore_stroke=(((int) (stack[sp-3].u.val*255)) << 16) +
+		 (((int) (stack[sp-2].u.val*255)) << 8) +
+		 (int) (stack[sp-1].u.val*255);
 	      sp -= 3;
 	   }
 	   break;
 	case pt_setrgbfill:
 	   if (sp >= 3) {
-	      fore_fill=(((int) (stack[sp - 3].u.val * 255)) << 16) +
-		 (((int) (stack[sp - 2].u.val * 255)) << 8) +
-		 (int) (stack[sp - 1].u.val * 255);
+	      fore_fill=(((int) (stack[sp-3].u.val*255)) << 16) +
+		 (((int) (stack[sp-2].u.val*255)) << 8) +
+		 (int) (stack[sp-1].u.val*255);
 	      sp -= 3;
 	   }
 	   break;
 	case pt_lineto:
 	case pt_moveto:
 	   if (sp >= 2) {
-	      current.x=stack[sp - 2].u.val;
-	      current.y=stack[sp - 1].u.val;
+	      current.x=stack[sp-2].u.val;
+	      current.y=stack[sp-1].u.val;
 	      sp -= 2;
 	      pt=chunkalloc(sizeof(SplinePoint));
 	      Transform(&pt->me, &current, transform);
@@ -1553,21 +1553,21 @@ static void _InterpretPdf(AFILE *in,struct pdfcontext *pc,EntityChar *ec) {
 	       || (sp >= 4 && tok != pt_curveto)) {
 	      BasePoint ncp, pcp, to;
 
-	      to.x=stack[sp - 2].u.val;
-	      to.y=stack[sp - 1].u.val;
+	      to.x=stack[sp-2].u.val;
+	      to.y=stack[sp-1].u.val;
 	      if (tok==pt_curveto) {
-		 ncp.x=stack[sp - 6].u.val;
-		 ncp.y=stack[sp - 5].u.val;
-		 pcp.x=stack[sp - 4].u.val;
-		 pcp.y=stack[sp - 3].u.val;
+		 ncp.x=stack[sp-6].u.val;
+		 ncp.y=stack[sp-5].u.val;
+		 pcp.x=stack[sp-4].u.val;
+		 pcp.y=stack[sp-3].u.val;
 	      } else if (tok==pt_vcurveto) {
 		 ncp=current;
-		 pcp.x=stack[sp - 4].u.val;
-		 pcp.y=stack[sp - 3].u.val;
+		 pcp.x=stack[sp-4].u.val;
+		 pcp.y=stack[sp-3].u.val;
 	      } else if (tok==pt_ycurveto) {
 		 pcp=to;
-		 ncp.x=stack[sp - 4].u.val;
-		 ncp.y=stack[sp - 3].u.val;
+		 ncp.x=stack[sp-4].u.val;
+		 ncp.y=stack[sp-3].u.val;
 	      }
 	      current=to;
 	      if (cur != NULL && cur->first != NULL
@@ -1596,17 +1596,17 @@ static void _InterpretPdf(AFILE *in,struct pdfcontext *pc,EntityChar *ec) {
 	      else
 		 head=spl;
 	      cur=spl;
-	      temp1.x=stack[sp - 4].u.val;
-	      temp1.y=stack[sp - 3].u.val;
+	      temp1.x=stack[sp-4].u.val;
+	      temp1.y=stack[sp-3].u.val;
 	      Transform(&temp2, &temp1, transform);
 	      first=SplinePointCreate(temp2.x, temp2.y);
-	      temp1.x += stack[sp - 2].u.val;
+	      temp1.x += stack[sp-2].u.val;
 	      Transform(&temp2, &temp1, transform);
 	      second=SplinePointCreate(temp2.x, temp2.y);
-	      temp1.y += stack[sp - 3].u.val;
+	      temp1.y += stack[sp-3].u.val;
 	      Transform(&temp2, &temp1, transform);
 	      third=SplinePointCreate(temp2.x, temp2.y);
-	      temp1.x=stack[sp - 4].u.val;
+	      temp1.x=stack[sp-4].u.val;
 	      Transform(&temp2, &temp1, transform);
 	      fourth=SplinePointCreate(temp2.x, temp2.y);
 	      cur->first=cur->last=first;
@@ -1669,7 +1669,7 @@ static void _InterpretPdf(AFILE *in,struct pdfcontext *pc,EntityChar *ec) {
 	   cur=NULL;
 	   break;
 	case pt_gsave:
-	   if (gsp < 30) {
+	   if (gsp<30) {
 	      memcpy(gsaves[gsp].transform, transform, sizeof(transform));
 	      gsaves[gsp].current=current;
 	      gsaves[gsp].linewidth=linewidth;
@@ -1682,7 +1682,7 @@ static void _InterpretPdf(AFILE *in,struct pdfcontext *pc,EntityChar *ec) {
 	   }
 	   break;
 	case pt_grestore:
-	   if (gsp > 0) {
+	   if (gsp>0) {
 	      --gsp;
 	      memcpy(transform, gsaves[gsp].transform, sizeof(transform));
 	      current=gsaves[gsp].current;
@@ -1788,25 +1788,25 @@ static void add_mapping(SplineFont *basesf,long *mappings,int *uvals,
 			int nuni, int gid, int cmap_from_cid, int cur) {
    int i, ndups, pos;
    char suffix[8], *name, *nname, buffer[400];
-   SplineFont *sf=basesf->subfontcnt > 0 ? basesf->subfonts[0] : basesf;
+   SplineFont *sf=basesf->subfontcnt>0?basesf->subfonts[0]:basesf;
    struct altuni *altuni, *prev;
    SplineChar *sc;
 
    name =
       fastrdup(StdGlyphName
 	   (buffer, uvals[0], sf->uni_interp, sf->for_new_glyphs));
-   name=realloc(name, strlen(name) + 8);
-   for (i=1; i < nuni; i++) {
+   name=realloc(name, strlen(name)+8);
+   for (i=1; i<nuni; i++) {
       nname =
 	 fastrdup(StdGlyphName
 	      (buffer, uvals[i], sf->uni_interp, sf->for_new_glyphs));
-      name=realloc(name, strlen(name) + strlen(nname) + 10);
+      name=realloc(name, strlen(name)+strlen(nname)+10);
       strcat(name, "_");
       strcat(name, nname);
       free(nname);
    }
    ndups=0;
-   for (i=0; i < cur; i++) {
+   for (i=0; i<cur; i++) {
       if (mappings[i]==mappings[cur])
 	 ndups++;
    }
@@ -1821,11 +1821,11 @@ static void add_mapping(SplineFont *basesf,long *mappings,int *uvals,
    /* If such a mapping is present, then GIDs used in the ToUnicode Cmap array will correspond */
    /* to "Unicode" values it specifies rather than to the real order in which the glyphs are */
    /* stored in the file */
-   pos=cmap_from_cid || sf->map==NULL ? gid : sf->map->map[gid];
+   pos=cmap_from_cid || sf->map==NULL?gid:sf->map->map[gid];
    sc=sf->glyphs[pos];
 
-   if (pos >= 0 && pos < sf->glyphcnt
-       && (sc->unicodeenc != uvals[0] || nuni > 1)) {
+   if (pos >= 0 && pos<sf->glyphcnt
+       && (sc->unicodeenc != uvals[0] || nuni>1)) {
       /* Sometimes FF instead of assigning proper Unicode values to TTF glyphs keeps */
       /* them encoded to the same codepoint, but creates for each glyph an alternate */
       /* encoding, corresponding to the position this glyph has in the font's encoding */
@@ -1858,7 +1858,7 @@ static void pdf_getcmap(struct pdfcontext *pc,SplineFont *basesf,
    int i, j, gid, start, end, uni, cur=0, nuni, nhex, nchars, lo, *uvals;
    long *mappings;
    char tok[200], *ccval, prevtok[200];
-   SplineFont *sf=basesf->subfontcnt > 0 ? basesf->subfonts[0] : basesf;
+   SplineFont *sf=basesf->subfontcnt>0?basesf->subfonts[0]:basesf;
 
    if (!pdf_findobject(pc, pc->cmapobjs[font_num]) || !pdf_readdict(pc))
       return;
@@ -1870,7 +1870,7 @@ static void pdf_getcmap(struct pdfcontext *pc,SplineFont *basesf,
    mappings=calloc(sf->glyphcnt, sizeof(long));
    while (pdf_getprotectedtok(file, tok) >= 0) {
       if (strcmp(tok, "beginbfchar")==0 && sscanf(prevtok, "%d", &nchars)) {
-	 for (i=0; i < nchars; i++) {
+	 for (i=0; i<nchars; i++) {
 	    if (pdf_skip_brackets(file, tok) >= 0 && sscanf(tok, "%x", &gid)
 		&& pdf_skip_brackets(file, tok) >= 0
 		&& sscanf(tok, "%lx", &mappings[cur])) {
@@ -1879,21 +1879,21 @@ static void pdf_getcmap(struct pdfcontext *pc,SplineFont *basesf,
 	       /* so they should not necessarily correspond to any valid Unicode codepoints. */
 	       /* In order to get the real Unicode value mapped to a glyph we should parse the */
 	       /* hex string once again, dividing it into hex quartets */
-	       nhex=(strlen(tok)) / 4;
+	       nhex=(strlen(tok))/4;
 	       nuni=1;
 	       uvals=calloc(nhex, sizeof(int));
 	       sscanf(tok, "%4x", &uvals[0]);
-	       ccval=tok + 4;
+	       ccval=tok+4;
 	       /* If a single glyph is mapped to a sequence of Unicode characters, then the */
 	       /* CMap mapping will contain two or more hex quartets. However a pair of such */
 	       /* quartets may also represent a single Unicode character encoded with */
 	       /* a surrogate pair */
-	       for (j=1; j < nhex && strlen(ccval) >= 4; j++) {
+	       for (j=1; j<nhex && strlen(ccval) >= 4; j++) {
 		  sscanf(ccval, "%4x", &lo);
-		  if (uvals[nuni - 1] >= 0xD800 && uvals[nuni - 1] <= 0xDBFF
+		  if (uvals[nuni-1] >= 0xD800 && uvals[nuni-1] <= 0xDBFF
 		      && lo >= 0xDC00 && lo <= 0xDFFF)
-		     uvals[nuni - 1] =
-			0x10000 + (uvals[nuni - 1] - 0xD800) * 0x400 + (lo -
+		     uvals[nuni-1] =
+			0x10000+(uvals[nuni-1]-0xD800)*0x400+(lo -
 									0xDC00);
 		  else
 		     uvals[nuni++]=lo;
@@ -1911,7 +1911,7 @@ static void pdf_getcmap(struct pdfcontext *pc,SplineFont *basesf,
 	    goto fail;
       } else if (strcmp(tok, "beginbfrange")==0
 		 && sscanf(prevtok, "%d", &nchars)) {
-	 for (i=0; i < nchars; i++) {
+	 for (i=0; i<nchars; i++) {
 	    if (pdf_skip_brackets(file, tok) >= 0 && sscanf(tok, "%x", &start)
 		&& pdf_skip_brackets(file, tok) >= 0
 		&& sscanf(tok, "%x", &end)
@@ -1923,10 +1923,10 @@ static void pdf_getcmap(struct pdfcontext *pc,SplineFont *basesf,
 	       /* For CMap values defining a character range we assume they should always */
 	       /* correspond to a single Unicode character (either a BMP character or a surrogate pair) */
 	       if (strlen(tok) >= 8) {
-		  sscanf(tok + 4, "%4x", &lo);
+		  sscanf(tok+4, "%4x", &lo);
 		  if (uni >= 0xD800 && uni <= 0xDBFF && lo >= 0xDC00
 		      && lo <= 0xDFFF)
-		     uni=0x10000 + (uni - 0xD800) * 0x400 + (lo - 0xDC00);
+		     uni=0x10000+(uni-0xD800)*0x400+(lo-0xDC00);
 	       }
 
 	       for (gid=start; gid <= end; gid++) {
@@ -2003,9 +2003,9 @@ static SplineFont *pdf_loadtype3(struct pdfcontext *pc) {
       goto fail;
    if (sscanf(fontmatrix, "[%lg", &emsize) != 1 || emsize==0)
       goto fail;
-   emsize=1.0 / emsize;
+   emsize=1.0/emsize;
    enc=fastrdup(enc);
-   name=fastrdup(name + 1);
+   name=fastrdup(name+1);
 
    if (!pdf_getcharprocs(pc, cp))
       goto fail;
@@ -2024,11 +2024,11 @@ static SplineFont *pdf_loadtype3(struct pdfcontext *pc) {
    sf->copyright=NULL;
    free(sf->comments);
    sf->comments=NULL;
-   sf->ascent=.8 * emsize;
-   sf->descent=emsize - sf->ascent;
+   sf->ascent=.8*emsize;
+   sf->descent=emsize-sf->ascent;
    sf->multilayer=true;
 
-   for (i=0; i < charprocdict->next; ++i) {
+   for (i=0; i<charprocdict->next; ++i) {
       sf->glyphs[i]=pdf_InterpretSC(pc, charprocdict->keys[i],
 				      charprocdict->values[i], &flags);
       if (sf->glyphs[i] != NULL) {
@@ -2119,7 +2119,7 @@ static SplineFont *pdf_loadfont(struct pdfcontext *pc,int font_num) {
    afclose(file);
    /* Don't attempt to parse CMaps for Type 1 fonts: they already have glyph names */
    /* which are usually more meaningful */
-   if (pc->cmapobjs[font_num] != -1 && type > 1)
+   if (pc->cmapobjs[font_num] != -1 && type>1)
       pdf_getcmap(pc, sf, font_num);
    return (sf);
 
@@ -2137,7 +2137,7 @@ static void pcFree(struct pdfcontext *pc) {
    free(pc->pdfdict.keys);
    free(pc->pdfdict.values);
    free(pc->objs);
-   for (i=0; i < pc->fcnt; ++i)
+   for (i=0; i<pc->fcnt; ++i)
       free(pc->fontnames[i]);
    free(pc->fontnames);
    free(pc->fontobjs);
@@ -2166,9 +2166,9 @@ char **NamesReadPDF(char *filename) {
    if (pdf_findfonts(&pc)==0) {
       goto NamesReadPDF_error;
    }
-   if ((list=malloc((pc.fcnt + 1) * sizeof(char *)))==NULL)
+   if ((list=malloc((pc.fcnt+1)*sizeof(char *)))==NULL)
       goto NamesReadPDF_error;
-   for (i=0; i < pc.fcnt; ++i)
+   for (i=0; i<pc.fcnt; ++i)
       if ((list[i]=fastrdup(pc.fontnames[i]))==NULL)
 	 goto NamesReadPDFlist_error;
    list[i]=NULL;
@@ -2213,18 +2213,18 @@ SplineFont *_SFReadPdfFont(AFILE *pdf, char *filename,
    }
    /* parse the chosen font name */
    if ((pt=strchr(filename, '(')) != NULL) {
-      select_this_font=fastrdup(pt + 1);
+      select_this_font=fastrdup(pt+1);
       if ((pt=strchr(select_this_font, ')')) != NULL)
 	 *pt='\0';
    }
    if (pc.fcnt==1) {
       sf=pdf_loadfont(&pc, 0);
    } else if (select_this_font != NULL) {
-      for (i=0; i < pc.fcnt; ++i) {
+      for (i=0; i<pc.fcnt; ++i) {
 	 if (strcmp(pc.fontnames[i], select_this_font)==0)
 	    break;
       }
-      if (i < pc.fcnt)
+      if (i<pc.fcnt)
 	 sf=pdf_loadfont(&pc, i);
       else
 	 ErrorMsg(2,"Not in collection:  %s is not in %.100s\n",
@@ -2233,13 +2233,13 @@ SplineFont *_SFReadPdfFont(AFILE *pdf, char *filename,
       char **names;
       int choice;
 
-      names=malloc((pc.fcnt + 1) * sizeof(unichar_t *));
-      for (i=0; i < pc.fcnt; ++i)
+      names=malloc((pc.fcnt+1)*sizeof(unichar_t *));
+      for (i=0; i<pc.fcnt; ++i)
 	 names[i]=fastrdup(pc.fontnames[i]);
       names[i]=NULL;
       choice=0;
 
-      for (i=0; i < pc.fcnt; ++i)
+      for (i=0; i<pc.fcnt; ++i)
 	 free(names[i]);
       free(names);
       if (choice != -1)
@@ -2290,7 +2290,7 @@ Entity *EntityInterpretPDFPage(AFILE *pdf, int select_page) {
    }
    if (pc.pcnt==1) {
       ent=pdf_InterpretEntity(&pc, 0);
-   } else if (select_page >= 0 && select_page < pc.pcnt) {
+   } else if (select_page >= 0 && select_page<pc.pcnt) {
       ent=pdf_InterpretEntity(&pc, select_page);
    } else {
       choice=0;

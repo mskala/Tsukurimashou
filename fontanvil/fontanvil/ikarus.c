@@ -1,4 +1,4 @@
-/* $Id: ikarus.c 4525 2015-12-20 19:51:59Z mskala $ */
+/* $Id: ikarus.c 4532 2015-12-22 13:18:53Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -46,9 +46,9 @@ static void InitURWTable(void) {
    if (urw_inited)
       return;
    memset(urwtable, -1, sizeof(urwtable));
-   for (i=0; i < 26; ++i) {
-      urwtable[i + 101]='A' + i;
-      urwtable[i + 301]='a' + i;
+   for (i=0; i<26; ++i) {
+      urwtable[i+101]='A'+i;
+      urwtable[i+301]='a'+i;
    }
    urwtable[127]=0xc6;
    urwtable[128]=0x152;
@@ -212,7 +212,7 @@ static void InitURWTable(void) {
    urwtable[487]=0x173;
    urwtable[489]=0x15f;
    for (i=1; i <= 9; ++i)
-      urwtable[500 + i]='0' + i;
+      urwtable[500+i]='0'+i;
    urwtable[510]='0';
    urwtable[511]=0xa3;
    urwtable[512]='$';
@@ -226,10 +226,10 @@ static void InitURWTable(void) {
    urwtable[576]=0xb2;
    urwtable[577]=0xb3;
    for (i=4; i <= 9; ++i)
-      urwtable[574 + i]=0x2070 + i;
+      urwtable[574+i]=0x2070+i;
    urwtable[584]=0x2070;
    for (i=1; i <= 9; ++i)
-      urwtable[586 + i]=0x2080 + i;
+      urwtable[586+i]=0x2080+i;
    urwtable[596]=0x2080;
 
    urwtable[601]='.';
@@ -290,8 +290,8 @@ static void InitURWTable(void) {
    urwtable[665]=0xbc;
    urwtable[666]=0xbe;
    urwtable[667]=0x2155;
-   for (i=0; i <= 0x215e - 0x2155; ++i)
-      urwtable[668 + i]=0x215e + i;
+   for (i=0; i <= 0x215e -0x2155; ++i)
+      urwtable[668+i]=0x215e +i;
    urwtable[677]=0x2044;
    urwtable[678]='%';
    urwtable[679]=0x2030;
@@ -388,7 +388,7 @@ static void IkarusNameFromURWNumber(SplineChar *sc,int number) {
 
    free(sc->name);
    sc->name=NULL;
-   if (number < sizeof(urwtable) / sizeof(urwtable[0])) {
+   if (number<sizeof(urwtable)/sizeof(urwtable[0])) {
       sc->unicodeenc=urwtable[number];
       if (sc->unicodeenc != -1) {
 	 sc->name=fastrdup(StdGlyphName(buf, sc->unicodeenc, ui_none, NULL));
@@ -417,9 +417,9 @@ static void IkarusAddContour(SplineChar *sc,int npts,BasePoint *bps,
    spl->next=sc->layers[ly_fore].splines;
    sc->layers[ly_fore].splines=spl;
    spl->first=spl->last=last=SplinePointCreate(bps[0].x, bps[0].y);
-   last->pointtype=ptype[npts - 1];
+   last->pointtype=ptype[npts-1];
    last->nextcpdef=last->prevcpdef=true;
-   for (i=1; i < npts - 1; ++i) {
+   for (i=1; i<npts-1; ++i) {
       next=SplinePointCreate(bps[i].x, bps[i].y);
       next->nextcpdef=next->prevcpdef=true;
       next->pointtype=ptype[i];
@@ -428,14 +428,14 @@ static void IkarusAddContour(SplineChar *sc,int npts,BasePoint *bps,
    }
    SplineMake3(last, spl->last);
    last=spl->first;
-   for (i=1; i < npts; ++i) {
+   for (i=1; i<npts; ++i) {
       SplineCharDefaultPrevCP(last);
       SplineCharDefaultNextCP(last);
       last=last->next->to;
    }
 
    cw=SplinePointListIsClockwise(spl)==1;
-   if (((nesting & 1) && cw) || (!(nesting & 1) && !cw))
+   if (((nesting&1) && cw) || (!(nesting&1) && !cw))
       SplineSetReverse(spl);
 }
 
@@ -461,7 +461,7 @@ static void IkarusReadChar(SplineChar *sc,AFILE *file) {
    if (following != 0)
       ErrorMsg(2,"This character (gid=%d) has a following part (%d). I'm not sure what that means, please send me (gww@silcom.com) a copy of this font so I can test with it.\n",
 	       sc->orig_pos, following);
-   for (i=3; i < n; ++i)
+   for (i=3; i<n; ++i)
       aget_uint16_be(file);		/* Just in case the name section is bigger now */
 
    n=aget_uint16_be(file);
@@ -475,26 +475,26 @@ static void IkarusReadChar(SplineChar *sc,AFILE *file) {
    bb.maxx=(short) aget_uint16_be(file);
    bb.miny=(short) aget_uint16_be(file);
    bb.maxy=(short) aget_uint16_be(file);
-   for (i=12; i < n; ++i)
+   for (i=12; i<n; ++i)
       aget_uint16_be(file);
 
    units=aget_uint16_be(file);
    if (units != 1)
       sc->width *= units;
 
-   n=aget_uint16_be(file) * 2048;
+   n=aget_uint16_be(file)*2048;
    n += aget_uint16_be(file);	/* Length of contour section in words */
-   ncontours=(n - 2) / 6;
+   ncontours=(n-2)/6;
    contours=malloc(ncontours * sizeof(struct contour));
    ptmax=0;
-   for (i=0; i < ncontours; ++i) {
-      contours[i].offset=aget_uint16_be(file) * 4096;
-      contours[i].offset += 2 * aget_uint16_be(file) - 2;
+   for (i=0; i<ncontours; ++i) {
+      contours[i].offset=aget_uint16_be(file)*4096;
+      contours[i].offset += 2*aget_uint16_be(file)-2;
       contours[i].dir=aget_uint16_be(file);
       contours[i].nest=aget_uint16_be(file);
       contours[i].col=aget_uint16_be(file);
       contours[i].npts=aget_uint16_be(file);
-      if (contours[i].npts > ptmax)
+      if (contours[i].npts>ptmax)
 	 ptmax=contours[i].npts;
    }
    bps=malloc(ptmax * sizeof(BasePoint));
@@ -503,25 +503,25 @@ static void IkarusReadChar(SplineChar *sc,AFILE *file) {
    base=aftell(file);
    /* 2 words here giving length (in records/words) of image data */
 
-   for (i=0; i < ncontours; ++i) {
-      afseek(file, base + contours[i].offset, SEEK_SET);
-      for (j=0; j < contours[i].npts; ++j) {
+   for (i=0; i<ncontours; ++i) {
+      afseek(file, base+contours[i].offset, SEEK_SET);
+      for (j=0; j<contours[i].npts; ++j) {
 	 x=(short) aget_uint16_be(file);
 	 y=(short) aget_uint16_be(file);
-	 if (x < 0 && y > 0)
+	 if (x<0 && y>0)
 	    ptype[j]=-1;	/* Start point */
-	 else if (x < 0 /* && y<0 */ )
+	 else if (x<0 /* && y<0 */ )
 	    ptype[j]=pt_corner;
-	 else if (/* x>0 && */ y > 0)
+	 else if (/* x>0 && */ y>0)
 	    ptype[j]=pt_curve;
 	 else			/* if (x>0 && y<0 ) */
 	    ptype[j]=pt_tangent;
-	 if (x < 0)
+	 if (x<0)
 	    x=-x;
-	 if (y < 0)
+	 if (y<0)
 	    y=-y;
-	 x += bb.minx - 1;
-	 y += bb.miny - 1;
+	 x += bb.minx-1;
+	 y += bb.miny-1;
 	 bps[j].x=units * x;
 	 bps[j].y=units * y;
       }
@@ -548,7 +548,7 @@ static void IkarusFontname(SplineFont *sf,char *fullname,char *fnam) {
       else {
 	 pt=strrchr(sf->origname, '/');
 	 if (pt==NULL)
-	    pt=sf->origname - 1;
+	    pt=sf->origname-1;
 	 strncpy(fullname, pt, 80);
 	 fullname[80]='\0';
 	 pt=strchr(fullname, '.');
@@ -633,7 +633,7 @@ SplineFont *SFReadIkarus(char *fontname) {
 	 ErrorMsg(2,"This looks like an ikarus format which I have seen examples of, but for which\nI have no documentation. FontAnvil does not support it yet.\n");
       afclose(file);
       return (NULL);
-   } else if (ilen < 55 || hlen <= ilen) {
+   } else if (ilen<55 || hlen <= ilen) {
       afclose(file);
       return (NULL);
    }
@@ -641,9 +641,9 @@ SplineFont *SFReadIkarus(char *fontname) {
       ErrorMsg(2,"Unexpected size for name section of URW font (expected 55, got %d)\n",
 	       ilen);
 
-   afseek(file, 2 * ilen + 2, SEEK_SET);
+   afseek(file, 2*ilen+2, SEEK_SET);
    jlen=aget_uint16_be(file);
-   if (jlen < 12 || hlen <= jlen + ilen) {
+   if (jlen<12 || hlen <= jlen+ilen) {
       afclose(file);
       return (NULL);
    }
@@ -661,13 +661,13 @@ SplineFont *SFReadIkarus(char *fontname) {
    /* descender?=*/ aget_uint16_be(file);
    /* line thickness=*/ aget_uint16_be(file);
    /* stroke thickness=*/ aget_uint16_be(file);
-   italic_angle=aget_uint16_be(file) / 10.0 * M_PI / 180.0;
+   italic_angle=aget_uint16_be(file)/10.0*M_PI/180.0;
    opt_pt_size=aget_uint16_be(file);
    /* average char width=*/ aget_uint16_be(file);
 
-   afseek(file, 2 * ilen + 2 * jlen + 2, SEEK_SET);
+   afseek(file, 2*ilen+2*jlen+2, SEEK_SET);
    llen=aget_uint16_be(file);	/* the hierarchy section is unused in font files */
-   if (llen != 1 || hlen <= jlen + ilen + llen) {
+   if (llen != 1 || hlen <= jlen+ilen+llen) {
       afclose(file);
       return (NULL);
    }
@@ -675,7 +675,7 @@ SplineFont *SFReadIkarus(char *fontname) {
    mlen=aget_uint16_be(file);
    /* Peter Karow's book documents that hlen==jlen+ilen+llen+mlen+1, but this */
    /*  does not appear to be the case. */
-   if (hlen < jlen + ilen + llen + mlen + 1 || mlen < 3 * numchars + 3) {
+   if (hlen<jlen+ilen+llen+mlen+1 || mlen<3*numchars+3) {
       afclose(file);
       return (NULL);
    }
@@ -686,13 +686,13 @@ SplineFont *SFReadIkarus(char *fontname) {
    offsets=malloc(numchars * sizeof(int32_t));
    numbers=malloc(numchars * sizeof(int32_t));
    maxnum=0;
-   for (i=0; i < numchars; ++i) {
+   for (i=0; i<numchars; ++i) {
       numbers[i]=aget_uint16_be(file);
-      if (numbers[i] > maxnum)
+      if (numbers[i]>maxnum)
 	 maxnum=numbers[i];
       rpos=aget_uint16_be(file);	/* record pos (1 record=2048 words) */
       wpos=aget_uint16_be(file);	/* word pos in record */
-      offsets[i]=(rpos - 1) * 4096 + 2 * (wpos - 1);
+      offsets[i]=(rpos-1)*4096+2*(wpos-1);
    }
 
    sf=SplineFontBlank(numchars /*maxnum+1 */ );
@@ -700,12 +700,12 @@ SplineFont *SFReadIkarus(char *fontname) {
    sf->italicangle=italic_angle;
    sf->ascent=12000;
    sf->descent=3000;		/* Ikarus fonts live in a 15,000 em world */
-   for (i=0; i < sf->glyphcnt; ++i)
+   for (i=0; i<sf->glyphcnt; ++i)
       if (sf->glyphs[i] != NULL)
 	 sf->glyphs[i]->width=sf->glyphs[i]->vwidth=15000;
    sf->map=EncMapNew(numchars, numchars, &custom);
 
-   for (i=0; i < numchars; ++i) {
+   for (i=0; i<numchars; ++i) {
       afseek(file, offsets[i], SEEK_SET);
       IkarusReadChar(SFMakeChar(sf, sf->map, i), file);
    }

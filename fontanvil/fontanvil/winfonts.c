@@ -1,4 +1,4 @@
-/* $Id: winfonts.c 4523 2015-12-20 12:30:49Z mskala $ */
+/* $Id: winfonts.c 4532 2015-12-22 13:18:53Z mskala $ */
 /* Copyright (C) 2002-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -62,7 +62,7 @@ Thom Hogan, pages 6-18 through 6-19.  You need this book.  ISBN 1-55615-321-X.
 struct fntheader {
    uint16_t version;		/* Either 0x200 or 0x300 */
    uint32_t filesize;
-   char copyright[60 + 1];
+   char copyright[60+1];
    uint16_t type;
 #define FNT_TYPE_VECTOR	0x0001	/* If set a vector FNT, else raster (we only parse rasters) */
 /* not used, mbz	0x0002 */
@@ -119,7 +119,7 @@ struct fntheader {
    uint16_t bspace;
    uint16_t cspace;
    uint32_t coloroffset;		/* Offset to color table */
-   uint8_t mbz2[16];		/* Freetype says 4. Online docs say 16 & earlier versions were wrong... */
+   uint8_t mbz2[16];		/* Freetype says 4. Online docs say 16&earlier versions were wrong... */
 };
 
 
@@ -159,7 +159,7 @@ static int lgetushort(AFILE *f) {
 
    ch1=agetc(f);
    ch2=agetc(f);
-   return ((ch2 << 8) | ch1);
+   return ((ch2 << 8)|ch1);
 }
 
 static int lgetlong(AFILE *f) {
@@ -169,19 +169,19 @@ static int lgetlong(AFILE *f) {
    ch2=agetc(f);
    ch3=agetc(f);
    ch4=agetc(f);
-   return ((ch4 << 24) | (ch3 << 16) | (ch2 << 8) | ch1);
+   return ((ch4 << 24)|(ch3 << 16)|(ch2 << 8)|ch1);
 }
 
 static void lputshort(AFILE *f,int val) {
-   aputc(val & 0xff, f);
-   aputc((val >> 8) & 0xff, f);
+   aputc(val&0xff, f);
+   aputc((val >> 8)&0xff, f);
 }
 
 static void lputlong(AFILE *f,int val) {
-   aputc(val & 0xff, f);
+   aputc(val&0xff, f);
    aputc((val >> 8), f);
    aputc((val >> 16), f);
-   aputc((val >> 24) & 0xff, f);
+   aputc((val >> 24)&0xff, f);
 }
 
 static int FNT_Load(AFILE *fnt,SplineFont *sf) {
@@ -198,13 +198,13 @@ static int FNT_Load(AFILE *fnt,SplineFont *sf) {
    if (fntheader.version != 0x200 && fntheader.version != 0x300)
       return (false);
    fntheader.filesize=lgetlong(fnt);
-   for (i=0; i < 60; ++i)
+   for (i=0; i<60; ++i)
       fntheader.copyright[i]=agetc(fnt);
    fntheader.copyright[i]='\0';
    for (--i; i >= 0 && fntheader.copyright[i]==' '; --i)
       fntheader.copyright[i]='\0';
    fntheader.type=lgetushort(fnt);
-   if (fntheader.type & (FNT_TYPE_VECTOR | FNT_TYPE_MEMORY | FNT_TYPE_DEVICE))
+   if (fntheader.type&(FNT_TYPE_VECTOR|FNT_TYPE_MEMORY|FNT_TYPE_DEVICE))
       return (false);
    fntheader.pointsize=lgetushort(fnt);
    fntheader.vertres=lgetushort(fnt);
@@ -235,19 +235,19 @@ static int FNT_Load(AFILE *fnt,SplineFont *sf) {
    if (fntheader.version==0x300) {
       fntheader.flags=lgetlong(fnt);
       if (fntheader.
-	  flags & (FNT_FLAGS_ABCFIXED | FNT_FLAGS_ABCPROP | FNT_FLAGS_16COLOR
-		   | FNT_FLAGS_256COLOR | FNT_FLAGS_RGBCOLOR))
+	  flags&(FNT_FLAGS_ABCFIXED|FNT_FLAGS_ABCPROP|FNT_FLAGS_16COLOR
+		  |FNT_FLAGS_256COLOR|FNT_FLAGS_RGBCOLOR))
 	 return (false);
       fntheader.aspace=lgetushort(fnt);
       fntheader.bspace=lgetushort(fnt);
       fntheader.cspace=lgetushort(fnt);
       fntheader.coloroffset=lgetlong(fnt);
-      for (i=0; i < 16; ++i)	/* Freetype thinks this is 4 */
+      for (i=0; i<16; ++i)	/* Freetype thinks this is 4 */
 	 (void) agetc(fnt);
    }
 
    memset(charinfo, 0, sizeof(charinfo));
-   for (i=fntheader.firstchar; i <= fntheader.lastchar + 2; ++i) {
+   for (i=fntheader.firstchar; i <= fntheader.lastchar+2; ++i) {
       charinfo[i].width=lgetushort(fnt);
       if (fntheader.version==0x200)
 	 charinfo[i].offset=lgetushort(fnt);
@@ -262,28 +262,28 @@ static int FNT_Load(AFILE *fnt,SplineFont *sf) {
       sf->copyright=fastrdup(fntheader.copyright);
    }
    free(sf->weight);
-   sf->weight=fastrdup(fntheader.weight <= 100 ? "Thin" :
-		     fntheader.weight <= 200 ? "Extralight" :
-		     fntheader.weight <= 300 ? "Light" :
-		     fntheader.weight <= 400 ? "Normal" :
-		     fntheader.weight <= 500 ? "Medium" :
-		     fntheader.weight <= 600 ? "Demibold" :
-		     fntheader.weight <= 700 ? "Bold" :
-		     fntheader.weight <= 800 ? "Heavy" :
-		     fntheader.weight <= 900 ? "Black" : "Nord");
+   sf->weight=fastrdup(fntheader.weight <= 100?"Thin" :
+		     fntheader.weight <= 200?"Extralight" :
+		     fntheader.weight <= 300?"Light" :
+		     fntheader.weight <= 400?"Normal" :
+		     fntheader.weight <= 500?"Medium" :
+		     fntheader.weight <= 600?"Demibold" :
+		     fntheader.weight <= 700?"Bold" :
+		     fntheader.weight <= 800?"Heavy" :
+		     fntheader.weight <= 900?"Black":"Nord");
    sf->pfminfo.weight=fntheader.weight;
-   sf->pfminfo.panose[2]=fntheader.weight / 100 + 1;
-   afseek(fnt, base + fntheader.faceoffset, SEEK_SET);
+   sf->pfminfo.panose[2]=fntheader.weight/100+1;
+   afseek(fnt, base+fntheader.faceoffset, SEEK_SET);
    for (i=0; (ch=agetc(fnt)) != EOF && ch != 0; ++i);
    free(sf->familyname);
-   sf->familyname=malloc(i + 2);
-   afseek(fnt, base + fntheader.faceoffset, SEEK_SET);
+   sf->familyname=malloc(i+2);
+   afseek(fnt, base+fntheader.faceoffset, SEEK_SET);
    for (i=0; (ch=agetc(fnt)) != EOF && ch != 0; ++i)
       sf->familyname[i]=ch;
    sf->familyname[i]='\0';
-   temp=malloc(i + 50);
+   temp=malloc(i+50);
    strcpy(temp, sf->familyname);
-   if (fntheader.weight <= 300 && fntheader.weight > 500) {
+   if (fntheader.weight <= 300 && fntheader.weight>500) {
       strcat(temp, " ");
       strcat(temp, sf->weight);
    }
@@ -299,15 +299,15 @@ static int FNT_Load(AFILE *fnt,SplineFont *sf) {
    *pt='\0';
    sf->pfminfo.pfmfamily=fntheader.pitchfamily;
    sf->pfminfo.panose[0]=2;
-   if ((fntheader.pitchfamily & FNT_FAMILY_MASK)==FNT_FAMILY_SCRIPT)
+   if ((fntheader.pitchfamily&FNT_FAMILY_MASK)==FNT_FAMILY_SCRIPT)
       sf->pfminfo.panose[0]=3;
    sf->pfminfo.width=5;	/* No info about condensed/extended */
    sf->pfminfo.panose[3]=3;
-   if (!(fntheader.pitchfamily & FNT_PITCH_VARIABLE))
+   if (!(fntheader.pitchfamily&FNT_PITCH_VARIABLE))
       sf->pfminfo.panose[3]=9;
    sf->pfminfo.linegap =
       (sf->ascent +
-       sf->descent) * fntheader.external_leading / fntheader.height;
+       sf->descent)*fntheader.external_leading/fntheader.height;
    if (fntheader.italic)
       sf->italicangle=11.25;
 
@@ -316,10 +316,10 @@ static int FNT_Load(AFILE *fnt,SplineFont *sf) {
    bdf->glyphcnt=sf->glyphcnt;
    bdf->glyphmax=sf->glyphmax;
    bdf->res=fntheader.vertres;
-   bdf->pixelsize=rint(fntheader.pointsize * fntheader.vertres / 72.27);
+   bdf->pixelsize=rint(fntheader.pointsize * fntheader.vertres/72.27);
    bdf->glyphs=calloc(sf->glyphmax, sizeof(BDFChar *));
-   bdf->ascent=rint(.8 * bdf->pixelsize);	/* shouldn't use typographical ascent */
-   bdf->descent=bdf->pixelsize - bdf->ascent;
+   bdf->ascent=rint(.8*bdf->pixelsize);	/* shouldn't use typographical ascent */
+   bdf->descent=bdf->pixelsize-bdf->ascent;
    for (i=fntheader.firstchar; i <= fntheader.lastchar; ++i)
       if (charinfo[i].width != 0) {
 	 int gid=SFMakeChar(sf, sf->map, i)->orig_pos;
@@ -328,31 +328,31 @@ static int FNT_Load(AFILE *fnt,SplineFont *sf) {
 	    if (gid >= bdf->glyphmax)
 	       bdf->glyphs =
 		  realloc(bdf->glyphs,
-			  (bdf->glyphmax=sf->glyphmax) * sizeof(BDFChar *));
-	    memset(bdf->glyphs + bdf->glyphcnt, 0,
-		   (sf->glyphcnt - bdf->glyphcnt) * sizeof(BDFChar *));
+			  (bdf->glyphmax=sf->glyphmax)*sizeof(BDFChar *));
+	    memset(bdf->glyphs+bdf->glyphcnt, 0,
+		   (sf->glyphcnt-bdf->glyphcnt)*sizeof(BDFChar *));
 	    bdf->glyphcnt=sf->glyphcnt;
 	 }
 
 	 bdf->glyphs[gid]=bdfc=chunkalloc(sizeof(BDFChar));
 	 memset(bdfc, '\0', sizeof(BDFChar));
 	 bdfc->xmin=0;
-	 bdfc->xmax=charinfo[i].width - 1;
-	 bdfc->ymin=fntheader.ascent - fntheader.height;
-	 bdfc->ymax=fntheader.ascent - 1;
+	 bdfc->xmax=charinfo[i].width-1;
+	 bdfc->ymin=fntheader.ascent-fntheader.height;
+	 bdfc->ymax=fntheader.ascent-1;
 	 bdfc->width=charinfo[i].width;
 	 bdfc->vwidth=bdf->pixelsize;
-	 bdfc->bytes_per_line=(bdfc->xmax >> 3) + 1;
+	 bdfc->bytes_per_line=(bdfc->xmax >> 3)+1;
 	 bdfc->bitmap =
 	    calloc(bdfc->bytes_per_line * fntheader.height, sizeof(uint8_t));
 	 bdfc->orig_pos=gid;
 	 bdfc->sc=sf->glyphs[gid];
 	 bdfc->sc->widthset=true;
 
-	 afseek(fnt, base + charinfo[i].offset, SEEK_SET);
-	 for (j=0; j < bdfc->bytes_per_line; ++j) {
-	    for (k=0; k < fntheader.height; ++k)
-	       bdfc->bitmap[k * bdfc->bytes_per_line + j]=agetc(fnt);
+	 afseek(fnt, base+charinfo[i].offset, SEEK_SET);
+	 for (j=0; j<bdfc->bytes_per_line; ++j) {
+	    for (k=0; k<fntheader.height; ++k)
+	       bdfc->bitmap[k * bdfc->bytes_per_line+j]=agetc(fnt);
 	 }
 	 BCCompressBitmap(bdfc);
 
@@ -394,7 +394,7 @@ SplineFont *SFReadWinFON(char *filename, int toback) {
    else {
       /* Ok, we know it begins with a mz header (whatever that is) */
       /* all we care about is the offset to the ne header (whatever that is) */
-      afseek(fon, 30 * sizeof(uint16_t), SEEK_SET);
+      afseek(fon, 30*sizeof(uint16_t), SEEK_SET);
       neoffset=lgetlong(fon);
       afseek(fon, neoffset, SEEK_SET);
       if (lgetushort(fon) != FON_NE_MAGIC) {
@@ -403,15 +403,15 @@ SplineFont *SFReadWinFON(char *filename, int toback) {
 	 afclose(fon);
 	 return (NULL);
       }
-      for (i=0; i < 34; ++i)
+      for (i=0; i<34; ++i)
 	 agetc(fon);
-      recoffset=neoffset + lgetushort(fon);
-      recend=neoffset + lgetushort(fon);
+      recoffset=neoffset+lgetushort(fon);
+      recend=neoffset+lgetushort(fon);
 
       afseek(fon, recoffset, SEEK_SET);
       shift_size=lgetushort(fon);
       font_count=0;
-      while (aftell(fon) < recend) {
+      while (aftell(fon)<recend) {
 	 int id, count;
 
 	 id=lgetushort(fon);
@@ -425,15 +425,15 @@ SplineFont *SFReadWinFON(char *filename, int toback) {
 	    lgetlong(fon);
 	    break;
 	 }
-	 afseek(fon, 4 + count * 12, SEEK_CUR);
+	 afseek(fon, 4+count*12, SEEK_CUR);
       }
-      for (i=0; i < font_count; ++i) {
+      for (i=0; i<font_count; ++i) {
 	 uint32_t here=aftell(fon);
 	 uint32_t offset=lgetushort(fon) << shift_size;
 
 	 afseek(fon, offset, SEEK_SET);	/* FontDirEntries need a +4 here */
 	 FNT_Load(fon, sf);
-	 afseek(fon, here + 12, SEEK_SET);
+	 afseek(fon, here+12, SEEK_SET);
       }
    }
    afclose(fon);
@@ -453,10 +453,10 @@ SplineFont *SFReadWinFON(char *filename, int toback) {
    }
    /* Find the biggest font, and adjust the metrics to match */
    for (bdf=sf->bitmaps; bdf->next != NULL; bdf=bdf->next);
-   for (i=0; i < sf->glyphcnt; ++i)
+   for (i=0; i<sf->glyphcnt; ++i)
       if (sf->glyphs[i] != NULL && bdf->glyphs[i] != NULL) {
 	 sf->glyphs[i]->width =
-	    rint(bdf->glyphs[i]->width * 1000.0 / bdf->pixelsize);
+	    rint(bdf->glyphs[i]->width*1000.0/bdf->pixelsize);
 	 sf->glyphs[i]->widthset=true;
       }
    sf->onlybitmaps=true;
@@ -481,7 +481,7 @@ static int _FntFontDump(AFILE *file,BDFFont *font,EncMap *map,int res) {
    if (font->clut != NULL)
       return (false);
 
-   for (i=0; i < map->enccount; i++)
+   for (i=0; i<map->enccount; i++)
       if ((gid=map->map[i]) != -1 && (bdfc=font->glyphs[gid]) != NULL)
 	 BCPrepareForOutput(bdfc, true);
    avgwid=widbytes=maxwid=maxy=last=cnt=0;
@@ -489,34 +489,34 @@ static int _FntFontDump(AFILE *file,BDFFont *font,EncMap *map,int res) {
    samewid=-1;
    badch=-1;
    defch=-1;
-   for (i=0; i < map->enccount && i < 256; ++i)
+   for (i=0; i<map->enccount && i<256; ++i)
       if ((gid=map->map[i]) != -1 && font->glyphs[gid] != NULL
-	  && font->glyphs[gid]->width > 0) {
+	  && font->glyphs[gid]->width>0) {
 	 if (i==0 || (i==0x80 && defch != 0))
 	    defch=i;
 	 else if (i != ' ')
 	    defch=i;
-	 if (i < first)
+	 if (i<first)
 	    first=i;
 	 last=i;
 	 ++cnt;
 	 avgwid += font->glyphs[gid]->width;
-	 widbytes += (font->glyphs[gid]->width + 7) >> 3;
-	 if (font->glyphs[gid]->ymax > maxy)
+	 widbytes += (font->glyphs[gid]->width+7) >> 3;
+	 if (font->glyphs[gid]->ymax>maxy)
 	    maxy=font->glyphs[gid]->ymax;
-	 if (font->glyphs[gid]->ymin < miny)
+	 if (font->glyphs[gid]->ymin<miny)
 	    miny=font->glyphs[gid]->ymin;
-	 if (font->glyphs[gid]->width > maxy)
+	 if (font->glyphs[gid]->width>maxy)
 	    maxwid=font->glyphs[gid]->width;
-	 if (font->glyphs[gid]->width < font->glyphs[gid]->xmax
-	     || font->glyphs[gid]->xmin < 0)
+	 if (font->glyphs[gid]->width<font->glyphs[gid]->xmax
+	     || font->glyphs[gid]->xmin<0)
 	    badch=gid;
 	 if (samewid==-1)
 	    samewid=font->glyphs[gid]->width;
 	 else if (samewid != font->glyphs[gid]->width)
 	    samewid=-2;
       }
-   if ((spacesize=font->pixelsize / 4)==0)
+   if ((spacesize=font->pixelsize/4)==0)
       spacesize=1;
    gid=map->map[' '];
    if (gid != -1 && font->glyphs[gid] != NULL && font->glyphs[gid]->sc != NULL
@@ -526,16 +526,16 @@ static int _FntFontDump(AFILE *file,BDFFont *font,EncMap *map,int res) {
       ErrorMsg(2,"At pixelsize %d the character %s either starts before the origin or extends beyond the advance width.\n",
 	       font->pixelsize, font->glyphs[badch]->sc->name);
    SFDefaultOS2Info(&pfminfo, font->sf, font->sf->fontname);
-   widbytes=avgwid + spacesize;
+   widbytes=avgwid+spacesize;
    if (cnt != 0)
-      avgwid=rint(avgwid / (double) cnt);
+      avgwid=rint(avgwid/(double) cnt);
    gid=map->map['X'];
    if (gid!=-1 &&
        font->glyphs[gid] != NULL && font->glyphs[gid]->sc != NULL &&
        font->glyphs[gid]->sc->unicodeenc=='X')
       avgwid=font->glyphs[gid]->width;
 
-   if (res < 0) {
+   if (res<0) {
       switch (font->pixelsize) {
 	case 13:
 	case 16:
@@ -552,22 +552,22 @@ static int _FntFontDump(AFILE *file,BDFFont *font,EncMap *map,int res) {
    lputlong(file, 0);		/* Fix file size up later */
    i=0;
    if (font->sf->copyright) {
-      for (i=0; i < 59 && font->sf->copyright[i] != '\0'; ++i)
+      for (i=0; i<59 && font->sf->copyright[i] != '\0'; ++i)
 	 aputc(font->sf->copyright[i], file);
    }
-   while (i < 60) {
+   while (i<60) {
       aputc('\0', file);
       ++i;
    }
    lputshort(file, 0);		/* flags */
-   lputshort(file, rint(font->pixelsize * 72.0 / res));	/* pointsize */
+   lputshort(file, rint(font->pixelsize*72.0/res));	/* pointsize */
    lputshort(file, res);	/* vertical res */
    lputshort(file, res);	/* horizontal res */
-   lputshort(file, maxy + 1);	/* ascent */
+   lputshort(file, maxy+1);	/* ascent */
    lputshort(file, 0);		/* internal_leading */
    lputshort(file,		/* external_leading */
 	     rint(pfminfo.linegap * font->pixelsize /
-		  (double) (font->sf->ascent + font->sf->descent)));
+		  (double) (font->sf->ascent+font->sf->descent)));
    if (font->sf->italicangle != 0
        || strstrmatch(font->sf->fontname, "ital") != NULL
        || strstrmatch(font->sf->fontname, "kurs") != NULL
@@ -580,21 +580,21 @@ static int _FntFontDump(AFILE *file,BDFFont *font,EncMap *map,int res) {
    aputc('\0', file);		/* strikeout */
    lputshort(file, pfminfo.weight);	/* weight */
    aputc('\0', file);		/* charset */ /* ??? */
-   lputshort(file, samewid > 0 ? samewid : 0);	/* fixed width */
-   lputshort(file, maxy - miny + 1);	/* bounding box height */
+   lputshort(file, samewid>0?samewid:0);	/* fixed width */
+   lputshort(file, maxy-miny+1);	/* bounding box height */
    aputc(pfminfo.pfmfamily, file);	/* pitchfamily */
    lputshort(file, avgwid);	/* average width */
    lputshort(file, maxwid);	/* max width */
    aputc(first, file);
    aputc(last, file);
-   aputc(defch - first, file);
-   aputc(' ' - first, file);
+   aputc(defch-first, file);
+   aputc(' '-first, file);
    lputshort(file, widbytes);	/* bytes per row */
    lputlong(file, 0);		/* device name */
    namelocpos=aftell(file);
    lputlong(file, 0);		/* face name, fill in later */
    lputlong(file, 0);		/* location in ROM */
-   datapos=118 + (last - first + 3) * 4;
+   datapos=118+(last-first+3)*4;
    lputlong(file, datapos);	/* bitmap data pointer */
    aputc('\0', file);
 /* End of FNT header */
@@ -602,15 +602,15 @@ static int _FntFontDump(AFILE *file,BDFFont *font,EncMap *map,int res) {
    widbytes=0;
    for (i=first; i <= last; ++i) {
       if ((gid=map->map[i]) != -1 && font->glyphs[gid] != NULL
-	  && font->glyphs[gid]->width > 0)
+	  && font->glyphs[gid]->width>0)
 	 lputshort(file, font->glyphs[gid]->width);
       else
 	 lputshort(file, 0);
-      lputshort(file, datapos + widbytes);
+      lputshort(file, datapos+widbytes);
       if (gid != -1 && font->glyphs[gid] != NULL
-	  && font->glyphs[gid]->width > 0)
+	  && font->glyphs[gid]->width>0)
 	 widbytes +=
-	    ((font->glyphs[gid]->width + 7) >> 3) * (maxy - miny + 1);
+	    ((font->glyphs[gid]->width+7) >> 3)*(maxy-miny+1);
    }
    /* And a space */
    lputshort(file, spacesize);
@@ -620,7 +620,7 @@ static int _FntFontDump(AFILE *file,BDFFont *font,EncMap *map,int res) {
    lputshort(file, 0);
    lputshort(file, widbytes);
 
-   if (aftell(file) - startpos != datapos) {
+   if (aftell(file)-startpos != datapos) {
       ErrorMsg(2,"Internal error in creating FNT. File offset wrong\n");
       complained=true;
    }
@@ -629,51 +629,51 @@ static int _FntFontDump(AFILE *file,BDFFont *font,EncMap *map,int res) {
    widbytes=0;
    for (i=first; i <= last; ++i) {
       int gid=map->map[i];
-      BDFChar *bdfc=gid==-1 ? NULL : font->glyphs[gid];
+      BDFChar *bdfc=gid==-1?NULL:font->glyphs[gid];
 
-      if (bdfc != NULL && bdfc->width > 0) {
-	 widbytes += ((bdfc->width + 7) >> 3) * (maxy - miny + 1);
-	 for (k=0; k < bdfc->width; k += 8) {
+      if (bdfc != NULL && bdfc->width>0) {
+	 widbytes += ((bdfc->width+7) >> 3)*(maxy-miny+1);
+	 for (k=0; k<bdfc->width; k += 8) {
 	    for (j=maxy; j >= miny; --j) {
-	       if (j > bdfc->ymax || j < bdfc->ymin)
+	       if (j>bdfc->ymax || j<bdfc->ymin)
 		  aputc('\0', file);
 	       else {
 		  ch=0;
-		  for (l=0; l < 8; ++l) {
-		     if (k + l >= bdfc->xmin && k + l <= bdfc->xmax &&
+		  for (l=0; l<8; ++l) {
+		     if (k+l >= bdfc->xmin && k+l <= bdfc->xmax &&
 			 (bdfc->
-			  bitmap[(bdfc->ymax - j) * bdfc->bytes_per_line +
-				 ((k + l - bdfc->xmin) >> 3)]
-			  & (0x80 >> ((k + l - bdfc->xmin) & 7))))
+			  bitmap[(bdfc->ymax-j)*bdfc->bytes_per_line +
+				 ((k+l-bdfc->xmin) >> 3)]
+			 &(0x80 >> ((k+l-bdfc->xmin)&7))))
 			ch |= (0x80 >> l);
 		  }
 		  aputc(ch, file);
 	       }
 	    }
 	 }
-	 if (aftell(file) - startpos != datapos + widbytes && !complained) {
+	 if (aftell(file)-startpos != datapos+widbytes && !complained) {
 	    ErrorMsg(2,"Internal error in creating FNT. File offset wrong in bitmap data\n");
 	    complained=true;
 	 }
       }
    }
    /* And the space character */
-   spacesize=(spacesize + 7) >> 3;
-   for (i=0; i < spacesize * (maxy - miny + 1); ++i)
+   spacesize=(spacesize+7) >> 3;
+   for (i=0; i<spacesize * (maxy-miny+1); ++i)
       aputc('\0', file);
 
    /* Now the face name */
    namepos=aftell(file);
-   afwrite(font->sf->familyname, 1, strlen(font->sf->familyname) + 1, file);
+   afwrite(font->sf->familyname, 1, strlen(font->sf->familyname)+1, file);
 
    /* And now fixup the file size field */
    endpos=aftell(file);
-   afseek(file, startpos + 2, SEEK_SET);
-   lputlong(file, endpos - startpos);
+   afseek(file, startpos+2, SEEK_SET);
+   lputlong(file, endpos-startpos);
    afseek(file, namelocpos, SEEK_SET);
    lputlong(file, namepos);
    afseek(file, endpos, SEEK_SET);
-   for (i=0; i < map->enccount; i++)
+   for (i=0; i<map->enccount; i++)
       if ((gid=map->map[i]) != -1 && (bdfc=font->glyphs[gid]) != NULL)
 	 BCRestoreAfterOutput(bdfc);
    return (true);
@@ -880,12 +880,12 @@ int FONFontDump(char *filename, SplineFont *sf, int32_t * sizes, int resol,
 
    for (i=0; sizes[i] != 0; ++i) {
       for (bdf=sf->bitmaps; bdf != NULL &&
-	   (bdf->pixelsize != (sizes[i] & 0xffff)
+	   (bdf->pixelsize != (sizes[i]&0xffff)
 	    || BDFDepth(bdf) != (sizes[i] >> 16)); bdf=bdf->next);
       if (bdf==NULL) {
 	 ErrorMsg(2,"Attempt to save a pixel size that has not been created (%d@%d)\n",
                   sizes[i]&0xffff,sizes[i]>>16);
-	 for (j=0; j < i; ++j)
+	 for (j=0; j<i; ++j)
 	    afclose(fntarray[j]);
 	 free(fntarray);
 	 return (false);
@@ -914,13 +914,13 @@ int FONFontDump(char *filename, SplineFont *sf, int32_t * sizes, int resol,
       *cp='\0';
       afseek(fntarray[i],0,SEEK_SET);
 
-      fontdir_len += 0x74 + strlen(name) + 1;
+      fontdir_len += 0x74+strlen(name)+1;
       if (i==0) {
 	 sprintf(non_resident_name, "FONTRES 100,%d,%d : %s %d", dpi[0],
 		 dpi[1], name, point_size);
 	 strcpy(resident_name, name);
       } else {
-	 sprintf(non_resident_name + strlen(non_resident_name), ",%d",
+	 sprintf(non_resident_name+strlen(non_resident_name), ",%d",
 		 point_size);
       }
    }
@@ -929,24 +929,24 @@ int FONFontDump(char *filename, SplineFont *sf, int32_t * sizes, int resol,
       strcat(non_resident_name, " (VGA res)");
    else
       strcat(non_resident_name, " (8514 res)");
-   non_resident_name_len=strlen(non_resident_name) + 4;
+   non_resident_name_len=strlen(non_resident_name)+4;
 
-   /* shift count + fontdir entry + num_files of font + nul type + \007FONTDIR */
-   resource_table_len=sizeof(align) + sizeof("FONTDIR") +
-      sizeof(NE_TYPEINFO) + sizeof(NE_NAMEINFO) +
-      sizeof(NE_TYPEINFO) + sizeof(NE_NAMEINFO) * num_files +
+   /* shift count+fontdir entry+num_files of font+nul type+\007FONTDIR */
+   resource_table_len=sizeof(align)+sizeof("FONTDIR") +
+      sizeof(NE_TYPEINFO)+sizeof(NE_NAMEINFO) +
+      sizeof(NE_TYPEINFO)+sizeof(NE_NAMEINFO)*num_files +
       sizeof(NE_TYPEINFO);
    resource_table_off=sizeof(NE_hdr);
-   resident_name_off=resource_table_off + resource_table_len;
-   resident_name_len=strlen(resident_name) + 4;
-   module_ref_off=resident_name_off + resident_name_len;
-   non_resident_name_off=sizeof(MZ_hdr) + module_ref_off + sizeof(align);
+   resident_name_off=resource_table_off+resource_table_len;
+   resident_name_len=strlen(resident_name)+4;
+   module_ref_off=resident_name_off+resident_name_len;
+   non_resident_name_off=sizeof(MZ_hdr)+module_ref_off+sizeof(align);
 
    memset(&NE_hdr, 0, sizeof(NE_hdr));
    NE_hdr.ne_magic=0x454e;
    NE_hdr.ne_ver=5;
    NE_hdr.ne_rev=1;
-   NE_hdr.ne_flags=NE_FFLAGS_LIBMODULE | NE_FFLAGS_GUI;
+   NE_hdr.ne_flags=NE_FFLAGS_LIBMODULE|NE_FFLAGS_GUI;
    NE_hdr.ne_cbnrestab=non_resident_name_len;
    NE_hdr.ne_segtab=sizeof(NE_hdr);
    NE_hdr.ne_rsrctab=sizeof(NE_hdr);
@@ -959,13 +959,13 @@ int FONFontDump(char *filename, SplineFont *sf, int32_t * sizes, int resol,
    NE_hdr.ne_exetyp=NE_OSFLAGS_WINDOWS;
    NE_hdr.ne_expver=0x400;
 
-   fontdir_off=(non_resident_name_off + non_resident_name_len + 15) & ~0xf;
-   font_off=(fontdir_off + fontdir_len + 15) & ~0x0f;
+   fontdir_off=(non_resident_name_off+non_resident_name_len+15)&~0xf;
+   font_off=(fontdir_off+fontdir_len+15)&~0x0f;
 
    fon=afopen(filename, "wb");
    if (fon==NULL) {
       ErrorMsg(2,"Could not open output file %s\n",filename);
-      for (j=0; j < num_files; ++j)
+      for (j=0; j<num_files; ++j)
 	 afclose(fntarray[j]);
       free(fntarray);
       return (false);
@@ -1015,9 +1015,9 @@ int FONFontDump(char *filename, SplineFont *sf, int32_t * sizes, int resol,
    lputlong(fon, (long) rc_type.resloader);
 
    rc_name.offset=fontdir_off >> 4;
-   rc_name.length=(fontdir_len + 15) >> 4;
-   rc_name.flags=NE_SEGFLAGS_MOVEABLE | NE_SEGFLAGS_PRELOAD;
-   rc_name.id=resident_name_off - sizeof("FONTDIR") - NE_hdr.ne_rsrctab;
+   rc_name.length=(fontdir_len+15) >> 4;
+   rc_name.flags=NE_SEGFLAGS_MOVEABLE|NE_SEGFLAGS_PRELOAD;
+   rc_name.id=resident_name_off-sizeof("FONTDIR")-NE_hdr.ne_rsrctab;
    rc_name.handle=0;
    rc_name.usage=0;
    lputshort(fon, rc_name.offset);
@@ -1034,13 +1034,13 @@ int FONFontDump(char *filename, SplineFont *sf, int32_t * sizes, int resol,
    lputshort(fon, rc_type.count);
    lputlong(fon, (long) rc_type.resloader);
 
-   for (res=first_res | 0x8000, i=0; i < num_files; i++, res++) {
-      int len=(file_lens[i] + 15) & ~0xf;
+   for (res=first_res|0x8000, i=0; i<num_files; i++, res++) {
+      int len=(file_lens[i]+15)&~0xf;
 
       rc_name.offset=font_off >> 4;
       rc_name.length=len >> 4;
       rc_name.flags =
-	 NE_SEGFLAGS_MOVEABLE | NE_SEGFLAGS_SHAREABLE |
+	 NE_SEGFLAGS_MOVEABLE|NE_SEGFLAGS_SHAREABLE |
 	 NE_SEGFLAGS_DISCARDABLE;
       rc_name.id=res;
       rc_name.handle=0;
@@ -1080,16 +1080,16 @@ int FONFontDump(char *filename, SplineFont *sf, int32_t * sizes, int resol,
    aputc(0x00, fon);
    aputc(0x00, fon);
 
-   pad=aftell(fon) & 0xf;
+   pad=aftell(fon)&0xf;
    if (pad != 0)
-      pad=0x10 - pad;
-   for (i=0; i < pad; i++)
+      pad=0x10-pad;
+   for (i=0; i<pad; i++)
       aputc(0x00, fon);
 
    /* FONTDIR resource */
    lputshort(fon, num_files);
 
-   for (res=first_res, i=0; i < num_files; i++, res++) {
+   for (res=first_res, i=0; i<num_files; i++, res++) {
       lputshort(fon, res);
 
       afseek(fntarray[i],0,SEEK_SET);
@@ -1106,16 +1106,16 @@ int FONFontDump(char *filename, SplineFont *sf, int32_t * sizes, int resol,
       while ((c=agetc(fntarray[i])) != 0 && c != EOF)
 	 *cp++=c;
       *cp='\0';
-      afwrite(name, strlen(name) + 1, 1, fon);
+      afwrite(name, strlen(name)+1, 1, fon);
    }
 
-   pad=aftell(fon) & 0xf;
+   pad=aftell(fon)&0xf;
    if (pad != 0)
-      pad=0x10 - pad;
-   for (i=0; i < pad; i++)
+      pad=0x10-pad;
+   for (i=0; i<pad; i++)
       aputc(0x00, fon);
 
-   for (res=first_res, i=0; i < num_files; i++, res++) {
+   for (res=first_res, i=0; i<num_files; i++, res++) {
       afseek(fntarray[i],0,SEEK_SET);
 
       while (1) {
@@ -1125,10 +1125,10 @@ int FONFontDump(char *filename, SplineFont *sf, int32_t * sizes, int resol,
 	 afwrite(buf, nread, 1, fon);
       }
       afclose(fntarray[i]);
-      pad=file_lens[i] & 0xf;
+      pad=file_lens[i]&0xf;
       if (pad != 0)
-	 pad=0x10 - pad;
-      for (j=0; j < pad; j++)
+	 pad=0x10-pad;
+      for (j=0; j<pad; j++)
 	 aputc(0x00, fon);
    }
    afclose(fon);

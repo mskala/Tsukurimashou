@@ -1,4 +1,4 @@
-/* $Id: dumpbdf.c 4525 2015-12-20 19:51:59Z mskala $ */
+/* $Id: dumpbdf.c 4532 2015-12-22 13:18:53Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -109,12 +109,12 @@ static void BDFDumpChar(AFILE *file,BDFFont *font,BDFChar *bdfc,int enc,
 
    afprintf(file, "ENCODING %d\n", enc);
    if (!(defs->metricssets & MS_Hor) || bdfc->sc->width != defs->swidth)
-      afprintf(file, "SWIDTH %d 0\n", bdfc->sc->width * 1000/em);
+      afprintf(file, "SWIDTH %d 0\n", bdfc->sc->width*1000/em);
    if (!(defs->metricssets & MS_Hor) || bdfc->width != defs->dwidth)
       afprintf(file, "DWIDTH %d 0\n", bdfc->width);
    if (font->sf->hasvmetrics) {
       if (!(defs->metricssets & MS_Vert) || bdfc->sc->vwidth != defs->swidth1)
-	 afprintf(file, "SWIDTH1 %d 0\n", bdfc->sc->vwidth * 1000/em);
+	 afprintf(file, "SWIDTH1 %d 0\n", bdfc->sc->vwidth*1000/em);
       if (!(defs->metricssets & MS_Vert) || bdfc->vwidth != defs->dwidth1)
 	 afprintf(file, "DWIDTH1 %d 0\n", bdfc->vwidth);
    }
@@ -193,7 +193,7 @@ static void figureDefMetrics(BDFFont *font,struct metric_defaults *defs) {
       defs->metricssets=MS_Hor;
       defs->dwidth=maxi;
       defs->swidth =
-	 rint(wsc[maxi]->sc->width * 1000.0 /
+	 rint(wsc[maxi]->sc->width*1000.0 /
 	      (font->sf->ascent+font->sf->descent));
    }
 
@@ -206,7 +206,7 @@ static void figureDefMetrics(BDFFont *font,struct metric_defaults *defs) {
       defs->metricssets |= MS_Vert;
       defs->dwidth1=maxi;
       defs->swidth1 =
-	 rint(vsc[maxi]->sc->vwidth * 1000.0 /
+	 rint(vsc[maxi]->sc->vwidth*1000.0 /
 	      (font->sf->ascent+font->sf->descent));
    }
 }
@@ -349,7 +349,7 @@ static void BDFDumpHeader(AFILE *file,BDFFont *font,EncMap *map,
       if (defs->swidth != -1)
 	 defs->swidth=rint(defs->swidth * em/1000.0);
       if (defs->swidth1 != -1)
-	 defs->swidth1=rint(defs->swidth1 * em/1000.0);
+	 defs->swidth1=rint(defs->swidth1*em/1000.0);
    }
    /* the 2.2 spec says we can omit SWIDTH/DWIDTH from character metrics if we */
    /* specify it here. That would make monospaced fonts a lot smaller, but */
@@ -391,8 +391,8 @@ static void BDFDumpHeader(AFILE *file,BDFFont *font,EncMap *map,
 		 else if (resolution_mismatch
 			  && strcmp(font->props[i].name, "POINT_SIZE")==0)
 		    afprintf(file, "%d\n",
-			    ((font->pixelsize * 72 +
-			      components.res_y/2)/components.res_y) * 10);
+			    ((font->pixelsize*72 +
+			      components.res_y/2)/components.res_y)*10);
 		 else
 		    afprintf(file, "%d\n", font->props[i].u.val);
 		 break;

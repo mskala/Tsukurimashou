@@ -1,4 +1,4 @@
-/* $Id: print.c 4464 2015-11-30 09:57:27Z mskala $ */
+/* $Id: print.c 4532 2015-12-22 13:18:53Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -63,7 +63,7 @@ static int pdf_addobject(PI *pi) {
    }
    pi->object_offsets[pi->next_object]=aftell(pi->out);
    afprintf(pi->out, "%d 0 obj\n", pi->next_object++);
-   return (pi->next_object - 1);
+   return (pi->next_object-1);
 }
 
 struct fontdesc {
@@ -104,7 +104,7 @@ void makePatName(char *buffer,
 
    if (ref==NULL)
       sprintf(buffer, "%s_ly%d_%s_%s", sc->name, layer,
-	      isstroke ? "stroke" : "fill", isgrad ? "grad" : "pattern");
+	      isstroke?"stroke":"fill", isgrad?"grad":"pattern");
    else {
       /* PDF names are significant up to 127 chars long and can contain */
       /*  all kinds of odd characters, just no spaces or slashes, so this */
@@ -113,7 +113,7 @@ void makePatName(char *buffer,
 	      (double) ref->transform[0], (double) ref->transform[1],
 	      (double) ref->transform[2], (double) ref->transform[3],
 	      (double) ref->transform[4], (double) ref->transform[5], layer,
-	      isstroke ? "stroke" : "fill", isgrad ? "grad" : "pattern");
+	      isstroke?"stroke":"fill", isgrad?"grad":"pattern");
    }
 }
 
@@ -132,12 +132,12 @@ static void pdf_BrushCheck(PI *pi,struct glyph_res *gr,struct brush *brush,
       afprintf(pi->out, "  /FunctionType 0\n");	/* Iterpolation between samples */
       afprintf(pi->out, "  /Domain [%g %g]\n",
 	      (double) grad->grad_stops[0].offset,
-	      (double) grad->grad_stops[grad->stop_cnt - 1].offset);
+	      (double) grad->grad_stops[grad->stop_cnt-1].offset);
       afprintf(pi->out, "  /Range [0 1.0 0 1.0 0 1.0]\n");
-      afprintf(pi->out, "  /Size [%d]\n", grad->stop_cnt==2 ? 2 : 101);
+      afprintf(pi->out, "  /Size [%d]\n", grad->stop_cnt==2?2:101);
       afprintf(pi->out, "  /BitsPerSample 8\n");
       afprintf(pi->out, "  /Decode [0 1.0 0 1.0 0 1.0]\n");
-      afprintf(pi->out, "  /Length %d\n", 3 * (grad->stop_cnt==2 ? 2 : 101));
+      afprintf(pi->out, "  /Length %d\n", 3*(grad->stop_cnt==2?2:101));
       afprintf(pi->out, ">>\n");
       afprintf(pi->out, "stream\n");
       if (grad->stop_cnt==2) {
@@ -145,38 +145,38 @@ static void pdf_BrushCheck(PI *pi,struct glyph_res *gr,struct brush *brush,
 
 	 if (col==COLOR_INHERITED)
 	    col=0x000000;
-	 aputc((col >> 16) & 0xff, pi->out);
-	 aputc((col >> 8) & 0xff, pi->out);
-	 aputc((col) & 0xff, pi->out);
+	 aputc((col >> 16)&0xff, pi->out);
+	 aputc((col >> 8)&0xff, pi->out);
+	 aputc((col)&0xff, pi->out);
 	 col=grad->grad_stops[1].col;
 	 if (col==COLOR_INHERITED)
 	    col=0x000000;
-	 aputc((col >> 16) & 0xff, pi->out);
-	 aputc((col >> 8) & 0xff, pi->out);
-	 aputc((col) & 0xff, pi->out);
+	 aputc((col >> 16)&0xff, pi->out);
+	 aputc((col >> 8)&0xff, pi->out);
+	 aputc((col)&0xff, pi->out);
       } else {
 	 /* Rather than try and figure out the minimum common divisor */
 	 /*  off all the offsets, I'll just assume they are all percent */
 	 for (i=0; i <= 100; ++i) {
 	    int col;
 	    double t=grad->grad_stops[0].offset +
-	       (grad->grad_stops[grad->stop_cnt - 1].offset -
-		grad->grad_stops[0].offset) * i / 100.0;
-	    for (j=0; j < grad->stop_cnt; ++j)
+	       (grad->grad_stops[grad->stop_cnt-1].offset -
+		grad->grad_stops[0].offset)*i/100.0;
+	    for (j=0; j<grad->stop_cnt; ++j)
 	       if (t <= grad->grad_stops[j].offset)
 		  break;
 	    if (j==grad->stop_cnt)
-	       col=grad->grad_stops[j - 1].col;
+	       col=grad->grad_stops[j-1].col;
 	    else if (t==grad->grad_stops[j].offset)
 	       col=grad->grad_stops[j].col;
 	    else {
 	       double percent =
 		  (t -
 		   grad->grad_stops[j -
-				    1].offset) / (grad->grad_stops[j].offset -
+				    1].offset)/(grad->grad_stops[j].offset -
 						  grad->grad_stops[j -
 								   1].offset);
-	       uint32_t col1=grad->grad_stops[j - 1].col;
+	       uint32_t col1=grad->grad_stops[j-1].col;
 	       uint32_t col2=grad->grad_stops[j].col;
 
 	       if (col1==COLOR_INHERITED)
@@ -184,20 +184,20 @@ static void pdf_BrushCheck(PI *pi,struct glyph_res *gr,struct brush *brush,
 	       if (col2==COLOR_INHERITED)
 		  col2=0x000000;
 	       int red =
-		  ((col1 >> 16) & 0xff) * (1 - percent) +
-		  ((col2 >> 16) & 0xff) * percent;
+		  ((col1 >> 16)&0xff)*(1-percent) +
+		  ((col2 >> 16)&0xff)*percent;
 	       int green =
-		  ((col1 >> 8) & 0xff) * (1 - percent) +
-		  ((col2 >> 8) & 0xff) * percent;
+		  ((col1 >> 8)&0xff)*(1-percent) +
+		  ((col2 >> 8)&0xff)*percent;
 	       int blue =
-		  ((col1) & 0xff) * (1 - percent) + ((col2) & 0xff) * percent;
-	       col=(red << 16) | (green << 8) | blue;
+		  ((col1)&0xff)*(1-percent)+((col2)&0xff)*percent;
+	       col=(red << 16)|(green << 8)|blue;
 	    }
 	    if (col==COLOR_INHERITED)
 	       col=0x000000;
-	    aputc((col >> 16) & 0xff, pi->out);
-	    aputc((col >> 8) & 0xff, pi->out);
-	    aputc((col) & 0xff, pi->out);
+	    aputc((col >> 16)&0xff, pi->out);
+	    aputc((col >> 8)&0xff, pi->out);
+	    aputc((col)&0xff, pi->out);
 	 }
       }
       afprintf(pi->out, "\nendstream\n");
@@ -205,7 +205,7 @@ static void pdf_BrushCheck(PI *pi,struct glyph_res *gr,struct brush *brush,
 
       shade_obj=pdf_addobject(pi);
       afprintf(pi->out, "<<\n");
-      afprintf(pi->out, "  /ShadingType %d\n", grad->radius==0 ? 2 : 3);
+      afprintf(pi->out, "  /ShadingType %d\n", grad->radius==0?2:3);
       afprintf(pi->out, "  /ColorSpace /DeviceRGB\n");
       if (grad->radius==0) {
 	 afprintf(pi->out, "  /Coords [%g %g %g %g]\n",
@@ -225,9 +225,9 @@ static void pdf_BrushCheck(PI *pi,struct glyph_res *gr,struct brush *brush,
       if (gr->pattern_cnt >= gr->pattern_max) {
 	 gr->pattern_names =
 	    realloc(gr->pattern_names,
-		    (gr->pattern_max += 100) * sizeof(char *));
+		    (gr->pattern_max += 100)*sizeof(char *));
 	 gr->pattern_objs =
-	    realloc(gr->pattern_objs, (gr->pattern_max) * sizeof(int));
+	    realloc(gr->pattern_objs, (gr->pattern_max)*sizeof(int));
       }
       makePatName(buffer, ref, sc, layer, !isfill, true);
       gr->pattern_names[gr->pattern_cnt]=fastrdup(buffer);
@@ -253,9 +253,9 @@ static void pdf_BrushCheck(PI *pi,struct glyph_res *gr,struct brush *brush,
       if (gr->pattern_cnt >= gr->pattern_max) {
 	 gr->pattern_names =
 	    realloc(gr->pattern_names,
-		    (gr->pattern_max += 100) * sizeof(char *));
+		    (gr->pattern_max += 100)*sizeof(char *));
 	 gr->pattern_objs =
-	    realloc(gr->pattern_objs, (gr->pattern_max) * sizeof(int));
+	    realloc(gr->pattern_objs, (gr->pattern_max)*sizeof(int));
       }
       makePatName(buffer, ref, sc, layer, !isfill, false);
       gr->pattern_names[gr->pattern_cnt]=fastrdup(buffer);
@@ -267,11 +267,11 @@ static void pdf_BrushCheck(PI *pi,struct glyph_res *gr,struct brush *brush,
       afprintf(pi->out, "  /TilingType 1\n");
       afprintf(pi->out, "  /BBox [%g %g %g %g]\n", (double) b.minx,
 	      (double) b.miny, (double) b.maxx, (double) b.maxy);
-      afprintf(pi->out, "  /XStep %g\n", (double) (b.maxx - b.minx));
-      afprintf(pi->out, "  /YStep %g\n", (double) (b.maxy - b.miny));
+      afprintf(pi->out, "  /XStep %g\n", (double) (b.maxx-b.minx));
+      afprintf(pi->out, "  /YStep %g\n", (double) (b.maxy-b.miny));
       memset(scale, 0, sizeof(scale));
-      scale[0]=pat->width / (b.maxx - b.minx);
-      scale[3]=pat->height / (b.maxy - b.miny);
+      scale[0]=pat->width/(b.maxx-b.minx);
+      scale[3]=pat->height/(b.maxy-b.miny);
       MatMultiply(scale, pat->transform, result);
       afprintf(pi->out, "  /Matrix [%g %g %g %g %g %g]\n", (double) result[0],
 	      (double) result[1], (double) result[2], (double) result[3],
@@ -286,7 +286,7 @@ static void pdf_BrushCheck(PI *pi,struct glyph_res *gr,struct brush *brush,
       afprintf(pi->out, " stream \n");
       lenstart=aftell(pi->out);
       SC_PSDump(pi->out,pattern_sc,true,true,ly_all);
-      len=aftell(pi->out) - lenstart;
+      len=aftell(pi->out)-lenstart;
       afprintf(pi->out, " endstream\n");
       afprintf(pi->out, "endobj\n");
 
@@ -297,8 +297,8 @@ static void pdf_BrushCheck(PI *pi,struct glyph_res *gr,struct brush *brush,
       afprintf(pi->out, "%8d", len);
       afseek(pi->out, 0, SEEK_END);
    }
-   if (brush->opacity < 1.0 && brush->opacity >= 0) {
-      for (i=gr->opacity_cnt - 1; i >= 0; --i) {
+   if (brush->opacity<1.0 && brush->opacity >= 0) {
+      for (i=gr->opacity_cnt-1; i >= 0; --i) {
 	 if (brush->opacity==gr->opac_state[i].opacity
 	     && isfill==gr->opac_state[i].opacity)
 	    break;		/* Already done */
@@ -307,7 +307,7 @@ static void pdf_BrushCheck(PI *pi,struct glyph_res *gr,struct brush *brush,
 	 if (gr->opacity_cnt >= gr->opacity_max) {
 	    gr->opac_state =
 	       realloc(gr->opac_state,
-		       (gr->opacity_max += 100) * sizeof(struct opac_state));
+		       (gr->opacity_max += 100)*sizeof(struct opac_state));
 	 }
 	 gr->opac_state[gr->opacity_cnt].opacity=brush->opacity;
 	 gr->opac_state[gr->opacity_cnt].isfill=isfill;
@@ -337,13 +337,13 @@ static void pdf_ImageCheck(PI *pi,struct glyph_res *gr,ImageList *images,
 
    while (images != NULL) {
       img=images->image;
-      base=img->list_len==0 ? img->u.image : img->u.images[1];
+      base=img->list_len==0?img->u.image:img->u.images[1];
 
       if (gr->image_cnt >= gr->image_max) {
 	 gr->image_names =
-	    realloc(gr->image_names, (gr->image_max += 100) * sizeof(char *));
+	    realloc(gr->image_names, (gr->image_max += 100)*sizeof(char *));
 	 gr->image_objs =
-	    realloc(gr->image_objs, (gr->image_max) * sizeof(int));
+	    realloc(gr->image_objs, (gr->image_max)*sizeof(int));
       }
       sprintf(buffer, "%s_ly%d_%d_image", sc->name, layer, icnt);
       gr->image_names[gr->image_cnt]=fastrdup(buffer);
@@ -363,12 +363,12 @@ static void pdf_ImageCheck(PI *pi,struct glyph_res *gr,ImageList *images,
       } else if (base->image_type==it_true) {
 	 afprintf(pi->out, "  /BitsPerComponent 8\n");
 	 afprintf(pi->out, "  /ColorSpace /DeviceRGB\n");
-	 afprintf(pi->out, "  /Length %d\n", base->height * base->width * 3);
+	 afprintf(pi->out, "  /Length %d\n", base->height * base->width*3);
       } else if (base->image_type==it_index) {
 	 afprintf(pi->out, "  /BitsPerComponent 8\n");
 	 afprintf(pi->out, "  /ColorSpace [/Indexed /DeviceRGB %d\n<",
 		 base->clut->clut_len);
-	 for (i=0; i < base->clut->clut_len; ++i)
+	 for (i=0; i<base->clut->clut_len; ++i)
 	    afprintf(pi->out, "%06x ", base->clut->clut[i]);
 	 afprintf(pi->out, ">\n");
 	 afprintf(pi->out, "  /Length %d\n", base->height * base->width);
@@ -381,10 +381,10 @@ static void pdf_ImageCheck(PI *pi,struct glyph_res *gr,ImageList *images,
 	 /* My image representation of colors includes a pad byte, pdf's does not */
 	 uint32_t *pt=(uint32_t *) base->data;
 
-	 for (i=0; i < base->width * base->height; ++i, ++pt) {
-	    int red=(*pt >> 16) & 0xff;
-	    int green=(*pt >> 8) & 0xff;
-	    int blue=(*pt) & 0xff;
+	 for (i=0; i<base->width * base->height; ++i, ++pt) {
+	    int red=(*pt >> 16)&0xff;
+	    int green=(*pt >> 8)&0xff;
+	    int blue=(*pt)&0xff;
 
 	    aputc(red, pi->out);
 	    aputc(green, pi->out);
@@ -406,7 +406,7 @@ int PdfDumpGlyphResources(PI * pi, SplineChar * sc) {
    int layer;
    RefChar *ref;
 
-   for (layer=ly_fore; layer < sc->layer_cnt; ++layer) {
+   for (layer=ly_fore; layer<sc->layer_cnt; ++layer) {
       if (sc->layers[layer].dofill)
 	 pdf_BrushCheck(pi, &gr, &sc->layers[layer].fill_brush, true, layer,
 			sc, NULL);
@@ -415,7 +415,7 @@ int PdfDumpGlyphResources(PI * pi, SplineChar * sc) {
 			layer, sc, NULL);
       pdf_ImageCheck(pi, &gr, sc->layers[layer].images, layer, sc);
       for (ref=sc->layers[layer].refs; ref != NULL; ref=ref->next) {
-	 for (i=0; i < ref->layer_cnt; ++i) {
+	 for (i=0; i<ref->layer_cnt; ++i) {
 	    if (ref->layers[i].dofill)
 	       pdf_BrushCheck(pi, &gr, &ref->layers[i].fill_brush, true, i,
 			      ref->sc, ref);
@@ -430,7 +430,7 @@ int PdfDumpGlyphResources(PI * pi, SplineChar * sc) {
    afprintf(pi->out, "<<\n");
    if (gr.pattern_cnt != 0) {
       afprintf(pi->out, "  /Pattern <<\n");
-      for (i=0; i < gr.pattern_cnt; ++i) {
+      for (i=0; i<gr.pattern_cnt; ++i) {
 	 afprintf(pi->out, "    /%s %d 0 R\n", gr.pattern_names[i],
 		 gr.pattern_objs[i]);
 	 free(gr.pattern_names[i]);
@@ -441,7 +441,7 @@ int PdfDumpGlyphResources(PI * pi, SplineChar * sc) {
    }
    if (gr.image_cnt != 0) {
       afprintf(pi->out, "  /XObject <<\n");
-      for (i=0; i < gr.image_cnt; ++i) {
+      for (i=0; i<gr.image_cnt; ++i) {
 	 afprintf(pi->out, "    /%s %d 0 R\n", gr.image_names[i],
 		 gr.image_objs[i]);
 	 free(gr.image_names[i]);
@@ -452,9 +452,9 @@ int PdfDumpGlyphResources(PI * pi, SplineChar * sc) {
    }
    if (gr.opacity_cnt != 0) {
       afprintf(pi->out, "  /ExtGState <<\n");
-      for (i=0; i < gr.opacity_cnt; ++i) {
+      for (i=0; i<gr.opacity_cnt; ++i) {
 	 afprintf(pi->out, "    /gs_%s_opacity_%g %d 0 R\n",
-		 gr.opac_state[i].isfill ? "fill" : "stroke",
+		 gr.opac_state[i].isfill?"fill":"stroke",
 		 gr.opac_state[i].opacity, gr.opac_state[i].obj);
       }
       free(gr.opac_state);

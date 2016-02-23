@@ -1,4 +1,4 @@
-/* $Id: splinestroke.c 4525 2015-12-20 19:51:59Z mskala $ */
+/* $Id: splinestroke.c 4532 2015-12-22 13:18:53Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -197,13 +197,13 @@ static int AdjustedSplineLength(Spline *s) {
    /*  (radius-curvature+c->radius)/radius-curvature                      */
    /*  For each segment and them sum that. But that's too hard */
    double len=SplineLength(s);
-   double xdiff=s->to->me.x - s->from->me.x, ydiff =
-      s->to->me.y - s->from->me.y;
-   double distance=sqrt(xdiff * xdiff + ydiff * ydiff);
+   double xdiff=s->to->me.x-s->from->me.x, ydiff =
+      s->to->me.y-s->from->me.y;
+   double distance=sqrt(xdiff * xdiff+ydiff * ydiff);
 
    if (len <= distance)
       return (len);		/* It's a straight line */
-   len += 1.5 * (len - distance);
+   len += 1.5*(len-distance);
    return (len);
 }
 
@@ -228,18 +228,18 @@ static enum hittest PolygonHitTest(BasePoint *poly,BasePoint *polyslopes,
    int i, zero_cnt=0, outside=false;
    double dx, dy, dot, bestd=0;
 
-   for (i=0; i < n; ++i) {
+   for (i=0; i<n; ++i) {
 
-      dx=test->x - poly[i].x;
-      dy=test->y - poly[i].y;
-      dot=dx * polyslopes[i].y - dy * polyslopes[i].x;
+      dx=test->x-poly[i].x;
+      dy=test->y-poly[i].y;
+      dot=dx * polyslopes[i].y-dy * polyslopes[i].x;
       if (dot >= -0.001 && dot <= .001)
 	 ++zero_cnt;
-      else if (dot < 0) {	/* It's on the left, so it can't be inside */
+      else if (dot<0) {	/* It's on the left, so it can't be inside */
 	 if (distance==NULL)
 	    return (ht_Outside);
 	 outside=true;
-	 if (bestd < -dot)
+	 if (bestd<-dot)
 	    bestd=-dot;
       }
    }
@@ -252,7 +252,7 @@ static enum hittest PolygonHitTest(BasePoint *poly,BasePoint *polyslopes,
    if (distance != NULL)
       *distance=0;
    /* zero_cnt==1 => on edge, zero_cnt==2 => on a vertex (on edge), zero_cnt>2 is impossible on a nice poly */
-   if (zero_cnt > 0) {
+   if (zero_cnt>0) {
       return (ht_OnEdge);
    }
 
@@ -283,17 +283,17 @@ static void LineCap(StrokeContext *c,int isend) {
    StrokePoint *p;
    double factor, si, co;
 
-   cnt=ceil(c->radius / c->resolution);
-   if (cnt < 2)
+   cnt=ceil(c->radius/c->resolution);
+   if (cnt<2)
       cnt=2;
-   if (c->cur + 2 * cnt + 10 >= c->max) {
-      int extras=2 * cnt + 200;
+   if (c->cur+2*cnt+10 >= c->max) {
+      int extras=2*cnt+200;
 
-      c->all=realloc(c->all, (c->max + extras) * sizeof(StrokePoint));
-      memset(c->all + c->max, 0, extras * sizeof(StrokePoint));
+      c->all=realloc(c->all, (c->max+extras)*sizeof(StrokePoint));
+      memset(c->all+c->max, 0, extras * sizeof(StrokePoint));
       c->max += extras;
    }
-   done=c->all[c->cur - 1];
+   done=c->all[c->cur-1];
    if (!isend)
       --c->cur;			/* If not at the end then we want to insert */
    /* the line cap data before the last thing */
@@ -304,8 +304,8 @@ static void LineCap(StrokeContext *c,int isend) {
    base=done.me;
    slope=done.slope;
 
-   cnt=ceil(c->radius / c->resolution);
-   if (cnt < 3)
+   cnt=ceil(c->radius/c->resolution);
+   if (cnt<3)
       cnt=3;
    if (c->cap==lc_butt) {
       /* Flat end at the point */
@@ -327,49 +327,49 @@ static void LineCap(StrokeContext *c,int isend) {
 	 p->me=base;
 	 p->slope=slope;
 	 p->needs_point_left=p->needs_point_right=i==0 || i==cnt;
-	 factor=c->radius * i / (cnt);
-	 p->left.x=base.x - factor * p->slope.y;
-	 p->left.y=base.y + factor * p->slope.x;
-	 p->right.x=base.x + factor * p->slope.y;
-	 p->right.y=base.y - factor * p->slope.x;
+	 factor=c->radius * i/(cnt);
+	 p->left.x=base.x-factor * p->slope.y;
+	 p->left.y=base.y+factor * p->slope.x;
+	 p->right.x=base.x+factor * p->slope.y;
+	 p->right.y=base.y-factor * p->slope.x;
 	 if (i==end)
 	    break;
       }
    } else if (c->cap==lc_square) {
       /* Continue in the direction of motion for 1 radius, then a flat end */
-      if (cnt < 4)
+      if (cnt<4)
 	 cnt=4;
-      if (cnt & 1)
+      if (cnt&1)
 	 ++cnt;
       if (isend) {
-	 start=2 * cnt;
+	 start=2*cnt;
 	 end=0;
 	 incr=-1;
       } else {
 	 start=0;
-	 end=2 * cnt;
+	 end=2*cnt;
 	 incr=1;
 	 slope.x=-slope.x;
 	 slope.y=-slope.y;
       }
-      base2.x=base.x + (c->radius) * slope.x;
-      base2.y=base.y + (c->radius) * slope.y;
-      halfleft.x=base2.x - c->radius * done.slope.y;
-      halfleft.y=base2.y + c->radius * done.slope.x;
-      halfright.x=base2.x + c->radius * done.slope.y;
-      halfright.y=base2.y - c->radius * done.slope.x;
+      base2.x=base.x+(c->radius)*slope.x;
+      base2.y=base.y+(c->radius)*slope.y;
+      halfleft.x=base2.x-c->radius * done.slope.y;
+      halfleft.y=base2.y+c->radius * done.slope.x;
+      halfright.x=base2.x+c->radius * done.slope.y;
+      halfright.y=base2.y-c->radius * done.slope.x;
       {
 	 struct extrapoly *ep;
 
 	 if (c->ecur >= c->emax)
 	    c->ep =
-	       realloc(c->ep, (c->emax += 40) * sizeof(struct extrapoly));
+	       realloc(c->ep, (c->emax += 40)*sizeof(struct extrapoly));
 	 ep=&c->ep[c->ecur++];
 	 ep->poly[0]=done.left;
-	 ep->poly[1].x=done.left.x + c->radius * slope.x;
-	 ep->poly[1].y=done.left.y + c->radius * slope.y;
-	 ep->poly[2].x=done.right.x + c->radius * slope.x;
-	 ep->poly[2].y=done.right.y + c->radius * slope.y;
+	 ep->poly[1].x=done.left.x+c->radius * slope.x;
+	 ep->poly[1].y=done.left.y+c->radius * slope.y;
+	 ep->poly[2].x=done.right.x+c->radius * slope.x;
+	 ep->poly[2].y=done.right.y+c->radius * slope.y;
 	 ep->poly[3]=done.right;
 	 if (!isend) {
 	    BasePoint temp;
@@ -390,26 +390,26 @@ static void LineCap(StrokeContext *c,int isend) {
 	 p->me=base;
 	 p->slope=slope;
 	 p->needs_point_left=p->needs_point_right=(i==0 || i==cnt
-						       || i==cnt + cnt);
+						       || i==cnt+cnt);
 	 if (i <= cnt) {
-	    factor=c->radius * i / cnt;
-	    p->left.x=base2.x - factor * done.slope.y;
-	    p->left.y=base2.y + factor * done.slope.x;
-	    p->right.x=base2.x + factor * done.slope.y;
-	    p->right.y=base2.y - factor * done.slope.x;
+	    factor=c->radius * i/cnt;
+	    p->left.x=base2.x-factor * done.slope.y;
+	    p->left.y=base2.y+factor * done.slope.x;
+	    p->right.x=base2.x+factor * done.slope.y;
+	    p->right.y=base2.y-factor * done.slope.x;
 	 } else {
-	    factor=c->radius * (i - cnt) / cnt;
-	    p->left.x=halfleft.x - factor * slope.x;
-	    p->left.y=halfleft.y - factor * slope.y;
-	    p->right.x=halfright.x - factor * slope.x;
-	    p->right.y=halfright.y - factor * slope.y;
+	    factor=c->radius * (i-cnt)/cnt;
+	    p->left.x=halfleft.x-factor * slope.x;
+	    p->left.y=halfleft.y-factor * slope.y;
+	    p->right.x=halfright.x-factor * slope.x;
+	    p->right.y=halfright.y-factor * slope.y;
 	 }
 	 if (i==end)
 	    break;
       }
    } else {
       /* Semicircle */
-      if (cnt < 8)
+      if (cnt<8)
 	 cnt=8;
       if (isend) {
 	 start=cnt;
@@ -425,18 +425,18 @@ static void LineCap(StrokeContext *c,int isend) {
 	 *p=done;
 	 p->circle=true;
 	 p->needs_point_left=p->needs_point_right=i==0 || i==cnt;
-	 si=sin((M_PI / 2.0) * i / (double) cnt);
-	 co=sqrt(1 - si * si);
+	 si=sin((M_PI/2.0)*i/(double) cnt);
+	 co=sqrt(1-si * si);
 	 if (isend)
 	    co=-co;
-	 slope2.x=slope.x * co + slope.y * si;
-	 slope2.y=-slope.x * si + slope.y * co;
-	 p->left.x=base.x - c->radius * slope2.x;
-	 p->left.y=base.y - c->radius * slope2.y;
-	 slope2.x=slope.x * co - slope.y * si;
-	 slope2.y=slope.x * si + slope.y * co;
-	 p->right.x=base.x - c->radius * slope2.x;
-	 p->right.y=base.y - c->radius * slope2.y;
+	 slope2.x=slope.x * co+slope.y * si;
+	 slope2.y=-slope.x * si+slope.y * co;
+	 p->left.x=base.x-c->radius * slope2.x;
+	 p->left.y=base.y-c->radius * slope2.y;
+	 slope2.x=slope.x * co-slope.y * si;
+	 slope2.y=slope.x * si+slope.y * co;
+	 p->right.x=base.x-c->radius * slope2.x;
+	 p->right.y=base.y-c->radius * slope2.y;
 	 if (i==end)
 	    break;
       }
@@ -462,40 +462,40 @@ static void LineJoin(StrokeContext *c,int atbreak) {
    /*  start (index 0), as opposed to (index+1) */
 
    if (atbreak) {
-      pindex=c->cur - 1;
+      pindex=c->cur-1;
       done=c->all[0];
    } else {
-      pindex=c->cur - 2;
-      done=c->all[c->cur - 1];
+      pindex=c->cur-2;
+      done=c->all[c->cur-1];
       /* We decrement c->cur a little later, after we figure out if we need */
       /*  to add a line join */
    }
-   if (pindex < 0)
+   if (pindex<0)
       ErrorMsg(2,"LineJoin: pindex<0\n");
    pslope=c->all[pindex].slope;
    nslope=done.slope;
-   len=sqrt(nslope.x * nslope.x + nslope.y * nslope.y);
+   len=sqrt(nslope.x * nslope.x+nslope.y * nslope.y);
    nslope.x /= len;
    nslope.y /= len;
 
-   len=sqrt(pslope.x * pslope.x + pslope.y * pslope.y);
+   len=sqrt(pslope.x * pslope.x+pslope.y * pslope.y);
    pslope.x /= len;
    pslope.y /= len;
 
-   dot=(nslope.x * pslope.x + nslope.y * pslope.y);
+   dot=(nslope.x * pslope.x+nslope.y * pslope.y);
    if (dot >= .999)
       return;			/* Essentially colinear */ /* Won't be perfect because control points lie on integers */
    /* miterlimit of 6, 18 degrees */
-   force_bevel=(c->join==lj_miter && dot < c->miterlimit);
+   force_bevel=(c->join==lj_miter && dot<c->miterlimit);
 
-   cnt=ceil(c->radius / c->resolution);
-   if (cnt < 6)
+   cnt=ceil(c->radius/c->resolution);
+   if (cnt<6)
       cnt=6;
-   if (c->cur + 2 * cnt + 10 >= c->max) {
-      int extras=2 * cnt + 200;
+   if (c->cur+2*cnt+10 >= c->max) {
+      int extras=2*cnt+200;
 
-      c->all=realloc(c->all, (c->max + extras) * sizeof(StrokePoint));
-      memset(c->all + c->max, 0, extras * sizeof(StrokePoint));
+      c->all=realloc(c->all, (c->max+extras)*sizeof(StrokePoint));
+      memset(c->all+c->max, 0, extras * sizeof(StrokePoint));
       c->max += extras;
    }
    if (!atbreak)
@@ -505,8 +505,8 @@ static void LineJoin(StrokeContext *c,int atbreak) {
    /* remove from array. We'll put it back at the */
    /* end */
 
-   normal_dot=-nslope.x * pslope.y + nslope.y * pslope.x;
-   if (normal_dot > 0)
+   normal_dot=-nslope.x * pslope.y+nslope.y * pslope.x;
+   if (normal_dot>0)
       bends_left=true;
    else
       bends_left=false;	/* So it bends right */
@@ -521,17 +521,17 @@ static void LineJoin(StrokeContext *c,int atbreak) {
 	 final=done.left;
 	 base=c->all[pindex].left;
       }
-      curslope.x=final.x - base.x;
-      curslope.y=final.y - base.y;
-      len=sqrt(curslope.x * curslope.x + curslope.y * curslope.y);
-      cnt=ceil(len / c->resolution);
-      if (cnt < 3)
+      curslope.x=final.x-base.x;
+      curslope.y=final.y-base.y;
+      len=sqrt(curslope.x * curslope.x+curslope.y * curslope.y);
+      cnt=ceil(len/c->resolution);
+      if (cnt<3)
 	 cnt=3;
-      if (c->cur + cnt + 10 >= c->max) {
-	 int extras=cnt + 200;
+      if (c->cur+cnt+10 >= c->max) {
+	 int extras=cnt+200;
 
-	 c->all=realloc(c->all, (c->max + extras) * sizeof(StrokePoint));
-	 memset(c->all + c->max, 0, extras * sizeof(StrokePoint));
+	 c->all=realloc(c->all, (c->max+extras)*sizeof(StrokePoint));
+	 memset(c->all+c->max, 0, extras * sizeof(StrokePoint));
 	 c->max += extras;
       }
       for (i=0; i <= cnt; ++i) {
@@ -542,12 +542,12 @@ static void LineJoin(StrokeContext *c,int atbreak) {
 	 p->needs_point_left=p->needs_point_right=i==0 || i==cnt;
 	 p->left_hidden=bends_left;
 	 p->right_hidden=!bends_left;
-	 factor=((double) i) / cnt;
+	 factor=((double) i)/cnt;
 	 if (i==cnt)
 	    p->left=final;
 	 else {
-	    p->left.x=base.x + factor * curslope.x;
-	    p->left.y=base.y + factor * curslope.y;
+	    p->left.x=base.x+factor * curslope.x;
+	    p->left.y=base.y+factor * curslope.y;
 	 }
 	 if (bends_left)
 	    p->right=p->left;
@@ -570,7 +570,7 @@ static void LineJoin(StrokeContext *c,int atbreak) {
 
 	 if (c->ecur >= c->emax)
 	    c->ep =
-	       realloc(c->ep, (c->emax += 40) * sizeof(struct extrapoly));
+	       realloc(c->ep, (c->emax += 40)*sizeof(struct extrapoly));
 	 ep=&c->ep[c->ecur++];
 	 ep->poly[0]=base;
 	 ep->poly[1]=inter;
@@ -581,23 +581,23 @@ static void LineJoin(StrokeContext *c,int atbreak) {
 	 }
 	 ep->ptcnt=3;
       }
-      curslope.x=inter.x - base.x;
-      curslope.y=inter.y - base.y;
-      len=sqrt(curslope.x * curslope.x + curslope.y * curslope.y);
-      cnt=ceil(len / c->resolution);
-      if (cnt < 3)
+      curslope.x=inter.x-base.x;
+      curslope.y=inter.y-base.y;
+      len=sqrt(curslope.x * curslope.x+curslope.y * curslope.y);
+      cnt=ceil(len/c->resolution);
+      if (cnt<3)
 	 cnt=3;
-      nextslope.x=final.x - inter.x;
-      nextslope.y=final.y - inter.y;
-      len=sqrt(nextslope.x * nextslope.x + nextslope.y * nextslope.y);
-      cnt1=ceil(len / c->resolution);
-      if (cnt1 < 3)
+      nextslope.x=final.x-inter.x;
+      nextslope.y=final.y-inter.y;
+      len=sqrt(nextslope.x * nextslope.x+nextslope.y * nextslope.y);
+      cnt1=ceil(len/c->resolution);
+      if (cnt1<3)
 	 cnt1=3;
-      if (c->cur + cnt + cnt1 + 2 >= c->max) {
-	 int extras=cnt + cnt1 + 200;
+      if (c->cur+cnt+cnt1+2 >= c->max) {
+	 int extras=cnt+cnt1+200;
 
-	 c->all=realloc(c->all, (c->max + extras) * sizeof(StrokePoint));
-	 memset(c->all + c->max, 0, extras * sizeof(StrokePoint));
+	 c->all=realloc(c->all, (c->max+extras)*sizeof(StrokePoint));
+	 memset(c->all+c->max, 0, extras * sizeof(StrokePoint));
 	 c->max += extras;
       }
       for (i=0; i <= cnt; ++i) {
@@ -607,12 +607,12 @@ static void LineJoin(StrokeContext *c,int atbreak) {
 	 p->needs_point_left=p->needs_point_right=i==0 || i==cnt;
 	 p->left_hidden=bends_left;
 	 p->right_hidden=!bends_left;
-	 factor=((double) i) / cnt;
+	 factor=((double) i)/cnt;
 	 if (i==cnt)
 	    p->left=inter;
 	 else {
-	    p->left.x=base.x + factor * curslope.x;
-	    p->left.y=base.y + factor * curslope.y;
+	    p->left.x=base.x+factor * curslope.x;
+	    p->left.y=base.y+factor * curslope.y;
 	 }
 	 if (bends_left)
 	    p->right=p->left;
@@ -624,12 +624,12 @@ static void LineJoin(StrokeContext *c,int atbreak) {
 	 p->needs_point_left=p->needs_point_right=i==0 || i==cnt;
 	 p->left_hidden=bends_left;
 	 p->right_hidden=!bends_left;
-	 factor=((double) i) / cnt1;
+	 factor=((double) i)/cnt1;
 	 if (i==cnt1)
 	    p->left=final;
 	 else {
-	    p->left.x=inter.x + factor * nextslope.x;
-	    p->left.y=inter.y + factor * nextslope.y;
+	    p->left.x=inter.x+factor * nextslope.x;
+	    p->left.y=inter.y+factor * nextslope.y;
 	 }
 	 if (bends_left)
 	    p->right=p->left;
@@ -640,36 +640,36 @@ static void LineJoin(StrokeContext *c,int atbreak) {
       /* or multiple nslope by the rotation matrix: */
       /*  (pslope.x    pslope.y)  */
       /*  (-pslope.y   pslope.x)  */
-      diff_angle.x=nslope.x * pslope.x + nslope.y * pslope.y;
-      diff_angle.y=-nslope.x * pslope.y + nslope.y * pslope.x;
+      diff_angle.x=nslope.x * pslope.x+nslope.y * pslope.y;
+      diff_angle.y=-nslope.x * pslope.y+nslope.y * pslope.x;
       /* But what we really want is a small fraction of that. Say 1/20th of */
       /*  the angle. Well that's hard to compute exactly, but don't need exact */
       if (diff_angle.x <= 0) {	/* more than 90 (or less than -90) */
 	 incr_angle.y=.078459;	/* sin(PI/40) */
-	 if (diff_angle.y < 0)
+	 if (diff_angle.y<0)
 	    incr_angle.y=-incr_angle.y;
       } else
-	 incr_angle.y=diff_angle.y / 20;
-      incr_angle.x=sqrt(1 - incr_angle.y * incr_angle.y);
+	 incr_angle.y=diff_angle.y/20;
+      incr_angle.x=sqrt(1-incr_angle.y * incr_angle.y);
 
       pp=&c->all[pindex];
       center=pp->me;
       if (bends_left) {
-	 vector.x=pp->right.x - center.x;
-	 vector.y=pp->right.y - center.y;
+	 vector.x=pp->right.x-center.x;
+	 vector.y=pp->right.y-center.y;
       } else {
-	 vector.x=pp->left.x - center.x;
-	 vector.y=pp->left.y - center.y;
+	 vector.x=pp->left.x-center.x;
+	 vector.y=pp->left.y-center.y;
       }
       rot=incr_angle;
       was_neg=false;
       while (1) {
 	 if (c->cur >= c->max) {
 	    int extras=400;
-	    int off=pp - c->all;
+	    int off=pp-c->all;
 
-	    c->all=realloc(c->all, (c->max + extras) * sizeof(StrokePoint));
-	    memset(c->all + c->max, 0, extras * sizeof(StrokePoint));
+	    c->all=realloc(c->all, (c->max+extras)*sizeof(StrokePoint));
+	    memset(c->all+c->max, 0, extras * sizeof(StrokePoint));
 	    c->max += extras;
 	    pp=&c->all[off];
 	 }
@@ -685,33 +685,33 @@ static void LineJoin(StrokeContext *c,int atbreak) {
 	    p->needs_point_left=p->needs_point_right=true;
 	    break;
 	 } else {
-	    temp.x=center.x + vector.x * rot.x - vector.y * rot.y;
-	    temp.y=center.y + vector.x * rot.y + vector.y * rot.x;
+	    temp.x=center.x+vector.x * rot.x-vector.y * rot.y;
+	    temp.y=center.y+vector.x * rot.y+vector.y * rot.x;
 	    if (bends_left)
 	       p->right=temp;
 	    else
 	       p->left=temp;
 	    if (rot.x <= 0 && !was_neg) {
-	       was_neg=c->cur - 1;
+	       was_neg=c->cur-1;
 	       p->needs_point_left=p->needs_point_right=true;
-	       if (diff_angle.y > .1) {
-		  incr_angle.y=diff_angle.y / 20;
-		  incr_angle.x=sqrt(1 - incr_angle.y * incr_angle.y);
+	       if (diff_angle.y>.1) {
+		  incr_angle.y=diff_angle.y/20;
+		  incr_angle.x=sqrt(1-incr_angle.y * incr_angle.y);
 	       }
 	    }
-	    temp.x=rot.x * incr_angle.x - rot.y * incr_angle.y;
-	    temp.y=rot.x * incr_angle.y + rot.y * incr_angle.x;
-	    if (temp.y > 1) {	/* Rounding errors */
+	    temp.x=rot.x * incr_angle.x-rot.y * incr_angle.y;
+	    temp.y=rot.x * incr_angle.y+rot.y * incr_angle.x;
+	    if (temp.y>1) {	/* Rounding errors */
 	       temp.y=1;
 	       temp.x=0;
-	    } else if (temp.y < -1) {
+	    } else if (temp.y<-1) {
 	       temp.y=-1;
 	       temp.x=0;
 	    }
 	    rot=temp;
 	 }
       }
-      if (was_neg != 0 && c->cur - was_neg < 5)
+      if (was_neg != 0 && c->cur-was_neg<5)
 	 c->all[was_neg].needs_point_left =
 	    c->all[was_neg].needs_point_right=false;
    }
@@ -720,49 +720,49 @@ static void LineJoin(StrokeContext *c,int atbreak) {
 }
 
 static void FindSlope(StrokeContext *c,Spline *s,double t,double tdiff) {
-   StrokePoint *p=&c->all[c->cur - 1];
+   StrokePoint *p=&c->all[c->cur-1];
    double len;
 
    p->sp=s;
    p->t=t;
    p->me.x =
-      ((s->splines[0].a * t + s->splines[0].b) * t + s->splines[0].c) * t +
+      ((s->splines[0].a * t+s->splines[0].b)*t+s->splines[0].c)*t +
       s->splines[0].d;
    p->me.y =
-      ((s->splines[1].a * t + s->splines[1].b) * t + s->splines[1].c) * t +
+      ((s->splines[1].a * t+s->splines[1].b)*t+s->splines[1].c)*t +
       s->splines[1].d;
    p->slope.x =
-      (3 * s->splines[0].a * t + 2 * s->splines[0].b) * t + s->splines[0].c;
+      (3*s->splines[0].a * t+2*s->splines[0].b)*t+s->splines[0].c;
    p->slope.y =
-      (3 * s->splines[1].a * t + 2 * s->splines[1].b) * t + s->splines[1].c;
+      (3*s->splines[1].a * t+2*s->splines[1].b)*t+s->splines[1].c;
    p->needs_point_left=p->needs_point_right=(t==0.0 || t==1.0);
 
    if (p->slope.x==0 && p->slope.y==0) {
       /* If the control point is at the endpoint then at the endpoints we */
       /*  have an undefined slope. Can't have that. */
       /* I suppose it could happen elsewhere */
-      if (t > 0)
+      if (t>0)
 	 p->slope=p[-1].slope;
       else {
-	 double nextt=t + tdiff;
+	 double nextt=t+tdiff;
 
 	 p->slope.x =
-	    (3 * s->splines[0].a * nextt + 2 * s->splines[0].b) * nextt +
+	    (3*s->splines[0].a * nextt+2*s->splines[0].b)*nextt +
 	    s->splines[0].c;
 	 p->slope.y =
-	    (3 * s->splines[1].a * nextt + 2 * s->splines[1].b) * nextt +
+	    (3*s->splines[1].a * nextt+2*s->splines[1].b)*nextt +
 	    s->splines[1].c;
 	 if (p->slope.x==0 && p->slope.y==0) {
 	    BasePoint next;
 
 	    next.x =
-	       ((s->splines[0].a * nextt + s->splines[0].b) * nextt +
-		s->splines[0].c) * nextt + s->splines[0].d;
+	       ((s->splines[0].a * nextt+s->splines[0].b)*nextt +
+		s->splines[0].c)*nextt+s->splines[0].d;
 	    next.y =
-	       ((s->splines[1].a * nextt + s->splines[1].b) * nextt +
-		s->splines[1].c) * nextt + s->splines[1].d;
-	    p->slope.x=next.x - p->me.x;
-	    p->slope.y=next.y - p->me.y;
+	       ((s->splines[1].a * nextt+s->splines[1].b)*nextt +
+		s->splines[1].c)*nextt+s->splines[1].d;
+	    p->slope.x=next.x-p->me.x;
+	    p->slope.y=next.y-p->me.y;
 	 }
       }
       if (p->slope.x==0 && p->slope.y==0) {
@@ -772,7 +772,7 @@ static void FindSlope(StrokeContext *c,Spline *s,double t,double tdiff) {
       if (p->slope.x==0 && p->slope.y==0)
 	 p->slope.x=1;
    }
-   len=p->slope.x * p->slope.x + p->slope.y * p->slope.y;
+   len=p->slope.x * p->slope.x+p->slope.y * p->slope.y;
    if (len != 0) {
       len=sqrt(len);
       p->slope.x /= len;
@@ -783,15 +783,15 @@ static void FindSlope(StrokeContext *c,Spline *s,double t,double tdiff) {
 static void HideStrokePointsCircle(StrokeContext *c) {
    int i, j;
    double xdiff, ydiff, dist2sq, dist1sq;
-   double res2=c->resolution * c->resolution, res_bound=100 * res2;
+   double res2=c->resolution * c->resolution, res_bound=100*res2;
 
-   for (i=c->cur - 1; i >= 0; --i) {
+   for (i=c->cur-1; i >= 0; --i) {
       StrokePoint *p=&c->all[i];
-      Spline *myline=p->sp->knownlinear ? p->sp : NULL;
+      Spline *myline=p->sp->knownlinear?p->sp:NULL;
 
       if (p->line || p->circle)
 	 myline=NULL;
-      for (j=c->cur - 1; j >= 0; --j)
+      for (j=c->cur-1; j >= 0; --j)
 	 if (j != i) {
 	    StrokePoint *op=&c->all[j];
 
@@ -807,17 +807,17 @@ static void HideStrokePointsCircle(StrokeContext *c) {
 	       /*  point on which they are centered will, in fact, cover them */
 	       /*  so we wait until the base point has moved at least radius */
 	       /*  from our base */
-	       xdiff=(p->me.x - op->me.x);
-	       ydiff=(p->me.y - op->me.y);
-	       dist2sq=xdiff * xdiff + ydiff * ydiff;
-	       if (dist2sq < c->radius2)
+	       xdiff=(p->me.x-op->me.x);
+	       ydiff=(p->me.y-op->me.y);
+	       dist2sq=xdiff * xdiff+ydiff * ydiff;
+	       if (dist2sq<c->radius2)
 		  continue;
 	    }
 	    if (!p->left_hidden) {
-	       xdiff=(p->left.x - op->me.x);
-	       ydiff=(p->left.y - op->me.y);
-	       dist1sq=xdiff * xdiff + ydiff * ydiff;
-	       if (dist1sq < c->radius2) {
+	       xdiff=(p->left.x-op->me.x);
+	       ydiff=(p->left.y-op->me.y);
+	       dist1sq=xdiff * xdiff+ydiff * ydiff;
+	       if (dist1sq<c->radius2) {
 		  p->left_hidden=true;
 		  if (p->right_hidden)
 		     break;
@@ -825,55 +825,55 @@ static void HideStrokePointsCircle(StrokeContext *c) {
 	    } else
 	       dist1sq=1e20;
 	    if (!p->right_hidden) {
-	       xdiff=(p->right.x - op->me.x);
-	       ydiff=(p->right.y - op->me.y);
-	       dist2sq=xdiff * xdiff + ydiff * ydiff;
-	       if (dist2sq < c->radius2) {
+	       xdiff=(p->right.x-op->me.x);
+	       ydiff=(p->right.y-op->me.y);
+	       dist2sq=xdiff * xdiff+ydiff * ydiff;
+	       if (dist2sq<c->radius2) {
 		  p->right_hidden=true;
 		  if (p->left_hidden)
 		     break;
 	       }
 	    } else
 	       dist2sq=1e20;
-	    if (dist1sq > dist2sq)
+	    if (dist1sq>dist2sq)
 	       dist1sq=dist2sq;
 	    dist1sq -= c->radius2;
-	    if (dist1sq > res_bound) {
+	    if (dist1sq>res_bound) {
 	       /* If we are far away from the desired point then we can */
 	       /*  skip ahead more quickly. Since things should be spaced */
 	       /*  about resolution units apart we know how far we can    */
 	       /*  skip. Since that measurement isn't perfect we leave some */
 	       /*  slop */
 	       dist1sq /= res2;
-	       if (dist1sq < 400)
-		  j -= (6 - 1);
+	       if (dist1sq<400)
+		  j -= (6-1);
 	       else
-		  j -= .66667 * sqrt(dist1sq) - 1;
+		  j -= .66667*sqrt(dist1sq)-1;
 	       /* Minus 1 because we are going to add 1 anyway */
 	    }
 	 }
    }
 
    /* now see if any miter join polygons (or square cap polys) cover anything */
-   for (j=0; j < c->ecur; ++j) {
+   for (j=0; j<c->ecur; ++j) {
       BasePoint slopes[4];
       double len;
       struct extrapoly *ep=&c->ep[j];
 
-      for (i=0; i < ep->ptcnt; ++i) {
-	 int ni=i + 1;
+      for (i=0; i<ep->ptcnt; ++i) {
+	 int ni=i+1;
 
 	 if (ni==ep->ptcnt)
 	    ni=0;
-	 slopes[i].x=ep->poly[ni].x - ep->poly[i].x;
-	 slopes[i].y=ep->poly[ni].y - ep->poly[i].y;
-	 len=sqrt(slopes[i].x * slopes[i].x + slopes[i].y * slopes[i].y);
+	 slopes[i].x=ep->poly[ni].x-ep->poly[i].x;
+	 slopes[i].y=ep->poly[ni].y-ep->poly[i].y;
+	 len=sqrt(slopes[i].x * slopes[i].x+slopes[i].y * slopes[i].y);
 	 if (len==0)
 	    return;
 	 slopes[i].x /= len;
 	 slopes[i].y /= len;
       }
-      for (i=c->cur - 1; i >= 0; --i) {
+      for (i=c->cur-1; i >= 0; --i) {
 	 StrokePoint *p=&c->all[i];
 
 	 if (!p->left_hidden)
@@ -905,30 +905,30 @@ static void FindStrokePointsCircle(SplineSet *ss,StrokeContext *c) {
 	 continue;		/* We can safely ignore it because it is of zero length */
       /* We need to ignore it because it gives us 0/0 in places */
 
-      len=ceil(length / c->resolution);
-      if (len < 2)
+      len=ceil(length/c->resolution);
+      if (len<2)
 	 len=2;
       /* There will be len+1 sample points taken. Two of those points will be */
       /*  the end points, and there will be at least one internal point */
-      diff=1.0 / len;
+      diff=1.0/len;
       for (i=0, t=0; i <= len; ++i, t += diff) {
 	 StrokePoint *p;
 
 	 if (c->cur >= c->max) {
-	    int extras=len + 200;
+	    int extras=len+200;
 
-	    c->all=realloc(c->all, (c->max + extras) * sizeof(StrokePoint));
-	    memset(c->all + c->max, 0, extras * sizeof(StrokePoint));
+	    c->all=realloc(c->all, (c->max+extras)*sizeof(StrokePoint));
+	    memset(c->all+c->max, 0, extras * sizeof(StrokePoint));
 	    c->max += extras;
 	 }
 	 p=&c->all[c->cur++];
 	 if (i==len)
 	    t=1.0;		/* In case there were rounding errors */
 	 FindSlope(c, s, t, diff);
-	 p->left.x=p->me.x - c->radius * p->slope.y;
-	 p->left.y=p->me.y + c->radius * p->slope.x;
-	 p->right.x=p->me.x + c->radius * p->slope.y;
-	 p->right.y=p->me.y - c->radius * p->slope.x;
+	 p->left.x=p->me.x-c->radius * p->slope.y;
+	 p->left.y=p->me.y+c->radius * p->slope.x;
+	 p->right.x=p->me.x+c->radius * p->slope.y;
+	 p->right.y=p->me.y-c->radius * p->slope.x;
 	 if (i==0) {
 	    /* OK, the join or cap should happen before this point */
 	    /*  But we will use the values we calculate here. So we'll */
@@ -943,7 +943,7 @@ static void FindStrokePointsCircle(SplineSet *ss,StrokeContext *c) {
       if (s->to->next==NULL)
 	 LineCap(c, 1);
    }
-   if (!open && c->cur > 0)
+   if (!open && c->cur>0)
       LineJoin(c, true);
    HideStrokePointsCircle(c);
 
@@ -953,26 +953,26 @@ static void FindStrokePointsCircle(SplineSet *ss,StrokeContext *c) {
    /*  polygon/square vertices, which is close enough to the same idea as no */
    /*  matter) */
    {
-      int j, k, skip=10 / c->resolution;
+      int j, k, skip=10/c->resolution;
 
-      for (i=c->cur - 1; i >= 0;) {
+      for (i=c->cur-1; i >= 0;) {
 	 while (i >= 0
 		&& (c->all[i].left_hidden || c->all[i].needs_point_left))
 	    --i;
-	 if (i < c->cur - 1 && !c->all[i + 1].left_hidden)
+	 if (i<c->cur-1 && !c->all[i+1].left_hidden)
 	    ++i;
-	 while (i > 0 && c->all[i].left.x==c->all[i - 1].left.x
-		&& c->all[i].left.y==c->all[i - 1].left.y)
+	 while (i>0 && c->all[i].left.x==c->all[i-1].left.x
+		&& c->all[i].left.y==c->all[i-1].left.y)
 	    --i;
-	 for (j=i - 1;
+	 for (j=i-1;
 	      j >= 0 && !c->all[j].left_hidden && !c->all[j].needs_point_left;
 	      --j) {
 	    if (c->all[i].slope.x * c->all[j].slope.x +
 		c->all[i].slope.y * c->all[j].slope.y <= 0) {
-	       for (k=j - 1;
-		    k >= 0 && k > j - skip && !c->all[k].left_hidden
+	       for (k=j-1;
+		    k >= 0 && k>j-skip && !c->all[k].left_hidden
 		    && !c->all[k].needs_point_left; --k);
-	       if (k <= j - skip) {
+	       if (k <= j-skip) {
 		  c->all[j].needs_point_left=true;
 		  i=j;
 		  j=k;
@@ -981,24 +981,24 @@ static void FindStrokePointsCircle(SplineSet *ss,StrokeContext *c) {
 	 }
 	 i=j;
       }
-      for (i=c->cur - 1; i >= 0;) {
+      for (i=c->cur-1; i >= 0;) {
 	 while (i >= 0
 		&& (c->all[i].right_hidden || c->all[i].needs_point_right))
 	    --i;
-	 if (i < c->cur - 1 && !c->all[i + 1].right_hidden)
+	 if (i<c->cur-1 && !c->all[i+1].right_hidden)
 	    ++i;
-	 while (i > 0 && c->all[i].right.x==c->all[i - 1].right.x
-		&& c->all[i].right.y==c->all[i - 1].right.y)
+	 while (i>0 && c->all[i].right.x==c->all[i-1].right.x
+		&& c->all[i].right.y==c->all[i-1].right.y)
 	    --i;
-	 for (j=i - 1;
+	 for (j=i-1;
 	      j >= 0 && !c->all[j].right_hidden
 	      && !c->all[j].needs_point_right; --j) {
 	    if (c->all[i].slope.x * c->all[j].slope.x +
 		c->all[i].slope.y * c->all[j].slope.y <= 0) {
-	       for (k=j - 1;
-		    k >= 0 && k > j - skip && !c->all[k].right_hidden
+	       for (k=j-1;
+		    k >= 0 && k>j-skip && !c->all[k].right_hidden
 		    && !c->all[k].needs_point_right; --k);
-	       if (k <= j - skip) {
+	       if (k <= j-skip) {
 		  c->all[j].needs_point_right=true;
 		  i=j;
 		  j=k;
@@ -1030,25 +1030,25 @@ static int WhichSquareCorner(BasePoint *slope,double t,int *right_trace) {
    int left_trace, rt;
 
    if (slope->x==0) {
-      if (slope->y > 0)
+      if (slope->y>0)
 	 left_trace=3;
       else
 	 left_trace=1;
    } else if (slope->y==0) {
-      if (slope->x > 0)
+      if (slope->x>0)
 	 left_trace=0;
       else
 	 left_trace=2;
-   } else if (slope->x > 0 && slope->y > 0)
+   } else if (slope->x>0 && slope->y>0)
       left_trace=0;
-   else if (slope->x > 0)
+   else if (slope->x>0)
       left_trace=1;
-   else if (slope->y > 0)
+   else if (slope->y>0)
       left_trace=3;
    else
       left_trace=2;
 
-   rt=left_trace + 2;
+   rt=left_trace+2;
    if (rt >= 4)
       rt -= 4;
    *right_trace=rt;
@@ -1068,7 +1068,7 @@ static void SquareCap(StrokeContext *c,int isend) {
    /* final half pen". In PostScript that means draw a semi-circle. Here */
    /* we draw half a square (which is easier to draw than a circle) */
 
-   done=c->all[c->cur - 1];
+   done=c->all[c->cur-1];
    if (!isend) {
       end_corner=done.lt;
       start_corner=done.rt;
@@ -1079,20 +1079,20 @@ static void SquareCap(StrokeContext *c,int isend) {
    /* we draw the square edges in a clockwise direction. So we start at */
    /*  start_corner and add 1 until we get to end corner */
    /* start-end%4==2 */
-   cc=end_corner - start_corner;
-   if (cc < 0)
+   cc=end_corner-start_corner;
+   if (cc<0)
       cc += 4;
    if (cc==0 || cc==3)
       ErrorMsg(2,"Unexpected value in SquareCap\n");
    /* We want the seam to be half-way. That means if cnt==2 it will be ON the */
    /*  corner point we add, and if cnt==1 it will be halfway along the line */
    /*  between the two new corners. */
-   cnt=ceil(c->radius / c->resolution);
-   if (c->cur + 2 * cnt + 10 >= c->max) {
-      int extras=2 * cnt + 200;
+   cnt=ceil(c->radius/c->resolution);
+   if (c->cur+2*cnt+10 >= c->max) {
+      int extras=2*cnt+200;
 
-      c->all=realloc(c->all, (c->max + extras) * sizeof(StrokePoint));
-      memset(c->all + c->max, 0, extras * sizeof(StrokePoint));
+      c->all=realloc(c->all, (c->max+extras)*sizeof(StrokePoint));
+      memset(c->all+c->max, 0, extras * sizeof(StrokePoint));
       c->max += extras;
    }
    if (!isend)
@@ -1104,13 +1104,13 @@ static void SquareCap(StrokeContext *c,int isend) {
 
 
    if (cc==2) {
-      nc=start_corner + 1;
+      nc=start_corner+1;
       if (nc==4)
 	 nc=0;
-      slope1.x=(SquareCorners[nc].x - SquareCorners[done.lt].x) * c->radius;
-      slope1.y=(SquareCorners[nc].y - SquareCorners[done.lt].y) * c->radius;
-      slope2.x=(SquareCorners[nc].x - SquareCorners[done.rt].x) * c->radius;
-      slope2.y=(SquareCorners[nc].y - SquareCorners[done.rt].y) * c->radius;
+      slope1.x=(SquareCorners[nc].x-SquareCorners[done.lt].x)*c->radius;
+      slope1.y=(SquareCorners[nc].y-SquareCorners[done.lt].y)*c->radius;
+      slope2.x=(SquareCorners[nc].x-SquareCorners[done.rt].x)*c->radius;
+      slope2.y=(SquareCorners[nc].y-SquareCorners[done.rt].y)*c->radius;
       if (!isend) {
 	 start=cnt;
 	 end=1;
@@ -1121,21 +1121,21 @@ static void SquareCap(StrokeContext *c,int isend) {
 	 incr=1;
       }
       for (i=start;; i += incr) {
-	 t=((double) i) / cnt;
+	 t=((double) i)/cnt;
 	 p=&c->all[c->cur++];
 	 *p=done;
 	 p->line=true;
 	 p->needs_point_left=p->needs_point_right=i==cnt;
-	 p->left.x=done.left.x + t * slope1.x;
-	 p->left.y=done.left.y + t * slope1.y;
-	 p->right.x=done.right.x + t * slope2.x;
-	 p->right.y=done.right.y + t * slope2.y;
+	 p->left.x=done.left.x+t * slope1.x;
+	 p->left.y=done.left.y+t * slope1.y;
+	 p->right.x=done.right.x+t * slope2.x;
+	 p->right.y=done.right.y+t * slope2.y;
 	 if (i==end)
 	    break;
       }
    } else {
-      slope1.x=done.left.x - done.right.x;
-      slope1.y=done.left.y - done.right.y;
+      slope1.x=done.left.x-done.right.x;
+      slope1.y=done.left.y-done.right.y;
       if (isend) {
 	 start=cnt;
 	 end=1;
@@ -1146,15 +1146,15 @@ static void SquareCap(StrokeContext *c,int isend) {
 	 incr=1;
       }
       for (i=start;; i += incr) {
-	 t=((double) i) / (2 * cnt);
+	 t=((double) i)/(2*cnt);
 	 p=&c->all[c->cur++];
 	 *p=done;
 	 p->line=true;
 	 p->needs_point_left=p->needs_point_right=i==cnt;
-	 p->left.x=done.left.x - t * slope1.x;
-	 p->left.y=done.left.y - t * slope2.y;
-	 p->right.x=done.right.x + t * slope.x;
-	 p->right.y=done.right.y + t * slope.y;
+	 p->left.x=done.left.x-t * slope1.x;
+	 p->left.y=done.left.y-t * slope2.y;
+	 p->right.x=done.right.x+t * slope.x;
+	 p->right.y=done.right.y+t * slope.y;
 	 if (i==end)
 	    break;
       }
@@ -1172,21 +1172,21 @@ static void SquareJoin(StrokeContext *c,int atbreak) {
    int pindex, nindex, i;
 
    if (atbreak) {
-      pindex=c->cur - 1;
+      pindex=c->cur-1;
       nindex=0;
    } else {
-      pindex=c->cur - 2;
-      nindex=c->cur - 1;
+      pindex=c->cur-2;
+      nindex=c->cur-1;
    }
-   if (pindex < 0)
+   if (pindex<0)
       ErrorMsg(2,"LineJoin: pindex<0\n");
    done=c->all[nindex];
    pslope=c->all[pindex].slope;
    nslope=done.slope;
 
-   dot=nslope.y * pslope.x - nslope.x * pslope.y;
+   dot=nslope.y * pslope.x-nslope.x * pslope.y;
    if (dot==0) {
-      if (nslope.x * pslope.x + nslope.y * pslope.y > 0)
+      if (nslope.x * pslope.x+nslope.y * pslope.y>0)
 	 return;		/* Colinear */
       /* Otherwise we go in the reverse direction */
       /* We need to know whether we are bending left or right, and a dot of 0 */
@@ -1194,7 +1194,7 @@ static void SquareJoin(StrokeContext *c,int atbreak) {
    }
    if (done.rt==c->all[pindex].rt)
       return;			/* Slope changes, but not enough for us to flip to a new corner */
-   if (dot > 0) {
+   if (dot>0) {
       bends_left=true;
       start=c->all[pindex].rt;
       end=done.rt;
@@ -1211,14 +1211,14 @@ static void SquareJoin(StrokeContext *c,int atbreak) {
       c->all[pindex].right_hidden=true;
    }
 
-   cnt=ceil(c->radius / c->resolution);
-   if (cnt < 2)
+   cnt=ceil(c->radius/c->resolution);
+   if (cnt<2)
       cnt=2;
-   if (c->cur + 3 * cnt + 10 >= c->max) {
-      int extras=3 * cnt + 200;
+   if (c->cur+3*cnt+10 >= c->max) {
+      int extras=3*cnt+200;
 
-      c->all=realloc(c->all, (c->max + extras) * sizeof(StrokePoint));
-      memset(c->all + c->max, 0, extras * sizeof(StrokePoint));
+      c->all=realloc(c->all, (c->max+extras)*sizeof(StrokePoint));
+      memset(c->all+c->max, 0, extras * sizeof(StrokePoint));
       c->max += extras;
    }
    if (!atbreak)
@@ -1229,15 +1229,15 @@ static void SquareJoin(StrokeContext *c,int atbreak) {
    /* end */
 
    lastc=start;
-   for (nc=bends_left ? start - 1 : start + 1;; bends_left ? --nc : ++nc) {
+   for (nc=bends_left?start-1:start+1;; bends_left?--nc:++nc) {
       if (nc==4)
 	 nc=0;
-      else if (nc < 0)
+      else if (nc<0)
 	 nc=3;
-      base.x=done.me.x + SquareCorners[lastc].x * c->radius;
-      base.y=done.me.y + SquareCorners[lastc].y * c->radius;
-      slope.x=SquareCorners[nc].x - SquareCorners[lastc].x;
-      slope.y=SquareCorners[nc].y - SquareCorners[lastc].y;
+      base.x=done.me.x+SquareCorners[lastc].x * c->radius;
+      base.y=done.me.y+SquareCorners[lastc].y * c->radius;
+      slope.x=SquareCorners[nc].x-SquareCorners[lastc].x;
+      slope.y=SquareCorners[nc].y-SquareCorners[lastc].y;
       for (i=1; i <= cnt; ++i) {
 	 p=&c->all[c->cur++];
 	 *p=c->all[pindex];
@@ -1245,8 +1245,8 @@ static void SquareJoin(StrokeContext *c,int atbreak) {
 	 p->needs_point_left=p->needs_point_right=i==cnt;
 	 p->left_hidden=bends_left;
 	 p->right_hidden=!bends_left;
-	 me.x=base.x + c->radius * i * slope.x / cnt;
-	 me.y=base.y + c->radius * i * slope.y / cnt;
+	 me.x=base.x+c->radius * i * slope.x/cnt;
+	 me.y=base.y+c->radius * i * slope.y/cnt;
 	 if (bends_left)
 	    p->right=me;
 	 else
@@ -1263,18 +1263,18 @@ static void SquareJoin(StrokeContext *c,int atbreak) {
 static void HideStrokePointsSquare(StrokeContext *c) {
    int i, j;
    double xdiff, ydiff, dist1, dist2;
-   double res_bound=10 * c->resolution;
+   double res_bound=10*c->resolution;
 
    /* Similar to the case for a circular pen, except the hit test for a square */
    /*  is slightly different from the hit test for a circle */
 
-   for (i=c->cur - 1; i >= 0; --i) {
+   for (i=c->cur-1; i >= 0; --i) {
       StrokePoint *p=&c->all[i];
-      Spline *myline=p->sp->knownlinear ? p->sp : NULL;
+      Spline *myline=p->sp->knownlinear?p->sp:NULL;
 
       if (p->line || p->circle)
 	 myline=NULL;
-      for (j=c->cur - 1; j >= 0; --j)
+      for (j=c->cur-1; j >= 0; --j)
 	 if (j != i) {
 	    StrokePoint *op=&c->all[j];
 
@@ -1287,39 +1287,39 @@ static void HideStrokePointsSquare(StrokeContext *c) {
 	       continue;
 	    dist1=dist2=1e20;
 	    if (!p->left_hidden) {
-	       if ((xdiff=(p->left.x - op->me.x)) < 0)
+	       if ((xdiff=(p->left.x-op->me.x))<0)
 		  xdiff=-xdiff;
-	       if ((ydiff=(p->left.y - op->me.y)) < 0)
+	       if ((ydiff=(p->left.y-op->me.y))<0)
 		  ydiff=-ydiff;
-	       if (xdiff < c->radius && ydiff < c->radius) {
+	       if (xdiff<c->radius && ydiff<c->radius) {
 		  p->left_hidden=true;
 		  if (p->right_hidden)
 		     break;
 	       } else
-		  dist1=xdiff < ydiff ? xdiff : ydiff;
+		  dist1=xdiff<ydiff?xdiff:ydiff;
 	    }
 	    if (!p->right_hidden) {
-	       if ((xdiff=(p->right.x - op->me.x)) < 0)
+	       if ((xdiff=(p->right.x-op->me.x))<0)
 		  xdiff=-xdiff;
-	       if ((ydiff=(p->right.y - op->me.y)) < 0)
+	       if ((ydiff=(p->right.y-op->me.y))<0)
 		  ydiff=-ydiff;
-	       if (xdiff < c->radius && ydiff < c->radius) {
+	       if (xdiff<c->radius && ydiff<c->radius) {
 		  p->right_hidden=true;
 		  if (p->left_hidden)
 		     break;
 	       } else
-		  dist2=xdiff < ydiff ? xdiff : ydiff;
+		  dist2=xdiff<ydiff?xdiff:ydiff;
 	    }
-	    if (dist1 > dist2)
+	    if (dist1>dist2)
 	       dist1=dist2;
 	    dist1 -= c->radius;
-	    if (dist1 > res_bound) {
+	    if (dist1>res_bound) {
 	       /* If we are far away from the desired point then we can */
 	       /*  skip ahead more quickly. Since things should be spaced */
 	       /*  about resolution units apart we know how far we can    */
 	       /*  skip. Since that measurement isn't perfect we leave some */
 	       /*  slop */
-	       j -= .66667 * dist1 / c->resolution - 1;
+	       j -= .66667*dist1/c->resolution-1;
 	       /* Minus 1 because we are going to add 1 anyway */
 	    }
 	 }
@@ -1334,18 +1334,18 @@ static int SquareWhichExtreme(StrokePoint *before,StrokePoint *after) {
    if (RealWithin(after->slope.x * after->slope.y, 0, .0001))
       return (1);
 
-   if (before->slope.y * after->slope.y < 0) {
+   if (before->slope.y * after->slope.y<0) {
       /* The extremum is in y */
-      if (before->slope.y < 0)	/* Heading for a minimum */
-	 return (before->me.y < after->me.y ? -1 : 1);
+      if (before->slope.y<0)	/* Heading for a minimum */
+	 return (before->me.y<after->me.y?-1:1);
       else			/* A maximum */
-	 return (before->me.y > after->me.y ? -1 : 1);
+	 return (before->me.y>after->me.y?-1:1);
    } else {
       /* The extremum is in x */
-      if (before->slope.x < 0)
-	 return (before->me.x < after->me.x ? -1 : 1);
+      if (before->slope.x<0)
+	 return (before->me.x<after->me.x?-1:1);
       else
-	 return (before->me.x > after->me.x ? -1 : 1);
+	 return (before->me.x>after->me.x?-1:1);
    }
 }
 
@@ -1359,7 +1359,7 @@ static void FindStrokePointsSquare(SplineSet *ss,StrokeContext *c) {
    int lt, rt;
    double factor;
 
-   cnt=ceil(2 * c->radius / c->resolution);
+   cnt=ceil(2*c->radius/c->resolution);
 
    first=NULL;
    for (s=ss->first->next; s != NULL && s != first; s=s->to->next) {
@@ -1370,27 +1370,27 @@ static void FindStrokePointsSquare(SplineSet *ss,StrokeContext *c) {
 	 continue;		/* We can safely ignore it because it is of zero length */
       /* We need to ignore it because it gives us 0/0 in places */
 
-      len=ceil(length / c->resolution);
-      if (len < 3)
+      len=ceil(length/c->resolution);
+      if (len<3)
 	 len=3;
       /* There will be len+1 sample points take. Two of those points will be */
       /*  the end points, and there will be at least two internal points */
-      if (c->cur + len + 1 + 8 * (cnt + 2) >= c->max) {
-	 int extras=len + 8 * cnt + 200;
+      if (c->cur+len+1+8*(cnt+2) >= c->max) {
+	 int extras=len+8*cnt+200;
 
-	 c->all=realloc(c->all, (c->max + extras) * sizeof(StrokePoint));
-	 memset(c->all + c->max, 0, extras * sizeof(StrokePoint));
+	 c->all=realloc(c->all, (c->max+extras)*sizeof(StrokePoint));
+	 memset(c->all+c->max, 0, extras * sizeof(StrokePoint));
 	 c->max += extras;
       }
-      diff=1.0 / len;
+      diff=1.0/len;
       for (i=0, t=0; i <= len; ++i, t += diff) {
 	 StrokePoint *p;
 
 	 if (c->cur >= c->max) {
-	    int extras=len + 8 * cnt + 200;
+	    int extras=len+8*cnt+200;
 
-	    c->all=realloc(c->all, (c->max + extras) * sizeof(StrokePoint));
-	    memset(c->all + c->max, 0, extras * sizeof(StrokePoint));
+	    c->all=realloc(c->all, (c->max+extras)*sizeof(StrokePoint));
+	    memset(c->all+c->max, 0, extras * sizeof(StrokePoint));
 	    c->max += extras;
 	 }
 	 p=&c->all[c->cur++];
@@ -1399,10 +1399,10 @@ static void FindStrokePointsSquare(SplineSet *ss,StrokeContext *c) {
 	 FindSlope(c, s, t, diff);
 	 lt=WhichSquareCorner(&p->slope, t, &rt);
 	 if (i==0 || p[-1].lt==lt) {
-	    p->left.x=p->me.x + c->radius * SquareCorners[lt].x;
-	    p->left.y=p->me.y + c->radius * SquareCorners[lt].y;
-	    p->right.x=p->me.x + c->radius * SquareCorners[rt].x;
-	    p->right.y=p->me.y + c->radius * SquareCorners[rt].y;
+	    p->left.x=p->me.x+c->radius * SquareCorners[lt].x;
+	    p->left.y=p->me.y+c->radius * SquareCorners[lt].y;
+	    p->right.x=p->me.x+c->radius * SquareCorners[rt].x;
+	    p->right.y=p->me.y+c->radius * SquareCorners[rt].y;
 	    p->lt=lt;
 	    p->rt=rt;
 	 } else {
@@ -1410,10 +1410,10 @@ static void FindStrokePointsSquare(SplineSet *ss,StrokeContext *c) {
 	    BasePoint slopel, sloper;
 	    int k, needsafter=false;
 
-	    p->left.x=p->me.x + c->radius * SquareCorners[p[-1].lt].x;
-	    p->left.y=p->me.y + c->radius * SquareCorners[p[-1].lt].y;
-	    p->right.x=p->me.x + c->radius * SquareCorners[p[-1].rt].x;
-	    p->right.y=p->me.y + c->radius * SquareCorners[p[-1].rt].y;
+	    p->left.x=p->me.x+c->radius * SquareCorners[p[-1].lt].x;
+	    p->left.y=p->me.y+c->radius * SquareCorners[p[-1].lt].y;
+	    p->right.x=p->me.x+c->radius * SquareCorners[p[-1].rt].x;
+	    p->right.y=p->me.y+c->radius * SquareCorners[p[-1].rt].y;
 	    p->lt=p[-1].lt;
 	    p->rt=p[-1].rt;
 
@@ -1422,50 +1422,50 @@ static void FindStrokePointsSquare(SplineSet *ss,StrokeContext *c) {
 	    /* and a point after it. Either might be closer (and it matters, */
 	    /* if we get it wrong we can hide the inserted side by mistake) */
 	    /* so figure out which is appropriate */
-	    if (SquareWhichExtreme(p - 1, p)==-1) {
+	    if (SquareWhichExtreme(p-1, p)==-1) {
 	       final=base=p[-1];
-	       final.left.x=final.me.x + c->radius * SquareCorners[lt].x;
-	       final.left.y=final.me.y + c->radius * SquareCorners[lt].y;
-	       final.right.x=final.me.x + c->radius * SquareCorners[rt].x;
-	       final.right.y=final.me.y + c->radius * SquareCorners[rt].y;
+	       final.left.x=final.me.x+c->radius * SquareCorners[lt].x;
+	       final.left.y=final.me.y+c->radius * SquareCorners[lt].y;
+	       final.right.x=final.me.x+c->radius * SquareCorners[rt].x;
+	       final.right.y=final.me.y+c->radius * SquareCorners[rt].y;
 	       final.lt=lt;
 	       final.rt=rt;
 	       final.needs_point_left=final.needs_point_right=true;
 	       p[-1].needs_point_left=p[-1].needs_point_right=true;
 
 	       afters=*p;
-	       afters.left.x=afters.me.x + c->radius * SquareCorners[lt].x;
-	       afters.left.y=afters.me.y + c->radius * SquareCorners[lt].y;
-	       afters.right.x=afters.me.x + c->radius * SquareCorners[rt].x;
-	       afters.right.y=afters.me.y + c->radius * SquareCorners[rt].y;
+	       afters.left.x=afters.me.x+c->radius * SquareCorners[lt].x;
+	       afters.left.y=afters.me.y+c->radius * SquareCorners[lt].y;
+	       afters.right.x=afters.me.x+c->radius * SquareCorners[rt].x;
+	       afters.right.y=afters.me.y+c->radius * SquareCorners[rt].y;
 	       --c->cur;
 	       needsafter=true;
 	    } else {
 	       final=base=*p;
-	       final.left.x=final.me.x + c->radius * SquareCorners[lt].x;
-	       final.left.y=final.me.y + c->radius * SquareCorners[lt].y;
-	       final.right.x=final.me.x + c->radius * SquareCorners[rt].x;
-	       final.right.y=final.me.y + c->radius * SquareCorners[rt].y;
+	       final.left.x=final.me.x+c->radius * SquareCorners[lt].x;
+	       final.left.y=final.me.y+c->radius * SquareCorners[lt].y;
+	       final.right.x=final.me.x+c->radius * SquareCorners[rt].x;
+	       final.right.y=final.me.y+c->radius * SquareCorners[rt].y;
 	       final.lt=lt;
 	       final.rt=rt;
 	       final.needs_point_left=final.needs_point_right=true;
 	       p->needs_point_left=p->needs_point_right=true;
 	    }
 
-	    slopel.x=final.left.x - base.left.x;
-	    slopel.y=final.left.y - base.left.y;
-	    sloper.x=final.right.x - base.right.x;
-	    sloper.y=final.right.y - base.right.y;
-	    for (k=1; k < cnt; ++k) {
+	    slopel.x=final.left.x-base.left.x;
+	    slopel.y=final.left.y-base.left.y;
+	    sloper.x=final.right.x-base.right.x;
+	    sloper.y=final.right.y-base.right.y;
+	    for (k=1; k<cnt; ++k) {
 	       p=&c->all[c->cur++];
 	       *p=base;
 	       p->needs_point_left=p->needs_point_right=false;
 	       p->line=true;
-	       factor=((double) k) / cnt;
-	       p->left.x=base.left.x + factor * slopel.x;
-	       p->left.y=base.left.y + factor * slopel.y;
-	       p->right.x=base.right.x + factor * sloper.x;
-	       p->right.y=base.right.y + factor * sloper.y;
+	       factor=((double) k)/cnt;
+	       p->left.x=base.left.x+factor * slopel.x;
+	       p->left.y=base.left.y+factor * slopel.y;
+	       p->right.x=base.right.x+factor * sloper.x;
+	       p->right.y=base.right.y+factor * sloper.y;
 	    }
 	    p=&c->all[c->cur++];
 	    *p=final;
@@ -1488,7 +1488,7 @@ static void FindStrokePointsSquare(SplineSet *ss,StrokeContext *c) {
       if (s->to->next==NULL)
 	 SquareCap(c, 1);
    }
-   if (!c->open && c->cur > 0)
+   if (!c->open && c->cur>0)
       SquareJoin(c, true);
    HideStrokePointsSquare(c);
 }
@@ -1510,10 +1510,10 @@ static int WhichPolyCorner(StrokeContext *c,BasePoint *slope,
 
    bestl_off=bestr_off=-1;
    bestl=bestl2=bestr=bestr2=-1;
-   for (i=0; i < c->n; ++i) {
-      off=-(c->corners[i].x * slope->y) + (c->corners[i].y * slope->x);
-      if (off > 0 && off >= bestl_off) {
-	 if (off > bestl_off) {
+   for (i=0; i<c->n; ++i) {
+      off=-(c->corners[i].x * slope->y)+(c->corners[i].y * slope->x);
+      if (off>0 && off >= bestl_off) {
+	 if (off>bestl_off) {
 	    bestl_off=off;
 	    bestl=i;
 	    bestl2=-1;
@@ -1522,9 +1522,9 @@ static int WhichPolyCorner(StrokeContext *c,BasePoint *slope,
 	 }
       }
 
-      off=(c->corners[i].x * slope->y) - (c->corners[i].y * slope->x);
-      if (off > 0 && off >= bestr_off) {
-	 if (off > bestr_off) {
+      off=(c->corners[i].x * slope->y)-(c->corners[i].y * slope->x);
+      if (off>0 && off >= bestr_off) {
+	 if (off>bestr_off) {
 	    bestr_off=off;
 	    bestr=i;
 	    bestr2=-1;
@@ -1536,16 +1536,16 @@ static int WhichPolyCorner(StrokeContext *c,BasePoint *slope,
    if (bestl==-1 || bestr==-1)
       ErrorMsg(2,"Failed to find corner in WhichPolyCorner\n");
    if (bestl2 != -1) {
-      if (bestl + 1 != bestl2 && !(bestl2==c->n - 1 && bestl==0))
+      if (bestl+1 != bestl2 && !(bestl2==c->n-1 && bestl==0))
 	 ErrorMsg(2,"Unexpected multiple left corners in WhichPolyCorner\n");
-      if (bestl==0 && bestl2==c->n - 1)
-	 bestl=c->n - 1;
+      if (bestl==0 && bestl2==c->n-1)
+	 bestl=c->n-1;
    }
    if (bestr2 != -1) {
-      if (bestr + 1 != bestr2 && !(bestr2==c->n - 1 && bestr==0))
+      if (bestr+1 != bestr2 && !(bestr2==c->n-1 && bestr==0))
 	 ErrorMsg(2,"Unexpected multiple right corners in WhichPolyCorner\n");
-      if (bestr==0 && bestr2==c->n - 1)
-	 bestr=c->n - 1;
+      if (bestr==0 && bestr2==c->n-1)
+	 bestr=c->n-1;
    }
    *right_trace=bestr;
    return (bestl);
@@ -1562,7 +1562,7 @@ static void PolyCap(StrokeContext *c,int isend) {
    /* Again, we don't worry about funny line endings, we just draw the bit of */
    /*  polygon that sticks out */
 
-   done=c->all[c->cur - 1];
+   done=c->all[c->cur-1];
    if (!isend) {
       end_corner=done.lt;
       start_corner=done.rt;
@@ -1570,26 +1570,26 @@ static void PolyCap(StrokeContext *c,int isend) {
       end_corner=done.rt;
       start_corner=done.lt;
    }
-   cc=end_corner - start_corner;
-   if (cc < 0)
+   cc=end_corner-start_corner;
+   if (cc<0)
       cc += c->n;
    if (!isend) {
-      int temp=start_corner + cc / 2;
+      int temp=start_corner+cc/2;
 
-      start_corner=end_corner - cc / 2;
+      start_corner=end_corner-cc/2;
       end_corner=temp;
       if (end_corner >= c->n)
 	 end_corner -= c->n;
-      if (start_corner < 0)
+      if (start_corner<0)
 	 start_corner += c->n;
    }
 
-   cnt=ceil(c->radius / c->resolution);
-   if (c->cur + cc * cnt + 10 >= c->max) {
-      int extras=cc * cnt + 200;
+   cnt=ceil(c->radius/c->resolution);
+   if (c->cur+cc * cnt+10 >= c->max) {
+      int extras=cc * cnt+200;
 
-      c->all=realloc(c->all, (c->max + extras) * sizeof(StrokePoint));
-      memset(c->all + c->max, 0, extras * sizeof(StrokePoint));
+      c->all=realloc(c->all, (c->max+extras)*sizeof(StrokePoint));
+      memset(c->all+c->max, 0, extras * sizeof(StrokePoint));
       c->max += extras;
    }
    if (!isend)
@@ -1603,14 +1603,14 @@ static void PolyCap(StrokeContext *c,int isend) {
    /* But if !isend we start in the middle and work out */
    /* We do things slightly differently if the number of edges we need to */
    /*  draw is even or odd. */
-   for (; cc > 0;) {
-      base1.x=done.me.x + c->corners[start_corner].x;
-      base1.y=done.me.y + c->corners[start_corner].y;
-      base2.x=done.me.x + c->corners[end_corner].x;
-      base2.y=done.me.y + c->corners[end_corner].y;
-      if ((!isend && cc & 1) || (isend && cc==1)) {
-	 slope1.x=c->corners[end_corner].x - c->corners[start_corner].x;
-	 slope1.y=c->corners[end_corner].y - c->corners[start_corner].y;
+   for (; cc>0;) {
+      base1.x=done.me.x+c->corners[start_corner].x;
+      base1.y=done.me.y+c->corners[start_corner].y;
+      base2.x=done.me.x+c->corners[end_corner].x;
+      base2.y=done.me.y+c->corners[end_corner].y;
+      if ((!isend && cc&1) || (isend && cc==1)) {
+	 slope1.x=c->corners[end_corner].x-c->corners[start_corner].x;
+	 slope1.y=c->corners[end_corner].y-c->corners[start_corner].y;
 	 if (!isend) {
 	    start=cnt;
 	    end=1;
@@ -1621,47 +1621,47 @@ static void PolyCap(StrokeContext *c,int isend) {
 	    incr=1;
 	 }
 	 for (i=start;; i += incr) {
-	    t=((double) i) / (2 * cnt);
+	    t=((double) i)/(2*cnt);
 	    p=&c->all[c->cur++];
 	    *p=done;
 	    p->line=true;
 	    p->left_hidden=p->right_hidden=false;
 	    p->needs_point_left=p->needs_point_right=i==cnt;
-	    p->left.x=base1.x + t * slope1.x;
-	    p->left.y=base1.y + t * slope1.y;
-	    p->right.x=base2.x - t * slope1.x;
-	    p->right.y=base2.y - t * slope1.y;
+	    p->left.x=base1.x+t * slope1.x;
+	    p->left.y=base1.y+t * slope1.y;
+	    p->right.x=base2.x-t * slope1.x;
+	    p->right.y=base2.y-t * slope1.y;
 	    if (i==end)
 	       break;
 	 }
 	 cc -= 1;
       } else {
-	 nc=start_corner + 1;
+	 nc=start_corner+1;
 	 if (nc==c->n)
 	    nc=0;
-	 bc=end_corner - 1;
+	 bc=end_corner-1;
 	 if (bc==-1)
-	    bc=c->n - 1;
-	 slope1.x=(c->corners[nc].x - c->corners[start_corner].x);
-	 slope1.y=(c->corners[nc].y - c->corners[start_corner].y);
-	 slope2.x=(c->corners[bc].x - c->corners[end_corner].x);
-	 slope2.y=(c->corners[bc].y - c->corners[end_corner].y);
+	    bc=c->n-1;
+	 slope1.x=(c->corners[nc].x-c->corners[start_corner].x);
+	 slope1.y=(c->corners[nc].y-c->corners[start_corner].y);
+	 slope2.x=(c->corners[bc].x-c->corners[end_corner].x);
+	 slope2.y=(c->corners[bc].y-c->corners[end_corner].y);
 	 for (i=0; i <= cnt; ++i) {
-	    t=((double) i) / cnt;
+	    t=((double) i)/cnt;
 	    p=&c->all[c->cur++];
 	    *p=done;
 	    p->left_hidden=p->right_hidden=false;
 	    p->line=true;
 	    p->needs_point_left=p->needs_point_right=i==cnt || i==0;
-	    p->left.x=base1.x + t * slope1.x;
-	    p->left.y=base1.y + t * slope1.y;
-	    p->right.x=base2.x + t * slope2.x;
-	    p->right.y=base2.y + t * slope2.y;
+	    p->left.x=base1.x+t * slope1.x;
+	    p->left.y=base1.y+t * slope1.y;
+	    p->right.x=base2.x+t * slope2.x;
+	    p->right.y=base2.y+t * slope2.y;
 	 }
 	 if (++start_corner >= c->n)
 	    start_corner=0;
-	 if (--end_corner < 0)
-	    end_corner=c->n - 1;
+	 if (--end_corner<0)
+	    end_corner=c->n-1;
 
 	 cc -= 2;
       }
@@ -1669,7 +1669,7 @@ static void PolyCap(StrokeContext *c,int isend) {
    /* OK if there were an even number of edges to add, then we are done */
    /* Otherwise we need add one more edge, and meet in the middle */
 
-   if (cc & 1) {
+   if (cc&1) {
    }
    if (!isend)
       c->all[c->cur++]=done;
@@ -1689,27 +1689,27 @@ static void PolyJoin(StrokeContext *c,int atbreak) {
    /*  start (index 0), as opposed to (index+1) */
 
    if (atbreak) {
-      pindex=c->cur - 1;
+      pindex=c->cur-1;
       nindex=0;
    } else {
-      pindex=c->cur - 2;
-      nindex=c->cur - 1;
+      pindex=c->cur-2;
+      nindex=c->cur-1;
    }
-   if (pindex < 0)
+   if (pindex<0)
       ErrorMsg(2,"LineJoin: pindex<0\n");
    done=c->all[nindex];
    pslope=c->all[pindex].slope;
    nslope=done.slope;
 
-   dot=nslope.y * pslope.x - nslope.x * pslope.y;
+   dot=nslope.y * pslope.x-nslope.x * pslope.y;
    if (dot==0) {
-      if (nslope.x * pslope.x + nslope.y * pslope.y > 0)
+      if (nslope.x * pslope.x+nslope.y * pslope.y>0)
 	 return;		/* Colinear */
       /* Otherwise we go in the reverse direction */
       /* We need to know whether we are bending left or right, and a dot of 0 */
       /*  won't tell us ... so half the time we get this wrong */
    }
-   if (dot > 0) {
+   if (dot>0) {
       /* Slope changes, but not enough for us to flip to a new corner */
       if (done.rt==c->all[pindex].rt)
 	 return;
@@ -1734,8 +1734,8 @@ static void PolyJoin(StrokeContext *c,int atbreak) {
       c->all[pindex].hide_right_if_on_edge=true;
    }
 
-   cnt=ceil(c->radius / c->resolution);
-   if (cnt < 2)
+   cnt=ceil(c->radius/c->resolution);
+   if (cnt<2)
       cnt=2;
 
    if (!atbreak)
@@ -1746,23 +1746,23 @@ static void PolyJoin(StrokeContext *c,int atbreak) {
    /* end */
 
    lastc=start;
-   for (nc=start + dir;; nc += dir) {
-      if (c->cur + cnt + 10 >= c->max) {
-	 int extras=3 * cnt + 200;
+   for (nc=start+dir;; nc += dir) {
+      if (c->cur+cnt+10 >= c->max) {
+	 int extras=3*cnt+200;
 
-	 c->all=realloc(c->all, (c->max + extras) * sizeof(StrokePoint));
-	 memset(c->all + c->max, 0, extras * sizeof(StrokePoint));
+	 c->all=realloc(c->all, (c->max+extras)*sizeof(StrokePoint));
+	 memset(c->all+c->max, 0, extras * sizeof(StrokePoint));
 	 c->max += extras;
       }
       if (nc==c->n)
 	 nc=0;
-      else if (nc < 0)
-	 nc=c->n - 1;
-      base.x=done.me.x + c->corners[lastc].x;
-      base.y=done.me.y + c->corners[lastc].y;
+      else if (nc<0)
+	 nc=c->n-1;
+      base.x=done.me.x+c->corners[lastc].x;
+      base.y=done.me.y+c->corners[lastc].y;
       /* Can't use c->slopes because they are unit vectors */
-      slope.x=c->corners[nc].x - c->corners[lastc].x;
-      slope.y=c->corners[nc].y - c->corners[lastc].y;
+      slope.x=c->corners[nc].x-c->corners[lastc].x;
+      slope.y=c->corners[nc].y-c->corners[lastc].y;
       for (i=1; i <= cnt; ++i) {
 	 p=&c->all[c->cur++];
 	 *p=c->all[pindex];
@@ -1770,8 +1770,8 @@ static void PolyJoin(StrokeContext *c,int atbreak) {
 	 p->needs_point_left=p->needs_point_right=i==cnt;
 	 p->left_hidden=bends_left;
 	 p->right_hidden=!bends_left;
-	 me.x=base.x + i * slope.x / cnt;
-	 me.y=base.y + i * slope.y / cnt;
+	 me.x=base.x+i * slope.x/cnt;
+	 me.y=base.y+i * slope.y/cnt;
 	 if (bends_left)
 	    p->right=me;
 	 else
@@ -1789,20 +1789,20 @@ static void HideStrokePointsPoly(StrokeContext *c) {
    int i, j;
    double xdiff, ydiff, dist1sq, dist2sq;
    BasePoint rel;
-   double res2=c->resolution * c->resolution, res_bound=100 * res2;
+   double res2=c->resolution * c->resolution, res_bound=100*res2;
    enum hittest hit;
 
    /* Similar to the case for a circular pen, except the hit test for a poly */
    /*  is slightly different from the hit test for a circle */
 
 
-   for (i=c->cur - 1; i >= 0; --i) {
+   for (i=c->cur-1; i >= 0; --i) {
       StrokePoint *p=&c->all[i];
-      Spline *myline=p->sp->knownlinear ? p->sp : NULL;
+      Spline *myline=p->sp->knownlinear?p->sp:NULL;
 
       if (p->line || p->circle)
 	 myline=NULL;
-      for (j=c->cur - 1; j >= 0; --j)
+      for (j=c->cur-1; j >= 0; --j)
 	 if (j != i) {
 	    StrokePoint *op=&c->all[j];
 
@@ -1815,9 +1815,9 @@ static void HideStrokePointsPoly(StrokeContext *c) {
 	       continue;
 	    dist1sq=dist2sq=1e20;
 	    if (!p->left_hidden) {
-	       xdiff=(p->left.x - op->me.x);
-	       ydiff=(p->left.y - op->me.y);
-	       dist1sq=xdiff * xdiff + ydiff * ydiff;
+	       xdiff=(p->left.x-op->me.x);
+	       ydiff=(p->left.y-op->me.y);
+	       dist1sq=xdiff * xdiff+ydiff * ydiff;
 	       if (dist1sq <= c->largest_distance2) {
 		  rel.x=xdiff;
 		  rel.y=ydiff;
@@ -1834,9 +1834,9 @@ static void HideStrokePointsPoly(StrokeContext *c) {
 	       }
 	    }
 	    if (!p->right_hidden) {
-	       xdiff=(p->right.x - op->me.x);
-	       ydiff=(p->right.y - op->me.y);
-	       dist2sq=xdiff * xdiff + ydiff * ydiff;
+	       xdiff=(p->right.x-op->me.x);
+	       ydiff=(p->right.y-op->me.y);
+	       dist2sq=xdiff * xdiff+ydiff * ydiff;
 	       if (dist2sq <= c->largest_distance2) {
 		  rel.x=xdiff;
 		  rel.y=ydiff;
@@ -1852,20 +1852,20 @@ static void HideStrokePointsPoly(StrokeContext *c) {
 		  }
 	       }
 	    }
-	    if (dist1sq > dist2sq)
+	    if (dist1sq>dist2sq)
 	       dist1sq=dist2sq;
 	    dist1sq -= c->largest_distance2;
-	    if (dist1sq > res_bound) {
+	    if (dist1sq>res_bound) {
 	       /* If we are far away from the desired point then we can */
 	       /*  skip ahead more quickly. Since things should be spaced */
 	       /*  about resolution units apart we know how far we can    */
 	       /*  skip. Since that measurement isn't perfect we leave some */
 	       /*  slop */
 	       dist1sq /= res2;
-	       if (dist1sq < 400)
-		  j -= (6 - 1);
+	       if (dist1sq<400)
+		  j -= (6-1);
 	       else
-		  j -= .7 * sqrt(dist1sq) - 1;
+		  j -= .7*sqrt(dist1sq)-1;
 	       /* Minus 1 because we are going to add 1 anyway */
 	    }
 	 }
@@ -1878,8 +1878,8 @@ static int PolyWhichExtreme(StrokeContext *c,int corner,int bends_left,
    int ret;
 
    if (bends_left) {
-      if (--corner < 0)
-	 corner=c->n - 1;
+      if (--corner<0)
+	 corner=c->n-1;
    }
 
    /* Rotate before/after by the slope of the old side of the polygon */
@@ -1900,14 +1900,14 @@ static int PolyWhichExtreme(StrokeContext *c,int corner,int bends_left,
       -before->me.y * c->slopes[corner].x +
       before->me.x * c->slopes[corner].y;
    ay =
-      -after->me.y * c->slopes[corner].x + after->me.x * c->slopes[corner].y;
+      -after->me.y * c->slopes[corner].x+after->me.x * c->slopes[corner].y;
 
-   if (sy < 0) {
+   if (sy<0) {
       /* Heading for a minimum */
-      ret=(by < ay ? -1 : 1);
+      ret=(by<ay?-1:1);
    } else {
       /* A maximum */
-      ret=(by > ay ? -1 : 1);
+      ret=(by>ay?-1:1);
    }
    return (ret);
 }
@@ -1924,8 +1924,8 @@ static void FindStrokePointsPoly(SplineSet *ss,StrokeContext *c) {
    int cnt, ldiff, rdiff, dir;
    StrokePoint final, base, saveend;
 
-   cnt=c->longest_edge / c->resolution;
-   if (cnt < 3)
+   cnt=c->longest_edge/c->resolution;
+   if (cnt<3)
       cnt=3;
 
    first=NULL;
@@ -1937,21 +1937,21 @@ static void FindStrokePointsPoly(SplineSet *ss,StrokeContext *c) {
 	 continue;		/* We can safely ignore it because it is of zero length */
       /* We need to ignore it because it gives us 0/0 in places */
 
-      len=ceil(length / c->resolution);
-      if (len < 2)
+      len=ceil(length/c->resolution);
+      if (len<2)
 	 len=2;
       /* There will be len+1 sample points take. Two of those points will be */
       /*  the end points, and there will be at least one internal point */
       /* there may be as many as c->n corner changes. Actually there can be */
       /*  c->n on each side, and sides can change independently so 2*c->n */
-      if (c->cur + len + 1 + (cnt + 2) * 2 * c->n >= c->max) {
-	 int extras=len + (cnt + 2) * 2 * c->n + 200;
+      if (c->cur+len+1+(cnt+2)*2*c->n >= c->max) {
+	 int extras=len+(cnt+2)*2*c->n+200;
 
-	 c->all=realloc(c->all, (c->max + extras) * sizeof(StrokePoint));
-	 memset(c->all + c->max, 0, extras * sizeof(StrokePoint));
+	 c->all=realloc(c->all, (c->max+extras)*sizeof(StrokePoint));
+	 memset(c->all+c->max, 0, extras * sizeof(StrokePoint));
 	 c->max += extras;
       }
-      diff=1.0 / len;
+      diff=1.0/len;
       oldlt=oldrt=-1;
       memset(&basel, 0, sizeof(basel));
       memset(&baser, 0, sizeof(baser));
@@ -1960,13 +1960,13 @@ static void FindStrokePointsPoly(SplineSet *ss,StrokeContext *c) {
       for (i=0, t=0; i <= len; ++i, t += diff) {
 	 StrokePoint *p;
 
-	 if (c->cur + 2 >= c->max) {
-	    int extras=200 + len;
+	 if (c->cur+2 >= c->max) {
+	    int extras=200+len;
 
-	    c->all=realloc(c->all, (c->max + extras) * sizeof(StrokePoint));
-	    memset(c->all + c->max, 0, extras * sizeof(StrokePoint));
+	    c->all=realloc(c->all, (c->max+extras)*sizeof(StrokePoint));
+	    memset(c->all+c->max, 0, extras * sizeof(StrokePoint));
 	    c->max += extras;
-	    p=&c->all[c->cur - 1];
+	    p=&c->all[c->cur-1];
 	 }
 	 p=&c->all[c->cur++];
 	 if (i==len)
@@ -1976,9 +1976,9 @@ static void FindStrokePointsPoly(SplineSet *ss,StrokeContext *c) {
 	 stuff_happened=false;
 	 if (p != c->all && (lt != oldlt || rt != oldrt)) {
 	    double dot =
-	       p->slope.y * p[-1].slope.x - p->slope.x * p[-1].slope.y;
-	    bends_left=dot > 0;
-	    dir=bends_left ? -1 : 1;
+	       p->slope.y * p[-1].slope.x-p->slope.x * p[-1].slope.y;
+	    bends_left=dot>0;
+	    dir=bends_left?-1:1;
 	    saveend=*p;
 	    --c->cur;
 	    stuff_happened=true;
@@ -1987,8 +1987,8 @@ static void FindStrokePointsPoly(SplineSet *ss,StrokeContext *c) {
 	    ldiff=0;
 	    nlt=oldlt;
 	    if (lt != oldlt) {
-	       ldiff=PolyWhichExtreme(c, oldlt, bends_left, p - 1, p);
-	       if ((nlt=oldlt + dir) < 0)
+	       ldiff=PolyWhichExtreme(c, oldlt, bends_left, p-1, p);
+	       if ((nlt=oldlt+dir)<0)
 		  nlt += c->n;
 	       else if (nlt >= c->n)
 		  nlt=0;
@@ -1997,65 +1997,65 @@ static void FindStrokePointsPoly(SplineSet *ss,StrokeContext *c) {
 	    rdiff=0;
 	    nrt=oldrt;
 	    if (rt != oldrt) {
-	       rdiff=PolyWhichExtreme(c, oldrt, bends_left, p - 1, p);
-	       if ((nrt=oldrt + dir) < 0)
+	       rdiff=PolyWhichExtreme(c, oldrt, bends_left, p-1, p);
+	       if ((nrt=oldrt+dir)<0)
 		  nrt += c->n;
 	       else if (nrt >= c->n)
 		  nrt=0;
 	       p[-1].needs_point_right=true;
 	    }
-	    if (ldiff < 0 || rdiff < 0) {
-	       int local_nlt=ldiff < 0 ? nlt : oldlt;
-	       int local_nrt=rdiff < 0 ? nrt : oldrt;
+	    if (ldiff<0 || rdiff<0) {
+	       int local_nlt=ldiff<0?nlt:oldlt;
+	       int local_nrt=rdiff<0?nrt:oldrt;
 
 	       final=base=p[-1];
-	       final.left.x=final.me.x + c->corners[local_nlt].x;
-	       final.left.y=final.me.y + c->corners[local_nlt].y;
-	       final.right.x=final.me.x + c->corners[local_nrt].x;
-	       final.right.y=final.me.y + c->corners[local_nrt].y;
+	       final.left.x=final.me.x+c->corners[local_nlt].x;
+	       final.left.y=final.me.y+c->corners[local_nlt].y;
+	       final.right.x=final.me.x+c->corners[local_nrt].x;
+	       final.right.y=final.me.y+c->corners[local_nrt].y;
 	       final.lt=local_nlt;
 	       final.rt=local_nrt;
 
-	       slopel.x=final.left.x - base.left.x;
-	       slopel.y=final.left.y - base.left.y;
-	       sloper.x=final.right.x - base.right.x;
-	       sloper.y=final.right.y - base.right.y;
+	       slopel.x=final.left.x-base.left.x;
+	       slopel.y=final.left.y-base.left.y;
+	       sloper.x=final.right.x-base.right.x;
+	       sloper.y=final.right.y-base.right.y;
 	       for (k=1; k <= cnt; ++k) {
 		  p=&c->all[c->cur++];
 		  *p=base;
 		  p->needs_point_left=p->needs_point_right=false;
 		  p->line=true;
-		  factor=((double) k) / cnt;
-		  p->left.x=base.left.x + factor * slopel.x;
-		  p->left.y=base.left.y + factor * slopel.y;
-		  p->right.x=base.right.x + factor * sloper.x;
-		  p->right.y=base.right.y + factor * sloper.y;
+		  factor=((double) k)/cnt;
+		  p->left.x=base.left.x+factor * slopel.x;
+		  p->left.y=base.left.y+factor * slopel.y;
+		  p->right.x=base.right.x+factor * sloper.x;
+		  p->right.y=base.right.y+factor * sloper.y;
 	       }
 	       p->needs_point_left=oldlt != local_nlt;
 	       p->needs_point_right=oldrt != local_nrt;
 	       oldlt=local_nlt;
 	       oldrt=local_nrt;
 	    }
-	    if (ldiff > 0 || rdiff > 0) {
-	       int local_nlt=ldiff > 0 ? nlt : oldlt;
-	       int local_nrt=rdiff > 0 ? nrt : oldrt;
+	    if (ldiff>0 || rdiff>0) {
+	       int local_nlt=ldiff>0?nlt:oldlt;
+	       int local_nrt=rdiff>0?nrt:oldrt;
 
 	       final=base=saveend;
-	       base.left.x=base.me.x + c->corners[p[-1].lt].x;
-	       base.left.y=base.me.y + c->corners[p[-1].lt].y;
-	       base.right.x=base.me.x + c->corners[p[-1].rt].x;
-	       base.right.y=base.me.y + c->corners[p[-1].rt].y;
-	       final.left.x=final.me.x + c->corners[local_nlt].x;
-	       final.left.y=final.me.y + c->corners[local_nlt].y;
-	       final.right.x=final.me.x + c->corners[local_nrt].x;
-	       final.right.y=final.me.y + c->corners[local_nrt].y;
+	       base.left.x=base.me.x+c->corners[p[-1].lt].x;
+	       base.left.y=base.me.y+c->corners[p[-1].lt].y;
+	       base.right.x=base.me.x+c->corners[p[-1].rt].x;
+	       base.right.y=base.me.y+c->corners[p[-1].rt].y;
+	       final.left.x=final.me.x+c->corners[local_nlt].x;
+	       final.left.y=final.me.y+c->corners[local_nlt].y;
+	       final.right.x=final.me.x+c->corners[local_nrt].x;
+	       final.right.y=final.me.y+c->corners[local_nrt].y;
 	       final.lt=lt;
 	       final.rt=rt;
 
-	       slopel.x=final.left.x - base.left.x;
-	       slopel.y=final.left.y - base.left.y;
-	       sloper.x=final.right.x - base.right.x;
-	       sloper.y=final.right.y - base.right.y;
+	       slopel.x=final.left.x-base.left.x;
+	       slopel.y=final.left.y-base.left.y;
+	       sloper.x=final.right.x-base.right.x;
+	       sloper.y=final.right.y-base.right.y;
 	       for (k=0; k <= cnt; ++k) {
 		  p=&c->all[c->cur++];
 		  *p=base;
@@ -2065,11 +2065,11 @@ static void FindStrokePointsPoly(SplineSet *ss,StrokeContext *c) {
 		     p->needs_point_right=oldrt != local_nrt;
 		  }
 		  p->line=true;
-		  factor=((double) k) / cnt;
-		  p->left.x=base.left.x + factor * slopel.x;
-		  p->left.y=base.left.y + factor * slopel.y;
-		  p->right.x=base.right.x + factor * sloper.x;
-		  p->right.y=base.right.y + factor * sloper.y;
+		  factor=((double) k)/cnt;
+		  p->left.x=base.left.x+factor * slopel.x;
+		  p->left.y=base.left.y+factor * slopel.y;
+		  p->right.x=base.right.x+factor * sloper.x;
+		  p->right.y=base.right.y+factor * sloper.y;
 	       }
 	       oldlt=local_nlt;
 	       oldrt=local_nrt;
@@ -2079,10 +2079,10 @@ static void FindStrokePointsPoly(SplineSet *ss,StrokeContext *c) {
 	    p=&c->all[c->cur++];
 	    *p=saveend;
 	 }
-	 p->left.x=p->me.x + c->corners[lt].x;
-	 p->left.y=p->me.y + c->corners[lt].y;
-	 p->right.x=p->me.x + c->corners[rt].x;
-	 p->right.y=p->me.y + c->corners[rt].y;
+	 p->left.x=p->me.x+c->corners[lt].x;
+	 p->left.y=p->me.y+c->corners[lt].y;
+	 p->right.x=p->me.x+c->corners[rt].x;
+	 p->right.y=p->me.y+c->corners[rt].y;
 	 p->lt=lt;
 	 p->rt=rt;
 	 oldlt=lt;
@@ -2098,13 +2098,13 @@ static void FindStrokePointsPoly(SplineSet *ss,StrokeContext *c) {
 	       PolyJoin(c, false);
 	    gothere=true;
 	 }
-	 if (c->cur > c->max)
+	 if (c->cur>c->max)
 	    ErrorMsg(2,"Memory corrupted\n");
       }
       if (s->to->next==NULL)
 	 PolyCap(c, 1);
    }
-   if (!c->open && c->cur > 0)
+   if (!c->open && c->cur>0)
       PolyJoin(c, true);
    HideStrokePointsPoly(c);
 }
@@ -2125,9 +2125,9 @@ static void SSRemoveColinearPoints(SplineSet *ss) {
    nsp=sp->next->to;
    if (nsp==sp)
       return;
-   dir.x=nsp->me.x - sp->me.x;
-   dir.y=nsp->me.y - sp->me.y;
-   len=dir.x * dir.x + dir.y * dir.y;
+   dir.x=nsp->me.x-sp->me.x;
+   dir.y=nsp->me.y-sp->me.y;
+   len=dir.x * dir.x+dir.y * dir.y;
    if (len != 0) {
       len=sqrt(len);
       dir.x /= len;
@@ -2147,9 +2147,9 @@ static void SSRemoveColinearPoints(SplineSet *ss) {
       if (sp==nsp)
 	 break;
       if (nsp->next->knownlinear) {
-	 ndir.x=nnsp->me.x - nsp->me.x;
-	 ndir.y=nnsp->me.y - nsp->me.y;
-	 len=ndir.x * ndir.x + ndir.y * ndir.y;
+	 ndir.x=nnsp->me.x-nsp->me.x;
+	 ndir.y=nnsp->me.y-nsp->me.y;
+	 len=ndir.x * ndir.x+ndir.y * ndir.y;
 	 if (len != 0) {
 	    len=sqrt(len);
 	    ndir.x /= len;
@@ -2162,9 +2162,9 @@ static void SSRemoveColinearPoints(SplineSet *ss) {
 	 }
       }
       if (sp->next->knownlinear && nsp->next->knownlinear) {
-	 double dot=dir.x * ndir.y - dir.y * ndir.x;
+	 double dot=dir.x * ndir.y-dir.y * ndir.x;
 
-	 if (dot < .001 && dot > -.001) {
+	 if (dot<.001 && dot>-.001) {
 	    sp->next->to=nnsp;
 	    nnsp->prev=sp->next;
 	    SplineRefigure(sp->next);
@@ -2215,14 +2215,14 @@ static struct shapedescrip {
 
 static SplinePoint *SpOnCircle(int i,double radius,BasePoint *center) {
    SplinePoint *sp =
-      SplinePointCreate(unitcircle[i].me.x * radius + center->x,
-			unitcircle[i].me.y * radius + center->y);
+      SplinePointCreate(unitcircle[i].me.x * radius+center->x,
+			unitcircle[i].me.y * radius+center->y);
 
    sp->pointtype=pt_curve;
-   sp->prevcp.x=unitcircle[i].prevcp.x * radius + center->x;
-   sp->prevcp.y=unitcircle[i].prevcp.y * radius + center->y;
-   sp->nextcp.x=unitcircle[i].nextcp.x * radius + center->x;
-   sp->nextcp.y=unitcircle[i].nextcp.y * radius + center->y;
+   sp->prevcp.x=unitcircle[i].prevcp.x * radius+center->x;
+   sp->prevcp.y=unitcircle[i].prevcp.y * radius+center->y;
+   sp->nextcp.x=unitcircle[i].nextcp.x * radius+center->x;
+   sp->nextcp.y=unitcircle[i].nextcp.y * radius+center->y;
    sp->nonextcp=sp->noprevcp=false;
    return (sp);
 }
@@ -2242,7 +2242,7 @@ static SplinePointList *SinglePointStroke(SplinePoint *sp,
    } else if (c->pentype==pt_circle && c->cap==lc_round) {
       /* Turn into a circle */
       ret->first=sp1=SpOnCircle(0, c->radius, &sp->me);
-      for (i=1; i < 4; ++i) {
+      for (i=1; i<4; ++i) {
 	 sp2=SpOnCircle(i, c->radius, &sp->me);
 	 SplineMake3(sp1, sp2);
 	 sp1=sp2;
@@ -2251,12 +2251,12 @@ static SplinePointList *SinglePointStroke(SplinePoint *sp,
       ret->last=ret->first;
    } else if (c->pentype==pt_circle || c->pentype==pt_square) {
       ret->first=sp1 =
-	 SplinePointCreate(sp->me.x + c->radius * SquareCorners[0].x,
-			   sp->me.y + c->radius * SquareCorners[0].y);
+	 SplinePointCreate(sp->me.x+c->radius * SquareCorners[0].x,
+			   sp->me.y+c->radius * SquareCorners[0].y);
       sp1->pointtype=pt_corner;
-      for (i=1; i < 4; ++i) {
-	 sp2=SplinePointCreate(sp->me.x + c->radius * SquareCorners[i].x,
-				 sp->me.y + c->radius * SquareCorners[i].y);
+      for (i=1; i<4; ++i) {
+	 sp2=SplinePointCreate(sp->me.x+c->radius * SquareCorners[i].x,
+				 sp->me.y+c->radius * SquareCorners[i].y);
 	 sp2->pointtype=pt_corner;
 	 SplineMake3(sp1, sp2);
 	 sp1=sp2;
@@ -2264,12 +2264,12 @@ static SplinePointList *SinglePointStroke(SplinePoint *sp,
       SplineMake3(sp1, ret->first);
       ret->last=ret->first;
    } else {
-      ret->first=sp1=SplinePointCreate(sp->me.x + c->corners[0].x,
-					   sp->me.y + c->corners[0].y);
+      ret->first=sp1=SplinePointCreate(sp->me.x+c->corners[0].x,
+					   sp->me.y+c->corners[0].y);
       sp1->pointtype=pt_corner;
-      for (i=1; i < c->n; ++i) {
-	 sp2=SplinePointCreate(sp->me.x + c->corners[i].x,
-				 sp->me.y + c->corners[i].y);
+      for (i=1; i<c->n; ++i) {
+	 sp2=SplinePointCreate(sp->me.x+c->corners[i].x,
+				 sp->me.y+c->corners[i].y);
 	 sp2->pointtype=pt_corner;
 	 SplineMake3(sp1, sp2);
 	 sp1=sp2;
@@ -2283,15 +2283,15 @@ static SplinePointList *SinglePointStroke(SplinePoint *sp,
 static int AllHiddenLeft(struct strokecontext *c) {
    int i;
 
-   for (i=c->cur - 1; i >= 0 && c->all[i].left_hidden; --i);
-   return (i < 0);
+   for (i=c->cur-1; i >= 0 && c->all[i].left_hidden; --i);
+   return (i<0);
 }
 
 static int AllHiddenRight(struct strokecontext *c) {
    int i;
 
-   for (i=c->cur - 1; i >= 0 && c->all[i].right_hidden; --i);
-   return (i < 0);
+   for (i=c->cur-1; i >= 0 && c->all[i].right_hidden; --i);
+   return (i<0);
 }
 
 static void LeftSlopeAtPos(struct strokecontext *c,int pos,int prev,
@@ -2302,35 +2302,35 @@ static void LeftSlopeAtPos(struct strokecontext *c,int pos,int prev,
    double len;
    int i;
 
-   if ((prev && pos==0) || (!prev && pos==c->cur - 1)) {
+   if ((prev && pos==0) || (!prev && pos==c->cur-1)) {
       slope->x=slope->y=0;	/* Won't know the slope till we join it to something else */
       return;			/* Can't normalize */
    }
-   if ((prev && c->all[pos - 1].circle) || (!prev && c->all[pos + 1].circle)) {
+   if ((prev && c->all[pos-1].circle) || (!prev && c->all[pos+1].circle)) {
       /* circle cap/join. Slope is normal to the line from left to me */
-      slope->x=(c->all[pos].left.y - c->all[pos].me.y);
-      slope->y=-(c->all[pos].left.x - c->all[pos].me.x);
-   } else if ((prev && c->all[pos - 1].line) ||
-	      (!prev && c->all[pos + 1].line)) {
+      slope->x=(c->all[pos].left.y-c->all[pos].me.y);
+      slope->y=-(c->all[pos].left.x-c->all[pos].me.x);
+   } else if ((prev && c->all[pos-1].line) ||
+	      (!prev && c->all[pos+1].line)) {
       slope->x=slope->y=0;
       /* Sometimes two adjacent points will be coincident (hence the loop) */
       for (i=1;
 	   slope->x==0 && slope->y==0 && ((prev && pos >= i)
-					      || (!prev && pos + i < c->cur));
+					      || (!prev && pos+i<c->cur));
 	   ++i) {
 	 if (prev) {
-	    slope->x=c->all[pos].left.x - c->all[pos - i].left.x;
-	    slope->y=c->all[pos].left.y - c->all[pos - i].left.y;
+	    slope->x=c->all[pos].left.x-c->all[pos-i].left.x;
+	    slope->y=c->all[pos].left.y-c->all[pos-i].left.y;
 	 } else {
-	    slope->x=c->all[pos + i].left.x - c->all[pos].left.x;
-	    slope->y=c->all[pos + i].left.y - c->all[pos].left.y;
+	    slope->x=c->all[pos+i].left.x-c->all[pos].left.x;
+	    slope->y=c->all[pos+i].left.y-c->all[pos].left.y;
 	 }
       }
    } else {
       *slope=c->all[pos].slope;
       return;			/* Already a unit vector */
    }
-   len=slope->x * slope->x + slope->y * slope->y;
+   len=slope->x * slope->x+slope->y * slope->y;
    if (len != 0) {
       len=sqrt(len);
       slope->x /= len;
@@ -2361,46 +2361,46 @@ static SplinePoint *LeftPointFromContext(struct strokecontext *c,int *_pos,
    BasePoint posslope, startslope, inter;
    SplinePoint *ret;
    double normal_dot, len1, len2;
-   double res_bound=16 * c->resolution * c->resolution;
+   double res_bound=16*c->resolution * c->resolution;
 
    *newcontour=false;
    if (pos==0 && !c->open) {
       if (c->all[0].left_hidden ||
-	  (c->all[0].needs_point_left && c->all[c->cur - 1].needs_point_left))
-	 for (start_pos=c->cur - 1;
+	  (c->all[0].needs_point_left && c->all[c->cur-1].needs_point_left))
+	 for (start_pos=c->cur-1;
 	      start_pos >= 0 && c->all[start_pos].left_hidden; --start_pos);
       /* Might be some hidden points if the other side has a joint !!!!! */
    } else if (c->all[start_pos].left_hidden && start_pos != 0)
       --start_pos;
-   if (pos + 1 < c->cur && c->all[pos].t==1 && c->all[pos + 1].t==0)
+   if (pos+1<c->cur && c->all[pos].t==1 && c->all[pos+1].t==0)
       ++pos;
-   while (pos < c->cur && c->all[pos].left_hidden)
+   while (pos<c->cur && c->all[pos].left_hidden)
       ++pos;
-   while (pos + 1 < c->cur &&
-	  c->all[pos].left.x==c->all[pos + 1].left.x &&
-	  c->all[pos].left.y==c->all[pos + 1].left.y)
+   while (pos+1<c->cur &&
+	  c->all[pos].left.x==c->all[pos+1].left.x &&
+	  c->all[pos].left.y==c->all[pos+1].left.y)
       ++pos;
    if (pos >= c->cur) {
       if (c->open)
-	 pos=c->cur - 1;
+	 pos=c->cur-1;
       else {
 	 pos=0;
-	 while (pos < c->cur && c->all[pos].left_hidden)
+	 while (pos<c->cur && c->all[pos].left_hidden)
 	    ++pos;
 	 if (pos >= c->cur)
-	    pos=c->cur - 1;	/* Should never happen */
+	    pos=c->cur-1;	/* Should never happen */
       }
    }
    LeftSlopeAtPos(c, pos, false, &posslope);
    LeftSlopeAtPos(c, start_pos, true, &startslope);
-   normal_dot=startslope.x * posslope.y - startslope.y * posslope.x;
-   if (normal_dot < 0)
+   normal_dot=startslope.x * posslope.y-startslope.y * posslope.x;
+   if (normal_dot<0)
       normal_dot=-normal_dot;
    len2 =
       (c->all[start_pos].left.x -
-       c->all[pos].left.x) * (c->all[start_pos].left.x - c->all[pos].left.x) +
+       c->all[pos].left.x)*(c->all[start_pos].left.x-c->all[pos].left.x) +
       (c->all[start_pos].left.y -
-       c->all[pos].left.y) * (c->all[start_pos].left.y - c->all[pos].left.y);
+       c->all[pos].left.y)*(c->all[start_pos].left.y-c->all[pos].left.y);
    if (len2 >= res_bound && orig_pos==0) {
       /* If we're going to start a new contour at the beginnin, don't bother */
       len2=0;
@@ -2412,21 +2412,21 @@ static SplinePoint *LeftPointFromContext(struct strokecontext *c,int *_pos,
 /* those two would be near each other. But there are cases where the hidden */
 /* section is at the ends of a long rectangle. In that case we must draw a  */
 /* line between the two (actually we should start a new contour, but we aren't*/
-   if (normal_dot < .01 && len2 < .001) {
+   if (normal_dot<.01 && len2<.001) {
       ret=SplinePointCreate(c->all[pos].left.x, c->all[pos].left.y);
       ret->pointtype=pt_curve;
-   } else if (len2 < 16 * c->resolution * c->resolution) {
+   } else if (len2<16*c->resolution * c->resolution) {
       if (!IntersectLinesSlopes(&inter,
 				&c->all[start_pos].left, &startslope,
 				&c->all[pos].left, &posslope))
 	 inter=c->all[pos].left;
       len1 =
-	 (inter.x - c->all[pos].left.x) * (inter.x - c->all[pos].left.x) +
-	 (inter.y - c->all[pos].left.y) * (inter.y - c->all[pos].left.y);
-      if ((len1 > 4 && len1 > 10 * len2) || len1 > 100) {
+	 (inter.x-c->all[pos].left.x)*(inter.x-c->all[pos].left.x) +
+	 (inter.y-c->all[pos].left.y)*(inter.y-c->all[pos].left.y);
+      if ((len1>4 && len1>10*len2) || len1>100) {
 	 /* Intersection is too far (slopes are very accute? */
-	 inter.x=(c->all[pos].left.x + c->all[start_pos].left.x) / 2;
-	 inter.y=(c->all[pos].left.y + c->all[start_pos].left.y) / 2;
+	 inter.x=(c->all[pos].left.x+c->all[start_pos].left.x)/2;
+	 inter.y=(c->all[pos].left.y+c->all[start_pos].left.y)/2;
       }
       ret=SplinePointCreate(inter.x, inter.y);
       ret->pointtype=pt_corner;
@@ -2450,15 +2450,15 @@ static SplinePoint *LeftPointFromContext(struct strokecontext *c,int *_pos,
       /*  start of the next */
       /* Or a joint may add a lot of points to the other side which show up */
       /*  hidden on this side */
-      while (pos + 1 < c->cur &&
-	     ((ret->me.x==c->all[pos + 1].left.x
-	       && ret->me.y==c->all[pos + 1].left.y)
-	      || c->all[pos + 1].left_hidden))
+      while (pos+1<c->cur &&
+	     ((ret->me.x==c->all[pos+1].left.x
+	       && ret->me.y==c->all[pos+1].left.y)
+	      || c->all[pos+1].left_hidden))
 	 ++pos;
       len2 =
-	 (ret->me.x - c->all[pos].left.x) * (ret->me.x - c->all[pos].left.x) +
-	 (ret->me.y - c->all[pos].left.y) * (ret->me.y - c->all[pos].left.y);
-      if (len2 >= 16 * c->resolution * c->resolution)
+	 (ret->me.x-c->all[pos].left.x)*(ret->me.x-c->all[pos].left.x) +
+	 (ret->me.y-c->all[pos].left.y)*(ret->me.y-c->all[pos].left.y);
+      if (len2 >= 16*c->resolution * c->resolution)
 	 *newcontour=true;
    }
    *_pos=pos;
@@ -2473,34 +2473,34 @@ static void RightSlopeAtPos(struct strokecontext *c,int pos,int prev,
    double len;
    int i;
 
-   if ((prev && pos==0) || (!prev && pos==c->cur - 1)) {
+   if ((prev && pos==0) || (!prev && pos==c->cur-1)) {
       slope->x=slope->y=0;	/* Won't know the slope till we join it to something else */
       return;			/* Can't normalize */
    }
-   if ((prev && c->all[pos - 1].circle) || (!prev && c->all[pos + 1].circle)) {
+   if ((prev && c->all[pos-1].circle) || (!prev && c->all[pos+1].circle)) {
       /* circle cap/join. Slope is normal to the line from right to me */
-      slope->x=-(c->all[pos].right.y - c->all[pos].me.y);
-      slope->y=(c->all[pos].right.x - c->all[pos].me.x);
-   } else if ((prev && c->all[pos - 1].line) ||
-	      (!prev && c->all[pos + 1].line)) {
+      slope->x=-(c->all[pos].right.y-c->all[pos].me.y);
+      slope->y=(c->all[pos].right.x-c->all[pos].me.x);
+   } else if ((prev && c->all[pos-1].line) ||
+	      (!prev && c->all[pos+1].line)) {
       slope->x=slope->y=0;
       for (i=1;
 	   slope->x==0 && slope->y==0 && ((prev && pos >= i)
-					      || (!prev && pos + i < c->cur));
+					      || (!prev && pos+i<c->cur));
 	   ++i) {
 	 if (prev) {
-	    slope->x=c->all[pos].right.x - c->all[pos - i].right.x;
-	    slope->y=c->all[pos].right.y - c->all[pos - i].right.y;
+	    slope->x=c->all[pos].right.x-c->all[pos-i].right.x;
+	    slope->y=c->all[pos].right.y-c->all[pos-i].right.y;
 	 } else {
-	    slope->x=c->all[pos + i].right.x - c->all[pos].right.x;
-	    slope->y=c->all[pos + i].right.y - c->all[pos].right.y;
+	    slope->x=c->all[pos+i].right.x-c->all[pos].right.x;
+	    slope->y=c->all[pos+i].right.y-c->all[pos].right.y;
 	 }
       }
    } else {
       *slope=c->all[pos].slope;
       return;			/* Already a unit vector */
    }
-   len=slope->x * slope->x + slope->y * slope->y;
+   len=slope->x * slope->x+slope->y * slope->y;
    if (len != 0) {
       len=sqrt(len);
       slope->x /= len;
@@ -2514,48 +2514,48 @@ static SplinePoint *RightPointFromContext(struct strokecontext *c,int *_pos,
    BasePoint posslope, startslope, inter;
    SplinePoint *ret;
    double normal_dot, len1, len2;
-   double res_bound=16 * c->resolution * c->resolution;
+   double res_bound=16*c->resolution * c->resolution;
 
    *newcontour=false;
    if (pos==0 && !c->open) {
       if (c->all[0].right_hidden ||
 	  (c->all[0].needs_point_right
-	   && c->all[c->cur - 1].needs_point_right))
-	 for (start_pos=c->cur - 1;
+	   && c->all[c->cur-1].needs_point_right))
+	 for (start_pos=c->cur-1;
 	      start_pos >= 0 && c->all[start_pos].right_hidden; --start_pos);
       /* Might be some hidden points if the other side has a joint !!!!! */
    } else if (c->all[start_pos].right_hidden && start_pos != 0)
       --start_pos;
-   if (pos + 1 < c->cur && c->all[pos].t==1 && c->all[pos + 1].t==0)
+   if (pos+1<c->cur && c->all[pos].t==1 && c->all[pos+1].t==0)
       ++pos;
-   while (pos < c->cur && c->all[pos].right_hidden)
+   while (pos<c->cur && c->all[pos].right_hidden)
       ++pos;
-   while (pos + 1 < c->cur &&
-	  c->all[pos].right.x==c->all[pos + 1].right.x &&
-	  c->all[pos].right.y==c->all[pos + 1].right.y)
+   while (pos+1<c->cur &&
+	  c->all[pos].right.x==c->all[pos+1].right.x &&
+	  c->all[pos].right.y==c->all[pos+1].right.y)
       ++pos;
    if (pos >= c->cur) {
       if (c->open)
-	 pos=c->cur - 1;
+	 pos=c->cur-1;
       else {
 	 pos=0;
-	 while (pos < c->cur && c->all[pos].right_hidden)
+	 while (pos<c->cur && c->all[pos].right_hidden)
 	    ++pos;
 	 if (pos >= c->cur)
-	    pos=c->cur - 1;	/* Should never happen */
+	    pos=c->cur-1;	/* Should never happen */
       }
    }
    RightSlopeAtPos(c, pos, false, &posslope);
    RightSlopeAtPos(c, start_pos, true, &startslope);
-   normal_dot=startslope.x * posslope.y - startslope.y * posslope.x;
-   if (normal_dot < 0)
+   normal_dot=startslope.x * posslope.y-startslope.y * posslope.x;
+   if (normal_dot<0)
       normal_dot=-normal_dot;
    len2 =
       (c->all[start_pos].right.x -
-       c->all[pos].right.x) * (c->all[start_pos].right.x -
+       c->all[pos].right.x)*(c->all[start_pos].right.x -
 			       c->all[pos].right.x) +
       (c->all[start_pos].right.y -
-       c->all[pos].right.y) * (c->all[start_pos].right.y -
+       c->all[pos].right.y)*(c->all[start_pos].right.y -
 			       c->all[pos].right.y);
    if (len2 >= res_bound && orig_pos==0) {
       /* If we're going to start a new contour at the beginnin, don't bother */
@@ -2568,21 +2568,21 @@ static SplinePoint *RightPointFromContext(struct strokecontext *c,int *_pos,
 /* those two would be near each other. But there are cases where the hidden */
 /* section is at the ends of a long rectangle. In that case we should start a */
 /* new contour */
-   if (normal_dot < .01 && len2 < .01) {
+   if (normal_dot<.01 && len2<.01) {
       ret=SplinePointCreate(c->all[pos].right.x, c->all[pos].right.y);
       ret->pointtype=pt_curve;
-   } else if (len2 < res_bound) {
+   } else if (len2<res_bound) {
       if (!IntersectLinesSlopes(&inter,
 				&c->all[start_pos].right, &startslope,
 				&c->all[pos].right, &posslope))
 	 inter=c->all[pos].right;
       len1 =
-	 (inter.x - c->all[pos].right.x) * (inter.x - c->all[pos].right.x) +
-	 (inter.y - c->all[pos].right.y) * (inter.y - c->all[pos].right.y);
-      if (len1 > 4 && len1 > 10 * len2) {
+	 (inter.x-c->all[pos].right.x)*(inter.x-c->all[pos].right.x) +
+	 (inter.y-c->all[pos].right.y)*(inter.y-c->all[pos].right.y);
+      if (len1>4 && len1>10*len2) {
 	 /* Intersection is too far (slopes are very accute? */
-	 inter.x=(c->all[pos].right.x + c->all[start_pos].right.x) / 2;
-	 inter.y=(c->all[pos].right.y + c->all[start_pos].right.y) / 2;
+	 inter.x=(c->all[pos].right.x+c->all[start_pos].right.x)/2;
+	 inter.y=(c->all[pos].right.y+c->all[start_pos].right.y)/2;
       }
       ret=SplinePointCreate(inter.x, inter.y);
       ret->pointtype=pt_corner;
@@ -2604,10 +2604,10 @@ static SplinePoint *RightPointFromContext(struct strokecontext *c,int *_pos,
       /*  hidden on this side */
       int opos=pos;
 
-      while (pos + 1 < c->cur &&
-	     ((ret->me.x==c->all[pos + 1].right.x
-	       && ret->me.y==c->all[pos + 1].right.y)
-	      || c->all[pos + 1].right_hidden))
+      while (pos+1<c->cur &&
+	     ((ret->me.x==c->all[pos+1].right.x
+	       && ret->me.y==c->all[pos+1].right.y)
+	      || c->all[pos+1].right_hidden))
 	 ++pos;
       if (opos != pos) {
 	 RightSlopeAtPos(c, pos, false, &posslope);
@@ -2618,9 +2618,9 @@ static SplinePoint *RightPointFromContext(struct strokecontext *c,int *_pos,
       if (posslope.x != 0 || posslope.y != 0)
 	 ret->nonextcp=false;
       len2 =
-	 (ret->me.x - c->all[pos].right.x) * (ret->me.x -
+	 (ret->me.x-c->all[pos].right.x)*(ret->me.x -
 					      c->all[pos].right.x) +
-	 (ret->me.y - c->all[pos].right.y) * (ret->me.y -
+	 (ret->me.y-c->all[pos].right.y)*(ret->me.y -
 					      c->all[pos].right.y);
       if (len2 >= res_bound)
 	 *newcontour=true;
@@ -2652,18 +2652,18 @@ static void HideSomeMorePoints(StrokeContext *c) {
    if (c->cur==0)
       return;
 
-   last_h=c->open ? false : c->all[c->cur - 1].left_hidden;
-   for (i=0; i < c->cur; ++i) {
+   last_h=c->open?false:c->all[c->cur-1].left_hidden;
+   for (i=0; i<c->cur; ++i) {
       StrokePoint *p=&c->all[i];
 
       next_h =
 	 (i <
 	  c->cur -
-	  1) ? p[1].left_hidden : c->open ? false : c->all[0].left_hidden;
+	  1)?p[1].left_hidden:c->open?false:c->all[0].left_hidden;
       if (last_h && !p->left_hidden) {
 	 if (next_h)
 	    p->left_hidden=true;
-	 else if (i < c->cur - 2 && !next_h && p[2].left_hidden &&
+	 else if (i<c->cur-2 && !next_h && p[2].left_hidden &&
 		  (p->t==0 || p->t==1 || p[1].t==0 || p[1].t==1)) {
 	    p->left_hidden=true;
 	    p[1].left_hidden=true;
@@ -2675,10 +2675,10 @@ static void HideSomeMorePoints(StrokeContext *c) {
 	 /*  and the other isn't, then hide both. Note, must be careful */
 	 /*  because location data isn't always meaningful for hidden pts */
 	 /*  hence the check on "hide_?_if_on_edge" */
-	 if (i > 0 && p[-1].left_hidden && p[-1].hide_left_if_on_edge &&
+	 if (i>0 && p[-1].left_hidden && p[-1].hide_left_if_on_edge &&
 	     p[-1].left.x==p->left.x && p[-1].left.y==p->left.y)
 	    p->left_hidden=true;
-	 else if (i < c->cur - 1 && p[1].left_hidden
+	 else if (i<c->cur-1 && p[1].left_hidden
 		  && p[1].hide_left_if_on_edge && p[1].left.x==p->left.x
 		  && p[1].left.y==p->left.y)
 	    p->left_hidden=true;
@@ -2687,18 +2687,18 @@ static void HideSomeMorePoints(StrokeContext *c) {
       last_h=p->left_hidden;
    }
 
-   last_h=c->open ? false : c->all[c->cur - 1].right_hidden;
-   for (i=0; i < c->cur; ++i) {
+   last_h=c->open?false:c->all[c->cur-1].right_hidden;
+   for (i=0; i<c->cur; ++i) {
       StrokePoint *p=&c->all[i];
 
       next_h =
 	 (i <
 	  c->cur -
-	  1) ? p[1].right_hidden : c->open ? false : c->all[0].right_hidden;
+	  1)?p[1].right_hidden:c->open?false:c->all[0].right_hidden;
       if (last_h && !p->right_hidden) {
 	 if (next_h)
 	    p->right_hidden=true;
-	 else if (i < c->cur - 2 && !next_h && p[2].right_hidden &&
+	 else if (i<c->cur-2 && !next_h && p[2].right_hidden &&
 		  (p->t==0 || p->t==1 || p[1].t==0 || p[1].t==1)) {
 	    p->right_hidden=true;
 	    p[1].right_hidden=true;
@@ -2723,44 +2723,44 @@ static void AddUnhiddenPoints(StrokeContext *c) {
       return;
    start=0;
    if (c->all[0].left_hidden)
-      for (start=0; start < c->cur && c->all[start].left_hidden; ++start);
+      for (start=0; start<c->cur && c->all[start].left_hidden; ++start);
    /* Not interested in a hidden section around 0 because there will be an on- */
    /*  curve point there already */
-   while (start < c->cur) {
-      while (start < c->cur && !c->all[start].left_hidden)
+   while (start<c->cur) {
+      while (start<c->cur && !c->all[start].left_hidden)
 	 ++start;
       if (start >= c->cur)
 	 break;
-      for (end=start; end < c->cur && c->all[end].left_hidden; ++end);
+      for (end=start; end<c->cur && c->all[end].left_hidden; ++end);
       if (end >= c->cur)
 	 break;			/* again, this would wrap around to 0 so not interesting */
       --start;
-      mid=(start + end) / 2;
+      mid=(start+end)/2;
       /* See if already at a joint */
       any=false;
       for (i=1;; ++i) {
 	 int back, fore;
 
-	 if (mid - i > 0) {
-	    if (c->all[mid - i].line || c->all[mid - i].circle
-		|| c->all[mid - i].needs_point_right) {
+	 if (mid-i>0) {
+	    if (c->all[mid-i].line || c->all[mid-i].circle
+		|| c->all[mid-i].needs_point_right) {
 	       any=true;
 	       break;
 	    }
-	    xdiff=c->all[mid - i].me.x - c->all[mid].me.x;
-	    ydiff=c->all[mid - i].me.y - c->all[mid].me.y;
-	    back=(xdiff * xdiff + ydiff * ydiff > 100);
+	    xdiff=c->all[mid-i].me.x-c->all[mid].me.x;
+	    ydiff=c->all[mid-i].me.y-c->all[mid].me.y;
+	    back=(xdiff * xdiff+ydiff * ydiff>100);
 	 } else
 	    back=true;
-	 if (mid + i < c->cur) {
-	    if (c->all[mid + i].line || c->all[mid + i].circle
-		|| c->all[mid + i].needs_point_right) {
+	 if (mid+i<c->cur) {
+	    if (c->all[mid+i].line || c->all[mid+i].circle
+		|| c->all[mid+i].needs_point_right) {
 	       any=true;
 	       break;
 	    }
-	    xdiff=c->all[mid + i].me.x - c->all[mid].me.x;
-	    ydiff=c->all[mid + i].me.y - c->all[mid].me.y;
-	    fore=(xdiff * xdiff + ydiff * ydiff > 100);
+	    xdiff=c->all[mid+i].me.x-c->all[mid].me.x;
+	    ydiff=c->all[mid+i].me.y-c->all[mid].me.y;
+	    fore=(xdiff * xdiff+ydiff * ydiff>100);
 	 } else
 	    fore=true;
 	 if (back && fore)
@@ -2774,42 +2774,42 @@ static void AddUnhiddenPoints(StrokeContext *c) {
    /* Same thing for the right side */
    start=0;
    if (c->all[0].right_hidden)
-      for (start=0; start < c->cur && c->all[start].right_hidden; ++start);
-   while (start < c->cur) {
-      while (start < c->cur && !c->all[start].right_hidden)
+      for (start=0; start<c->cur && c->all[start].right_hidden; ++start);
+   while (start<c->cur) {
+      while (start<c->cur && !c->all[start].right_hidden)
 	 ++start;
       if (start >= c->cur)
 	 break;
-      for (end=start; end < c->cur && c->all[end].right_hidden; ++end);
+      for (end=start; end<c->cur && c->all[end].right_hidden; ++end);
       if (end >= c->cur)
 	 break;			/* again, this would wrap around to 0 so not interesting */
       --start;
-      mid=(start + end) / 2;
+      mid=(start+end)/2;
       /* See if already at a joint */
       any=false;
       for (i=1;; ++i) {
 	 int back, fore;
 
-	 if (mid - i > 0) {
-	    if (c->all[mid - i].line || c->all[mid - i].circle
-		|| c->all[mid - i].needs_point_left) {
+	 if (mid-i>0) {
+	    if (c->all[mid-i].line || c->all[mid-i].circle
+		|| c->all[mid-i].needs_point_left) {
 	       any=true;
 	       break;
 	    }
-	    xdiff=c->all[mid - i].me.x - c->all[mid].me.x;
-	    ydiff=c->all[mid - i].me.y - c->all[mid].me.y;
-	    back=(xdiff * xdiff + ydiff * ydiff > 100);
+	    xdiff=c->all[mid-i].me.x-c->all[mid].me.x;
+	    ydiff=c->all[mid-i].me.y-c->all[mid].me.y;
+	    back=(xdiff * xdiff+ydiff * ydiff>100);
 	 } else
 	    back=true;
-	 if (mid + i < c->cur) {
-	    if (c->all[mid + i].line || c->all[mid + i].circle
-		|| c->all[mid + i].needs_point_left) {
+	 if (mid+i<c->cur) {
+	    if (c->all[mid+i].line || c->all[mid+i].circle
+		|| c->all[mid+i].needs_point_left) {
 	       any=true;
 	       break;
 	    }
-	    xdiff=c->all[mid + i].me.x - c->all[mid].me.x;
-	    ydiff=c->all[mid + i].me.y - c->all[mid].me.y;
-	    fore=(xdiff * xdiff + ydiff * ydiff > 100);
+	    xdiff=c->all[mid+i].me.x-c->all[mid].me.x;
+	    ydiff=c->all[mid+i].me.y-c->all[mid].me.y;
+	    fore=(xdiff * xdiff+ydiff * ydiff>100);
 	 } else
 	    fore=true;
 	 if (back && fore)
@@ -2854,58 +2854,58 @@ static void PointJoint(SplinePoint *base,SplinePoint *other,
    /*  of the two slopes */
    if (!IntersectLines(&inter,
 		       &hasnext->me,
-		       hasnext->nonextcp ? &hasnext->next->to->me : &hasnext->
+		       hasnext->nonextcp?&hasnext->next->to->me:&hasnext->
 		       nextcp, &hasprev->me,
-		       hasprev->noprevcp ? &hasprev->prev->from->
-		       me : &hasprev->prevcp)) {
+		       hasprev->noprevcp?&hasprev->prev->from->
+		       me:&hasprev->prevcp)) {
       bad=true;
    } else {
-      xdiff=inter.x - base->me.x;
-      ydiff=inter.y - base->me.y;
-      len=xdiff * xdiff + ydiff * ydiff;
-      if (len > 9 * resolution * resolution)
+      xdiff=inter.x-base->me.x;
+      ydiff=inter.y-base->me.y;
+      len=xdiff * xdiff+ydiff * ydiff;
+      if (len>9*resolution * resolution)
 	 bad=true;
    }
    /* Well, if the intersection is extremely far away, then just average the */
    /*  two points */
    if (bad) {
-      inter.x=(hasnext->me.x + hasprev->me.x) / 2;
-      inter.y=(hasnext->me.y + hasprev->me.y) / 2;
+      inter.x=(hasnext->me.x+hasprev->me.x)/2;
+      inter.y=(hasnext->me.y+hasprev->me.y)/2;
    }
 
    /* Adjust control points for the new position */
-   off.x=hasnext->nextcp.x - hasnext->me.x;
-   off.y=hasnext->nextcp.y - hasnext->me.y;
-   xdiff=hasnext->next->to->me.x - hasnext->me.x;
-   ydiff=hasnext->next->to->me.y - hasnext->me.y;
-   len=xdiff * xdiff + ydiff * ydiff;
-   xdiff=hasnext->next->to->me.x - inter.x;
-   ydiff=hasnext->next->to->me.y - inter.y;
-   len2=xdiff * xdiff + ydiff * ydiff;
-   if (len != 0 && len2 > len) {
-      len=sqrt(len2 / len);
+   off.x=hasnext->nextcp.x-hasnext->me.x;
+   off.y=hasnext->nextcp.y-hasnext->me.y;
+   xdiff=hasnext->next->to->me.x-hasnext->me.x;
+   ydiff=hasnext->next->to->me.y-hasnext->me.y;
+   len=xdiff * xdiff+ydiff * ydiff;
+   xdiff=hasnext->next->to->me.x-inter.x;
+   ydiff=hasnext->next->to->me.y-inter.y;
+   len2=xdiff * xdiff+ydiff * ydiff;
+   if (len != 0 && len2>len) {
+      len=sqrt(len2/len);
       off.x *= len;
       off.y *= len;
    }
-   base->nextcp.x=inter.x + off.x;
-   base->nextcp.y=inter.y + off.y;
+   base->nextcp.x=inter.x+off.x;
+   base->nextcp.y=inter.y+off.y;
 
    /* And the prevcp */
-   off.x=hasprev->prevcp.x - hasprev->me.x;
-   off.y=hasprev->prevcp.y - hasprev->me.y;
-   xdiff=hasprev->prev->from->me.x - hasprev->me.x;
-   ydiff=hasprev->prev->from->me.y - hasprev->me.y;
-   len=xdiff * xdiff + ydiff * ydiff;
-   xdiff=hasprev->prev->from->me.x - inter.x;
-   ydiff=hasprev->prev->from->me.y - inter.y;
-   len2=xdiff * xdiff + ydiff * ydiff;
-   if (len != 0 && len2 > len) {
-      len=sqrt(len2 / len);
+   off.x=hasprev->prevcp.x-hasprev->me.x;
+   off.y=hasprev->prevcp.y-hasprev->me.y;
+   xdiff=hasprev->prev->from->me.x-hasprev->me.x;
+   ydiff=hasprev->prev->from->me.y-hasprev->me.y;
+   len=xdiff * xdiff+ydiff * ydiff;
+   xdiff=hasprev->prev->from->me.x-inter.x;
+   ydiff=hasprev->prev->from->me.y-inter.y;
+   len2=xdiff * xdiff+ydiff * ydiff;
+   if (len != 0 && len2>len) {
+      len=sqrt(len2/len);
       off.x *= len;
       off.y *= len;
    }
-   base->prevcp.x=inter.x + off.x;
-   base->prevcp.y=inter.y + off.y;
+   base->prevcp.x=inter.x+off.x;
+   base->prevcp.y=inter.y+off.y;
 
    base->me=inter;
    SplineRefigure(base->next);
@@ -2940,9 +2940,9 @@ static SplineSet *JoinFragments(SplineSet *fragments,SplineSet ** contours,
       prev2=prev;
       test2=NULL;
       for (test=cur; test != NULL; prev2=test, test=test->next) {
-	 xdiff=cur->last->me.x - test->first->me.x;
-	 ydiff=cur->last->me.y - test->first->me.y;
-	 if (xdiff * xdiff + ydiff * ydiff <= res2)
+	 xdiff=cur->last->me.x-test->first->me.x;
+	 ydiff=cur->last->me.y-test->first->me.y;
+	 if (xdiff * xdiff+ydiff * ydiff <= res2)
 	    break;
       }
       if (test==cur &&
@@ -2960,9 +2960,9 @@ static SplineSet *JoinFragments(SplineSet *fragments,SplineSet ** contours,
       if (test==NULL) {
 	 prev2=prev;
 	 for (test2=cur; test2 != NULL; prev2=test2, test2=test2->next) {
-	    xdiff=cur->first->me.x - test2->last->me.x;
-	    ydiff=cur->first->me.y - test2->last->me.y;
-	    if (xdiff * xdiff + ydiff * ydiff <= res2)
+	    xdiff=cur->first->me.x-test2->last->me.x;
+	    ydiff=cur->first->me.y-test2->last->me.y;
+	    if (xdiff * xdiff+ydiff * ydiff <= res2)
 	       break;
 	 }
       }
@@ -2988,9 +2988,9 @@ static SplineSet *JoinFragments(SplineSet *fragments,SplineSet ** contours,
 	       next=test->next;
 	    SplinePointListFree(test);
 
-	    xdiff=cur->last->me.x - cur->first->me.x;
-	    ydiff=cur->last->me.y - cur->first->me.y;
-	    if (xdiff * xdiff + ydiff * ydiff <= res2) {
+	    xdiff=cur->last->me.x-cur->first->me.x;
+	    ydiff=cur->last->me.y-cur->first->me.y;
+	    if (xdiff * xdiff+ydiff * ydiff <= res2) {
 	       PointJoint(cur->first, cur->last, resolution);
 	       cur->last=cur->first;
 	    }
@@ -3021,26 +3021,26 @@ static int Linelike(SplineSet *ss,double resolution) {
    if (ss->first->next==ss->last->prev)
       return (true);
 
-   slope.x=ss->last->me.x - ss->first->me.x;
-   slope.y=ss->last->me.y - ss->first->me.y;
-   len=slope.x * slope.x + slope.y * slope.y;
+   slope.x=ss->last->me.x-ss->first->me.x;
+   slope.y=ss->last->me.y-ss->first->me.y;
+   len=slope.x * slope.x+slope.y * slope.y;
    if (len==0)
       return (false);
    len=sqrt(len);
    slope.x /= len;
    slope.y /= len;
    for (s=ss->first->next; s != NULL; s=s->to->next) {
-      dot=slope.y * (s->from->nextcp.x - ss->first->me.x) -
-	 slope.x * (s->from->nextcp.y - ss->first->me.y);
-      if (dot > resolution || dot < -resolution)
+      dot=slope.y * (s->from->nextcp.x-ss->first->me.x) -
+	 slope.x * (s->from->nextcp.y-ss->first->me.y);
+      if (dot>resolution || dot<-resolution)
 	 return (false);
-      dot=slope.y * (s->to->prevcp.x - ss->first->me.x) -
-	 slope.x * (s->to->prevcp.y - ss->first->me.y);
-      if (dot > resolution || dot < -resolution)
+      dot=slope.y * (s->to->prevcp.x-ss->first->me.x) -
+	 slope.x * (s->to->prevcp.y-ss->first->me.y);
+      if (dot>resolution || dot<-resolution)
 	 return (false);
-      dot=slope.y * (s->to->me.x - ss->first->me.x) -
-	 slope.x * (s->to->me.y - ss->first->me.y);
-      if (dot > resolution || dot < -resolution)
+      dot=slope.y * (s->to->me.x-ss->first->me.x) -
+	 slope.x * (s->to->me.y-ss->first->me.y);
+      if (dot>resolution || dot<-resolution)
 	 return (false);
    }
    return (true);
@@ -3100,13 +3100,13 @@ static SplineSet *EdgeEffects(SplineSet *fragments,StrokeContext *c) {
    }
 
    /* And sometimes we are just missing a chunk */
-   r2=(c->pentype==pt_poly) ? c->longest_edge : 2 * c->radius;
-   r2 += 2 * c->resolution;	/* Add a little fudge */
+   r2=(c->pentype==pt_poly)?c->longest_edge:2*c->radius;
+   r2 += 2*c->resolution;	/* Add a little fudge */
    r2 *= r2;
    for (cur=fragments; cur != NULL; cur=cur->next) {
-      double xdiff=cur->last->me.x - cur->first->me.x;
-      double ydiff=cur->last->me.y - cur->first->me.y;
-      double len=xdiff * xdiff + ydiff * ydiff;
+      double xdiff=cur->last->me.x-cur->first->me.x;
+      double ydiff=cur->last->me.y-cur->first->me.y;
+      double len=xdiff * xdiff+ydiff * ydiff;
 
       if (len != 0 && len <= r2) {
 	 SplinePoint *sp =
@@ -3167,22 +3167,22 @@ static int ReversedLines(Spline *line1,Spline *line2,SplinePoint ** start,
    double len1, len2, normal_off;
    int f1, f2, t1, t2;
 
-   slope1.x=line1->to->me.x - line1->from->me.x;
-   slope1.y=line1->to->me.y - line1->from->me.y;
-   slope2.x=line2->to->me.x - line2->from->me.x;
-   slope2.y=line2->to->me.y - line2->from->me.y;
-   if (slope1.x * slope2.x + slope1.y * slope2.y >= 0)
+   slope1.x=line1->to->me.x-line1->from->me.x;
+   slope1.y=line1->to->me.y-line1->from->me.y;
+   slope2.x=line2->to->me.x-line2->from->me.x;
+   slope2.y=line2->to->me.y-line2->from->me.y;
+   if (slope1.x * slope2.x+slope1.y * slope2.y >= 0)
       return (false);		/* Lines go vaguely in the same direction, not reversed */
-   len1=sqrt(slope1.x * slope1.x + slope1.y * slope1.y);
-   len2=sqrt(slope2.x * slope2.x + slope2.y * slope2.y);
+   len1=sqrt(slope1.x * slope1.x+slope1.y * slope1.y);
+   len2=sqrt(slope2.x * slope2.x+slope2.y * slope2.y);
    if (len1==0 || len2==0)
       return (false);		/* zero length lines are just points. Ignore */
 
-   normal_off=slope1.x * slope2.y / len2 - slope1.y * slope2.x / len2;
-   if (normal_off < -.1 || normal_off > .1)
+   normal_off=slope1.x * slope2.y/len2-slope1.y * slope2.x/len2;
+   if (normal_off<-.1 || normal_off>.1)
       return (false);		/* Not parallel */
-   normal_off=slope2.x * slope1.y / len1 - slope2.y * slope1.x / len1;
-   if (normal_off < -.1 || normal_off > .1)
+   normal_off=slope2.x * slope1.y/len1-slope2.y * slope1.x/len1;
+   if (normal_off<-.1 || normal_off>.1)
       return (false);		/* Not parallel */
 
    /* OK, the lines are parallel, and point in the right direction, but do they */
@@ -3409,97 +3409,97 @@ static int InterpolateTPoints(StrokeContext *c,int start_pos,int end_pos,
    double len;
 
    if (start_pos==0)
-      return (end_pos - start_pos);
+      return (end_pos-start_pos);
 
    if (20 >= c->tmax)
-      c->tpt=realloc(c->tpt, (c->tmax=20 + MAX_TPOINTS) * sizeof(TPoint));
+      c->tpt=realloc(c->tpt, (c->tmax=20+MAX_TPOINTS)*sizeof(TPoint));
 
    if (c->all[start_pos].line) {
-      me=c->all[start_pos - 1].me;
+      me=c->all[start_pos-1].me;
       if (isleft) {
-	 slope.x=(c->all[end_pos].left.x - me.x) / 6;
-	 slope.y=(c->all[end_pos].left.y - me.y) / 6;
+	 slope.x=(c->all[end_pos].left.x-me.x)/6;
+	 slope.y=(c->all[end_pos].left.y-me.y)/6;
       } else {
-	 slope.x=(c->all[end_pos].right.x - me.x) / 6;
-	 slope.y=(c->all[end_pos].right.y - me.y) / 6;
+	 slope.x=(c->all[end_pos].right.x-me.x)/6;
+	 slope.y=(c->all[end_pos].right.y-me.y)/6;
       }
-      for (i=0; i < 5; ++i) {
-	 c->tpt[i].x=me.x + slope.x * (i + 1);
-	 c->tpt[i].y=me.y + slope.y * (i + 1);
-	 c->tpt[i].t=(i + 1) / 6.0;
+      for (i=0; i<5; ++i) {
+	 c->tpt[i].x=me.x+slope.x * (i+1);
+	 c->tpt[i].y=me.y+slope.y * (i+1);
+	 c->tpt[i].t=(i+1)/6.0;
       }
       return (5);
    } else if (c->all[start_pos].circle) {
       me=c->all[start_pos].me;	/* Center */
       if (isleft) {
-	 start_x=c->all[start_pos - 1].left.x - me.x;
-	 end_x=c->all[end_pos].left.x - me.x;
-	 start_y=c->all[start_pos - 1].left.y - me.y;
-	 end_y=c->all[end_pos].left.y - me.y;
+	 start_x=c->all[start_pos-1].left.x-me.x;
+	 end_x=c->all[end_pos].left.x-me.x;
+	 start_y=c->all[start_pos-1].left.y-me.y;
+	 end_y=c->all[end_pos].left.y-me.y;
       } else {
-	 start_x=c->all[start_pos - 1].right.x - me.x;
-	 end_x=c->all[end_pos].right.x - me.x;
-	 start_y=c->all[start_pos - 1].right.y - me.y;
-	 end_y=c->all[end_pos].right.y - me.y;
+	 start_x=c->all[start_pos-1].right.x-me.x;
+	 end_x=c->all[end_pos].right.x-me.x;
+	 start_y=c->all[start_pos-1].right.y-me.y;
+	 end_y=c->all[end_pos].right.y-me.y;
       }
-      if ((diff_x=end_x - start_x) < 0)
+      if ((diff_x=end_x-start_x)<0)
 	 diff_x=-diff_x;
-      if ((diff_y=end_y - start_y) < 0)
+      if ((diff_y=end_y-start_y)<0)
 	 diff_y=-diff_y;
       /* By choosing the bigger difference, I insure the other coord will */
       /*  not cross over from negative to positive. Actually this is only */
       /*  true for small segments of the circle. But that's what we've got */
       r2=c->radius * c->radius;
-      if (diff_y > diff_x) {
-	 diff_y=(end_y - start_y) / 11.0;
-	 for (y=start_y + diff_y, i=0; i < 10; ++i, y += diff_y) {
-	    x=sqrt(r2 - y * y);
-	    if (start_x < 0)
+      if (diff_y>diff_x) {
+	 diff_y=(end_y-start_y)/11.0;
+	 for (y=start_y+diff_y, i=0; i<10; ++i, y += diff_y) {
+	    x=sqrt(r2-y * y);
+	    if (start_x<0)
 	       x=-x;
-	    c->tpt[i].x=me.x + x;
-	    c->tpt[i].y=me.y + y;
-	    c->tpt[i].t=(i + 1) / 11.0;
+	    c->tpt[i].x=me.x+x;
+	    c->tpt[i].y=me.y+y;
+	    c->tpt[i].t=(i+1)/11.0;
 	 }
       } else {
-	 diff_x=(end_x - start_x) / 11.0;
-	 for (x=start_x + diff_x, i=0; i < 10; ++i, x += diff_x) {
-	    y=sqrt(r2 - x * x);
-	    if (start_y < 0)
+	 diff_x=(end_x-start_x)/11.0;
+	 for (x=start_x+diff_x, i=0; i<10; ++i, x += diff_x) {
+	    y=sqrt(r2-x * x);
+	    if (start_y<0)
 	       y=-y;
-	    c->tpt[i].x=me.x + x;
-	    c->tpt[i].y=me.y + y;
-	    c->tpt[i].t=(i + 1) / 11.0;
+	    c->tpt[i].x=me.x+x;
+	    c->tpt[i].y=me.y+y;
+	    c->tpt[i].t=(i+1)/11.0;
 	 }
       }
       return (10);
    }
 
-   if (c->all[start_pos - 1].t==c->all[end_pos].t ||
-       c->all[start_pos - 1].sp != c->all[end_pos].sp ||
-       (isleft && c->all[start_pos - 1].lt != c->all[end_pos].lt) ||
-       (!isleft && c->all[start_pos - 1].rt != c->all[end_pos].rt))
-      return (end_pos - start_pos);	/* Well, nothing we can do here */
+   if (c->all[start_pos-1].t==c->all[end_pos].t ||
+       c->all[start_pos-1].sp != c->all[end_pos].sp ||
+       (isleft && c->all[start_pos-1].lt != c->all[end_pos].lt) ||
+       (!isleft && c->all[start_pos-1].rt != c->all[end_pos].rt))
+      return (end_pos-start_pos);	/* Well, nothing we can do here */
 
-   start_t=c->all[start_pos - 1].t;
+   start_t=c->all[start_pos-1].t;
    end_t=c->all[end_pos].t;
-   diff_t=(end_t - start_t) / 11;
+   diff_t=(end_t-start_t)/11;
    s=c->all[start_pos].sp;
    lt=c->all[start_pos].lt;
    rt=c->all[start_pos].rt;
-   for (t=start_t + diff_t, j=i=0; i < 10; ++i, t += diff_t) {
+   for (t=start_t+diff_t, j=i=0; i<10; ++i, t += diff_t) {
       me.x =
-	 ((s->splines[0].a * t + s->splines[0].b) * t + s->splines[0].c) * t +
+	 ((s->splines[0].a * t+s->splines[0].b)*t+s->splines[0].c)*t +
 	 s->splines[0].d;
       me.y =
-	 ((s->splines[1].a * t + s->splines[1].b) * t + s->splines[1].c) * t +
+	 ((s->splines[1].a * t+s->splines[1].b)*t+s->splines[1].c)*t +
 	 s->splines[1].d;
       slope.x =
-	 (3 * s->splines[0].a * t + 2 * s->splines[0].b) * t +
+	 (3*s->splines[0].a * t+2*s->splines[0].b)*t +
 	 s->splines[0].c;
       slope.y =
-	 (3 * s->splines[1].a * t + 2 * s->splines[1].b) * t +
+	 (3*s->splines[1].a * t+2*s->splines[1].b)*t +
 	 s->splines[1].c;
-      len=slope.x * slope.x + slope.y * slope.y;
+      len=slope.x * slope.x+slope.y * slope.y;
       if (len==0 && c->pentype==pt_circle)
 	 continue;
       len=sqrt(len);
@@ -3507,28 +3507,28 @@ static int InterpolateTPoints(StrokeContext *c,int start_pos,int end_pos,
       slope.y /= len;
       if (isleft) {
 	 if (c->pentype==pt_circle) {
-	    c->tpt[j].x=me.x - c->radius * slope.y;
-	    c->tpt[j].y=me.y + c->radius * slope.x;
+	    c->tpt[j].x=me.x-c->radius * slope.y;
+	    c->tpt[j].y=me.y+c->radius * slope.x;
 	 } else if (c->pentype==pt_square) {
-	    c->tpt[j].x=me.x + c->radius * SquareCorners[lt].x;
-	    c->tpt[j].y=me.y + c->radius * SquareCorners[lt].y;
+	    c->tpt[j].x=me.x+c->radius * SquareCorners[lt].x;
+	    c->tpt[j].y=me.y+c->radius * SquareCorners[lt].y;
 	 } else {
-	    c->tpt[j].x=me.x + c->corners[lt].x;
-	    c->tpt[j].y=me.y + c->corners[lt].y;
+	    c->tpt[j].x=me.x+c->corners[lt].x;
+	    c->tpt[j].y=me.y+c->corners[lt].y;
 	 }
-	 c->tpt[j++].t=(i + 1) / 11.0;
+	 c->tpt[j++].t=(i+1)/11.0;
       } else {
 	 if (c->pentype==pt_circle) {
-	    c->tpt[j].x=me.x + c->radius * slope.y;
-	    c->tpt[j].y=me.y - c->radius * slope.x;
+	    c->tpt[j].x=me.x+c->radius * slope.y;
+	    c->tpt[j].y=me.y-c->radius * slope.x;
 	 } else if (c->pentype==pt_square) {
-	    c->tpt[j].x=me.x + c->radius * SquareCorners[rt].x;
-	    c->tpt[j].y=me.y + c->radius * SquareCorners[rt].y;
+	    c->tpt[j].x=me.x+c->radius * SquareCorners[rt].x;
+	    c->tpt[j].y=me.y+c->radius * SquareCorners[rt].y;
 	 } else {
-	    c->tpt[j].x=me.x + c->corners[rt].x;
-	    c->tpt[j].y=me.y + c->corners[rt].y;
+	    c->tpt[j].x=me.x+c->corners[rt].x;
+	    c->tpt[j].y=me.y+c->corners[rt].y;
 	 }
-	 c->tpt[j++].t=(i + 1) / 11.0;
+	 c->tpt[j++].t=(i+1)/11.0;
       }
    }
    return (j);
@@ -3545,7 +3545,7 @@ static SplineSet *ApproximateStrokeContours(StrokeContext *c) {
    /*  on the right side. If the original were a closed contour, then each of */
    /*  these new contours should also be closed. If an open contour then we  */
    /*  will probably want to join the two sides into one contour. BUT if the */
-   /*  endpoints of an open contour are < radius apart, then the linecaps may */
+   /*  endpoints of an open contour are<radius apart, then the linecaps may */
    /*  merge and we end up with the closed contour case again. */
    /* More serious, if a contour double backs on itself it may squeeze itself */
    /*  out of existance so we might end up with several contour fragments. */
@@ -3556,18 +3556,18 @@ static SplineSet *ApproximateStrokeContours(StrokeContext *c) {
    /* handle the left side */
    if ((!c->remove_outer || c->open) && !AllHiddenLeft(c)) {
       pos=0;
-      while (pos < c->cur - 1) {
+      while (pos<c->cur-1) {
 	 last=first=LeftPointFromContext(c, &pos, &newcontour);
-	 while (newcontour && pos < c->cur) {
+	 while (newcontour && pos<c->cur) {
 	    SplinePointFree(first);
 	    start_pos=pos;
-	    if (pos < c->cur)
+	    if (pos<c->cur)
 	       last=first=LeftPointFromContext(c, &pos, &newcontour);
 	    else {
 	       last=first=NULL;
 	       break;
 	    }
-	    if (pos < start_pos || (pos + start_pos==0)) {
+	    if (pos<start_pos || (pos+start_pos==0)) {
 	       /* Wrapped around */
 	       SplinePointFree(first);
 	       first=last=NULL;
@@ -3575,30 +3575,30 @@ static SplineSet *ApproximateStrokeContours(StrokeContext *c) {
 	       break;
 	    }
 	 }
-	 for (; pos < c->cur - 1 && !newcontour;) {
-	    start_pos=pos + 1;
+	 for (; pos<c->cur-1 && !newcontour;) {
+	    start_pos=pos+1;
 	    for (i=start_pos;
-		 i < c->cur && !c->all[i].left_hidden
+		 i<c->cur && !c->all[i].left_hidden
 		 && !c->all[i].needs_point_left; ++i);
 	    end_pos=pos=i;
 	    cur=LeftPointFromContext(c, &pos, &newcontour);
-	    if (end_pos > start_pos && c->all[end_pos - 1].left.x==cur->me.x
-		&& c->all[end_pos - 1].left.y==cur->me.y)
+	    if (end_pos>start_pos && c->all[end_pos-1].left.x==cur->me.x
+		&& c->all[end_pos-1].left.y==cur->me.y)
 	       --end_pos;
-	    tot=end_pos - start_pos;
+	    tot=end_pos-start_pos;
 	    jump=1;
 	    extras=0;
 	    skip=MAX_TPOINTS;
-	    if (tot > MAX_TPOINTS) {
-	       jump=(tot / MAX_TPOINTS);
-	       extras=tot % MAX_TPOINTS;
-	       skip=MAX_TPOINTS / (extras + 1);
+	    if (tot>MAX_TPOINTS) {
+	       jump=(tot/MAX_TPOINTS);
+	       extras=tot%MAX_TPOINTS;
+	       skip=MAX_TPOINTS/(extras+1);
 	       tot=MAX_TPOINTS;
 	    }
 	    if (tot >= c->tmax)
 	       c->tpt =
 		  realloc(c->tpt,
-			  (c->tmax=tot + MAX_TPOINTS) * sizeof(TPoint));
+			  (c->tmax=tot+MAX_TPOINTS)*sizeof(TPoint));
 	    /* There is really no point in having a huge number of data points */
 	    /*  I don't need 1000 points to approximate the curve, 10 will probably */
 	    /*  do. The extra points just slow us down (we need them for the */
@@ -3606,24 +3606,24 @@ static SplineSet *ApproximateStrokeContours(StrokeContext *c) {
 	    ipos=start_pos;
 	    skip_cnt=0;
 	    for (i=0; i <= tot; ++i) {
-	       TPoint *tpt=c->tpt + i;
-	       StrokePoint *spt=c->all + ipos;
+	       TPoint *tpt=c->tpt+i;
+	       StrokePoint *spt=c->all+ipos;
 
 	       tpt->x=spt->left.x;
 	       tpt->y=spt->left.y;
 	       tpt->t =
-		  (ipos - start_pos + 1) / (double) (end_pos - start_pos +
+		  (ipos-start_pos+1)/(double) (end_pos-start_pos +
 						      1);
 	       ipos += jump;
-	       if (++skip_cnt > skip && extras > 0) {
+	       if (++skip_cnt>skip && extras>0) {
 		  ++ipos;
 		  --extras;
 		  skip_cnt=0;
 	       }
-	       if (ipos > end_pos)
+	       if (ipos>end_pos)
 		  ipos=end_pos;
 	    }
-	    if (end_pos < start_pos + 3)
+	    if (end_pos<start_pos+3)
 	       tot=InterpolateTPoints(c, start_pos, end_pos, true);
 	    if (end_pos != start_pos) {
 	       ApproximateSplineFromPointsSlopes(last, cur, c->tpt, tot,
@@ -3631,8 +3631,8 @@ static SplineSet *ApproximateStrokeContours(StrokeContext *c) {
 	    } else
 	       SplineMake3(last, cur);
 	    last=cur;
-	    if (pos < end_pos) {
-	       pos=c->cur + 1;
+	    if (pos<end_pos) {
+	       pos=c->cur+1;
 	       break;
 	    }
 	 }
@@ -3650,18 +3650,18 @@ static SplineSet *ApproximateStrokeContours(StrokeContext *c) {
    rfragments=NULL;
    if ((!c->remove_inner || c->open) && !AllHiddenRight(c)) {
       pos=0;
-      while (pos < c->cur - 1) {
+      while (pos<c->cur-1) {
 	 last=first=RightPointFromContext(c, &pos, &newcontour);
-	 while (newcontour && pos < c->cur) {
+	 while (newcontour && pos<c->cur) {
 	    SplinePointFree(first);
 	    start_pos=pos;
-	    if (pos < c->cur)
+	    if (pos<c->cur)
 	       last=first=RightPointFromContext(c, &pos, &newcontour);
 	    else {
 	       last=first=NULL;
 	       break;
 	    }
-	    if (pos < start_pos || (pos + start_pos==0)) {
+	    if (pos<start_pos || (pos+start_pos==0)) {
 	       /* Wrapped around */
 	       SplinePointFree(first);
 	       first=last=NULL;
@@ -3669,51 +3669,51 @@ static SplineSet *ApproximateStrokeContours(StrokeContext *c) {
 	       break;
 	    }
 	 }
-	 for (; pos < c->cur - 1 && !newcontour;) {
-	    start_pos=pos + 1;
+	 for (; pos<c->cur-1 && !newcontour;) {
+	    start_pos=pos+1;
 	    for (i=start_pos;
-		 i < c->cur && !c->all[i].right_hidden
+		 i<c->cur && !c->all[i].right_hidden
 		 && !c->all[i].needs_point_right; ++i);
 	    end_pos=pos=i;
 	    cur=RightPointFromContext(c, &pos, &newcontour);
-	    if (c->all[end_pos - 1].right.x==cur->me.x
-		&& c->all[end_pos - 1].right.y==cur->me.y)
+	    if (c->all[end_pos-1].right.x==cur->me.x
+		&& c->all[end_pos-1].right.y==cur->me.y)
 	       --end_pos;
-	    tot=end_pos - start_pos;
+	    tot=end_pos-start_pos;
 	    jump=1;
 	    extras=0;
 	    skip=MAX_TPOINTS;
-	    if (tot > MAX_TPOINTS) {
-	       jump=(tot / MAX_TPOINTS);
-	       extras=tot % MAX_TPOINTS;
-	       skip=MAX_TPOINTS / (extras + 1);
+	    if (tot>MAX_TPOINTS) {
+	       jump=(tot/MAX_TPOINTS);
+	       extras=tot%MAX_TPOINTS;
+	       skip=MAX_TPOINTS/(extras+1);
 	       tot=MAX_TPOINTS;
 	    }
 	    if (tot >= c->tmax)
 	       c->tpt =
 		  realloc(c->tpt,
-			  (c->tmax=tot + MAX_TPOINTS) * sizeof(TPoint));
+			  (c->tmax=tot+MAX_TPOINTS)*sizeof(TPoint));
 	    ipos=start_pos;
 	    skip_cnt=0;
 	    for (i=0; i <= tot; ++i) {
-	       TPoint *tpt=c->tpt + i;
-	       StrokePoint *spt=c->all + ipos;
+	       TPoint *tpt=c->tpt+i;
+	       StrokePoint *spt=c->all+ipos;
 
 	       tpt->x=spt->right.x;
 	       tpt->y=spt->right.y;
 	       tpt->t =
-		  (ipos - start_pos + 1) / (double) (end_pos - start_pos +
+		  (ipos-start_pos+1)/(double) (end_pos-start_pos +
 						      1);
 	       ipos += jump;
-	       if (++skip_cnt > skip && extras > 0) {
+	       if (++skip_cnt>skip && extras>0) {
 		  ++ipos;
 		  --extras;
 		  skip_cnt=0;
 	       }
-	       if (ipos > end_pos)
+	       if (ipos>end_pos)
 		  ipos=end_pos;
 	    }
-	    if (end_pos < start_pos + 3)
+	    if (end_pos<start_pos+3)
 	       tot=InterpolateTPoints(c, start_pos, end_pos, false);
 	    if (end_pos != start_pos) {
 	       ApproximateSplineFromPointsSlopes(last, cur, c->tpt, tot,
@@ -3723,8 +3723,8 @@ static SplineSet *ApproximateStrokeContours(StrokeContext *c) {
 	    last=cur;
 	    if (last->next != NULL)
 	       last=last->next->to;
-	    if (pos < end_pos) {
-	       pos=c->cur + 1;
+	    if (pos<end_pos) {
+	       pos=c->cur+1;
 	       break;
 	    }
 	 }
@@ -3761,7 +3761,7 @@ static SplineSet *ApproximateStrokeContours(StrokeContext *c) {
       lfragments=JoinFragments(lfragments, &contours, 0);
    } else
       lfragments=rfragments;
-   for (i=2; lfragments != NULL && i < c->radius / 2; ++i)
+   for (i=2; lfragments != NULL && i<c->radius/2; ++i)
       lfragments=JoinFragments(lfragments, &contours, i * c->resolution);
    lfragments=EdgeEffects(lfragments, c);
    lfragments=JoinFragments(lfragments, &contours, c->resolution);
@@ -3856,8 +3856,8 @@ SplineSet *SplineSetStroke(SplineSet * ss, StrokeInfo * si, int order2) {
    c.resolution=si->resolution;
    if (si->resolution==0)
       c.resolution=1;
-   c.pentype=si->stroke_type==si_std ? pt_circle :
-      si->stroke_type==si_caligraphic ? pt_square : pt_poly;
+   c.pentype=si->stroke_type==si_std?pt_circle :
+      si->stroke_type==si_caligraphic?pt_square:pt_poly;
    c.join=si->join;
    c.cap=si->cap;
    c.miterlimit =
@@ -3877,7 +3877,7 @@ SplineSet *SplineSetStroke(SplineSet * ss, StrokeInfo * si, int order2) {
 	 c.transform_needed=true;
 	 sn=sin(si->penangle);
 	 co=cos(si->penangle);
-	 factor=si->radius / si->minorradius;
+	 factor=si->radius/si->minorradius;
 	 c.transform[0]=c.transform[3]=co;
 	 c.transform[1]=-sn;
 	 c.transform[2]=sn;
@@ -3889,8 +3889,8 @@ SplineSet *SplineSetStroke(SplineSet * ss, StrokeInfo * si, int order2) {
 	 c.inverse[3] /= factor;
 	 c.inverse[2] /= factor;
       }
-      if (si->resolution==0 && c.resolution > c.radius / 3)
-	 c.resolution=c.radius / 3;
+      if (si->resolution==0 && c.resolution>c.radius/3)
+	 c.resolution=c.radius/3;
       ret=SplineSets_Stroke(ss, &c, order2);
    } else {
       first=last=NULL;
@@ -3905,7 +3905,7 @@ SplineSet *SplineSetStroke(SplineSet * ss, StrokeInfo * si, int order2) {
 	    if (sp==active->first)
 	       break;
 	 }
-	 if (n > max)
+	 if (n>max)
 	    max=n;
       }
       c.corners=malloc(max * sizeof(BasePoint));
@@ -3914,8 +3914,8 @@ SplineSet *SplineSetStroke(SplineSet * ss, StrokeInfo * si, int order2) {
       trans[0]=trans[3]=1;
       if (!c.leave_users_center) {
 	 SplineSetQuickBounds(si->poly, &b);
-	 trans[4]=-(b.minx + b.maxx) / 2;
-	 trans[5]=-(b.miny + b.maxy) / 2;
+	 trans[4]=-(b.minx+b.maxx)/2;
+	 trans[5]=-(b.miny+b.maxy)/2;
 	 SplinePointListTransform(si->poly, trans, tpt_AllPoints);
       }
       for (active=si->poly; active != NULL; active=anext) {
@@ -3929,8 +3929,8 @@ SplineSet *SplineSetStroke(SplineSet * ss, StrokeInfo * si, int order2) {
 	    anext=active->next;
 	    active->next=NULL;
 	    SplineSetQuickBounds(active, &b);
-	    trans[4]=-(b.minx + b.maxx) / 2;
-	    trans[5]=-(b.miny + b.maxy) / 2;
+	    trans[4]=-(b.minx+b.maxx)/2;
+	    trans[5]=-(b.miny+b.maxy)/2;
 	    SplinePointListTransform(active, trans, tpt_AllPoints);	/* Only works if pen is fixed and does not rotate or get scaled */
 	    active->next=anext;
 	 }
@@ -3939,19 +3939,19 @@ SplineSet *SplineSetStroke(SplineSet * ss, StrokeInfo * si, int order2) {
 	 for (sp=active->first, n=0;;) {
 	    nsp=sp->next->to;
 	    c.corners[n]=sp->me;
-	    c.slopes[n].x=nsp->me.x - sp->me.x;
-	    c.slopes[n].y=nsp->me.y - sp->me.y;
+	    c.slopes[n].x=nsp->me.x-sp->me.x;
+	    c.slopes[n].y=nsp->me.y-sp->me.y;
 	    len =
-	       c.slopes[n].x * c.slopes[n].x + c.slopes[n].y * c.slopes[n].y;
+	       c.slopes[n].x * c.slopes[n].x+c.slopes[n].y * c.slopes[n].y;
 	    len=sqrt(len);
-	    if (len > maxlen)
+	    if (len>maxlen)
 	       maxlen=len;
 	    if (len != 0) {
 	       c.slopes[n].x /= len;
 	       c.slopes[n].y /= len;
 	    }
-	    d2=sp->me.x * sp->me.x + sp->me.y * sp->me.y;
-	    if (d2 > maxd2)
+	    d2=sp->me.x * sp->me.x+sp->me.y * sp->me.y;
+	    if (d2>maxd2)
 	       maxd2=d2;
 	    ++n;
 	    sp=nsp;
@@ -3963,8 +3963,8 @@ SplineSet *SplineSetStroke(SplineSet * ss, StrokeInfo * si, int order2) {
 	 c.longest_edge=maxlen;
 	 c.radius=sqrt(maxd2);
 	 c.radius2=maxd2;
-	 if (si->resolution==0 && c.resolution > c.radius / 3)
-	    c.resolution=c.radius / 3;
+	 if (si->resolution==0 && c.resolution>c.radius/3)
+	    c.resolution=c.radius/3;
 	 cur=SplineSets_Stroke(ss, &c, order2);
 	 if (!c.scaled_or_rotated) {
 	    trans[4]=-trans[4];
@@ -4008,20 +4008,20 @@ void FVStrokeItScript(void *_fv, StrokeInfo * si, int pointless_argument) {
    int i, cnt=0, gid;
    SplineChar *sc;
 
-   for (i=0; i < fv->map->enccount; ++i)
+   for (i=0; i<fv->map->enccount; ++i)
       if ((gid=fv->map->map[i]) != -1 && fv->sf->glyphs[gid] != NULL
 	  && fv->selected[i])
 	 ++cnt;
 
    SFUntickAll(fv->sf);
-   for (i=0; i < fv->map->enccount; ++i) {
+   for (i=0; i<fv->map->enccount; ++i) {
       if ((gid=fv->map->map[i]) != -1 && (sc=fv->sf->glyphs[gid]) != NULL
 	  && !sc->ticked && fv->selected[i]) {
 	 sc->ticked=true;
 	 glyphname=sc->name;
 	 if (sc->parent->multilayer) {
 	    SCPreserveState(sc, false);
-	    for (layer=ly_fore; layer < sc->layer_cnt; ++layer) {
+	    for (layer=ly_fore; layer<sc->layer_cnt; ++layer) {
 	       temp =
 		  SplineSetStroke(sc->layers[layer].splines, si,
 				  sc->layers[layer].order2);

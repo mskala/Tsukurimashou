@@ -1,4 +1,4 @@
-/* $Id: savefont.c 4302 2015-10-24 15:00:46Z mskala $ */
+/* $Id: savefont.c 4532 2015-12-22 13:18:53Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -38,7 +38,7 @@
 #include "savefont.h"
 
 int old_sfnt_flags=ttf_flag_otmode;
-int old_ps_flags=ps_flag_afm | ps_flag_round;
+int old_ps_flags=ps_flag_afm|ps_flag_round;
 int old_psotb_flags=ps_flag_afm;
 int oldformatstate=ff_pfb;
 int oldbitmapstate=0;
@@ -73,7 +73,7 @@ char *bitmapextensions[] =
 static int WriteAfmFile(char *filename,SplineFont *sf,int formattype,
 			EncMap * map, int flags, SplineFont *fullsf,
 			int layer) {
-   char *buf=malloc(strlen(filename) + 6), *pt, *pt2;
+   char *buf=malloc(strlen(filename)+6), *pt, *pt2;
    AFILE *afm;
    int ret;
    int subtype=formattype;
@@ -85,7 +85,7 @@ static int WriteAfmFile(char *filename,SplineFont *sf,int formattype,
 
    strcpy(buf, filename);
    pt=strrchr(buf, '.');
-   if (pt != NULL && (pt2=strrchr(buf, '/')) != NULL && pt < pt2)
+   if (pt != NULL && (pt2=strrchr(buf, '/')) != NULL && pt<pt2)
       pt=NULL;
    if (pt==NULL)
       strcat(buf, ".afm");
@@ -97,7 +97,7 @@ static int WriteAfmFile(char *filename,SplineFont *sf,int formattype,
       return (false);
    }
    ret =
-      AfmSplineFont(afm, sf, subtype, map, flags & ps_flag_afmwithmarks,
+      AfmSplineFont(afm, sf, subtype, map, flags&ps_flag_afmwithmarks,
 		    fullsf, layer);
    free(buf);
    if (afclose(afm)==-1)
@@ -109,9 +109,9 @@ static int WriteAfmFile(char *filename,SplineFont *sf,int formattype,
       MMSet *mm=sf->mm;
       int i;
 
-      for (i=0; i < mm->instance_count; ++i) {
+      for (i=0; i<mm->instance_count; ++i) {
 	 sf=mm->instances[i];
-	 buf=malloc(strlen(filename) + strlen(sf->fontname) + 4 + 1);
+	 buf=malloc(strlen(filename)+strlen(sf->fontname)+4+1);
 	 strcpy(buf, filename);
 	 pt=strrchr(buf, '/');
 	 if (pt==NULL)
@@ -125,18 +125,18 @@ static int WriteAfmFile(char *filename,SplineFont *sf,int formattype,
 	 if (afm==NULL)
 	    return (false);
 	 ret =
-	    AfmSplineFont(afm, sf, subtype, map, flags & ps_flag_afmwithmarks,
+	    AfmSplineFont(afm, sf, subtype, map, flags&ps_flag_afmwithmarks,
 			  NULL, layer);
 	 if (afclose(afm)==-1)
 	    return (false);
 	 if (!ret)
 	    return (false);
       }
-      buf=malloc(strlen(filename) + 8);
+      buf=malloc(strlen(filename)+8);
 
       strcpy(buf, filename);
       pt=strrchr(buf, '.');
-      if (pt != NULL && (pt2=strrchr(buf, '/')) != NULL && pt < pt2)
+      if (pt != NULL && (pt2=strrchr(buf, '/')) != NULL && pt<pt2)
 	 pt=NULL;
       if (pt==NULL)
 	 strcat(buf, ".amfm");
@@ -155,7 +155,7 @@ static int WriteAfmFile(char *filename,SplineFont *sf,int formattype,
 
 static int WriteTfmFile(char *filename,SplineFont *sf,int formattype,
 			EncMap * map, int layer) {
-   char *buf=malloc(strlen(filename) + 6), *pt, *pt2;
+   char *buf=malloc(strlen(filename)+6), *pt, *pt2;
    AFILE *tfm, *enc;
    int ret;
    int i;
@@ -163,7 +163,7 @@ static int WriteTfmFile(char *filename,SplineFont *sf,int formattype,
 
    strcpy(buf, filename);
    pt=strrchr(buf, '.');
-   if (pt != NULL && (pt2=strrchr(buf, '/')) != NULL && pt < pt2)
+   if (pt != NULL && (pt2=strrchr(buf, '/')) != NULL && pt<pt2)
       pt=NULL;
    if (pt==NULL)
       strcat(buf, ".tfm");
@@ -190,18 +190,18 @@ static int WriteTfmFile(char *filename,SplineFont *sf,int formattype,
       afprintf(enc, "/%s-Enc [\n", sf->fontname);
    else
       afprintf(enc, "/%s [\n", encname);
-   for (i=0; i < map->enccount && i < 256; ++i) {
+   for (i=0; i<map->enccount && i<256; ++i) {
       if (map->map[i]==-1 || !SCWorthOutputting(sf->glyphs[map->map[i]]))
 	 afprintf(enc, " /.notdef");
       else
 	 afprintf(enc, " /%s", sf->glyphs[map->map[i]]->name);
-      if ((i & 0xf)==0)
+      if ((i&0xf)==0)
 	 afprintf(enc, "\t\t%% 0x%02x", i);
       aputc('\n', enc);
    }
-   while (i < 256) {
+   while (i<256) {
       afprintf(enc, " /.notdef");
-      if ((i & 0xf0)==0)
+      if ((i&0xf0)==0)
 	 afprintf(enc, "\t\t%% 0x%02x", i);
       aputc('\n', enc);
       ++i;
@@ -215,7 +215,7 @@ static int WriteTfmFile(char *filename,SplineFont *sf,int formattype,
 
 static int WriteOfmFile(char *filename,SplineFont *sf,int formattype,
 			EncMap * map, int layer) {
-   char *buf=malloc(strlen(filename) + 6), *pt, *pt2;
+   char *buf=malloc(strlen(filename)+6), *pt, *pt2;
    AFILE *tfm, *enc;
    int ret;
    int i;
@@ -226,7 +226,7 @@ static int WriteOfmFile(char *filename,SplineFont *sf,int formattype,
 
    strcpy(buf, filename);
    pt=strrchr(buf, '.');
-   if (pt != NULL && (pt2=strrchr(buf, '/')) != NULL && pt < pt2)
+   if (pt != NULL && (pt2=strrchr(buf, '/')) != NULL && pt<pt2)
       pt=NULL;
    if (pt==NULL)
       strcat(buf, ".ofm");
@@ -252,15 +252,15 @@ static int WriteOfmFile(char *filename,SplineFont *sf,int formattype,
    if (sf->subfontcnt==0 && map->enc != &custom)
       encname=EncodingName(map->enc);
    afprintf(enc, "CODINGSCHEME %s\n",
-	   encname==NULL ? encname : "FONT-SPECIFIC");
+	   encname==NULL?encname:"FONT-SPECIFIC");
 
    /* OfmSplineFont has already called TeXDefaultParams, so we don't have to */
    afprintf(enc, "EPSILON 0.090\n");	/* I have no idea what this means */
    for (i=0; texparamnames[i] != NULL; ++i)
       afprintf(enc, "%s %g\n", texparamnames[i],
-	      sf->texdata.params[i] / (double) (1 << 20));
+	      sf->texdata.params[i]/(double) (1 << 20));
 
-   for (i=0; i < map->enccount && i < 65536; ++i) {
+   for (i=0; i<map->enccount && i<65536; ++i) {
       if (map->map[i] != -1 && SCWorthOutputting(sf->glyphs[map->map[i]]))
 	 afprintf(enc, "%04X N %s\n", i, sf->glyphs[map->map[i]]->name);
    }
@@ -272,13 +272,13 @@ static int WriteOfmFile(char *filename,SplineFont *sf,int formattype,
 
 int WritePfmFile(char *filename, SplineFont *sf, int type0, EncMap * map,
 		 int layer) {
-   char *buf=malloc(strlen(filename) + 6), *pt, *pt2;
+   char *buf=malloc(strlen(filename)+6), *pt, *pt2;
    AFILE *pfm;
    int ret;
 
    strcpy(buf, filename);
    pt=strrchr(buf, '.');
-   if (pt != NULL && (pt2=strrchr(buf, '/')) != NULL && pt < pt2)
+   if (pt != NULL && (pt2=strrchr(buf, '/')) != NULL && pt<pt2)
       pt=NULL;
    if (pt==NULL)
       strcat(buf, ".pfm");
@@ -296,7 +296,7 @@ int WritePfmFile(char *filename, SplineFont *sf, int type0, EncMap * map,
 
 static int WriteFontLog(char *filename,SplineFont *sf,int formattype,
 			EncMap * map, int flags, SplineFont *fullsf) {
-   char *buf=malloc(strlen(filename) + 12), *pt;
+   char *buf=malloc(strlen(filename)+12), *pt;
    AFILE *flog;
 
    if (sf->fontlog==NULL || *sf->fontlog=='\0')
@@ -307,7 +307,7 @@ static int WriteFontLog(char *filename,SplineFont *sf,int formattype,
    if (pt==NULL)
       strcat(buf, "FontLog.txt");
    else
-      strcpy(pt + 1, "FontLog.txt");
+      strcpy(pt+1, "FontLog.txt");
    flog=afopen(buf, "w");
    free(buf);
    if (flog==NULL)
@@ -323,7 +323,7 @@ static int WriteFontLog(char *filename,SplineFont *sf,int formattype,
 
 static int WriteBitmaps(char *filename,SplineFont *sf,int32_t *sizes,
 			int res, int bf, EncMap * map) {
-   char *buf=malloc(strlen(filename) + 30), *pt, *pt2;
+   char *buf=malloc(strlen(filename)+30), *pt, *pt2;
    int i;
    BDFFont *bdf;
    char *ext;
@@ -336,7 +336,7 @@ static int WriteBitmaps(char *filename,SplineFont *sf,int32_t *sizes,
    for (i=0; sizes[i] != 0; ++i);
    for (i=0; sizes[i] != 0; ++i) {
       for (bdf=sf->bitmaps; bdf != NULL &&
-	   (bdf->pixelsize != (sizes[i] & 0xffff)
+	   (bdf->pixelsize != (sizes[i]&0xffff)
 	    || BDFDepth(bdf) != (sizes[i] >> 16)); bdf=bdf->next);
       if (bdf==NULL) {
 	 ErrorMsg(2,"Attempt to save a pixel size that has not been created (%d@%d)\n",
@@ -352,16 +352,16 @@ static int WriteBitmaps(char *filename,SplineFont *sf,int32_t *sizes,
 
       strcpy(buf, filename);
       pt=strrchr(buf, '.');
-      if (pt != NULL && (pt2=strrchr(buf, '/')) != NULL && pt < pt2)
+      if (pt != NULL && (pt2=strrchr(buf, '/')) != NULL && pt<pt2)
 	 pt=NULL;
       if (pt==NULL)
-	 pt=buf + strlen(buf);
-      if (strcmp(pt - 4, ".otf.dfont")==0
-	  || strcmp(pt - 4, ".ttf.bin")==0)
+	 pt=buf+strlen(buf);
+      if (strcmp(pt-4, ".otf.dfont")==0
+	  || strcmp(pt-4, ".ttf.bin")==0)
 	 pt -= 4;
-      if (pt - 2 > buf && pt[-2]=='-' && pt[-1]=='*')
+      if (pt-2>buf && pt[-2]=='-' && pt[-1]=='*')
 	 pt -= 2;
-      ext=bf==bf_bdf ? ".bdf" : bf==bf_ptype3 ? ".pt3" : ".fnt";
+      ext=bf==bf_bdf?".bdf":bf==bf_ptype3?".pt3":".fnt";
       if (bdf->clut==NULL)
 	 sprintf(pt, "-%d%s", bdf->pixelsize, ext);
       else
@@ -405,19 +405,19 @@ static int32_t *ParseWernerSFDFile(char *wernerfilename,SplineFont *sf,
 
    k=0;
    do {
-      _sf=sf->subfontcnt==0 ? sf : sf->subfonts[k++];
-      if (_sf->glyphcnt > cnt)
+      _sf=sf->subfontcnt==0?sf:sf->subfonts[k++];
+      if (_sf->glyphcnt>cnt)
 	 cnt=_sf->glyphcnt;
-   } while (k < sf->subfontcnt);
+   } while (k<sf->subfontcnt);
 
-   mapping=calloc(cnt + 1, sizeof(int32_t));
-   memset(mapping, -1, (cnt + 1) * sizeof(int32_t));
+   mapping=calloc(cnt+1, sizeof(int32_t));
+   memset(mapping, -1, (cnt+1)*sizeof(int32_t));
    mapping[cnt]=-2;
    *max=0;
 
    while (afgets(buffer, sizeof(buffer), file) != NULL)
       ++subfilecnt;
-   names=malloc((subfilecnt + 1) * sizeof(char *));
+   names=malloc((subfilecnt+1)*sizeof(char *));
 
    afseek(file,0,SEEK_SET);
    subfilecnt=0;
@@ -427,15 +427,15 @@ static int32_t *ParseWernerSFDFile(char *wernerfilename,SplineFont *sf,
 	 free(mapping);
 	 return (NULL);
       }
-      pt=buffer + strlen(buffer) - 1;
+      pt=buffer+strlen(buffer)-1;
       bpt=buffer;
-      if ((*pt != '\n' && *pt != '\r') || (pt > buffer && pt[-1]=='\\') ||
-	  (pt > buffer + 1 && pt[-2]=='\\' && isspace(pt[-1]))) {
+      if ((*pt != '\n' && *pt != '\r') || (pt>buffer && pt[-1]=='\\') ||
+	  (pt>buffer+1 && pt[-2]=='\\' && isspace(pt[-1]))) {
 	 bpt=fastrdup("");
 	 while (1) {
 	    loop=false;
 	    if ((*pt != '\n' && *pt != '\r')
-		|| (pt > buffer && pt[-1]=='\\') || (pt > buffer + 1
+		|| (pt>buffer && pt[-1]=='\\') || (pt>buffer+1
 						       && pt[-2]=='\\'
 						       && isspace(pt[-1])))
 	       loop=true;
@@ -445,13 +445,13 @@ static int32_t *ParseWernerSFDFile(char *wernerfilename,SplineFont *sf,
 	       else if (pt[-2]=='\\')
 		  pt[-2]='\0';
 	    }
-	    bpt=realloc(bpt, strlen(bpt) + strlen(buffer) + 10);
+	    bpt=realloc(bpt, strlen(bpt)+strlen(buffer)+10);
 	    strcat(bpt, buffer);
 	    if (!loop)
 	       break;
 	    if (afgets(buffer, sizeof(buffer), file)==NULL)
 	       break;
-	    pt=buffer + strlen(buffer) - 1;
+	    pt=buffer+strlen(buffer)-1;
 	 }
       }
       if (bpt[0]=='#' || bpt[0]=='\0' || isspace(bpt[0]))
@@ -459,8 +459,8 @@ static int32_t *ParseWernerSFDFile(char *wernerfilename,SplineFont *sf,
       for (pt=bpt; !isspace(*pt) && *pt != '\0'; ++pt);
       if (*pt=='\0' || *pt=='\r' || *pt=='\n')
 	 continue;
-      names[subfilecnt]=copyn(bpt, pt - bpt);
-      if (subfilecnt > *max)
+      names[subfilecnt]=copyn(bpt, pt-bpt);
+      if (subfilecnt>*max)
 	 *max=subfilecnt;
       end=pt;
       thusfar=0;
@@ -476,15 +476,15 @@ static int32_t *ParseWernerSFDFile(char *wernerfilename,SplineFont *sf,
 	 while (isspace(*end))
 	    ++end;
 	 if (*end==':') {
-	    if (r1 >= 256 || r1 < 0)
+	    if (r1 >= 256 || r1<0)
 	       ErrorMsg(2,"Bad offset: %d for subfont %s\n", r1,
 			names[subfilecnt]);
 	    else
 	       thusfar=r1;
-	    r1=strtoul(end + 1, &end, 0);
+	    r1=strtoul(end+1, &end, 0);
 	 }
 	 if (*end=='_' || *end=='-')
-	    r2=strtoul(end + 1, &end, 0);
+	    r2=strtoul(end+1, &end, 0);
 	 else
 	    r2=r1;
 	 for (i=r1; i <= r2; ++i) {
@@ -492,18 +492,18 @@ static int32_t *ParseWernerSFDFile(char *wernerfilename,SplineFont *sf,
 	    if (map->remap != NULL) {
 	       for (remap=map->remap; remap->infont != -1; ++remap) {
 		  if (i >= remap->firstenc && i <= remap->lastenc) {
-		     modi=i - remap->firstenc + remap->infont;
+		     modi=i-remap->firstenc+remap->infont;
 		     break;
 		  }
 	       }
 	    }
-	    if (modi < map->enccount)
+	    if (modi<map->enccount)
 	       modi=map->map[modi];
 	    else if (sf->subfontcnt != 0)
 	       modi=modi;
 	    else
 	       modi=-1;
-	    if (modi < cnt && modi != -1) {
+	    if (modi<cnt && modi != -1) {
 	       if (mapping[modi] != -1 && !warned) {
 		  if ((i==0xffff || i==0xfffe) &&
 		      (map->enc->is_unicodebmp || map->enc->is_unicodefull))
@@ -512,16 +512,16 @@ static int32_t *ParseWernerSFDFile(char *wernerfilename,SplineFont *sf,
 		     ErrorMsg(2,"Warning: Encoding %d (0x%x) is mapped to at least two locations (%s@0x%02x and %s@0x%02x)\n Only one will be used here.\n",
 			      i, i, names[subfilecnt], thusfar,
 			      names[(mapping[modi] >> 8)],
-			      mapping[modi] & 0xff);
+			      mapping[modi]&0xff);
 		     warned=true;
 		  }
 	       }
-	       mapping[modi]=(subfilecnt << 8) | thusfar;
+	       mapping[modi]=(subfilecnt << 8)|thusfar;
 	    }
 	    thusfar++;
 	 }
       }
-      if (thusfar > 256)
+      if (thusfar>256)
 	 ErrorMsg(2,"More than 256 entries in subfont %s\n",
 		  names[subfilecnt]);
       ++subfilecnt;
@@ -546,7 +546,7 @@ static int SaveSubFont(SplineFont *sf,char *newname,int32_t *sizes,int res,
    RefChar *ref;
    int err=0;
    enum fontformat subtype =
-      strstr(newname, ".pfa") != NULL ? ff_pfa : ff_pfb;
+      strstr(newname, ".pfa") != NULL?ff_pfa:ff_pfb;
    EncMap encmap;
    int32_t _mapping[256], _backmap[256];
 
@@ -573,18 +573,18 @@ static int SaveSubFont(SplineFont *sf,char *newname,int32_t *sizes,int res,
       if ((mapping[i] >> 8)==subfont) {
 	 k=0;
 	 do {
-	    _sf=sf->subfontcnt==0 ? sf : sf->subfonts[k++];
-	    if (i < _sf->glyphcnt && _sf->glyphs[i] != NULL)
+	    _sf=sf->subfontcnt==0?sf:sf->subfonts[k++];
+	    if (i<_sf->glyphcnt && _sf->glyphs[i] != NULL)
 	       break;
-	 } while (k < sf->subfontcnt);
-	 if (temp.glyphcnt < 256) {
-	    if (i < _sf->glyphcnt) {
+	 } while (k<sf->subfontcnt);
+	 if (temp.glyphcnt<256) {
+	    if (i<_sf->glyphcnt) {
 	       if (_sf->glyphs[i] != NULL) {
 		  _sf->glyphs[i]->parent=&temp;
 		  _sf->glyphs[i]->orig_pos=temp.glyphcnt;
 		  chars[temp.glyphcnt]=_sf->glyphs[i];
-		  _mapping[mapping[i] & 0xff]=temp.glyphcnt;
-		  _backmap[temp.glyphcnt]=mapping[i] & 0xff;
+		  _mapping[mapping[i]&0xff]=temp.glyphcnt;
+		  _backmap[temp.glyphcnt]=mapping[i]&0xff;
 		  ++temp.glyphcnt;
 		  ++used;
 	       }
@@ -600,7 +600,7 @@ static int SaveSubFont(SplineFont *sf,char *newname,int32_t *sizes,int res,
    /*  korean fonts huge */
    while (1) {
       extras=0;
-      for (i=0; i < temp.glyphcnt; ++i)
+      for (i=0; i<temp.glyphcnt; ++i)
 	 if (temp.glyphs[i] != NULL) {
 	    for (ref=temp.glyphs[i]->layers[ly_fore].refs; ref != NULL;
 		 ref=ref->next)
@@ -609,28 +609,28 @@ static int SaveSubFont(SplineFont *sf,char *newname,int32_t *sizes,int res,
 	 }
       if (extras==0)
 	 break;
-      newchars=calloc(temp.glyphcnt + extras, sizeof(SplineChar *));
+      newchars=calloc(temp.glyphcnt+extras, sizeof(SplineChar *));
       memcpy(newchars, temp.glyphs, temp.glyphcnt * sizeof(SplineChar *));
       if (temp.glyphs != chars)
 	 free(temp.glyphs);
       base=temp.glyphcnt;
       temp.glyphs=newchars;
       extras=0;
-      for (i=0; i < base; ++i)
+      for (i=0; i<base; ++i)
 	 if (temp.glyphs[i] != NULL) {
 	    for (ref=temp.glyphs[i]->layers[ly_fore].refs; ref != NULL;
 		 ref=ref->next)
 	       if (ref->sc->parent != &temp) {
-		  temp.glyphs[base + extras]=ref->sc;
+		  temp.glyphs[base+extras]=ref->sc;
 		  ref->sc->parent=&temp;
-		  ref->sc->orig_pos=base + extras++;
+		  ref->sc->orig_pos=base+extras++;
 	       }
 	 }
       temp.glyphcnt += extras;	/* this might be a slightly different value from that found before if some references get reused. N'importe */
       temp.glyphmax=temp.glyphcnt;
    }
 
-   filename=malloc(strlen(newname) + strlen(names[subfont]) + 10);
+   filename=malloc(strlen(newname)+strlen(names[subfont])+10);
    strcpy(filename, newname);
    pt=strrchr(filename, '.');
    spt=strrchr(filename, '/');
@@ -638,7 +638,7 @@ static int SaveSubFont(SplineFont *sf,char *newname,int32_t *sizes,int res,
       spt=filename;
    else
       ++spt;
-   if (pt > spt)
+   if (pt>spt)
       *pt='\0';
    pt=strstr(spt, "%d");
    if (pt==NULL)
@@ -649,31 +649,31 @@ static int SaveSubFont(SplineFont *sf,char *newname,int32_t *sizes,int res,
       int len=strlen(names[subfont]);
       int l;
 
-      if (len > 2) {
+      if (len>2) {
 	 for (l=strlen(pt); l >= 2; --l)
-	    pt[l + len - 2]=pt[l];
-      } else if (len < 2)
-	 strcpy(pt + len, pt + 2);
+	    pt[l+len-2]=pt[l];
+      } else if (len<2)
+	 strcpy(pt+len, pt+2);
       memcpy(pt, names[subfont], len);
    }
    temp.fontname=fastrdup(spt);
-   temp.fullname=malloc(strlen(temp.fullname) + strlen(names[subfont]) + 3);
+   temp.fullname=malloc(strlen(temp.fullname)+strlen(names[subfont])+3);
    strcpy(temp.fullname, sf->fullname);
    strcat(temp.fullname, " ");
    strcat(temp.fullname, names[subfont]);
-   strcat(spt, subtype==ff_pfb ? ".pfb" : ".pfa");
+   strcat(spt, subtype==ff_pfb?".pfb":".pfa");
 
    if (sf->xuid != NULL) {
       sprintf(buf, "%d", subfont);
-      temp.xuid=malloc(strlen(sf->xuid) + strlen(buf) + 5);
+      temp.xuid=malloc(strlen(sf->xuid)+strlen(buf)+5);
       strcpy(temp.xuid, sf->xuid);
-      pt=temp.xuid + strlen(temp.xuid) - 1;
-      while (pt > temp.xuid && *pt==' ')
+      pt=temp.xuid+strlen(temp.xuid)-1;
+      while (pt>temp.xuid && *pt==' ')
 	 --pt;
       if (*pt==']')
 	 --pt;
       *pt=' ';
-      strcpy(pt + 1, buf);
+      strcpy(pt+1, buf);
       strcat(pt, "]");
    }
 
@@ -682,7 +682,7 @@ static int SaveSubFont(SplineFont *sf,char *newname,int32_t *sizes,int res,
 		   layer);
    if (err)
       ErrorMsg(2,"Save failed.\n");
-   if (!err && (old_ps_flags & ps_flag_afm)) {
+   if (!err && (old_ps_flags&ps_flag_afm)) {
       if (!WriteAfmFile
 	  (filename, &temp, oldformatstate, &encmap, old_ps_flags, sf,
 	   layer)) {
@@ -690,7 +690,7 @@ static int SaveSubFont(SplineFont *sf,char *newname,int32_t *sizes,int res,
 	 err=true;
       }
    }
-   if (!err && (old_ps_flags & ps_flag_tfm)) {
+   if (!err && (old_ps_flags&ps_flag_tfm)) {
       if (!WriteTfmFile(filename, &temp, oldformatstate, &encmap, layer)) {
          ErrorMsg(2,"TFM save failed.\n");
 	 err=true;
@@ -710,13 +710,13 @@ static int SaveSubFont(SplineFont *sf,char *newname,int32_t *sizes,int res,
    /* Do this after every save, else afm,tfm files might produce extraneous kerns */
    k=0;
    do {
-      _sf=sf->subfontcnt==0 ? sf : sf->subfonts[k++];
-      for (i=0; i < _sf->glyphcnt; ++i)
+      _sf=sf->subfontcnt==0?sf:sf->subfonts[k++];
+      for (i=0; i<_sf->glyphcnt; ++i)
 	 if (_sf->glyphs[i] != NULL) {
 	    _sf->glyphs[i]->parent=_sf;
 	    _sf->glyphs[i]->orig_pos=i;
 	 }
-   } while (k < sf->subfontcnt);
+   } while (k<sf->subfontcnt);
 
    return (err);
 }
@@ -751,7 +751,7 @@ static int WriteMultiplePSFont(SplineFont *sf,char *newname,int32_t *sizes,
       sf=sf->cidmaster;
 
    filecnt=1;
-   if ((old_ps_flags & ps_flag_afm))
+   if ((old_ps_flags&ps_flag_afm))
       filecnt=2;
    path=fastrdup(newname);
    free(path);
@@ -772,11 +772,11 @@ int CheckIfTransparent(SplineFont *sf) {
    /* Type3 doesn't support translucent fills */
    int i, j;
 
-   for (i=0; i < sf->glyphcnt; ++i)
+   for (i=0; i<sf->glyphcnt; ++i)
       if (sf->glyphs[i] != NULL) {
 	 SplineChar *sc=sf->glyphs[i];
 
-	 for (j=ly_fore; j < sc->layer_cnt; ++j) {
+	 for (j=ly_fore; j<sc->layer_cnt; ++j) {
 	    if (sc->layers[j].fill_brush.opacity != 1
 		|| sc->layers[j].stroke_pen.brush.opacity != 1) {
 	       return (false);
@@ -805,7 +805,7 @@ int _DoSave(SplineFont *sf, char *newname, int32_t * sizes, int res,
    else if (oldformatstate != ff_none)
       flags=old_sfnt_flags;
    else
-      flags=old_sfnt_flags & ~(ttf_flag_ofm);
+      flags=old_sfnt_flags&~(ttf_flag_ofm);
    if (oldformatstate <= ff_cffcid && oldbitmapstate==bf_otb)
       flags=old_psotb_flags;
 
@@ -876,31 +876,31 @@ int _DoSave(SplineFont *sf, char *newname, int32_t * sizes, int res,
 	 err=true;
       }
    }
-   if (!err && (flags & ps_flag_tfm)) {
+   if (!err && (flags&ps_flag_tfm)) {
       if (!WriteTfmFile(newname, sf, oldformatstate, map, layer)) {
 	 ErrorMsg(2,"TFM save failed.\n");
 	 err=true;
       }
    }
-   if (!err && (flags & ttf_flag_ofm)) {
+   if (!err && (flags&ttf_flag_ofm)) {
       if (!WriteOfmFile(newname, sf, oldformatstate, map, layer)) {
 	 ErrorMsg(2,"OFM save failed.\n");
 	 err=true;
       }
    }
-   if (!err && (flags & ps_flag_afm)) {
+   if (!err && (flags&ps_flag_afm)) {
       if (!WriteAfmFile(newname, sf, oldformatstate, map, flags, NULL, layer)) {
 	 ErrorMsg(2,"AFM save failed.\n");
 	 err=true;
       }
    }
-   if (!err && (flags & ps_flag_outputfontlog)) {
+   if (!err && (flags&ps_flag_outputfontlog)) {
       if (!WriteFontLog(newname, sf, oldformatstate, map, flags, NULL)) {
 	 ErrorMsg(2,"FontLog save failed.\n");
 	 err=true;
       }
    }
-   if (!err && (flags & ps_flag_pfm) && !iscid) {
+   if (!err && (flags&ps_flag_pfm) && !iscid) {
       if (!WritePfmFile(newname, sf, oldformatstate==ff_ptype0, map, layer)) {
 	 ErrorMsg(2,"PFM save failed.\n");
 	 err=true;
@@ -909,10 +909,10 @@ int _DoSave(SplineFont *sf, char *newname, int32_t * sizes, int res,
    if (oldbitmapstate==bf_otb || oldbitmapstate==bf_sfnt_ms) {
       char *temp=newname;
 
-      if (newname[strlen(newname) - 1]=='.') {
-	 temp=malloc(strlen(newname) + 8);
+      if (newname[strlen(newname)-1]=='.') {
+	 temp=malloc(strlen(newname)+8);
 	 strcpy(temp, newname);
-	 strcat(temp, oldbitmapstate==bf_otb ? "otb" : "ttf");
+	 strcat(temp, oldbitmapstate==bf_otb?"otb":"ttf");
       }
       if (!WriteTTFFont
 	  (temp, sf, ff_none, sizes, oldbitmapstate, flags, map, layer))
@@ -922,8 +922,8 @@ int _DoSave(SplineFont *sf, char *newname, int32_t * sizes, int res,
    } else if (oldbitmapstate==bf_sfnt_dfont) {
       char *temp=newname;
 
-      if (newname[strlen(newname) - 1]=='.') {
-	 temp=malloc(strlen(newname) + 8);
+      if (newname[strlen(newname)-1]=='.') {
+	 temp=malloc(strlen(newname)+8);
 	 strcpy(temp, newname);
 	 strcat(temp, "dfont");
       }
@@ -964,7 +964,7 @@ void PrepareUnlinkRmOvrlp(SplineFont *sf, char *filename, int layer) {
    if (maxundoes==0)
       maxundoes=1;		/* Force undoes */
 
-   for (gid=0; gid < sf->glyphcnt; ++gid)
+   for (gid=0; gid<sf->glyphcnt; ++gid)
       if ((sc=sf->glyphs[gid]) != NULL && sc->unlink_rm_ovrlp_save_undo) {
 	 if (autohint_before_generate && sc != NULL &&
 	     sc->changedsincelasthinted && !sc->manualhints) {
@@ -989,7 +989,7 @@ void RestoreUnlinkRmOvrlp(SplineFont *sf, char *filename, int layer) {
    int gid;
    SplineChar *sc;
 
-   for (gid=0; gid < sf->glyphcnt; ++gid)
+   for (gid=0; gid<sf->glyphcnt; ++gid)
       if ((sc=sf->glyphs[gid]) != NULL && sc->unlink_rm_ovrlp_save_undo) {
 	 SCDoUndo(sc, layer);
 	 if (!sc->manualhints)
@@ -1002,16 +1002,16 @@ static int32_t *AllBitmapSizes(SplineFont *sf) {
    BDFFont *bdf;
    int i, cnt;
 
-   for (i=0; i < 2; ++i) {
+   for (i=0; i<2; ++i) {
       cnt=0;
       for (bdf=sf->bitmaps; bdf != NULL; bdf=bdf->next) {
 	 if (sizes != NULL)
-	    sizes[cnt]=bdf->pixelsize | (BDFDepth(bdf) << 16);
+	    sizes[cnt]=bdf->pixelsize|(BDFDepth(bdf) << 16);
 	 ++cnt;
       }
       if (i==1)
 	 break;
-      sizes=malloc((cnt + 1) * sizeof(int32_t));
+      sizes=malloc((cnt+1)*sizeof(int32_t));
    }
    sizes[cnt]=0;
    return (sizes);
@@ -1026,7 +1026,7 @@ int GenerateScript(SplineFont *sf, char *filename, char *bitmaptype,
       { "bdf", "ttf", "dfont", "ttf", "otb", "bin", "fon", "fnt", "pdb",
 "pt3", NULL };
    int32_t *sizes=NULL;
-   char *end=filename + strlen(filename);
+   char *end=filename+strlen(filename);
    struct sflist *sfi;
    char *freeme=NULL;
    int ret;
@@ -1055,45 +1055,45 @@ int GenerateScript(SplineFont *sf, char *filename, char *bitmaptype,
    oldbitmapstate=i;
 
    for (i=0; savefont_extensions[i] != NULL; ++i) {
-      if (strlen(savefont_extensions[i]) > 0 &&
-	  end - filename >= strlen(savefont_extensions[i]) &&
-	  strmatch(end - strlen(savefont_extensions[i]),
+      if (strlen(savefont_extensions[i])>0 &&
+	  end-filename >= strlen(savefont_extensions[i]) &&
+	  strmatch(end-strlen(savefont_extensions[i]),
 		   savefont_extensions[i])==0)
 	 break;
    }
-   if (end - filename > 8
-       && strmatch(end - strlen(".ttf.bin"), ".ttf.bin")==0)
+   if (end-filename>8
+       && strmatch(end-strlen(".ttf.bin"), ".ttf.bin")==0)
       i=ff_ttfmacbin;
-   else if (end - filename > 5 && strmatch(end - strlen(".suit"), ".suit")==0)	/* Different extensions for Mac/non Mac, support both always */
+   else if (end-filename>5 && strmatch(end-strlen(".suit"), ".suit")==0)	/* Different extensions for Mac/non Mac, support both always */
       i=ff_ttfmacbin;
-   else if (end - filename > 4 && strmatch(end - strlen(".bin"), ".bin")==0)
+   else if (end-filename>4 && strmatch(end-strlen(".bin"), ".bin")==0)
       i=ff_pfbmacbin;
-   else if (end - filename > 4 && strmatch(end - strlen(".res"), ".res")==0)
+   else if (end-filename>4 && strmatch(end-strlen(".res"), ".res")==0)
       i=ff_pfbmacbin;
-   else if (end - filename > 8
-	    && strmatch(end - strlen(".sym.ttf"), ".sym.ttf")==0)
+   else if (end-filename>8
+	    && strmatch(end-strlen(".sym.ttf"), ".sym.ttf")==0)
       i=ff_ttfsym;
-   else if (end - filename > 8
-	    && strmatch(end - strlen(".cid.cff"), ".cid.cff")==0)
+   else if (end-filename>8
+	    && strmatch(end-strlen(".cid.cff"), ".cid.cff")==0)
       i=ff_cffcid;
-   else if (end - filename > 8
-	    && strmatch(end - strlen(".cid.t42"), ".cid.t42")==0)
+   else if (end-filename>8
+	    && strmatch(end-strlen(".cid.t42"), ".cid.t42")==0)
       i=ff_type42cid;
-   else if (end - filename > 7
-	    && strmatch(end - strlen(".mm.pfa"), ".mm.pfa")==0)
+   else if (end-filename>7
+	    && strmatch(end-strlen(".mm.pfa"), ".mm.pfa")==0)
       i=ff_mma;
-   else if (end - filename > 7
-	    && strmatch(end - strlen(".mm.pfb"), ".mm.pfb")==0)
+   else if (end-filename>7
+	    && strmatch(end-strlen(".mm.pfb"), ".mm.pfb")==0)
       i=ff_mmb;
-   else if (end - filename > 7
-	    && strmatch(end - strlen(".mult"), ".mult")==0)
+   else if (end-filename>7
+	    && strmatch(end-strlen(".mult"), ".mult")==0)
       i=ff_multiple;
    else if ((i==ff_pfa || i==ff_pfb) && strstr(filename, "%s") != NULL)
       i=ff_multiple;
    if (savefont_extensions[i]==NULL) {
       for (i=0; bitmaps[i] != NULL; ++i) {
-	 if (end - filename > strlen(bitmaps[i]) &&
-	     strmatch(end - strlen(bitmaps[i]), bitmaps[i])==0)
+	 if (end-filename>strlen(bitmaps[i]) &&
+	     strmatch(end-strlen(bitmaps[i]), bitmaps[i])==0)
 	    break;
       }
       if (*filename=='\0' || end[-1]=='.')
@@ -1106,7 +1106,7 @@ int GenerateScript(SplineFont *sf, char *filename, char *bitmaptype,
       }
    }
    if (i==ff_ttfdfont
-       && strmatch(end - strlen(".otf.dfont"), ".otf.dfont")==0)
+       && strmatch(end-strlen(".otf.dfont"), ".otf.dfont")==0)
       i=ff_otfdfont;
    if (sf->cidmaster != NULL) {
       if (i==ff_otf)
@@ -1121,7 +1121,7 @@ int GenerateScript(SplineFont *sf, char *filename, char *bitmaptype,
    if (oldformatstate==ff_none && end[-1]=='.' &&
        (oldbitmapstate==bf_ttf || oldbitmapstate==bf_sfnt_dfont
 	|| oldbitmapstate==bf_otb)) {
-      freeme=malloc(strlen(filename) + 8);
+      freeme=malloc(strlen(filename)+8);
       strcpy(freeme, filename);
       if (strmatch(bitmaptype, "otf")==0)
 	 strcat(freeme, "otf");
@@ -1147,33 +1147,33 @@ int GenerateScript(SplineFont *sf, char *filename, char *bitmaptype,
    if (fmflags==-1) {
       /* Default to what we did last time */
    } else {
-      if (oldformatstate==ff_ttf && (fmflags & 0x2000))
+      if (oldformatstate==ff_ttf && (fmflags&0x2000))
 	 oldformatstate=ff_ttfsym;
       if (oldformatstate <= ff_cffcid) {
 	 old_ps_flags=0;
-	 if (fmflags & 1)
+	 if (fmflags&1)
 	    old_ps_flags |= ps_flag_afm;
-	 if (fmflags & 2)
+	 if (fmflags&2)
 	    old_ps_flags |= ps_flag_pfm;
-	 if (fmflags & 0x10000)
+	 if (fmflags&0x10000)
 	    old_ps_flags |= ps_flag_tfm;
-	 if (fmflags & 0x20000)
+	 if (fmflags&0x20000)
 	    old_ps_flags |= ps_flag_nohintsubs;
-	 if (fmflags & 0x40000)
+	 if (fmflags&0x40000)
 	    old_ps_flags |= ps_flag_noflex;
-	 if (fmflags & 0x80000)
+	 if (fmflags&0x80000)
 	    old_ps_flags |= ps_flag_nohints;
-	 if (fmflags & 0x100000)
+	 if (fmflags&0x100000)
 	    old_ps_flags |= ps_flag_restrict256;
-	 if (fmflags & 0x200000)
+	 if (fmflags&0x200000)
 	    old_ps_flags |= ps_flag_round;
-	 if (fmflags & 0x400000)
+	 if (fmflags&0x400000)
 	    old_ps_flags |= ps_flag_afmwithmarks;
 	 if (i==bf_otb) {
 	    old_sfnt_flags=0;
-	    switch (fmflags & 0x90) {
+	    switch (fmflags&0x90) {
 	      case 0x80:
-		 old_sfnt_flags |= ttf_flag_applemode | ttf_flag_otmode;
+		 old_sfnt_flags |= ttf_flag_applemode|ttf_flag_otmode;
 		 break;
 	      case 0x90:
 		 /* Neither */ ;
@@ -1185,52 +1185,52 @@ int GenerateScript(SplineFont *sf, char *filename, char *bitmaptype,
 		 old_sfnt_flags |= ttf_flag_otmode;
 		 break;
 	    }
-	    if (fmflags & 4)
+	    if (fmflags&4)
 	       old_sfnt_flags |= ttf_flag_shortps;
-	    if (fmflags & 0x20)
+	    if (fmflags&0x20)
 	       old_sfnt_flags |= ttf_flag_pfed_comments;
-	    if (fmflags & 0x40)
+	    if (fmflags&0x40)
 	       old_sfnt_flags |= ttf_flag_pfed_colors;
-	    if (fmflags & 0x200)
+	    if (fmflags&0x200)
 	       old_sfnt_flags |= ttf_flag_TeXtable;
-	    if (fmflags & 0x400)
+	    if (fmflags&0x400)
 	       old_sfnt_flags |= ttf_flag_ofm;
-	    if ((fmflags & 0x800) && !(old_sfnt_flags & ttf_flag_applemode))
+	    if ((fmflags&0x800) && !(old_sfnt_flags&ttf_flag_applemode))
 	       old_sfnt_flags |= ttf_flag_oldkern;
-	    if (fmflags & 0x1000)
+	    if (fmflags&0x1000)
 	       old_sfnt_flags |= ttf_flag_brokensize;
-	    if (fmflags & 0x2000)
+	    if (fmflags&0x2000)
 	       old_sfnt_flags |= ttf_flag_symbol;
-	    if (fmflags & 0x4000)
+	    if (fmflags&0x4000)
 	       old_sfnt_flags |= ttf_flag_dummyDSIG;
-	    if (fmflags & 0x800000)
+	    if (fmflags&0x800000)
 	       old_sfnt_flags |= ttf_flag_pfed_lookupnames;
-	    if (fmflags & 0x1000000)
+	    if (fmflags&0x1000000)
 	       old_sfnt_flags |= ttf_flag_pfed_guides;
-	    if (fmflags & 0x2000000)
+	    if (fmflags&0x2000000)
 	       old_sfnt_flags |= ttf_flag_pfed_layers;
 	 }
       } else {
 	 old_sfnt_flags=0;
 	 /* Applicable postscript flags */
-	 if (fmflags & 1)
+	 if (fmflags&1)
 	    old_sfnt_flags |= ps_flag_afm;
-	 if (fmflags & 2)
+	 if (fmflags&2)
 	    old_sfnt_flags |= ps_flag_pfm;
-	 if (fmflags & 0x20000)
+	 if (fmflags&0x20000)
 	    old_sfnt_flags |= ps_flag_nohintsubs;
-	 if (fmflags & 0x40000)
+	 if (fmflags&0x40000)
 	    old_sfnt_flags |= ps_flag_noflex;
-	 if (fmflags & 0x80000)
+	 if (fmflags&0x80000)
 	    old_sfnt_flags |= ps_flag_nohints;
-	 if (fmflags & 0x200000)
+	 if (fmflags&0x200000)
 	    old_sfnt_flags |= ps_flag_round;
-	 if (fmflags & 0x400000)
+	 if (fmflags&0x400000)
 	    old_sfnt_flags |= ps_flag_afmwithmarks;
 	 /* Applicable truetype flags */
-	 switch (fmflags & 0x90) {
+	 switch (fmflags&0x90) {
 	   case 0x80:
-	      old_sfnt_flags |= ttf_flag_applemode | ttf_flag_otmode;
+	      old_sfnt_flags |= ttf_flag_applemode|ttf_flag_otmode;
 	      break;
 	   case 0x90:
 	      /* Neither */ ;
@@ -1242,33 +1242,33 @@ int GenerateScript(SplineFont *sf, char *filename, char *bitmaptype,
 	      old_sfnt_flags |= ttf_flag_otmode;
 	      break;
 	 }
-	 if (fmflags & 4)
+	 if (fmflags&4)
 	    old_sfnt_flags |= ttf_flag_shortps;
-	 if (fmflags & 8)
+	 if (fmflags&8)
 	    old_sfnt_flags |= ttf_flag_nohints;
-	 if (fmflags & 0x20)
+	 if (fmflags&0x20)
 	    old_sfnt_flags |= ttf_flag_pfed_comments;
-	 if (fmflags & 0x40)
+	 if (fmflags&0x40)
 	    old_sfnt_flags |= ttf_flag_pfed_colors;
-	 if (fmflags & 0x100)
+	 if (fmflags&0x100)
 	    old_sfnt_flags |= ttf_flag_glyphmap;
-	 if (fmflags & 0x200)
+	 if (fmflags&0x200)
 	    old_sfnt_flags |= ttf_flag_TeXtable;
-	 if (fmflags & 0x400)
+	 if (fmflags&0x400)
 	    old_sfnt_flags |= ttf_flag_ofm;
-	 if ((fmflags & 0x800) && !(old_sfnt_flags & ttf_flag_applemode))
+	 if ((fmflags&0x800) && !(old_sfnt_flags&ttf_flag_applemode))
 	    old_sfnt_flags |= ttf_flag_oldkern;
-	 if (fmflags & 0x1000)
+	 if (fmflags&0x1000)
 	    old_sfnt_flags |= ttf_flag_brokensize;
-	 if (fmflags & 0x2000)
+	 if (fmflags&0x2000)
 	    old_sfnt_flags |= ttf_flag_symbol;
-	 if (fmflags & 0x4000)
+	 if (fmflags&0x4000)
 	    old_sfnt_flags |= ttf_flag_dummyDSIG;
-	 if (fmflags & 0x800000)
+	 if (fmflags&0x800000)
 	    old_sfnt_flags |= ttf_flag_pfed_lookupnames;
-	 if (fmflags & 0x1000000)
+	 if (fmflags&0x1000000)
 	    old_sfnt_flags |= ttf_flag_pfed_guides;
-	 if (fmflags & 0x2000000)
+	 if (fmflags&0x2000000)
 	    old_sfnt_flags |= ttf_flag_pfed_layers;
       }
    }

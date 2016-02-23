@@ -1,4 +1,4 @@
-/* $Id: cvimages.c 4525 2015-12-20 19:51:59Z mskala $ */
+/* $Id: cvimages.c 4532 2015-12-22 13:18:53Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -46,7 +46,7 @@ void SCAppendEntityLayers(SplineChar * sc, Entity * ent) {
       return;
    EntityDefaultStrokeFill(ent);
 
-   sc->layers=realloc(sc->layers, (sc->layer_cnt+cnt) * sizeof(Layer));
+   sc->layers=realloc(sc->layers, (sc->layer_cnt+cnt)*sizeof(Layer));
    for (pos=sc->layer_cnt, e=ent; e != NULL; e=enext, ++pos) {
       enext=e->next;
       LayerDefault(&sc->layers[pos]);
@@ -71,7 +71,7 @@ void SCAppendEntityLayers(SplineChar * sc, Entity * ent) {
 	 sc->layers[pos].stroke_pen.linejoin=e->u.splines.join;
 	 sc->layers[pos].stroke_pen.linecap=e->u.splines.cap;
 	 memcpy(sc->layers[pos].stroke_pen.trans, e->u.splines.transform,
-		4 * sizeof(double));
+		4*sizeof(double));
 	 sc->layers[pos].splines=e->u.splines.splines;
       } else if (e->type==et_image) {
 	 ImageList *ilist=chunkalloc(sizeof(ImageList));
@@ -350,8 +350,8 @@ void SCInsertImage(SplineChar * sc, GImage * image, double scale, double yoff,
    im->next=sc->layers[layer].images;
    im->bb.minx=im->xoff;
    im->bb.maxy=im->yoff;
-   im->bb.maxx=im->xoff+GImageGetWidth(im->image) * im->xscale;
-   im->bb.miny=im->yoff-GImageGetHeight(im->image) * im->yscale;
+   im->bb.maxx=im->xoff+GImageGetWidth(im->image)*im->xscale;
+   im->bb.miny=im->yoff-GImageGetHeight(im->image)*im->yscale;
    sc->layers[layer].images=im;
    sc->parent->onlybitmaps=false;
    SCCharChangedUpdate(sc, layer, true);

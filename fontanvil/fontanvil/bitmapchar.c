@@ -1,4 +1,4 @@
-/* $Id: bitmapchar.c 4525 2015-12-20 19:51:59Z mskala $ */
+/* $Id: bitmapchar.c 4532 2015-12-22 13:18:53Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -168,7 +168,7 @@ static void BDFPropAddString(BDFFont *bdf,char *keyword,char *value,
       if (i >= bdf->prop_max)
 	 bdf->props =
 	    realloc(bdf->props,
-		    (bdf->prop_max += 10) * sizeof(BDFProperties));
+		    (bdf->prop_max += 10)*sizeof(BDFProperties));
       ++bdf->prop_cnt;
       bdf->props[i].name=fastrdup(keyword);
    }
@@ -199,7 +199,7 @@ static void BDFPropAddInt(BDFFont *bdf,char *keyword,int value,
       if (i >= bdf->prop_max)
 	 bdf->props =
 	    realloc(bdf->props,
-		    (bdf->prop_max += 10) * sizeof(BDFProperties));
+		    (bdf->prop_max += 10)*sizeof(BDFProperties));
       ++bdf->prop_cnt;
       bdf->props[i].name=fastrdup(keyword);
    }
@@ -241,7 +241,7 @@ static char *AllSame(BDFFont *font,int *avg,int *cnt) {
    if (c==0)
       *avg=0;
    else
-      *avg=(10 * a)/c;
+      *avg=(10*a)/c;
    *cnt=c;
    return (common==-2?"P":cell?"C":"M");
 }
@@ -251,7 +251,7 @@ static void BDFPropAppendString(BDFFont *bdf,char *keyword,char *value) {
 
    if (i >= bdf->prop_max)
       bdf->props =
-	 realloc(bdf->props, (bdf->prop_max += 10) * sizeof(BDFProperties));
+	 realloc(bdf->props, (bdf->prop_max += 10)*sizeof(BDFProperties));
    ++bdf->prop_cnt;
    bdf->props[i].name=fastrdup(keyword);
    if (strcmp(keyword, "COMMENT")==0)
@@ -604,7 +604,7 @@ void XLFD_CreateComponents(BDFFont * font, EncMap * map, int res,
    else
       res=75;
 
-   pnt=((font->pixelsize * 72+res/2)/res) * 10;
+   pnt=((font->pixelsize*72+res/2)/res)*10;
    if (pnt==230 && res==75)
       pnt=240;
 
@@ -755,14 +755,14 @@ void Default_Properties(BDFFont * bdf, EncMap * map, char *onlyme) {
    if (def_ch != -1)
       BDFPropAddInt(bdf, "DEFAULT_CHAR", def_ch, onlyme);
    BDFPropAddInt(bdf, "RAW_ASCENT",
-		 bdf->sf->ascent * 1000/(bdf->sf->ascent +
+		 bdf->sf->ascent*1000/(bdf->sf->ascent +
 					   bdf->sf->descent), onlyme);
    BDFPropAddInt(bdf, "RAW_DESCENT",
-		 bdf->sf->descent * 1000/(bdf->sf->ascent +
+		 bdf->sf->descent*1000/(bdf->sf->ascent +
 					    bdf->sf->descent), onlyme);
    if (bdf->sf->italicangle != 0)
       BDFPropAddInt(bdf, "ITALIC_ANGLE",
-		    (int) ((90+bdf->sf->italicangle) * 64), onlyme);
+		    (int) ((90+bdf->sf->italicangle)*64), onlyme);
 
    if ((gid=SFFindExistingSlot(bdf->sf, ' ', NULL)) != -1
        && bdf->glyphs[gid] != NULL)
@@ -783,7 +783,7 @@ void Default_Properties(BDFFont * bdf, EncMap * map, char *onlyme) {
       /* OS/2 uses values 0-900. XLFD uses 0-90 */
       BDFPropAddInt(bdf, "RELATIVE_WEIGHT", bdf->sf->pfminfo.weight/10,
 		    onlyme);
-      BDFPropAddInt(bdf, "RELATIVE_SETWIDTH", bdf->sf->pfminfo.width * 10,
+      BDFPropAddInt(bdf, "RELATIVE_SETWIDTH", bdf->sf->pfminfo.width*10,
 		    onlyme);
    }
    if (bdf->sf->pfminfo.subsuper_set) {
@@ -847,10 +847,10 @@ void Default_Properties(BDFFont * bdf, EncMap * map, char *onlyme) {
 	    }
 	 }
       if (lc_cnt != 0)
-	 BDFPropAddInt(bdf, "AVG_LOWERCASE_WIDTH", lc_sum * 10/lc_cnt,
+	 BDFPropAddInt(bdf, "AVG_LOWERCASE_WIDTH", lc_sum*10/lc_cnt,
 		       onlyme);
       if (uc_cnt != 0)
-	 BDFPropAddInt(bdf, "AVG_UPPERCASE_WIDTH", uc_sum * 10/uc_cnt,
+	 BDFPropAddInt(bdf, "AVG_UPPERCASE_WIDTH", uc_sum*10/uc_cnt,
 		       onlyme);
    }
 
@@ -916,7 +916,7 @@ BDFChar *BDFMakeGID(BDFFont * bdf, int gid) {
       if (gid >= bdf->glyphmax)
 	 bdf->glyphs =
 	    realloc(bdf->glyphs,
-		    (bdf->glyphmax=sf->glyphmax) * sizeof(BDFChar *));
+		    (bdf->glyphmax=sf->glyphmax)*sizeof(BDFChar *));
       for (i=bdf->glyphcnt; i <= gid; ++i)
 	 bdf->glyphs[i]=NULL;
       bdf->glyphcnt=sf->glyphcnt;

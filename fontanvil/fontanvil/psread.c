@@ -1,4 +1,4 @@
-/* $Id: psread.c 4525 2015-12-20 19:51:59Z mskala $ */
+/* $Id: psread.c 4532 2015-12-22 13:18:53Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -70,7 +70,7 @@ static void AddTok(GrowBuf *gb,char *buf,int islit) {
 static struct pskeyval *lookup(struct pskeydict *dict,char *tokbuf) {
    int i;
 
-   for (i=0; i < dict->cnt; ++i)
+   for (i=0; i<dict->cnt; ++i)
       if (strcmp(dict->entries[i].key, tokbuf)==0)
 	 return (&dict->entries[i]);
 
@@ -80,7 +80,7 @@ static struct pskeyval *lookup(struct pskeydict *dict,char *tokbuf) {
 static void dictfree(struct pskeydict *dict) {
    int i;
 
-   for (i=0; i < dict->cnt; ++i) {
+   for (i=0; i<dict->cnt; ++i) {
       if (dict->entries[i].type==ps_string
 	  || dict->entries[i].type==ps_instr
 	  || dict->entries[i].type==ps_lit)
@@ -97,8 +97,8 @@ static void garbagefree(struct garbage *all) {
 
    for (junk=all; junk != NULL; junk=next) {
       next=junk->next;
-      for (j=0; j < junk->cnt; ++j) {
-	 for (i=0; i < junk->cnts[j]; ++i) {
+      for (j=0; j<junk->cnt; ++j) {
+	 for (i=0; i<junk->cnts[j]; ++i) {
 	    if (junk->entries[j][i].type==ps_string
 		|| junk->entries[j][i].type==ps_instr
 		|| junk->entries[j][i].type==ps_lit)
@@ -225,22 +225,22 @@ static int getfoghex(_IO *io) {
 
    while (isspace(ch=agetc(io->fog)));
    if (isdigit(ch))
-      val=ch - '0';
+      val=ch-'0';
    else if (ch >= 'A' && ch <= 'F')
-      val=ch - 'A' + 10;
+      val=ch-'A'+10;
    else if (ch >= 'a' && ch <= 'f')
-      val=ch - 'a' + 10;
+      val=ch-'a'+10;
    else
       return (EOF);
 
    val <<= 4;
    while (isspace(ch=agetc(io->fog)));
    if (isdigit(ch))
-      val |= ch - '0';
+      val |= ch-'0';
    else if (ch >= 'A' && ch <= 'F')
-      val |= ch - 'A' + 10;
+      val |= ch-'A'+10;
    else if (ch >= 'a' && ch <= 'f')
-      val |= ch - 'a' + 10;
+      val |= ch-'a'+10;
    else
       return (EOF);
 
@@ -272,22 +272,22 @@ static int nextch(IO *wrapper) {
 	    return (*(io->macro++));
 	 ch=getfoghex(io);
 	 if (ch >= 233) {
-	    io->macro=foguvec[ch - 233];
+	    io->macro=foguvec[ch-233];
 	    return (*(io->macro++));
-	 } else if (ch != EOF && ch < 200) {
-	    sprintf(io->fogbuf, "%d ", ch - 100);
+	 } else if (ch != EOF && ch<200) {
+	    sprintf(io->fogbuf, "%d ", ch-100);
 	    io->macro=io->fogbuf;
 	    return (*(io->macro++));
 	 } else if (ch != EOF) {
-	    sprintf(io->fogbuf, "%d %s ", ch - 233 + 17, io->fogns
-		    ? "2 exch exp 3 1 roll 100 mul add mul" : "100 mul add");
+	    sprintf(io->fogbuf, "%d %s ", ch-233+17, io->fogns
+		   ?"2 exch exp 3 1 roll 100 mul add mul":"100 mul add");
 	    io->macro=io->fogbuf;
 	    return (*(io->macro++));
 	 }
       } else {
 	 if ((ch=*(io->macro++)) != '\0')
 	    return (ch);
-	 if (--io->cnt > 0) {
+	 if (--io->cnt>0) {
 	    io->macro=io->start;
 	    return (nextch(wrapper));
 	 }
@@ -382,7 +382,7 @@ static int ioescapestopped(IO *wrapper,struct psstack *stack,int sp,
       free(io);
       if (wasstopped) {
 	 wrapper->top=iop;
-	 if (sp < (int) bsize) {
+	 if (sp<(int) bsize) {
 	    stack[sp].type=ps_bool;
 	    stack[sp++].u.tf=true;
 	 }
@@ -423,7 +423,7 @@ static int CheckCodePointsComment(IO *wrapper) {
    pt=commentbuffer;
    while ((ch=nextch(wrapper)) != EOF && ch != '\r' && ch != '\n'
 	  && ch != '\f') {
-      if (pt - commentbuffer < sizeof(commentbuffer) - 1)
+      if (pt-commentbuffer<sizeof(commentbuffer)-1)
 	 *pt++=ch;
    }
    *pt='\0';
@@ -439,7 +439,7 @@ static int nextpstoken(IO *wrapper,double *val,char *tokbuf,int tbsize) {
    float mf2pt_advance_width;
 
    pt=tokbuf;
-   end=pt + tbsize - 1;
+   end=pt+tbsize-1;
 
    /* Eat whitespace and comments. Comments last to eol (or formfeed) */
    while (1) {
@@ -448,7 +448,7 @@ static int nextpstoken(IO *wrapper,double *val,char *tokbuf,int tbsize) {
 	 break;
       while ((ch=nextch(wrapper)) != EOF && ch != '\r' && ch != '\n'
 	     && ch != '\f')
-	 if (pt < end)
+	 if (pt<end)
 	    *pt++=ch;
       *pt='\0';
       /* Some comments have meanings (that we care about) */
@@ -467,7 +467,7 @@ static int nextpstoken(IO *wrapper,double *val,char *tokbuf,int tbsize) {
       return (pt_eof);
 
    pt=tokbuf;
-   end=pt + tbsize - 1;
+   end=pt+tbsize-1;
    *pt++=ch;
    *pt='\0';
 
@@ -475,7 +475,7 @@ static int nextpstoken(IO *wrapper,double *val,char *tokbuf,int tbsize) {
       int nest=1, quote=0;
 
       while ((ch=nextch(wrapper)) != EOF) {
-	 if (pt < end)
+	 if (pt<end)
 	    *pt++=ch;
 	 if (quote)
 	    quote=0;
@@ -491,19 +491,19 @@ static int nextpstoken(IO *wrapper,double *val,char *tokbuf,int tbsize) {
       return (pt_string);
    } else if (ch=='<') {
       ch=nextch(wrapper);
-      if (pt < end)
+      if (pt<end)
 	 *pt++=ch;
       if (ch=='>')
 	 /* Done */ ;
       else if (ch != '~') {
 	 while ((ch=nextch(wrapper)) != EOF && ch != '>')
-	    if (pt < end)
+	    if (pt<end)
 	       *pt++=ch;
       } else {
 	 int twiddle=0;
 
 	 while ((ch=nextch(wrapper)) != EOF) {
-	    if (pt < end)
+	    if (pt<end)
 	       *pt++=ch;
 	    if (ch=='~')
 	       twiddle=1;
@@ -532,7 +532,7 @@ static int nextpstoken(IO *wrapper,double *val,char *tokbuf,int tbsize) {
       while ((ch=nextch(wrapper)) != EOF && !isspace(ch) && ch != '%' &&
 	     ch != '(' && ch != ')' && ch != '<' && ch != '>' && ch != '['
 	     && ch != ']' && ch != '{' && ch != '}' && ch != '/')
-	 if (pt < tokbuf + tbsize - 2)
+	 if (pt<tokbuf+tbsize-2)
 	    *pt++=ch;
       *pt='\0';
       unnextch(ch, wrapper);
@@ -541,7 +541,7 @@ static int nextpstoken(IO *wrapper,double *val,char *tokbuf,int tbsize) {
       while ((ch=nextch(wrapper)) != EOF && !isspace(ch) && ch != '%' &&
 	     ch != '(' && ch != ')' && ch != '<' && ch != '>' && ch != '['
 	     && ch != ']' && ch != '{' && ch != '}' && ch != '/') {
-	 if (pt < tokbuf + tbsize - 2)
+	 if (pt<tokbuf+tbsize-2)
 	    *pt++=ch;
       }
       *pt='\0';
@@ -552,7 +552,7 @@ static int nextpstoken(IO *wrapper,double *val,char *tokbuf,int tbsize) {
 	 *val=r;
 	 return (pt_number);
       } else if (*pt=='#') {
-	 r=strtol(pt + 1, &end, r);
+	 r=strtol(pt+1, &end, r);
 	 if (*end=='\0') {	/* It's a radix integer */
 	    *val=r;
 	    return (pt_number);
@@ -578,35 +578,35 @@ static int nextpstoken(IO *wrapper,double *val,char *tokbuf,int tbsize) {
 }
 
 static void Transform(BasePoint *to,DBasePoint *from,double trans[6]) {
-   to->x=trans[0] * from->x + trans[2] * from->y + trans[4];
-   to->y=trans[1] * from->x + trans[3] * from->y + trans[5];
+   to->x=trans[0] * from->x+trans[2] * from->y+trans[4];
+   to->y=trans[1] * from->x+trans[3] * from->y+trans[5];
 }
 
 void MatMultiply(double m1[6], double m2[6], double to[6]) {
    double trans[6];
 
-   trans[0]=m1[0] * m2[0] + m1[1] * m2[2];
-   trans[1]=m1[0] * m2[1] + m1[1] * m2[3];
-   trans[2]=m1[2] * m2[0] + m1[3] * m2[2];
-   trans[3]=m1[2] * m2[1] + m1[3] * m2[3];
-   trans[4]=m1[4] * m2[0] + m1[5] * m2[2] + m2[4];
-   trans[5]=m1[4] * m2[1] + m1[5] * m2[3] + m2[5];
+   trans[0]=m1[0] * m2[0]+m1[1] * m2[2];
+   trans[1]=m1[0] * m2[1]+m1[1] * m2[3];
+   trans[2]=m1[2] * m2[0]+m1[3] * m2[2];
+   trans[3]=m1[2] * m2[1]+m1[3] * m2[3];
+   trans[4]=m1[4] * m2[0]+m1[5] * m2[2]+m2[4];
+   trans[5]=m1[4] * m2[1]+m1[5] * m2[3]+m2[5];
    memcpy(to, trans, sizeof(trans));
 }
 
 void MatInverse(double into[6], double orig[6]) {
-   double det=orig[0] * orig[3] - orig[1] * orig[2];
+   double det=orig[0] * orig[3]-orig[1] * orig[2];
 
    if (det==0) {
       ErrorMsg(2,"Attempt to invert a singular matrix\n");
       memset(into, 0, sizeof(*into));
    } else {
-      into[0]=orig[3] / det;
-      into[1]=-orig[1] / det;
-      into[2]=-orig[2] / det;
-      into[3]=orig[0] / det;
-      into[4]=-orig[4] * into[0] - orig[5] * into[2];
-      into[5]=-orig[4] * into[1] - orig[5] * into[3];
+      into[0]=orig[3]/det;
+      into[1]=-orig[1]/det;
+      into[2]=-orig[2]/det;
+      into[3]=orig[0]/det;
+      into[4]=-orig[4] * into[0]-orig[5] * into[2];
+      into[5]=-orig[4] * into[1]-orig[5] * into[3];
    }
 }
 
@@ -638,31 +638,31 @@ static int AddEntry(struct pskeydict *dict,struct psstack *stack,int sp) {
 	    realloc(dict->entries, dict->max * sizeof(struct pskeyval));
       }
    }
-   if (sp < 2)
+   if (sp<2)
       return (sp);
-   if (stack[sp - 2].type != ps_string && stack[sp - 2].type != ps_lit) {
+   if (stack[sp-2].type != ps_string && stack[sp-2].type != ps_lit) {
 /* GT: Here "def" is a PostScript keyword, (meaning define). */
 /* GT: This "def" should not be translated as it is part of the PostScript language. */
       ErrorMsg(2,"Key for a def must be a string or name literal\n");
-      return (sp - 2);
+      return (sp-2);
    }
-   for (i=0; i < dict->cnt; ++i)
-      if (strcmp(dict->entries[i].key, stack[sp - 2].u.str)==0)
+   for (i=0; i<dict->cnt; ++i)
+      if (strcmp(dict->entries[i].key, stack[sp-2].u.str)==0)
 	 break;
    if (i != dict->cnt) {
-      free(stack[sp - 2].u.str);
+      free(stack[sp-2].u.str);
       if (dict->entries[i].type==ps_string
 	  || dict->entries[i].type==ps_instr
 	  || dict->entries[i].type==ps_lit)
 	 free(dict->entries[i].u.str);
    } else {
       memset(&dict->entries[i], '\0', sizeof(struct pskeyval));
-      dict->entries[i].key=stack[sp - 2].u.str;
+      dict->entries[i].key=stack[sp-2].u.str;
       ++dict->cnt;
    }
-   dict->entries[i].type=stack[sp - 1].type;
-   dict->entries[i].u=stack[sp - 1].u;
-   return (sp - 2);
+   dict->entries[i].type=stack[sp-1].type;
+   dict->entries[i].u=stack[sp-1].u;
+   return (sp-2);
 }
 
 static int forgetstack(struct psstack *stack,int forgets,int sp) {
@@ -671,35 +671,35 @@ static int forgetstack(struct psstack *stack,int forgets,int sp) {
    /*  don't understand all of PS */
    int i;
 
-   for (i=0; i < forgets; ++i) {
+   for (i=0; i<forgets; ++i) {
       if (stack[i].type==ps_string || stack[i].type==ps_instr ||
 	  stack[i].type==ps_lit)
 	 free(stack[i].u.str);
       else if (stack[i].type==ps_array || stack[i].type==ps_dict)
 	 dictfree(&stack[i].u.dict);
    }
-   for (i=forgets; i < sp; ++i)
-      stack[i - forgets]=stack[i];
-   return (sp - forgets);
+   for (i=forgets; i<sp; ++i)
+      stack[i-forgets]=stack[i];
+   return (sp-forgets);
 }
 
 static int rollstack(struct psstack *stack,int sp) {
    int n, j, i;
    struct psstack *temp;
 
-   if (sp > 1) {
-      n=stack[sp - 2].u.val;
-      j=stack[sp - 1].u.val;
+   if (sp>1) {
+      n=stack[sp-2].u.val;
+      j=stack[sp-1].u.val;
       sp -= 2;
-      if (sp >= n && n > 0) {
+      if (sp >= n && n>0) {
 	 j %= n;
-	 if (j < 0)
+	 if (j<0)
 	    j += n;
 	 temp=malloc(n * sizeof(struct psstack));
-	 for (i=0; i < n; ++i)
-	    temp[i]=stack[sp - n + i];
-	 for (i=0; i < n; ++i)
-	    stack[sp - n + (i + j) % n]=temp[i];
+	 for (i=0; i<n; ++i)
+	    temp[i]=stack[sp-n+i];
+	 for (i=0; i<n; ++i)
+	    stack[sp-n+(i+j)%n]=temp[i];
 	 free(temp);
       }
    }
@@ -707,14 +707,14 @@ static int rollstack(struct psstack *stack,int sp) {
 }
 
 static void CheckMakeB(BasePoint *test,BasePoint *good) {
-   if (!isfinite(test->x) || test->x > 100000 || test->x < -100000) {
+   if (!isfinite(test->x) || test->x>100000 || test->x<-100000) {
       ErrorMsg(2,"Value out of bounds in spline.\n");
       if (good != NULL)
 	 test->x=good->x;
       else
 	 test->x=0;
    }
-   if (!isfinite(test->y) || test->y > 100000 || test->y < -100000) {
+   if (!isfinite(test->y) || test->y>100000 || test->y<-100000) {
       ErrorMsg(2,"Value out of bounds in spline.\n");
       if (good != NULL)
 	 test->y=good->y;
@@ -741,32 +741,32 @@ static void circlearcto(double a1,double a2,double cx,double cy,double r,
    if (a1==a2)
       return;
 
-   cplen=(a2 - a1) / 90 * r * .552;
-   a1 *= M_PI / 180;
-   a2 *= M_PI / 180;
+   cplen=(a2-a1)/90*r * .552;
+   a1 *= M_PI/180;
+   a2 *= M_PI/180;
    s1=sin(a1);
    s2=sin(a2);
    c1=cos(a1);
    c2=cos(a2);
-   temp.x=cx + r * c2;
-   temp.y=cy + r * s2;
-   base.x=cx + r * c1;
-   base.y=cy + r * s1;
+   temp.x=cx+r * c2;
+   temp.y=cy+r * s2;
+   base.x=cx+r * c1;
+   base.y=cy+r * s1;
    pt=chunkalloc(sizeof(SplinePoint));
    Transform(&pt->me, &temp, transform);
-   cp.x=temp.x - cplen * s2;
-   cp.y=temp.y + cplen * c2;
-   if ((cp.x - base.x) * (cp.x - base.x) + (cp.y - base.y) * (cp.y - base.y) >
-       (temp.x - base.x) * (temp.x - base.x) + (temp.y - base.y) * (temp.y -
+   cp.x=temp.x-cplen * s2;
+   cp.y=temp.y+cplen * c2;
+   if ((cp.x-base.x)*(cp.x-base.x)+(cp.y-base.y)*(cp.y-base.y) >
+       (temp.x-base.x)*(temp.x-base.x)+(temp.y-base.y)*(temp.y -
 								    base.y)) {
       sign=-1;
-      cp.x=temp.x + cplen * s2;
-      cp.y=temp.y - cplen * c2;
+      cp.x=temp.x+cplen * s2;
+      cp.y=temp.y-cplen * c2;
    }
    Transform(&pt->prevcp, &cp, transform);
    pt->nonextcp=true;
-   cp.x=base.x + sign * cplen * s1;
-   cp.y=base.y - sign * cplen * c1;
+   cp.x=base.x+sign * cplen * s1;
+   cp.y=base.y-sign * cplen * c1;
    Transform(&cur->last->nextcp, &cp, transform);
    cur->last->nonextcp=false;
    CheckMake(cur->last, pt);
@@ -779,32 +779,32 @@ static void circlearcsto(double a1,double a2,double cx,double cy,double r,
    int a;
    double last;
 
-   while (a1 < 0) {
+   while (a1<0) {
       a1 += 360;
       a2 += 360;
    }
-   while (a2 - a1 <= -360)
+   while (a2-a1 <= -360)
       a2 += 360;
-   while (a1 > 360) {
+   while (a1>360) {
       a1 -= 360;
       a2 -= 360;
    }
-   while (a2 - a1 > 360)
+   while (a2-a1>360)
       a2 -= 360;
    if (!clockwise) {
-      if (a1 > a2)
+      if (a1>a2)
 	 a2 += 360;
       last=a1;
-      for (a=((int) (a1 + 90) / 90) * 90; a < a2; a += 90) {
+      for (a=((int) (a1+90)/90)*90; a<a2; a += 90) {
 	 circlearcto(last, a, cx, cy, r, cur, transform);
 	 last=a;
       }
       circlearcto(last, a2, cx, cy, r, cur, transform);
    } else {
-      if (a2 > a1)
+      if (a2>a1)
 	 a1 += 360;
       last=a1;
-      for (a=((int) (a1 - 90) / 90) * 90 + 90; a > a2; a -= 90) {
+      for (a=((int) (a1-90)/90)*90+90; a>a2; a -= 90) {
 	 circlearcto(last, a, cx, cy, r, cur, transform);
 	 last=a;
       }
@@ -835,7 +835,7 @@ static void copyarray(struct pskeydict *to,struct pskeydict *from,
 
    *to=*from;
    to->entries=calloc(to->cnt, sizeof(struct pskeyval));
-   for (i=0; i < to->cnt; ++i) {
+   for (i=0; i<to->cnt; ++i) {
       to->entries[i]=oldent[i];
       if (to->entries[i].type==ps_string || to->entries[i].type==ps_instr
 	  || to->entries[i].type==ps_lit)
@@ -851,13 +851,13 @@ static int aload(int sp,struct psstack *stack,int stacktop,
 		 struct garbage *tofrees) {
    int i;
 
-   if (sp >= 1 && stack[sp - 1].type==ps_array) {
+   if (sp >= 1 && stack[sp-1].type==ps_array) {
       struct pskeydict dict;
 
       --sp;
       dict=stack[sp].u.dict;
-      for (i=0; i < dict.cnt; ++i) {
-	 if (sp < stacktop) {
+      for (i=0; i<dict.cnt; ++i) {
+	 if (sp<stacktop) {
 	    stack[sp].type=dict.entries[i].type;
 	    stack[sp].u=dict.entries[i].u;
 	    if (stack[sp].type==ps_string || stack[sp].type==ps_instr ||
@@ -870,7 +870,7 @@ static int aload(int sp,struct psstack *stack,int stacktop,
 	    ++sp;
 	 }
       }
-      if (sp < sizeof(stack) / sizeof(stack[0])) {
+      if (sp<sizeof(stack)/sizeof(stack[0])) {
 	 stack[sp].type=ps_array;
 	 stack[sp].u.dict=dict;
 	 ++sp;
@@ -883,22 +883,22 @@ static void printarray(struct pskeydict *dict) {
    int i;
 
    printf("[");
-   for (i=0; i < dict->cnt; ++i) {
+   for (i=0; i<dict->cnt; ++i) {
       switch (dict->entries[i].type) {
 	case ps_num:
 	   printf("%g", (double) dict->entries[i].u.val);
 	   break;
 	case ps_bool:
-	   printf("%s", dict->entries[i].u.tf ? "true" : "false");
+	   printf("%s", dict->entries[i].u.tf?"true":"false");
 	   break;
 	case ps_string:
 	case ps_instr:
 	case ps_lit:
-	   printf(dict->entries[i].type==ps_lit ? "/" :
-		  dict->entries[i].type==ps_string ? "(" : "{");
+	   printf(dict->entries[i].type==ps_lit?"/" :
+		  dict->entries[i].type==ps_string?"(":"{");
 	   printf("%s", dict->entries[i].u.str);
-	   printf(dict->entries[i].type==ps_lit ? "" :
-		  dict->entries[i].type==ps_string ? ")" : "}");
+	   printf(dict->entries[i].type==ps_lit?"" :
+		  dict->entries[i].type==ps_string?")":"}");
 	   break;
 	case ps_array:
 	   printarray(&dict->entries[i].u.dict);
@@ -920,7 +920,7 @@ static void freestuff(struct psstack *stack,int sp,struct pskeydict *dict,
    int i;
 
    free(gb->base);
-   for (i=0; i < dict->cnt; ++i) {
+   for (i=0; i<dict->cnt; ++i) {
       if (dict->entries[i].type==ps_string
 	  || dict->entries[i].type==ps_instr
 	  || dict->entries[i].type==ps_lit)
@@ -928,7 +928,7 @@ static void freestuff(struct psstack *stack,int sp,struct pskeydict *dict,
       free(dict->entries[i].key);
    }
    free(dict->entries);
-   for (i=0; i < sp; ++i) {
+   for (i=0; i<sp; ++i) {
       if (stack[i].type==ps_string || stack[i].type==ps_instr ||
 	  stack[i].type==ps_lit)
 	 free(stack[i].u.str);
@@ -939,9 +939,9 @@ static void freestuff(struct psstack *stack,int sp,struct pskeydict *dict,
 static void DoMatTransform(int tok,int sp,struct psstack *stack) {
    double invt[6], t[6];
 
-   if (stack[sp - 1].u.dict.cnt==6
-       && stack[sp - 1].u.dict.entries[0].type==ps_num) {
-      double x=stack[sp - 3].u.val, y=stack[sp - 2].u.val;
+   if (stack[sp-1].u.dict.cnt==6
+       && stack[sp-1].u.dict.entries[0].type==ps_num) {
+      double x=stack[sp-3].u.val, y=stack[sp-2].u.val;
 
       --sp;
       t[5]=stack[sp].u.dict.entries[5].u.val;
@@ -955,11 +955,11 @@ static void DoMatTransform(int tok,int sp,struct psstack *stack) {
 	 MatInverse(invt, t);
 	 memcpy(t, invt, sizeof(t));
       }
-      stack[sp - 2].u.val=t[0] * x + t[1] * y;
-      stack[sp - 1].u.val=t[2] * x + t[3] * y;
+      stack[sp-2].u.val=t[0] * x+t[1] * y;
+      stack[sp-1].u.val=t[2] * x+t[3] * y;
       if (tok==pt_transform || tok==pt_itransform) {
-	 stack[sp - 2].u.val += t[4];
-	 stack[sp - 1].u.val += t[5];
+	 stack[sp-2].u.val += t[4];
+	 stack[sp-1].u.val += t[5];
       }
    }
 }
@@ -968,32 +968,32 @@ static int DoMatOp(int tok,int sp,struct psstack *stack) {
    double temp[6], t[6];
    int nsp=sp;
 
-   if (stack[sp - 1].u.dict.cnt==6
-       && stack[sp - 1].u.dict.entries[0].type==ps_num) {
-      t[5]=stack[sp - 1].u.dict.entries[5].u.val;
-      t[4]=stack[sp - 1].u.dict.entries[4].u.val;
-      t[3]=stack[sp - 1].u.dict.entries[3].u.val;
-      t[2]=stack[sp - 1].u.dict.entries[2].u.val;
-      t[1]=stack[sp - 1].u.dict.entries[1].u.val;
-      t[0]=stack[sp - 1].u.dict.entries[0].u.val;
+   if (stack[sp-1].u.dict.cnt==6
+       && stack[sp-1].u.dict.entries[0].type==ps_num) {
+      t[5]=stack[sp-1].u.dict.entries[5].u.val;
+      t[4]=stack[sp-1].u.dict.entries[4].u.val;
+      t[3]=stack[sp-1].u.dict.entries[3].u.val;
+      t[2]=stack[sp-1].u.dict.entries[2].u.val;
+      t[1]=stack[sp-1].u.dict.entries[1].u.val;
+      t[0]=stack[sp-1].u.dict.entries[0].u.val;
       switch (tok) {
 	case pt_translate:
 	   if (sp >= 3) {
-	      stack[sp - 1].u.dict.entries[5].u.val +=
-		 stack[sp - 3].u.val * t[0] + stack[sp - 2].u.val * t[2];
-	      stack[sp - 1].u.dict.entries[4].u.val +=
-		 stack[sp - 3].u.val * t[1] + stack[sp - 2].u.val * t[3];
-	      nsp=sp - 2;
+	      stack[sp-1].u.dict.entries[5].u.val +=
+		 stack[sp-3].u.val * t[0]+stack[sp-2].u.val * t[2];
+	      stack[sp-1].u.dict.entries[4].u.val +=
+		 stack[sp-3].u.val * t[1]+stack[sp-2].u.val * t[3];
+	      nsp=sp-2;
 	   }
 	   break;
 	case pt_scale:
 	   if (sp >= 2) {
-	      stack[sp - 1].u.dict.entries[0].u.val *= stack[sp - 3].u.val;
-	      stack[sp - 1].u.dict.entries[1].u.val *= stack[sp - 3].u.val;
-	      stack[sp - 1].u.dict.entries[2].u.val *= stack[sp - 2].u.val;
-	      stack[sp - 1].u.dict.entries[3].u.val *= stack[sp - 2].u.val;
+	      stack[sp-1].u.dict.entries[0].u.val *= stack[sp-3].u.val;
+	      stack[sp-1].u.dict.entries[1].u.val *= stack[sp-3].u.val;
+	      stack[sp-1].u.dict.entries[2].u.val *= stack[sp-2].u.val;
+	      stack[sp-1].u.dict.entries[3].u.val *= stack[sp-2].u.val;
 	      /* transform[4,5] are unchanged */
-	      nsp=sp - 2;
+	      nsp=sp-2;
 	   }
 	   break;
 	case pt_rotate:
@@ -1004,17 +1004,17 @@ static int DoMatOp(int tok,int sp,struct psstack *stack) {
 	      temp[2]=-temp[1];
 	      temp[4]=temp[5]=0;
 	      MatMultiply(temp, t, t);
-	      stack[sp - 1].u.dict.entries[5].u.val=t[5];
-	      stack[sp - 1].u.dict.entries[4].u.val=t[4];
-	      stack[sp - 1].u.dict.entries[3].u.val=t[3];
-	      stack[sp - 1].u.dict.entries[2].u.val=t[2];
-	      stack[sp - 1].u.dict.entries[1].u.val=t[1];
-	      stack[sp - 1].u.dict.entries[0].u.val=t[0];
-	      nsp=sp - 1;
+	      stack[sp-1].u.dict.entries[5].u.val=t[5];
+	      stack[sp-1].u.dict.entries[4].u.val=t[4];
+	      stack[sp-1].u.dict.entries[3].u.val=t[3];
+	      stack[sp-1].u.dict.entries[2].u.val=t[2];
+	      stack[sp-1].u.dict.entries[1].u.val=t[1];
+	      stack[sp-1].u.dict.entries[0].u.val=t[0];
+	      nsp=sp-1;
 	   }
 	   break;
       }
-      stack[nsp - 1]=stack[sp - 1];
+      stack[nsp-1]=stack[sp-1];
    }
    return (nsp);
 }
@@ -1034,7 +1034,7 @@ static Entity *EntityCreate(SplinePointList *head,int linecap,int linejoin,
    ent->u.splines.fill.opacity=1.0;
    ent->u.splines.stroke.opacity=1.0;
    ent->clippath=SplinePointListCopy(clippath);
-   memcpy(ent->u.splines.transform, transform, 6 * sizeof(double));
+   memcpy(ent->u.splines.transform, transform, 6*sizeof(double));
    return (ent);
 }
 
@@ -1057,7 +1057,7 @@ static uint8_t *StringToBytes(struct psstack *stackel,int *len) {
    } else if (stackel->type != pt_string)
       return (NULL);
 
-   upt=base=malloc(65536 + 1);	/* Maximum size of ps string */
+   upt=base=malloc(65536+1);	/* Maximum size of ps string */
 
    if (*pt=='(') {
       /* A conventional string */
@@ -1101,14 +1101,14 @@ static uint8_t *StringToBytes(struct psstack *stackel,int *len) {
 	       *upt++='\f';
 	       ++pt;
 	    } else if (*pt >= '0' && *pt <= '7') {
-	       if (pt[1] < '0' || pt[1] > '7')	/* This isn't really legal postscript */
-		  *upt++=*pt++ - '0';
-	       else if (pt[2] < '0' || pt[2] > '7') {	/* 3 octal digits are required */
-		  *upt++=((*pt - '0') << 3) + (pt[1] - '0');
+	       if (pt[1]<'0' || pt[1]>'7')	/* This isn't really legal postscript */
+		  *upt++=*pt++-'0';
+	       else if (pt[2]<'0' || pt[2]>'7') {	/* 3 octal digits are required */
+		  *upt++=((*pt-'0') << 3)+(pt[1]-'0');
 		  pt += 2;
 	       } else {
 		  *upt++ =
-		     ((*pt - '0') << 6) + ((pt[1] - '0') << 3) + (pt[2] -
+		     ((*pt-'0') << 6)+((pt[1]-'0') << 3)+(pt[2] -
 								  '0');
 		  pt += 3;
 	       }
@@ -1130,11 +1130,11 @@ static uint8_t *StringToBytes(struct psstack *stackel,int *len) {
       ++pt;
       while (*pt != '>' && *pt != '\0') {
 	 if (*pt >= 'a' && *pt <= 'f')
-	    val=*pt++ - 'a' + 10;
+	    val=*pt++-'a'+10;
 	 else if (*pt >= 'A' && *pt <= 'F')
-	    val=*pt++ - 'A' + 10;
+	    val=*pt++-'A'+10;
 	 else if (isdigit(*pt))
-	    val=*pt++ - '0';
+	    val=*pt++-'0';
 	 else {
 	    ++pt;		/* Not hex */
 	    continue;
@@ -1143,7 +1143,7 @@ static uint8_t *StringToBytes(struct psstack *stackel,int *len) {
 	    half=true;
 	    sofar=val << 4;
 	 } else {
-	    *upt++=sofar | val;
+	    *upt++=sofar|val;
 	    half=false;
 	 }
       }
@@ -1155,7 +1155,7 @@ static uint8_t *StringToBytes(struct psstack *stackel,int *len) {
       /* z => 32bits of 0 */
       pt += 2;
       while (*pt != '\0' && *pt != '~') {
-	 if (upt - base + 4 > 65536)
+	 if (upt-base+4>65536)
 	    break;
 	 if (*pt=='z') {
 	    *upt++=0;
@@ -1165,18 +1165,18 @@ static uint8_t *StringToBytes(struct psstack *stackel,int *len) {
 	    ++pt;
 	 } else if (*pt >= '!' && *pt <= 'u') {
 	    val=0;
-	    for (i=0; i < 5 && *pt >= '!' && *pt <= 'u'; ++i)
-	       val=(val * 85) + *pt++ - '!';
-	    for (j=i; j < 5; ++j)
+	    for (i=0; i<5 && *pt >= '!' && *pt <= 'u'; ++i)
+	       val=(val*85)+*pt++-'!';
+	    for (j=i; j<5; ++j)
 	       val *= 85;
 	    *upt++=val >> 24;
-	    if (i > 2)
-	       *upt++=(val >> 16) & 0xff;
-	    if (i > 3)
-	       *upt++=(val >> 8) & 0xff;
-	    if (i > 4)
-	       *upt++=val & 0xff;
-	    if (i < 5)
+	    if (i>2)
+	       *upt++=(val >> 16)&0xff;
+	    if (i>3)
+	       *upt++=(val >> 8)&0xff;
+	    if (i>4)
+	       *upt++=val&0xff;
+	    if (i<5)
 	       break;
 	 } else if (isspace(*pt)) {
 	    ++pt;
@@ -1184,9 +1184,9 @@ static uint8_t *StringToBytes(struct psstack *stackel,int *len) {
 	    break;
       }
    }
-   *len=upt - base;
-   ret=malloc(upt - base);
-   memcpy(ret, base, upt - base);
+   *len=upt-base;
+   ret=malloc(upt-base);
+   memcpy(ret, base, upt-base);
    free(base);
    return (ret);
 }
@@ -1202,74 +1202,74 @@ static int PSAddImagemask(EntityChar *ec,struct psstack *stack,int sp,
    Entity *ent;
    int i, j;
 
-   if (sp < 5
-       || (stack[sp - 1].type != ps_instr
-	   && stack[sp - 1].type != ps_string)) {
+   if (sp<5
+       || (stack[sp-1].type != ps_instr
+	   && stack[sp-1].type != ps_string)) {
       ErrorMsg(2,"FontAnvil does not support dictionary based imagemask operators.\n");
-      return (sp - 1);
+      return (sp-1);
    }
 
-   if (stack[sp - 2].type != ps_array || stack[sp - 2].u.dict.cnt != 6) {
+   if (stack[sp-2].type != ps_array || stack[sp-2].u.dict.cnt != 6) {
       ErrorMsg(2,"Fourth argument of imagemask must be a 6-element transformation matrix.\n");
-      return (sp - 5);
+      return (sp-5);
    }
 
-   if (stack[sp - 3].type != ps_bool) {
+   if (stack[sp-3].type != ps_bool) {
       ErrorMsg(2,"Third argument of imagemask must be a boolean.\n");
-      return (sp - 5);
+      return (sp-5);
    }
-   polarity=stack[sp - 3].u.tf;
+   polarity=stack[sp-3].u.tf;
 
-   if (stack[sp - 4].type != ps_num || stack[sp - 5].type != ps_num) {
+   if (stack[sp-4].type != ps_num || stack[sp-5].type != ps_num) {
       ErrorMsg(2,"First and second arguments of imagemask must be integers.\n");
-      return (sp - 5);
+      return (sp-5);
    }
-   height=stack[sp - 4].u.val;
-   width=stack[sp - 5].u.val;
+   height=stack[sp-4].u.val;
+   width=stack[sp-5].u.val;
 
-   data=StringToBytes(&stack[sp - 1], &datalen);
+   data=StringToBytes(&stack[sp-1], &datalen);
 
-   if (width <= 0 || height <= 0 || ((width + 7) / 8) * height > datalen) {
+   if (width <= 0 || height <= 0 || ((width+7)/8)*height>datalen) {
       ErrorMsg(2,"Width or height arguments to imagemask contain invalid values\n(either negative or they require more data than provided).\n");
       free(data);
-      return (sp - 5);
+      return (sp-5);
    }
-   trans[0]=stack[sp - 2].u.dict.entries[0].u.val;
-   trans[1]=stack[sp - 2].u.dict.entries[1].u.val;
-   trans[2]=stack[sp - 2].u.dict.entries[2].u.val;
-   trans[3]=stack[sp - 2].u.dict.entries[3].u.val;
-   trans[4]=stack[sp - 2].u.dict.entries[4].u.val;
-   trans[5]=stack[sp - 2].u.dict.entries[5].u.val;
+   trans[0]=stack[sp-2].u.dict.entries[0].u.val;
+   trans[1]=stack[sp-2].u.dict.entries[1].u.val;
+   trans[2]=stack[sp-2].u.dict.entries[2].u.val;
+   trans[3]=stack[sp-2].u.dict.entries[3].u.val;
+   trans[4]=stack[sp-2].u.dict.entries[4].u.val;
+   trans[5]=stack[sp-2].u.dict.entries[5].u.val;
 
    gi=GImageCreate(it_mono, width, height);
    base=gi->u.image;
    base->trans=1;
    if (polarity) {
-      for (i=0; i < datalen; ++i)
+      for (i=0; i<datalen; ++i)
 	 data[i] ^= 0xff;
    }
-   if (trans[0] > 0 && trans[3] < 0)
+   if (trans[0]>0 && trans[3]<0)
       memcpy(base->data, data, datalen);
-   else if (trans[0] > 0 && trans[3] > 0) {
-      for (i=0; i < height; ++i)
-	 memcpy(base->data + i * base->bytes_per_line,
-		data + (height - i) * base->bytes_per_line,
+   else if (trans[0]>0 && trans[3]>0) {
+      for (i=0; i<height; ++i)
+	 memcpy(base->data+i * base->bytes_per_line,
+		data+(height-i)*base->bytes_per_line,
 		base->bytes_per_line);
-   } else if (trans[0] < 0 && trans[3] < 0) {
-      for (i=0; i < height; ++i)
-	 for (j=0; j < width; ++j) {
-	    if (data[i * base->bytes_per_line + (j >> 3)] & (0x80 >> (j & 7)))
+   } else if (trans[0]<0 && trans[3]<0) {
+      for (i=0; i<height; ++i)
+	 for (j=0; j<width; ++j) {
+	    if (data[i * base->bytes_per_line+(j >> 3)]&(0x80 >> (j&7)))
 	       base->data[i * base->bytes_per_line +
-			  ((width - j - 1) >> 3)] |=
-		  (0x80 >> ((width - j - 1) & 7));
+			  ((width-j-1) >> 3)] |=
+		  (0x80 >> ((width-j-1)&7));
 	 }
    } else {
-      for (i=0; i < height; ++i)
-	 for (j=0; j < width; ++j) {
-	    if (data[i * base->bytes_per_line + (j >> 3)] & (0x80 >> (j & 7)))
-	       base->data[(height - i - 1) * base->bytes_per_line +
-			  ((width - j - 1) >> 3)] |=
-		  (0x80 >> ((width - j - 1) & 7));
+      for (i=0; i<height; ++i)
+	 for (j=0; j<width; ++j) {
+	    if (data[i * base->bytes_per_line+(j >> 3)]&(0x80 >> (j&7)))
+	       base->data[(height-i-1)*base->bytes_per_line +
+			  ((width-j-1) >> 3)] |=
+		  (0x80 >> ((width-j-1)&7));
 	 }
    }
    free(data);
@@ -1285,7 +1285,7 @@ static int PSAddImagemask(EntityChar *ec,struct psstack *stack,int sp,
 
    ent->next=ec->splines;
    ec->splines=ent;
-   return (sp - 5);
+   return (sp-5);
 }
 
 static void HandleType3Reference(IO *wrapper,EntityChar *ec,
@@ -1356,7 +1356,7 @@ static void _InterpretPS(IO *wrapper,EntityChar *ec,RetStack *rs) {
    struct garbage tofrees;
    SplineSet *clippath=NULL;
    char *tokbuf;
-   const int tokbufsize=2 * 65536 + 10;
+   const int tokbufsize=2*65536+10;
 
    tokbuf=malloc(tokbufsize);
 
@@ -1385,27 +1385,27 @@ static void _InterpretPS(IO *wrapper,EntityChar *ec,RetStack *rs) {
 
    while ((tok=nextpstoken(wrapper, &dval, tokbuf, tokbufsize)) != pt_eof) {
       if (endedstopped(wrapper)) {
-	 if (sp < sizeof(stack) / sizeof(stack[0])) {
+	 if (sp<sizeof(stack)/sizeof(stack[0])) {
 	    stack[sp].type=ps_bool;
 	    stack[sp++].u.tf=false;
 	 }
       }
-      if (sp > sizeof(stack) / sizeof(stack[0]) * 4 / 5) {
+      if (sp>sizeof(stack)/sizeof(stack[0])*4/5) {
 	 /* We don't interpret all of postscript */
 	 /* Sometimes we leave garbage on the stack that a real PS interp */
 	 /*  would have handled. If the stack gets too deep, clean out the */
 	 /*  oldest entries */
-	 sp=forgetstack(stack, sizeof(stack) / sizeof(stack[0]) / 3, sp);
+	 sp=forgetstack(stack, sizeof(stack)/sizeof(stack[0])/3, sp);
       }
-      if (ccnt > 0) {
+      if (ccnt>0) {
 	 if (tok==pt_closecurly)
 	    --ccnt;
 	 else if (tok==pt_opencurly)
 	    ++ccnt;
-	 if (ccnt > 0)
+	 if (ccnt>0)
 	    AddTok(&gb, tokbuf, tok==pt_namelit);
 	 else {
-	    if (sp < sizeof(stack) / sizeof(stack[0])) {
+	    if (sp<sizeof(stack)/sizeof(stack[0])) {
 	       stack[sp].type=ps_instr;
 	       if (gb.pt==NULL)
 		  stack[sp++].u.str=fastrdup("");
@@ -1419,18 +1419,18 @@ static void _InterpretPS(IO *wrapper,EntityChar *ec,RetStack *rs) {
       } else if (tok==pt_unknown && (kv=lookup(&dict, tokbuf)) != NULL) {
 	 if (kv->type==ps_instr)
 	    pushio(wrapper, NULL, fastrdup(kv->u.str), 0);
-	 else if (sp < sizeof(stack) / sizeof(stack[0])) {
+	 else if (sp<sizeof(stack)/sizeof(stack[0])) {
 	    stack[sp].type=kv->type;
 	    stack[sp++].u=kv->u;
 	    if (kv->type==ps_instr || kv->type==ps_lit
 		|| kv->type==ps_string)
-	       stack[sp - 1].u.str=fastrdup(stack[sp - 1].u.str);
+	       stack[sp-1].u.str=fastrdup(stack[sp-1].u.str);
 	    else if (kv->type==ps_array || kv->type==ps_dict) {
-	       copyarray(&stack[sp - 1].u.dict, &stack[sp - 1].u.dict,
+	       copyarray(&stack[sp-1].u.dict, &stack[sp-1].u.dict,
 			 &tofrees);
-	       if (stack[sp - 1].u.dict.is_executable)
+	       if (stack[sp-1].u.dict.is_executable)
 		  sp =
-		     aload(sp, stack, sizeof(stack) / sizeof(stack[0]),
+		     aload(sp, stack, sizeof(stack)/sizeof(stack[0]),
 			   &tofrees);
 	    }
 	 }
@@ -1440,52 +1440,52 @@ static void _InterpretPS(IO *wrapper,EntityChar *ec,RetStack *rs) {
 	       tok=pt_setcachedevice;
 	    else if (strcmp(tokbuf, "SetWid")==0) {
 	       tok=pt_setcharwidth;
-	       if (sp < sizeof(stack) / sizeof(stack[0])) {
+	       if (sp<sizeof(stack)/sizeof(stack[0])) {
 		  stack[sp].type=ps_num;
 		  stack[sp++].u.val=0;
 	       }
 	    } else if (strcmp(tokbuf, "rrcurveto")==0) {
 	       if (sp >= 6) {
-		  stack[sp - 4].u.val += stack[sp - 6].u.val;
-		  stack[sp - 3].u.val += stack[sp - 5].u.val;
-		  stack[sp - 2].u.val += stack[sp - 4].u.val;
-		  stack[sp - 1].u.val += stack[sp - 3].u.val;
+		  stack[sp-4].u.val += stack[sp-6].u.val;
+		  stack[sp-3].u.val += stack[sp-5].u.val;
+		  stack[sp-2].u.val += stack[sp-4].u.val;
+		  stack[sp-1].u.val += stack[sp-3].u.val;
 		  tok=pt_rcurveto;
 	       }
 	    } else if (strcmp(tokbuf, "FillStroke")==0) {
-	       if (sp > 0)
+	       if (sp>0)
 		  --sp;
-	       tok=linewidth != WIDTH_INHERITED ? pt_stroke : pt_fill;
+	       tok=linewidth != WIDTH_INHERITED?pt_stroke:pt_fill;
 	       if (wrapper->top != NULL && wrapper->top->ps != NULL &&
 		   linewidth != WIDTH_INHERITED)
 		  linewidth /= 10.0;	/* bug in Fontographer's unencrypted type3 fonts */
 	    } else if (strcmp(tokbuf, "SG")==0) {
-	       if (linewidth != WIDTH_INHERITED && sp > 1)
-		  stack[sp - 2].u.val=stack[sp - 1].u.val;
-	       if (sp > 0)
+	       if (linewidth != WIDTH_INHERITED && sp>1)
+		  stack[sp-2].u.val=stack[sp-1].u.val;
+	       if (sp>0)
 		  --sp;
-	       if (sp > 0)
-		  stack[sp - 1].u.val=(stack[sp - 1].u.val + 99) / 198.0;
+	       if (sp>0)
+		  stack[sp-1].u.val=(stack[sp-1].u.val+99)/198.0;
 	       tok=pt_setgray;
 	    } else if (strcmp(tokbuf, "ShowInt")==0) {
 	       /* Fontographer reference */
-	       if ((!wrapper->top->fogns && sp > 0
-		    && stack[sp - 1].type==ps_num
-		    && stack[sp - 1].u.val >= 0 && stack[sp - 1].u.val <= 255)
-		   || (wrapper->top->fogns && sp > 6
-		       && stack[sp - 7].type==ps_num
-		       && stack[sp - 7].u.val >= 0
-		       && stack[sp - 7].u.val <= 255)) {
+	       if ((!wrapper->top->fogns && sp>0
+		    && stack[sp-1].type==ps_num
+		    && stack[sp-1].u.val >= 0 && stack[sp-1].u.val <= 255)
+		   || (wrapper->top->fogns && sp>6
+		       && stack[sp-7].type==ps_num
+		       && stack[sp-7].u.val >= 0
+		       && stack[sp-7].u.val <= 255)) {
 		  ref=RefCharCreate();
 		  memcpy(ref->transform, transform, sizeof(ref->transform));
 		  if (wrapper->top->fogns) {
 		     sp -= 6;
-		     t[0]=stack[sp + 0].u.val;
-		     t[1]=stack[sp + 1].u.val;
-		     t[2]=stack[sp + 2].u.val;
-		     t[3]=stack[sp + 3].u.val;
-		     t[4]=stack[sp + 4].u.val;
-		     t[5]=stack[sp + 5].u.val;
+		     t[0]=stack[sp+0].u.val;
+		     t[1]=stack[sp+1].u.val;
+		     t[2]=stack[sp+2].u.val;
+		     t[3]=stack[sp+3].u.val;
+		     t[4]=stack[sp+4].u.val;
+		     t[5]=stack[sp+5].u.val;
 		     MatMultiply(t, ref->transform, ref->transform);
 		     wrapper->top->fogns=false;
 		  }
@@ -1501,20 +1501,20 @@ static void _InterpretPS(IO *wrapper,EntityChar *ec,RetStack *rs) {
 	 }
 	 switch (tok) {
 	   case pt_number:
-	      if (sp < sizeof(stack) / sizeof(stack[0])) {
+	      if (sp<sizeof(stack)/sizeof(stack[0])) {
 		 stack[sp].type=ps_num;
 		 stack[sp++].u.val=dval;
 	      }
 	      break;
 	   case pt_string:
-	      if (sp < sizeof(stack) / sizeof(stack[0])) {
+	      if (sp<sizeof(stack)/sizeof(stack[0])) {
 		 stack[sp].type=ps_string;
-		 stack[sp++].u.str=copyn(tokbuf + 1, strlen(tokbuf) - 2);
+		 stack[sp++].u.str=copyn(tokbuf+1, strlen(tokbuf)-2);
 	      }
 	      break;
 	   case pt_true:
 	   case pt_false:
-	      if (sp < sizeof(stack) / sizeof(stack[0])) {
+	      if (sp<sizeof(stack)/sizeof(stack[0])) {
 		 stack[sp].type=ps_bool;
 		 stack[sp++].u.tf=tok==pt_true;
 	      }
@@ -1524,19 +1524,19 @@ static void _InterpretPS(IO *wrapper,EntityChar *ec,RetStack *rs) {
 	      break;
 	   case pt_closecurly:
 	      --ccnt;
-	      if (ccnt < 0) {
+	      if (ccnt<0) {
 		 goto done;
 	      }
 	      break;
 	   case pt_count:
-	      if (sp < sizeof(stack) / sizeof(stack[0])) {
+	      if (sp<sizeof(stack)/sizeof(stack[0])) {
 		 stack[sp].type=ps_num;
 		 stack[sp].u.val=sp;
 		 ++sp;
 	      }
 	      break;
 	   case pt_pop:
-	      if (sp > 0) {
+	      if (sp>0) {
 		 --sp;
 		 if (stack[sp].type==ps_string || stack[sp].type==ps_instr
 		     || stack[sp].type==ps_lit)
@@ -1547,7 +1547,7 @@ static void _InterpretPS(IO *wrapper,EntityChar *ec,RetStack *rs) {
 	      }
 	      break;
 	   case pt_clear:
-	      while (sp > 0) {
+	      while (sp>0) {
 		 --sp;
 		 if (stack[sp].type==ps_string || stack[sp].type==ps_instr
 		     || stack[sp].type==ps_lit)
@@ -1558,8 +1558,8 @@ static void _InterpretPS(IO *wrapper,EntityChar *ec,RetStack *rs) {
 	      }
 	      break;
 	   case pt_dup:
-	      if (sp > 0 && sp < sizeof(stack) / sizeof(stack[0])) {
-		 stack[sp]=stack[sp - 1];
+	      if (sp>0 && sp<sizeof(stack)/sizeof(stack[0])) {
+		 stack[sp]=stack[sp-1];
 		 if (stack[sp].type==ps_string || stack[sp].type==ps_instr
 		     || stack[sp].type==ps_lit)
 		    stack[sp].u.str=fastrdup(stack[sp].u.str);
@@ -1571,14 +1571,14 @@ static void _InterpretPS(IO *wrapper,EntityChar *ec,RetStack *rs) {
 	      }
 	      break;
 	   case pt_copy:
-	      if (sp > 0) {
+	      if (sp>0) {
 		 int n=stack[--sp].u.val;
 
-		 if (n + sp < sizeof(stack) / sizeof(stack[0])) {
+		 if (n+sp<sizeof(stack)/sizeof(stack[0])) {
 		    int i;
 
-		    for (i=0; i < n; ++i) {
-		       stack[sp]=stack[sp - n];
+		    for (i=0; i<n; ++i) {
+		       stack[sp]=stack[sp-n];
 		       if (stack[sp].type==ps_string
 			   || stack[sp].type==ps_instr
 			   || stack[sp].type==ps_lit)
@@ -1594,22 +1594,22 @@ static void _InterpretPS(IO *wrapper,EntityChar *ec,RetStack *rs) {
 	      }
 	      break;
 	   case pt_exch:
-	      if (sp > 1) {
+	      if (sp>1) {
 		 struct psstack temp;
 
-		 temp=stack[sp - 1];
-		 stack[sp - 1]=stack[sp - 2];
-		 stack[sp - 2]=temp;
+		 temp=stack[sp-1];
+		 stack[sp-1]=stack[sp-2];
+		 stack[sp-2]=temp;
 	      }
 	      break;
 	   case pt_roll:
 	      sp=rollstack(stack, sp);
 	      break;
 	   case pt_index:
-	      if (sp > 0) {
+	      if (sp>0) {
 		 i=stack[--sp].u.val;
-		 if (sp > i && i >= 0) {
-		    stack[sp]=stack[sp - i - 1];
+		 if (sp>i && i >= 0) {
+		    stack[sp]=stack[sp-i-1];
 		    if (stack[sp].type==ps_string
 			|| stack[sp].type==ps_instr
 			|| stack[sp].type==ps_lit)
@@ -1624,135 +1624,135 @@ static void _InterpretPS(IO *wrapper,EntityChar *ec,RetStack *rs) {
 	      }
 	      break;
 	   case pt_add:
-	      if (sp >= 2 && stack[sp - 1].type==ps_num
-		  && stack[sp - 2].type==ps_num) {
-		 stack[sp - 2].u.val += stack[sp - 1].u.val;
+	      if (sp >= 2 && stack[sp-1].type==ps_num
+		  && stack[sp-2].type==ps_num) {
+		 stack[sp-2].u.val += stack[sp-1].u.val;
 		 --sp;
 	      }
 	      break;
 	   case pt_sub:
-	      if (sp >= 2 && stack[sp - 1].type==ps_num
-		  && stack[sp - 2].type==ps_num) {
-		 stack[sp - 2].u.val -= stack[sp - 1].u.val;
+	      if (sp >= 2 && stack[sp-1].type==ps_num
+		  && stack[sp-2].type==ps_num) {
+		 stack[sp-2].u.val -= stack[sp-1].u.val;
 		 --sp;
 	      }
 	      break;
 	   case pt_mul:
-	      if (sp >= 2 && stack[sp - 1].type==ps_num
-		  && stack[sp - 2].type==ps_num) {
-		 stack[sp - 2].u.val *= stack[sp - 1].u.val;
+	      if (sp >= 2 && stack[sp-1].type==ps_num
+		  && stack[sp-2].type==ps_num) {
+		 stack[sp-2].u.val *= stack[sp-1].u.val;
 		 --sp;
 	      }
 	      break;
 	   case pt_div:
-	      if (sp >= 2 && stack[sp - 1].type==ps_num
-		  && stack[sp - 2].type==ps_num) {
-		 if (stack[sp - 1].u.val==0)
+	      if (sp >= 2 && stack[sp-1].type==ps_num
+		  && stack[sp-2].type==ps_num) {
+		 if (stack[sp-1].u.val==0)
 		    ErrorMsg(2,"Divide by zero in postscript code.\n");
 		 else
-		    stack[sp - 2].u.val /= stack[sp - 1].u.val;
+		    stack[sp-2].u.val /= stack[sp-1].u.val;
 		 --sp;
 	      }
 	      break;
 	   case pt_idiv:
-	      if (sp >= 2 && stack[sp - 1].type==ps_num
-		  && stack[sp - 2].type==ps_num) {
-		 if (stack[sp - 1].u.val==0)
+	      if (sp >= 2 && stack[sp-1].type==ps_num
+		  && stack[sp-2].type==ps_num) {
+		 if (stack[sp-1].u.val==0)
 		    ErrorMsg(2,"Divide by zero in postscript code.\n");
 		 else
-		    stack[sp - 2].u.val =
-		       ((int) stack[sp - 2].u.val) /
-		       ((int) stack[sp - 1].u.val);
+		    stack[sp-2].u.val =
+		       ((int) stack[sp-2].u.val) /
+		       ((int) stack[sp-1].u.val);
 		 --sp;
 	      }
 	      break;
 	   case pt_mod:
-	      if (sp >= 2 && stack[sp - 1].type==ps_num
-		  && stack[sp - 2].type==ps_num) {
-		 if (stack[sp - 1].u.val==0)
+	      if (sp >= 2 && stack[sp-1].type==ps_num
+		  && stack[sp-2].type==ps_num) {
+		 if (stack[sp-1].u.val==0)
 		    ErrorMsg(2,"Divide by zero in postscript code.\n");
 		 else
-		    stack[sp - 2].u.val =
-		       ((int) stack[sp - 2].u.val) %
-		       ((int) stack[sp - 1].u.val);
+		    stack[sp-2].u.val =
+		       ((int) stack[sp-2].u.val) %
+		       ((int) stack[sp-1].u.val);
 		 --sp;
 	      }
 	      break;
 	   case pt_max:
-	      if (sp >= 2 && stack[sp - 1].type==ps_num
-		  && stack[sp - 2].type==ps_num) {
-		 if (stack[sp - 2].u.val < stack[sp - 1].u.val)
-		    stack[sp - 2].u.val=stack[sp - 1].u.val;
+	      if (sp >= 2 && stack[sp-1].type==ps_num
+		  && stack[sp-2].type==ps_num) {
+		 if (stack[sp-2].u.val<stack[sp-1].u.val)
+		    stack[sp-2].u.val=stack[sp-1].u.val;
 		 --sp;
 	      }
 	      break;
 	   case pt_min:
-	      if (sp >= 2 && stack[sp - 1].type==ps_num
-		  && stack[sp - 2].type==ps_num) {
-		 if (stack[sp - 2].u.val > stack[sp - 1].u.val)
-		    stack[sp - 2].u.val=stack[sp - 1].u.val;
+	      if (sp >= 2 && stack[sp-1].type==ps_num
+		  && stack[sp-2].type==ps_num) {
+		 if (stack[sp-2].u.val>stack[sp-1].u.val)
+		    stack[sp-2].u.val=stack[sp-1].u.val;
 		 --sp;
 	      }
 	      break;
 	   case pt_neg:
 	      if (sp >= 1) {
-		 if (stack[sp - 1].type==ps_num)
-		    stack[sp - 1].u.val=-stack[sp - 1].u.val;
+		 if (stack[sp-1].type==ps_num)
+		    stack[sp-1].u.val=-stack[sp-1].u.val;
 	      }
 	      break;
 	   case pt_abs:
 	      if (sp >= 1) {
-		 if (stack[sp - 1].type==ps_num)
-		    if (stack[sp - 1].u.val < 0)
-		       stack[sp - 1].u.val=-stack[sp - 1].u.val;
+		 if (stack[sp-1].type==ps_num)
+		    if (stack[sp-1].u.val<0)
+		       stack[sp-1].u.val=-stack[sp-1].u.val;
 	      }
 	      break;
 	   case pt_round:
 	      if (sp >= 1) {
-		 if (stack[sp - 1].type==ps_num)
-		    stack[sp - 1].u.val=rint(stack[sp - 1].u.val);
+		 if (stack[sp-1].type==ps_num)
+		    stack[sp-1].u.val=rint(stack[sp-1].u.val);
 		 /* rint isn't quite right, round will take 6.5 to 7, 5.5 to 6, etc. while rint() will take both to 6 */
 	      }
 	      break;
 	   case pt_floor:
 	      if (sp >= 1) {
-		 if (stack[sp - 1].type==ps_num)
-		    stack[sp - 1].u.val=floor(stack[sp - 1].u.val);
+		 if (stack[sp-1].type==ps_num)
+		    stack[sp-1].u.val=floor(stack[sp-1].u.val);
 	      }
 	      break;
 	   case pt_ceiling:
 	      if (sp >= 1) {
-		 if (stack[sp - 1].type==ps_num)
-		    stack[sp - 1].u.val=ceil(stack[sp - 1].u.val);
+		 if (stack[sp-1].type==ps_num)
+		    stack[sp-1].u.val=ceil(stack[sp-1].u.val);
 	      }
 	      break;
 	   case pt_truncate:
 	      if (sp >= 1) {
-		 if (stack[sp - 1].type==ps_num) {
-		    if (stack[sp - 1].u.val < 0)
-		       stack[sp - 1].u.val=ceil(stack[sp - 1].u.val);
+		 if (stack[sp-1].type==ps_num) {
+		    if (stack[sp-1].u.val<0)
+		       stack[sp-1].u.val=ceil(stack[sp-1].u.val);
 		    else
-		       stack[sp - 1].u.val=floor(stack[sp - 1].u.val);
+		       stack[sp-1].u.val=floor(stack[sp-1].u.val);
 		 }
 	      }
 	      break;
 	   case pt_ne:
 	   case pt_eq:
 	      if (sp >= 2) {
-		 if (stack[sp - 2].type != stack[sp - 1].type)
-		    stack[sp - 2].u.tf=false;
-		 else if (stack[sp - 2].type==ps_num)
-		    stack[sp - 2].u.tf =
-		       (stack[sp - 2].u.val==stack[sp - 1].u.val);
-		 else if (stack[sp - 2].type==ps_bool)
-		    stack[sp - 2].u.tf =
-		       (stack[sp - 2].u.tf==stack[sp - 1].u.tf);
+		 if (stack[sp-2].type != stack[sp-1].type)
+		    stack[sp-2].u.tf=false;
+		 else if (stack[sp-2].type==ps_num)
+		    stack[sp-2].u.tf =
+		       (stack[sp-2].u.val==stack[sp-1].u.val);
+		 else if (stack[sp-2].type==ps_bool)
+		    stack[sp-2].u.tf =
+		       (stack[sp-2].u.tf==stack[sp-1].u.tf);
 		 else
-		    stack[sp - 2].u.tf =
-		       strcmp(stack[sp - 2].u.str, stack[sp - 1].u.str)==0;
-		 stack[sp - 2].type=ps_bool;
+		    stack[sp-2].u.tf =
+		       strcmp(stack[sp-2].u.str, stack[sp-1].u.str)==0;
+		 stack[sp-2].type=ps_bool;
 		 if (tok==pt_ne)
-		    stack[sp - 2].u.tf=!stack[sp - 2].u.tf;
+		    stack[sp-2].u.tf=!stack[sp-2].u.tf;
 		 --sp;
 	      }
 	      break;
@@ -1761,158 +1761,158 @@ static void _InterpretPS(IO *wrapper,EntityChar *ec,RetStack *rs) {
 	   case pt_lt:
 	   case pt_ge:
 	      if (sp >= 2) {
-		 if (stack[sp - 2].type != stack[sp - 1].type)
-		    stack[sp - 2].u.tf=false;
-		 else if (stack[sp - 2].type==ps_array)
+		 if (stack[sp-2].type != stack[sp-1].type)
+		    stack[sp-2].u.tf=false;
+		 else if (stack[sp-2].type==ps_array)
 		    ErrorMsg(2,"Can't compare arrays\n");
 		 else {
 		    int cmp;
 
-		    if (stack[sp - 2].type==ps_num)
-		       cmp=(stack[sp - 2].u.val > stack[sp - 1].u.val) ? 1 :
-			  (stack[sp - 2].u.val ==
-			   stack[sp - 1].u.val) ? 0 : -1;
-		    else if (stack[sp - 2].type==ps_bool)
-		       cmp=(stack[sp - 2].u.tf - stack[sp - 1].u.tf);
+		    if (stack[sp-2].type==ps_num)
+		       cmp=(stack[sp-2].u.val>stack[sp-1].u.val)?1 :
+			  (stack[sp-2].u.val ==
+			   stack[sp-1].u.val)?0:-1;
+		    else if (stack[sp-2].type==ps_bool)
+		       cmp=(stack[sp-2].u.tf-stack[sp-1].u.tf);
 		    else
-		       cmp=strcmp(stack[sp - 2].u.str, stack[sp - 1].u.str);
+		       cmp=strcmp(stack[sp-2].u.str, stack[sp-1].u.str);
 		    if (tok==pt_gt)
-		       stack[sp - 2].u.tf=cmp > 0;
+		       stack[sp-2].u.tf=cmp>0;
 		    else if (tok==pt_lt)
-		       stack[sp - 2].u.tf=cmp < 0;
+		       stack[sp-2].u.tf=cmp<0;
 		    else if (tok==pt_le)
-		       stack[sp - 2].u.tf=cmp <= 0;
+		       stack[sp-2].u.tf=cmp <= 0;
 		    else
-		       stack[sp - 2].u.tf=cmp >= 0;
+		       stack[sp-2].u.tf=cmp >= 0;
 		 }
-		 stack[sp - 2].type=ps_bool;
+		 stack[sp-2].type=ps_bool;
 		 --sp;
 	      }
 	      break;
 	   case pt_not:
 	      if (sp >= 1) {
-		 if (stack[sp - 1].type==ps_bool)
-		    stack[sp - 1].u.tf=!stack[sp - 1].u.tf;
+		 if (stack[sp-1].type==ps_bool)
+		    stack[sp-1].u.tf=!stack[sp-1].u.tf;
 	      }
 	      break;
 	   case pt_and:
 	      if (sp >= 2) {
-		 if (stack[sp - 2].type==ps_num)
-		    stack[sp - 2].u.val =
-		       ((int) stack[sp - 1].u.val) & (int) stack[sp -
+		 if (stack[sp-2].type==ps_num)
+		    stack[sp-2].u.val =
+		       ((int) stack[sp-1].u.val)&(int) stack[sp -
 								 1].u.val;
-		 else if (stack[sp - 2].type==ps_bool)
-		    stack[sp - 2].u.tf &= stack[sp - 1].u.tf;
+		 else if (stack[sp-2].type==ps_bool)
+		    stack[sp-2].u.tf &= stack[sp-1].u.tf;
 		 --sp;
 	      }
 	      break;
 	   case pt_or:
 	      if (sp >= 2) {
-		 if (stack[sp - 2].type==ps_num)
-		    stack[sp - 2].u.val =
-		       ((int) stack[sp - 1].u.val) | (int) stack[sp -
+		 if (stack[sp-2].type==ps_num)
+		    stack[sp-2].u.val =
+		       ((int) stack[sp-1].u.val)|(int) stack[sp -
 								 1].u.val;
-		 else if (stack[sp - 2].type==ps_bool)
-		    stack[sp - 2].u.tf |= stack[sp - 1].u.tf;
+		 else if (stack[sp-2].type==ps_bool)
+		    stack[sp-2].u.tf |= stack[sp-1].u.tf;
 		 --sp;
 	      }
 	      break;
 	   case pt_xor:
 	      if (sp >= 2) {
-		 if (stack[sp - 2].type==ps_num)
-		    stack[sp - 2].u.val =
-		       ((int) stack[sp - 1].u.val) ^ (int) stack[sp -
+		 if (stack[sp-2].type==ps_num)
+		    stack[sp-2].u.val =
+		       ((int) stack[sp-1].u.val) ^ (int) stack[sp -
 								 1].u.val;
-		 else if (stack[sp - 2].type==ps_bool)
-		    stack[sp - 2].u.tf ^= stack[sp - 1].u.tf;
+		 else if (stack[sp-2].type==ps_bool)
+		    stack[sp-2].u.tf ^= stack[sp-1].u.tf;
 		 --sp;
 	      }
 	      break;
 	   case pt_exp:
-	      if (sp >= 2 && stack[sp - 1].type==ps_num
-		  && stack[sp - 2].type==ps_num) {
-		 stack[sp - 2].u.val =
-		    pow(stack[sp - 2].u.val, stack[sp - 1].u.val);
+	      if (sp >= 2 && stack[sp-1].type==ps_num
+		  && stack[sp-2].type==ps_num) {
+		 stack[sp-2].u.val =
+		    pow(stack[sp-2].u.val, stack[sp-1].u.val);
 		 --sp;
 	      }
 	      break;
 	   case pt_sqrt:
-	      if (sp >= 1 && stack[sp - 1].type==ps_num) {
-		 stack[sp - 1].u.val=sqrt(stack[sp - 1].u.val);
+	      if (sp >= 1 && stack[sp-1].type==ps_num) {
+		 stack[sp-1].u.val=sqrt(stack[sp-1].u.val);
 	      }
 	      break;
 	   case pt_ln:
-	      if (sp >= 1 && stack[sp - 1].type==ps_num) {
-		 stack[sp - 1].u.val=log(stack[sp - 1].u.val);
+	      if (sp >= 1 && stack[sp-1].type==ps_num) {
+		 stack[sp-1].u.val=log(stack[sp-1].u.val);
 	      }
 	      break;
 	   case pt_log:
-	      if (sp >= 1 && stack[sp - 1].type==ps_num) {
-		 stack[sp - 1].u.val=log10(stack[sp - 1].u.val);
+	      if (sp >= 1 && stack[sp-1].type==ps_num) {
+		 stack[sp-1].u.val=log10(stack[sp-1].u.val);
 	      }
 	      break;
 	   case pt_atan:
-	      if (sp >= 2 && stack[sp - 1].type==ps_num
-		  && stack[sp - 2].type==ps_num) {
-		 stack[sp - 2].u.val =
-		    atan2(stack[sp - 2].u.val,
-			  stack[sp - 1].u.val) * 180 / M_PI;
+	      if (sp >= 2 && stack[sp-1].type==ps_num
+		  && stack[sp-2].type==ps_num) {
+		 stack[sp-2].u.val =
+		    atan2(stack[sp-2].u.val,
+			  stack[sp-1].u.val)*180/M_PI;
 		 --sp;
 	      }
 	      break;
 	   case pt_sin:
-	      if (sp >= 1 && stack[sp - 1].type==ps_num) {
-		 stack[sp - 1].u.val =
-		    sin(stack[sp - 1].u.val * M_PI / 180);
+	      if (sp >= 1 && stack[sp-1].type==ps_num) {
+		 stack[sp-1].u.val =
+		    sin(stack[sp-1].u.val * M_PI/180);
 	      }
 	      break;
 	   case pt_cos:
-	      if (sp >= 1 && stack[sp - 1].type==ps_num) {
-		 stack[sp - 1].u.val =
-		    cos(stack[sp - 1].u.val * M_PI / 180);
+	      if (sp >= 1 && stack[sp-1].type==ps_num) {
+		 stack[sp-1].u.val =
+		    cos(stack[sp-1].u.val * M_PI/180);
 	      }
 	      break;
 	   case pt_if:
 	      if (sp >= 2) {
-		 if (((stack[sp - 2].type==ps_bool && stack[sp - 2].u.tf) ||
-		      (stack[sp - 2].type==ps_num
-		       && strstr(stack[sp - 1].u.str,
+		 if (((stack[sp-2].type==ps_bool && stack[sp-2].u.tf) ||
+		      (stack[sp-2].type==ps_num
+		       && strstr(stack[sp-1].u.str,
 				 "setcachedevice") != NULL))
-		     && stack[sp - 1].type==ps_instr)
-		    pushio(wrapper, NULL, stack[sp - 1].u.str, 0);
-		 if (stack[sp - 1].type==ps_string
-		     || stack[sp - 1].type==ps_instr
-		     || stack[sp - 1].type==ps_lit)
-		    free(stack[sp - 1].u.str);
+		     && stack[sp-1].type==ps_instr)
+		    pushio(wrapper, NULL, stack[sp-1].u.str, 0);
+		 if (stack[sp-1].type==ps_string
+		     || stack[sp-1].type==ps_instr
+		     || stack[sp-1].type==ps_lit)
+		    free(stack[sp-1].u.str);
 		 sp -= 2;
-	      } else if (sp==1 && stack[sp - 1].type==ps_instr) {
+	      } else if (sp==1 && stack[sp-1].type==ps_instr) {
 		 /*This can happen when reading our type3 fonts, we get passed */
 		 /* values on the stack which the interpreter knows nothing */
 		 /* about, but the interp needs to learn the width of the char */
-		 if (strstr(stack[sp - 1].u.str, "setcachedevice") != NULL ||
-		     strstr(stack[sp - 1].u.str, "setcharwidth") != NULL)
-		    pushio(wrapper, NULL, stack[sp - 1].u.str, 0);
-		 free(stack[sp - 1].u.str);
+		 if (strstr(stack[sp-1].u.str, "setcachedevice") != NULL ||
+		     strstr(stack[sp-1].u.str, "setcharwidth") != NULL)
+		    pushio(wrapper, NULL, stack[sp-1].u.str, 0);
+		 free(stack[sp-1].u.str);
 		 sp=0;
 	      }
 	      break;
 	   case pt_ifelse:
 	      if (sp >= 3) {
-		 if (stack[sp - 3].type==ps_bool && stack[sp - 3].u.tf) {
-		    if (stack[sp - 2].type==ps_instr)
-		       pushio(wrapper, NULL, stack[sp - 2].u.str, 0);
+		 if (stack[sp-3].type==ps_bool && stack[sp-3].u.tf) {
+		    if (stack[sp-2].type==ps_instr)
+		       pushio(wrapper, NULL, stack[sp-2].u.str, 0);
 		 } else {
-		    if (stack[sp - 1].type==ps_instr)
-		       pushio(wrapper, NULL, stack[sp - 1].u.str, 0);
+		    if (stack[sp-1].type==ps_instr)
+		       pushio(wrapper, NULL, stack[sp-1].u.str, 0);
 		 }
-		 if (stack[sp - 1].type==ps_string
-		     || stack[sp - 1].type==ps_instr
-		     || stack[sp - 1].type==ps_lit)
-		    free(stack[sp - 1].u.str);
-		 if (stack[sp - 2].type==ps_string
-		     || stack[sp - 2].type==ps_instr
-		     || stack[sp - 2].type==ps_lit)
-		    free(stack[sp - 2].u.str);
+		 if (stack[sp-1].type==ps_string
+		     || stack[sp-1].type==ps_instr
+		     || stack[sp-1].type==ps_lit)
+		    free(stack[sp-1].u.str);
+		 if (stack[sp-2].type==ps_string
+		     || stack[sp-2].type==ps_instr
+		     || stack[sp-2].type==ps_lit)
+		    free(stack[sp-2].u.str);
 		 sp -= 3;
 	      }
 	      break;
@@ -1922,22 +1922,22 @@ static void _InterpretPS(IO *wrapper,EntityChar *ec,RetStack *rs) {
 		 char *func;
 		 int cnt;
 
-		 if (stack[sp - 4].type==ps_num
-		     && stack[sp - 3].type==ps_num
-		     && stack[sp - 2].type==ps_num
-		     && stack[sp - 1].type==ps_instr) {
-		    init=stack[sp - 4].u.val;
-		    incr=stack[sp - 3].u.val;
-		    limit=stack[sp - 2].u.val;
-		    func=stack[sp - 1].u.str;
+		 if (stack[sp-4].type==ps_num
+		     && stack[sp-3].type==ps_num
+		     && stack[sp-2].type==ps_num
+		     && stack[sp-1].type==ps_instr) {
+		    init=stack[sp-4].u.val;
+		    incr=stack[sp-3].u.val;
+		    limit=stack[sp-2].u.val;
+		    func=stack[sp-1].u.str;
 		    sp -= 4;
 		    cnt=0;
-		    if (incr > 0) {
+		    if (incr>0) {
 		       while (init <= limit) {
 			  ++cnt;
 			  init += incr;
 		       }
-		    } else if (incr < 0) {
+		    } else if (incr<0) {
 		       while (init >= limit) {
 			  ++cnt;
 			  init += incr;
@@ -1953,9 +1953,9 @@ static void _InterpretPS(IO *wrapper,EntityChar *ec,RetStack *rs) {
 		 char *func;
 		 int cnt;
 
-		 if (stack[sp - 1].type==ps_instr) {
+		 if (stack[sp-1].type==ps_instr) {
 		    cnt=0x7fffffff;	/* Loop for ever */
-		    func=stack[sp - 1].u.str;
+		    func=stack[sp-1].u.str;
 		    --sp;
 		    pushio(wrapper, NULL, func, cnt);
 		    free(func);
@@ -1967,10 +1967,10 @@ static void _InterpretPS(IO *wrapper,EntityChar *ec,RetStack *rs) {
 		 char *func;
 		 int cnt;
 
-		 if (stack[sp - 2].type==ps_num
-		     && stack[sp - 1].type==ps_instr) {
-		    cnt=stack[sp - 2].u.val;
-		    func=stack[sp - 1].u.str;
+		 if (stack[sp-2].type==ps_num
+		     && stack[sp-1].type==ps_instr) {
+		    cnt=stack[sp-2].u.val;
+		    func=stack[sp-1].u.str;
 		    sp -= 2;
 		    pushio(wrapper, NULL, func, cnt);
 		    free(func);
@@ -1984,8 +1984,8 @@ static void _InterpretPS(IO *wrapper,EntityChar *ec,RetStack *rs) {
 	      if (sp >= 1) {
 		 char *func;
 
-		 if (stack[sp - 1].type==ps_instr) {
-		    func=stack[sp - 1].u.str;
+		 if (stack[sp-1].type==ps_instr) {
+		    func=stack[sp-1].u.str;
 		    --sp;
 		    pushio(wrapper, NULL, func, -1);
 		    free(func);
@@ -1995,19 +1995,19 @@ static void _InterpretPS(IO *wrapper,EntityChar *ec,RetStack *rs) {
 	   case pt_stop:
 	      sp =
 		 ioescapestopped(wrapper, stack, sp,
-				 sizeof(stack) / sizeof(stack[0]));
+				 sizeof(stack)/sizeof(stack[0]));
 	      break;
 	   case pt_load:
-	      if (sp >= 1 && stack[sp - 1].type==ps_lit) {
-		 kv=lookup(&dict, stack[sp - 1].u.str);
+	      if (sp >= 1 && stack[sp-1].type==ps_lit) {
+		 kv=lookup(&dict, stack[sp-1].u.str);
 		 if (kv != NULL) {
-		    free(stack[sp - 1].u.str);
-		    stack[sp - 1].type=kv->type;
-		    stack[sp - 1].u=kv->u;
+		    free(stack[sp-1].u.str);
+		    stack[sp-1].type=kv->type;
+		    stack[sp-1].u=kv->u;
 		    if (kv->type==ps_instr || kv->type==ps_lit)
-		       stack[sp - 1].u.str=fastrdup(stack[sp - 1].u.str);
+		       stack[sp-1].u.str=fastrdup(stack[sp-1].u.str);
 		 } else
-		    stack[sp - 1].type=ps_instr;
+		    stack[sp-1].type=ps_instr;
 	      }
 	      break;
 	   case pt_def:
@@ -2018,8 +2018,8 @@ static void _InterpretPS(IO *wrapper,EntityChar *ec,RetStack *rs) {
 	      break;
 	   case pt_setcachedevice:
 	      if (sp >= 6) {
-		 ec->width=stack[sp - 6].u.val;
-		 ec->vwidth=stack[sp - 5].u.val;
+		 ec->width=stack[sp-6].u.val;
+		 ec->vwidth=stack[sp-5].u.val;
 		 /* I don't care about the bounding box */
 		 sp -= 6;
 	      }
@@ -2029,34 +2029,34 @@ static void _InterpretPS(IO *wrapper,EntityChar *ec,RetStack *rs) {
 		 ec->width=stack[sp -= 2].u.val;
 	      break;
 	   case pt_translate:
-	      if (sp >= 1 && stack[sp - 1].type==ps_array)
+	      if (sp >= 1 && stack[sp-1].type==ps_array)
 		 sp=DoMatOp(tok, sp, stack);
 	      else if (sp >= 2) {
 		 transform[4] +=
-		    stack[sp - 2].u.val * transform[0] + stack[sp -
+		    stack[sp-2].u.val * transform[0]+stack[sp -
 							       1].u.val *
 		    transform[2];
 		 transform[5] +=
-		    stack[sp - 2].u.val * transform[1] + stack[sp -
+		    stack[sp-2].u.val * transform[1]+stack[sp -
 							       1].u.val *
 		    transform[3];
 		 sp -= 2;
 	      }
 	      break;
 	   case pt_scale:
-	      if (sp >= 1 && stack[sp - 1].type==ps_array)
+	      if (sp >= 1 && stack[sp-1].type==ps_array)
 		 sp=DoMatOp(tok, sp, stack);
 	      else if (sp >= 2) {
-		 transform[0] *= stack[sp - 2].u.val;
-		 transform[1] *= stack[sp - 2].u.val;
-		 transform[2] *= stack[sp - 1].u.val;
-		 transform[3] *= stack[sp - 1].u.val;
+		 transform[0] *= stack[sp-2].u.val;
+		 transform[1] *= stack[sp-2].u.val;
+		 transform[2] *= stack[sp-1].u.val;
+		 transform[3] *= stack[sp-1].u.val;
 		 /* transform[4,5] are unchanged */
 		 sp -= 2;
 	      }
 	      break;
 	   case pt_rotate:
-	      if (sp >= 1 && stack[sp - 1].type==ps_array)
+	      if (sp >= 1 && stack[sp-1].type==ps_array)
 		 sp=DoMatOp(tok, sp, stack);
 	      else if (sp >= 1) {
 		 --sp;
@@ -2069,9 +2069,9 @@ static void _InterpretPS(IO *wrapper,EntityChar *ec,RetStack *rs) {
 	      break;
 	   case pt_concat:
 	      if (sp >= 1) {
-		 if (stack[sp - 1].type==ps_array) {
-		    if (stack[sp - 1].u.dict.cnt==6
-			&& stack[sp - 1].u.dict.entries[0].type==ps_num) {
+		 if (stack[sp-1].type==ps_array) {
+		    if (stack[sp-1].u.dict.cnt==6
+			&& stack[sp-1].u.dict.entries[0].type==ps_num) {
 		       --sp;
 		       t[5]=stack[sp].u.dict.entries[5].u.val;
 		       t[4]=stack[sp].u.dict.entries[4].u.val;
@@ -2086,72 +2086,72 @@ static void _InterpretPS(IO *wrapper,EntityChar *ec,RetStack *rs) {
 	      }
 	      break;
 	   case pt_transform:
-	      if (sp >= 1 && stack[sp - 1].type==ps_array) {
+	      if (sp >= 1 && stack[sp-1].type==ps_array) {
 		 if (sp >= 3) {
 		    DoMatTransform(tok, sp, stack);
 		    --sp;
 		 }
 	      } else if (sp >= 2) {
-		 double x=stack[sp - 2].u.val, y=stack[sp - 1].u.val;
+		 double x=stack[sp-2].u.val, y=stack[sp-1].u.val;
 
-		 stack[sp - 2].u.val =
-		    transform[0] * x + transform[1] * y + transform[4];
-		 stack[sp - 1].u.val =
-		    transform[2] * x + transform[3] * y + transform[5];
+		 stack[sp-2].u.val =
+		    transform[0] * x+transform[1] * y+transform[4];
+		 stack[sp-1].u.val =
+		    transform[2] * x+transform[3] * y+transform[5];
 	      }
 	      break;
 	   case pt_itransform:
-	      if (sp >= 1 && stack[sp - 1].type==ps_array) {
+	      if (sp >= 1 && stack[sp-1].type==ps_array) {
 		 if (sp >= 3) {
 		    DoMatTransform(tok, sp, stack);
 		    --sp;
 		 }
 	      } else if (sp >= 2) {
-		 double x=stack[sp - 2].u.val, y=stack[sp - 1].u.val;
+		 double x=stack[sp-2].u.val, y=stack[sp-1].u.val;
 
 		 MatInverse(t, transform);
-		 stack[sp - 2].u.val=t[0] * x + t[1] * y + t[4];
-		 stack[sp - 1].u.val=t[2] * x + t[3] * y + t[5];
+		 stack[sp-2].u.val=t[0] * x+t[1] * y+t[4];
+		 stack[sp-1].u.val=t[2] * x+t[3] * y+t[5];
 	      }
 	      break;
 	   case pt_dtransform:
-	      if (sp >= 1 && stack[sp - 1].type==ps_array) {
+	      if (sp >= 1 && stack[sp-1].type==ps_array) {
 		 if (sp >= 3) {
 		    DoMatTransform(tok, sp, stack);
 		    --sp;
 		 }
 	      } else if (sp >= 2) {
-		 double x=stack[sp - 2].u.val, y=stack[sp - 1].u.val;
+		 double x=stack[sp-2].u.val, y=stack[sp-1].u.val;
 
-		 stack[sp - 2].u.val=transform[0] * x + transform[1] * y;
-		 stack[sp - 1].u.val=transform[2] * x + transform[3] * y;
+		 stack[sp-2].u.val=transform[0] * x+transform[1] * y;
+		 stack[sp-1].u.val=transform[2] * x+transform[3] * y;
 	      }
 	      break;
 	   case pt_idtransform:
-	      if (sp >= 1 && stack[sp - 1].type==ps_array) {
+	      if (sp >= 1 && stack[sp-1].type==ps_array) {
 		 if (sp >= 3) {
 		    DoMatTransform(tok, sp, stack);
 		    --sp;
 		 }
 	      } else if (sp >= 2) {
-		 double x=stack[sp - 2].u.val, y=stack[sp - 1].u.val;
+		 double x=stack[sp-2].u.val, y=stack[sp-1].u.val;
 
 		 MatInverse(t, transform);
-		 stack[sp - 2].u.val=t[0] * x + t[1] * y;
-		 stack[sp - 1].u.val=t[2] * x + t[3] * y;
+		 stack[sp-2].u.val=t[0] * x+t[1] * y;
+		 stack[sp-1].u.val=t[2] * x+t[3] * y;
 	      }
 	      break;
 	   case pt_namelit:
 	      if (strcmp(tokbuf, "CharProcs")==0 && ec != NULL) {
 		 HandleType3Reference(wrapper, ec, transform, tokbuf,
 				      tokbufsize);
-	      } else if (sp < sizeof(stack) / sizeof(stack[0])) {
+	      } else if (sp<sizeof(stack)/sizeof(stack[0])) {
 		 stack[sp].type=ps_lit;
 		 stack[sp++].u.str=fastrdup(tokbuf);
 	      }
 	      break;
 	   case pt_exec:
-	      if (sp > 0 && stack[sp - 1].type==ps_lit) {
+	      if (sp>0 && stack[sp-1].type==ps_lit) {
 		 ref=RefCharCreate();
 		 ref->sc=(SplineChar *) stack[--sp].u.str;
 		 memcpy(ref->transform, transform, sizeof(transform));
@@ -2173,12 +2173,12 @@ static void _InterpretPS(IO *wrapper,EntityChar *ec,RetStack *rs) {
 	   case pt_rmoveto:
 	      if (sp >= 2 || tok==pt_newpath) {
 		 if (tok==pt_rlineto || tok==pt_rmoveto) {
-		    current.x += stack[sp - 2].u.val;
-		    current.y += stack[sp - 1].u.val;
+		    current.x += stack[sp-2].u.val;
+		    current.y += stack[sp-1].u.val;
 		    sp -= 2;
 		 } else if (tok==pt_lineto || tok==pt_moveto) {
-		    current.x=stack[sp - 2].u.val;
-		    current.y=stack[sp - 1].u.val;
+		    current.x=stack[sp-2].u.val;
+		    current.y=stack[sp-1].u.val;
 		    sp -= 2;
 		 }
 		 pt=chunkalloc(sizeof(SplinePoint));
@@ -2210,25 +2210,25 @@ static void _InterpretPS(IO *wrapper,EntityChar *ec,RetStack *rs) {
 	   case pt_rcurveto:
 	      if (sp >= 6) {
 		 if (tok==pt_rcurveto) {
-		    stack[sp - 1].u.val += current.y;
-		    stack[sp - 3].u.val += current.y;
-		    stack[sp - 5].u.val += current.y;
-		    stack[sp - 2].u.val += current.x;
-		    stack[sp - 4].u.val += current.x;
-		    stack[sp - 6].u.val += current.x;
+		    stack[sp-1].u.val += current.y;
+		    stack[sp-3].u.val += current.y;
+		    stack[sp-5].u.val += current.y;
+		    stack[sp-2].u.val += current.x;
+		    stack[sp-4].u.val += current.x;
+		    stack[sp-6].u.val += current.x;
 		 }
-		 current.x=stack[sp - 2].u.val;
-		 current.y=stack[sp - 1].u.val;
+		 current.x=stack[sp-2].u.val;
+		 current.y=stack[sp-1].u.val;
 		 if (cur != NULL && cur->first != NULL
 		     && (cur->first != cur->last
 			 || cur->first->next==NULL)) {
-		    temp.x=stack[sp - 6].u.val;
-		    temp.y=stack[sp - 5].u.val;
+		    temp.x=stack[sp-6].u.val;
+		    temp.y=stack[sp-5].u.val;
 		    Transform(&cur->last->nextcp, &temp, transform);
 		    cur->last->nonextcp=false;
 		    pt=chunkalloc(sizeof(SplinePoint));
-		    temp.x=stack[sp - 4].u.val;
-		    temp.y=stack[sp - 3].u.val;
+		    temp.x=stack[sp-4].u.val;
+		    temp.y=stack[sp-3].u.val;
 		    Transform(&pt->prevcp, &temp, transform);
 		    Transform(&pt->me, &current, transform);
 		    pt->nonextcp=true;
@@ -2245,14 +2245,14 @@ static void _InterpretPS(IO *wrapper,EntityChar *ec,RetStack *rs) {
 	      if (sp >= 5) {
 		 double cx, cy, r, a1, a2;
 
-		 cx=stack[sp - 5].u.val;
-		 cy=stack[sp - 4].u.val;
-		 r=stack[sp - 3].u.val;
-		 a1=stack[sp - 2].u.val;
-		 a2=stack[sp - 1].u.val;
+		 cx=stack[sp-5].u.val;
+		 cy=stack[sp-4].u.val;
+		 r=stack[sp-3].u.val;
+		 a1=stack[sp-2].u.val;
+		 a2=stack[sp-1].u.val;
 		 sp -= 5;
-		 temp.x=cx + r * cos(a1 / 180 * M_PI);
-		 temp.y=cy + r * sin(a1 / 180 * M_PI);
+		 temp.x=cx+r * cos(a1/180*M_PI);
+		 temp.y=cy+r * sin(a1/180*M_PI);
 		 if (temp.x != current.x || temp.y != current.y ||
 		     !(cur != NULL && cur->first != NULL
 		       && (cur->first != cur->last
@@ -2280,8 +2280,8 @@ static void _InterpretPS(IO *wrapper,EntityChar *ec,RetStack *rs) {
 		 }
 		 circlearcsto(a1, a2, cx, cy, r, cur, transform,
 			      tok==pt_arcn);
-		 current.x=cx + r * cos(a2 / 180 * M_PI);
-		 current.y=cy + r * sin(a2 / 180 * M_PI);
+		 current.x=cx+r * cos(a2/180*M_PI);
+		 current.y=cy+r * sin(a2/180*M_PI);
 	      } else
 		 sp=0;
 	      break;
@@ -2291,11 +2291,11 @@ static void _InterpretPS(IO *wrapper,EntityChar *ec,RetStack *rs) {
 		 double x1, y1, x2, y2, r;
 		 double xt1, xt2, yt1, yt2;
 
-		 x1=stack[sp - 5].u.val;
-		 y1=stack[sp - 4].u.val;
-		 x2=stack[sp - 3].u.val;
-		 y2=stack[sp - 2].u.val;
-		 r=stack[sp - 1].u.val;
+		 x1=stack[sp-5].u.val;
+		 y1=stack[sp-4].u.val;
+		 x2=stack[sp-3].u.val;
+		 y2=stack[sp-2].u.val;
+		 r=stack[sp-1].u.val;
 		 sp -= 5;
 
 		 xt1=xt2=x1;
@@ -2306,8 +2306,8 @@ static void _InterpretPS(IO *wrapper,EntityChar *ec,RetStack *rs) {
 		 else if (current.x==x1 && current.y==y1)
 		    /* Error */ ;
 		 else if ((x1==x2 && y1==y2) ||
-			  (current.x - x1) * (y2 - y1) ==
-			  (x2 - x1) * (current.y - y1)) {
+			  (current.x-x1)*(y2-y1) ==
+			  (x2-x1)*(current.y-y1)) {
 		    /* Degenerate case */
 		    current.x=x1;
 		    current.y=y1;
@@ -2320,37 +2320,37 @@ static void _InterpretPS(IO *wrapper,EntityChar *ec,RetStack *rs) {
 		    cur->last=pt;
 		 } else {
 		    double l1 =
-		       sqrt((current.x - x1) * (current.x - x1) +
-			    (current.y - y1) * (current.y - y1));
+		       sqrt((current.x-x1)*(current.x-x1) +
+			    (current.y-y1)*(current.y-y1));
 		    double l2 =
-		       sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1));
-		    double dx=((current.x - x1) / l1 + (x2 - x1) / l2);
-		    double dy=((current.y - y1) / l1 + (y2 - y1) / l2);
+		       sqrt((x2-x1)*(x2-x1)+(y2-y1)*(y2-y1));
+		    double dx=((current.x-x1)/l1+(x2-x1)/l2);
+		    double dy=((current.y-y1)/l1+(y2-y1)/l2);
 
 		    /* the line from (x1,y1) to (x1+dx,y1+dy) contains the center */
-		    double l3=sqrt(dx * dx + dy * dy);
+		    double l3=sqrt(dx * dx+dy * dy);
 		    double cx, cy, t, tmid;
 		    double a1, amid, a2;
 		    int clockwise=true;
 
 		    dx /= l3;
 		    dy /= l3;
-		    a1=atan2(current.y - y1, current.x - x1);
-		    a2=atan2(y2 - y1, x2 - x1);
-		    amid=atan2(dy, dx) - a1;
-		    tmid=r / sin(amid);
-		    t=r / tan(amid);
-		    if (t < 0) {
+		    a1=atan2(current.y-y1, current.x-x1);
+		    a2=atan2(y2-y1, x2-x1);
+		    amid=atan2(dy, dx)-a1;
+		    tmid=r/sin(amid);
+		    t=r/tan(amid);
+		    if (t<0) {
 		       clockwise=false;
 		       t=-t;
 		       tmid=-tmid;
 		    }
-		    cx=x1 + tmid * dx;
-		    cy=y1 + tmid * dy;
-		    xt1=x1 + t * (current.x - x1) / l1;
-		    yt1=y1 + t * (current.y - y1) / l1;
-		    xt2=x1 + t * (x2 - x1) / l2;
-		    yt2=y1 + t * (y2 - y1) / l2;
+		    cx=x1+tmid * dx;
+		    cy=y1+tmid * dy;
+		    xt1=x1+t * (current.x-x1)/l1;
+		    yt1=y1+t * (current.y-y1)/l1;
+		    xt2=x1+t * (x2-x1)/l2;
+		    yt2=y1+t * (y2-y1)/l2;
 		    if (xt1 != current.x || yt1 != current.y) {
 		       DBasePoint temp;
 
@@ -2364,19 +2364,19 @@ static void _InterpretPS(IO *wrapper,EntityChar *ec,RetStack *rs) {
 		       SplineMake3(cur->last, pt);
 		       cur->last=pt;
 		    }
-		    a1=3 * M_PI / 2 + a1;
-		    a2=M_PI / 2 + a2;
+		    a1=3*M_PI/2+a1;
+		    a2=M_PI/2+a2;
 		    if (!clockwise) {
 		       a1 += M_PI;
 		       a2 += M_PI;
 		    }
-		    circlearcsto(a1 * 180 / M_PI,
-				 a2 * 180 / M_PI, cx, cy, r,
+		    circlearcsto(a1*180/M_PI,
+				 a2*180/M_PI, cx, cy, r,
 				 cur, transform, clockwise);
 		 }
 		 if (tok==pt_arcto) {
-		    stack[sp].type=stack[sp + 1].type=stack[sp + 2].type =
-		       stack[sp + 3].type=ps_num;
+		    stack[sp].type=stack[sp+1].type=stack[sp+2].type =
+		       stack[sp+3].type=ps_num;
 		    stack[sp++].u.val=xt1;
 		    stack[sp++].u.val=yt1;
 		    stack[sp++].u.val=xt2;
@@ -2395,9 +2395,9 @@ static void _InterpretPS(IO *wrapper,EntityChar *ec,RetStack *rs) {
 
 		    cur->first->prevcp=oldlast->prevcp;
 		    cur->first->prevcp.x +=
-		       (cur->first->me.x - oldlast->me.x);
+		       (cur->first->me.x-oldlast->me.x);
 		    cur->first->prevcp.y +=
-		       (cur->first->me.y - oldlast->me.y);
+		       (cur->first->me.y-oldlast->me.y);
 		    cur->first->noprevcp=oldlast->noprevcp;
 		    oldlast->prev->from->next=NULL;
 		    cur->last=oldlast->prev->from;
@@ -2422,37 +2422,37 @@ static void _InterpretPS(IO *wrapper,EntityChar *ec,RetStack *rs) {
 		 linewidth=stack[--sp].u.val;
 	      break;
 	   case pt_setdash:
-	      if (sp >= 2 && stack[sp - 1].type==ps_num
-		  && stack[sp - 2].type==ps_array) {
+	      if (sp >= 2 && stack[sp-1].type==ps_num
+		  && stack[sp-2].type==ps_array) {
 		 sp -= 2;
-		 dash_offset=stack[sp + 1].u.val;
-		 for (i=0; i < DASH_MAX && i < stack[sp].u.dict.cnt; ++i)
+		 dash_offset=stack[sp+1].u.val;
+		 for (i=0; i<DASH_MAX && i<stack[sp].u.dict.cnt; ++i)
 		    dashes[i]=stack[sp].u.dict.entries[i].u.val;
 		 dictfree(&stack[sp].u.dict);
 	      }
 	      break;
 	   case pt_currentlinecap:
 	   case pt_currentlinejoin:
-	      if (sp < sizeof(stack) / sizeof(stack[0])) {
+	      if (sp<sizeof(stack)/sizeof(stack[0])) {
 		 stack[sp].type=ps_num;
 		 stack[sp++].u.val =
-		    tok==pt_currentlinecap ? linecap : linejoin;
+		    tok==pt_currentlinecap?linecap:linejoin;
 	      }
 	      break;
 	   case pt_currentlinewidth:
-	      if (sp < sizeof(stack) / sizeof(stack[0])) {
+	      if (sp<sizeof(stack)/sizeof(stack[0])) {
 		 stack[sp].type=ps_num;
 		 stack[sp++].u.val=linewidth;
 	      }
 	      break;
 	   case pt_currentdash:
-	      if (sp + 1 < sizeof(stack) / sizeof(stack[0])) {
+	      if (sp+1<sizeof(stack)/sizeof(stack[0])) {
 		 struct pskeydict dict;
 
-		 for (i=0; i < DASH_MAX && dashes[i] != 0; ++i);
+		 for (i=0; i<DASH_MAX && dashes[i] != 0; ++i);
 		 dict.cnt=dict.max=i;
 		 dict.entries=calloc(i, sizeof(struct pskeyval));
-		 for (j=0; j < i; ++j) {
+		 for (j=0; j<i; ++j) {
 		    dict.entries[j].type=ps_num;
 		    dict.entries[j].u.val=dashes[j];
 		 }
@@ -2463,68 +2463,68 @@ static void _InterpretPS(IO *wrapper,EntityChar *ec,RetStack *rs) {
 	      }
 	      break;
 	   case pt_currentgray:
-	      if (sp < sizeof(stack) / sizeof(stack[0])) {
+	      if (sp<sizeof(stack)/sizeof(stack[0])) {
 		 stack[sp].type=ps_num;
 		 stack[sp++].u.val =
-		    (3 * ((fore >> 16) & 0xff) + 6 * ((fore >> 8) & 0xff) +
-		     (fore & 0xff)) / 2550.;
+		    (3*((fore >> 16)&0xff)+6*((fore >> 8)&0xff) +
+		     (fore&0xff))/2550.;
 	      }
 	      break;
 	   case pt_setgray:
 	      if (sp >= 1) {
-		 fore=stack[--sp].u.val * 255;
+		 fore=stack[--sp].u.val*255;
 		 fore *= 0x010101;
 	      }
 	      break;
 	   case pt_setrgbcolor:
 	      if (sp >= 3) {
-		 fore=(((int) (stack[sp - 3].u.val * 255)) << 16) +
-		    (((int) (stack[sp - 2].u.val * 255)) << 8) +
-		    (int) (stack[sp - 1].u.val * 255);
+		 fore=(((int) (stack[sp-3].u.val*255)) << 16) +
+		    (((int) (stack[sp-2].u.val*255)) << 8) +
+		    (int) (stack[sp-1].u.val*255);
 		 sp -= 3;
 	      }
 	      break;
 	   case pt_currenthsbcolor:
 	   case pt_currentrgbcolor:
-	      if (sp + 2 < sizeof(stack) / sizeof(stack[0])) {
-		 stack[sp].type=stack[sp + 1].type=stack[sp + 2].type =
+	      if (sp+2<sizeof(stack)/sizeof(stack[0])) {
+		 stack[sp].type=stack[sp+1].type=stack[sp+2].type =
 		    ps_num;
 		 if (tok==pt_currentrgbcolor) {
-		    stack[sp++].u.val=((fore >> 16) & 0xff) / 255.;
-		    stack[sp++].u.val=((fore >> 8) & 0xff) / 255.;
-		    stack[sp++].u.val=(fore & 0xff) / 255.;
+		    stack[sp++].u.val=((fore >> 16)&0xff)/255.;
+		    stack[sp++].u.val=((fore >> 8)&0xff)/255.;
+		    stack[sp++].u.val=(fore&0xff)/255.;
 		 } else {
-		    int r=fore >> 16, g=(fore >> 8) & 0xff, bl =
-		       fore & 0xff;
+		    int r=fore >> 16, g=(fore >> 8)&0xff, bl =
+		       fore&0xff;
 		    int mx, mn;
 		    double h, s, b;
 
 		    mx=mn=r;
-		    if (mx > g)
+		    if (mx>g)
 		       mn=g;
 		    else
 		       mx=g;
-		    if (mx < bl)
+		    if (mx<bl)
 		       mx=bl;
-		    if (mn > bl)
+		    if (mn>bl)
 		       mn=bl;
-		    b=mx / 255.;
+		    b=mx/255.;
 		    s=h=0;
-		    if (mx > 0)
-		       s=((double) (mx - mn)) / mx;
+		    if (mx>0)
+		       s=((double) (mx-mn))/mx;
 		    if (s != 0) {
-		       double rdiff=((double) (mx - r)) / (mx - mn);
-		       double gdiff=((double) (mx - g)) / (mx - mn);
-		       double bdiff=((double) (mx - bl)) / (mx - mn);
+		       double rdiff=((double) (mx-r))/(mx-mn);
+		       double gdiff=((double) (mx-g))/(mx-mn);
+		       double bdiff=((double) (mx-bl))/(mx-mn);
 
 		       if (rdiff==0)
-			  h=bdiff - gdiff;
+			  h=bdiff-gdiff;
 		       else if (gdiff==0)
-			  h=2 + rdiff - bdiff;
+			  h=2+rdiff-bdiff;
 		       else
-			  h=4 + gdiff - rdiff;
+			  h=4+gdiff-rdiff;
 		       h /= 6;
-		       if (h < 0)
+		       if (h<0)
 			  h += 1;
 		    }
 		    stack[sp++].u.val=h;
@@ -2535,47 +2535,47 @@ static void _InterpretPS(IO *wrapper,EntityChar *ec,RetStack *rs) {
 	      break;
 	   case pt_sethsbcolor:
 	      if (sp >= 3) {
-		 double h=stack[sp - 3].u.val, s=stack[sp - 2].u.val, b =
-		    stack[sp - 1].u.val;
+		 double h=stack[sp-3].u.val, s=stack[sp-2].u.val, b =
+		    stack[sp-1].u.val;
 		 int r, g, bl;
 
 		 if (s==0)	/* it's grey */
-		    fore=((int) (b * 255)) * 0x010101;
+		    fore=((int) (b*255))*0x010101;
 		 else {
-		    double sextant=(h - floor(h)) * 6;
-		    double mod=sextant - floor(sextant);
-		    double p=b * (1 - s), q=b * (1 - s * mod), t =
-		       b * (1 - s * (1 - mod));
+		    double sextant=(h-floor(h))*6;
+		    double mod=sextant-floor(sextant);
+		    double p=b * (1-s), q=b * (1-s * mod), t =
+		       b * (1-s * (1-mod));
 		    switch ((int) sextant) {
 		      case 0:
-			 r=b * 255.;
-			 g=t * 255.;
-			 bl=p * 255.;
+			 r=b*255.;
+			 g=t*255.;
+			 bl=p*255.;
 			 break;
 		      case 1:
-			 r=q * 255.;
-			 g=b * 255.;
-			 bl=p * 255.;
+			 r=q*255.;
+			 g=b*255.;
+			 bl=p*255.;
 			 break;
 		      case 2:
-			 r=p * 255.;
-			 g=b * 255.;
-			 bl=t * 255.;
+			 r=p*255.;
+			 g=b*255.;
+			 bl=t*255.;
 			 break;
 		      case 3:
-			 r=p * 255.;
-			 g=q * 255.;
-			 bl=b * 255.;
+			 r=p*255.;
+			 g=q*255.;
+			 bl=b*255.;
 			 break;
 		      case 4:
-			 r=t * 255.;
-			 g=p * 255.;
-			 bl=b * 255.;
+			 r=t*255.;
+			 g=p*255.;
+			 bl=b*255.;
 			 break;
 		      case 5:
-			 r=b * 255.;
-			 g=p * 255.;
-			 bl=q * 255.;
+			 r=b*255.;
+			 g=p*255.;
+			 bl=q*255.;
 			 break;
 		    }
 		    fore=COLOR_CREATE(r, g, bl);
@@ -2584,23 +2584,23 @@ static void _InterpretPS(IO *wrapper,EntityChar *ec,RetStack *rs) {
 	      }
 	      break;
 	   case pt_currentcmykcolor:
-	      if (sp + 3 < sizeof(stack) / sizeof(stack[0])) {
+	      if (sp+3<sizeof(stack)/sizeof(stack[0])) {
 		 double c, m, y, k;
 
-		 stack[sp].type=stack[sp + 1].type=stack[sp + 2].type =
-		    stack[sp + 3].type=ps_num;
-		 y=1. - (fore & 0xff) / 255.;
-		 m=1. - ((fore >> 8) & 0xff) / 255.;
-		 c=1. - ((fore >> 16) & 0xff) / 255.;
+		 stack[sp].type=stack[sp+1].type=stack[sp+2].type =
+		    stack[sp+3].type=ps_num;
+		 y=1.-(fore&0xff)/255.;
+		 m=1.-((fore >> 8)&0xff)/255.;
+		 c=1.-((fore >> 16)&0xff)/255.;
 		 k=y;
-		 if (k > m)
+		 if (k>m)
 		    k=m;
-		 if (k > c)
+		 if (k>c)
 		    k=c;
 		 if (k != 1) {
-		    y=(y - k) / (1 - k);
-		    m=(m - k) / (1 - k);
-		    c=(c - k) / (1 - k);
+		    y=(y-k)/(1-k);
+		    m=(m-k)/(1-k);
+		    c=(c-k)/(1-k);
 		 } else
 		    y=m=c=0;
 		 stack[sp++].u.val=c;
@@ -2611,32 +2611,32 @@ static void _InterpretPS(IO *wrapper,EntityChar *ec,RetStack *rs) {
 	      break;
 	   case pt_setcmykcolor:
 	      if (sp >= 4) {
-		 double c=stack[sp - 4].u.val, m=stack[sp - 3].u.val, y =
-		    stack[sp - 2].u.val, k=stack[sp - 1].u.val;
+		 double c=stack[sp-4].u.val, m=stack[sp-3].u.val, y =
+		    stack[sp-2].u.val, k=stack[sp-1].u.val;
 		 sp -= 4;
 		 if (k==1)
 		    fore=0x000000;
 		 else {
-		    if ((y=(1 - k) * y + k) < 0)
+		    if ((y=(1-k)*y+k)<0)
 		       y=0;
-		    else if (y > 1)
+		    else if (y>1)
 		       y=1;
-		    if ((m=(1 - k) * m + k) < 0)
+		    if ((m=(1-k)*m+k)<0)
 		       m=0;
-		    else if (m > 1)
+		    else if (m>1)
 		       m=1;
-		    if ((c=(1 - k) * c + k) < 0)
+		    if ((c=(1-k)*c+k)<0)
 		       c=0;
-		    else if (c > 1)
+		    else if (c>1)
 		       c=1;
-		    fore=((int) ((1 - c) * 255.) << 16) |
-		       ((int) ((1 - m) * 255.) << 8) |
-		       ((int) ((1 - y) * 255.));
+		    fore=((int) ((1-c)*255.) << 16) |
+		       ((int) ((1-m)*255.) << 8) |
+		       ((int) ((1-y)*255.));
 		 }
 	      }
 	      break;
 	   case pt_currentpoint:
-	      if (sp + 1 < sizeof(stack) / sizeof(stack[0])) {
+	      if (sp+1<sizeof(stack)/sizeof(stack[0])) {
 		 stack[sp].type=ps_num;
 		 stack[sp++].u.val=current.x;
 		 stack[sp].type=ps_num;
@@ -2681,7 +2681,7 @@ static void _InterpretPS(IO *wrapper,EntityChar *ec,RetStack *rs) {
 	      break;
 	   case pt_imagemask:
 	      i=PSAddImagemask(ec, stack, sp, transform, fore);
-	      while (sp > i) {
+	      while (sp>i) {
 		 --sp;
 		 if (stack[sp].type==ps_string || stack[sp].type==ps_instr
 		     || stack[sp].type==ps_lit)
@@ -2696,13 +2696,13 @@ static void _InterpretPS(IO *wrapper,EntityChar *ec,RetStack *rs) {
 	   case pt_save:
 	   case pt_currentmatrix:
 	      /* push some junk on the stack */
-	      if (sp < sizeof(stack) / sizeof(stack[0])) {
+	      if (sp<sizeof(stack)/sizeof(stack[0])) {
 		 stack[sp].type=ps_num;
 		 stack[sp++].u.val=0;
 	      }
 	      /* Fall through into gsave */ ;
 	   case pt_gsave:
-	      if (gsp < 30) {
+	      if (gsp<30) {
 		 memcpy(gsaves[gsp].transform, transform, sizeof(transform));
 		 gsaves[gsp].current=current;
 		 gsaves[gsp].linewidth=linewidth;
@@ -2721,7 +2721,7 @@ static void _InterpretPS(IO *wrapper,EntityChar *ec,RetStack *rs) {
 		 --sp;
 	      /* Fall through into grestore */ ;
 	   case pt_grestore:
-	      if (gsp > 0) {
+	      if (gsp>0) {
 		 --gsp;
 		 memcpy(transform, gsaves[gsp].transform, sizeof(transform));
 		 current=gsaves[gsp].current;
@@ -2735,14 +2735,14 @@ static void _InterpretPS(IO *wrapper,EntityChar *ec,RetStack *rs) {
 	      break;
 	   case pt_null:
 	      /* push a 0. I don't handle pointers properly */
-	      if (sp < sizeof(stack) / sizeof(stack[0])) {
+	      if (sp<sizeof(stack)/sizeof(stack[0])) {
 		 stack[sp].u.val=0;
 		 stack[sp++].type=ps_num;
 	      }
 	      break;
 	   case pt_currentoverprint:
 	      /* push false. I don't handle this properly */
-	      if (sp < sizeof(stack) / sizeof(stack[0])) {
+	      if (sp<sizeof(stack)/sizeof(stack[0])) {
 		 stack[sp].u.val=0;
 		 stack[sp++].type=ps_bool;
 	      }
@@ -2754,7 +2754,7 @@ static void _InterpretPS(IO *wrapper,EntityChar *ec,RetStack *rs) {
 	      break;
 	   case pt_currentflat:
 	      /* push 1.0 (default value). I don't handle this properly */
-	      if (sp < sizeof(stack) / sizeof(stack[0])) {
+	      if (sp<sizeof(stack)/sizeof(stack[0])) {
 		 stack[sp].u.val=1.0;
 		 stack[sp++].type=ps_num;
 	      }
@@ -2766,7 +2766,7 @@ static void _InterpretPS(IO *wrapper,EntityChar *ec,RetStack *rs) {
 	      break;
 	   case pt_currentmiterlimit:
 	      /* push 10.0 (default value). I don't handle this properly */
-	      if (sp < sizeof(stack) / sizeof(stack[0])) {
+	      if (sp<sizeof(stack)/sizeof(stack[0])) {
 		 stack[sp].u.val=10.0;
 		 stack[sp++].type=ps_num;
 	      }
@@ -2778,7 +2778,7 @@ static void _InterpretPS(IO *wrapper,EntityChar *ec,RetStack *rs) {
 	      break;
 	   case pt_currentpacking:
 	      /* push false (default value). I don't handle this properly */
-	      if (sp < sizeof(stack) / sizeof(stack[0])) {
+	      if (sp<sizeof(stack)/sizeof(stack[0])) {
 		 stack[sp].u.val=0;
 		 stack[sp++].type=ps_bool;
 	      }
@@ -2790,7 +2790,7 @@ static void _InterpretPS(IO *wrapper,EntityChar *ec,RetStack *rs) {
 	      break;
 	   case pt_currentstrokeadjust:
 	      /* push false (default value). I don't handle this properly */
-	      if (sp < sizeof(stack) / sizeof(stack[0])) {
+	      if (sp<sizeof(stack)/sizeof(stack[0])) {
 		 stack[sp].u.val=0;
 		 stack[sp++].type=ps_bool;
 	      }
@@ -2802,7 +2802,7 @@ static void _InterpretPS(IO *wrapper,EntityChar *ec,RetStack *rs) {
 	      break;
 	   case pt_currentsmoothness:
 	      /* default value is installation dependant. I don't handle this properly */
-	      if (sp < sizeof(stack) / sizeof(stack[0])) {
+	      if (sp<sizeof(stack)/sizeof(stack[0])) {
 		 stack[sp].u.val=1.0;
 		 stack[sp++].type=ps_num;
 	      }
@@ -2814,7 +2814,7 @@ static void _InterpretPS(IO *wrapper,EntityChar *ec,RetStack *rs) {
 	      break;
 	   case pt_currentobjectformat:
 	      /* default value is installation dependant. I don't handle this properly */
-	      if (sp < sizeof(stack) / sizeof(stack[0])) {
+	      if (sp<sizeof(stack)/sizeof(stack[0])) {
 		 stack[sp].u.val=0.0;
 		 stack[sp++].type=ps_num;
 	      }
@@ -2827,7 +2827,7 @@ static void _InterpretPS(IO *wrapper,EntityChar *ec,RetStack *rs) {
 	   case pt_currentglobal:
 	   case pt_currentshared:
 	      /* push false (default value). I don't handle this properly */
-	      if (sp < sizeof(stack) / sizeof(stack[0])) {
+	      if (sp<sizeof(stack)/sizeof(stack[0])) {
 		 stack[sp].u.val=0;
 		 stack[sp++].type=ps_bool;
 	      }
@@ -2840,24 +2840,24 @@ static void _InterpretPS(IO *wrapper,EntityChar *ec,RetStack *rs) {
 
 	   case pt_openarray:
 	   case pt_mark:
-	      if (sp < sizeof(stack) / sizeof(stack[0])) {
+	      if (sp<sizeof(stack)/sizeof(stack[0])) {
 		 stack[sp++].type=ps_mark;
 	      }
 	      break;
 	   case pt_counttomark:
-	      for (i=0; i < sp; ++i)
-		 if (stack[sp - 1 - i].type==ps_mark)
+	      for (i=0; i<sp; ++i)
+		 if (stack[sp-1-i].type==ps_mark)
 		    break;
 	      if (i==sp)
 		 ErrorMsg(2,"No mark in counttomark\n");
-	      else if (sp < sizeof(stack) / sizeof(stack[0])) {
+	      else if (sp<sizeof(stack)/sizeof(stack[0])) {
 		 stack[sp].type=ps_num;
 		 stack[sp++].u.val=i;
 	      }
 	      break;
 	   case pt_cleartomark:
-	      for (i=0; i < sp; ++i)
-		 if (stack[sp - 1 - i].type==ps_mark)
+	      for (i=0; i<sp; ++i)
+		 if (stack[sp-1-i].type==ps_mark)
 		    break;
 	      if (i==sp)
 		 ErrorMsg(2,"No mark in cleartomark\n");
@@ -2875,8 +2875,8 @@ static void _InterpretPS(IO *wrapper,EntityChar *ec,RetStack *rs) {
 	      }
 	      break;
 	   case pt_closearray:
-	      for (i=0; i < sp; ++i)
-		 if (stack[sp - 1 - i].type==ps_mark)
+	      for (i=0; i<sp; ++i)
+		 if (stack[sp-1-i].type==ps_mark)
 		    break;
 	      if (i==sp)
 		 ErrorMsg(2,"No mark in ] (close array)\n");
@@ -2885,41 +2885,41 @@ static void _InterpretPS(IO *wrapper,EntityChar *ec,RetStack *rs) {
 
 		 dict.cnt=dict.max=i;
 		 dict.entries=calloc(i, sizeof(struct pskeyval));
-		 for (j=0; j < i; ++j) {
-		    dict.entries[j].type=stack[sp - i + j].type;
-		    dict.entries[j].u=stack[sp - i + j].u;
+		 for (j=0; j<i; ++j) {
+		    dict.entries[j].type=stack[sp-i+j].type;
+		    dict.entries[j].u=stack[sp-i+j].u;
 		    /* don't need to copy because the things on the stack */
 		    /*  are being popped (don't need to free either) */
 		 }
 		 collectgarbage(&tofrees, &dict);
-		 sp=sp - i;
-		 stack[sp - 1].type=ps_array;
-		 stack[sp - 1].u.dict=dict;
+		 sp=sp-i;
+		 stack[sp-1].type=ps_array;
+		 stack[sp-1].u.dict=dict;
 	      }
 	      break;
 	   case pt_array:
-	      if (sp >= 1 && stack[sp - 1].type==ps_num) {
+	      if (sp >= 1 && stack[sp-1].type==ps_num) {
 		 struct pskeydict dict;
 
-		 dict.cnt=dict.max=stack[sp - 1].u.val;
+		 dict.cnt=dict.max=stack[sp-1].u.val;
 		 dict.entries=calloc(dict.cnt, sizeof(struct pskeyval));
 		 /* all entries are inited to void */
-		 stack[sp - 1].type=ps_array;
-		 stack[sp - 1].u.dict=dict;
+		 stack[sp-1].type=ps_array;
+		 stack[sp-1].u.dict=dict;
 	      }
 	      break;
 	   case pt_aload:
 	      sp =
-		 aload(sp, stack, sizeof(stack) / sizeof(stack[0]), &tofrees);
+		 aload(sp, stack, sizeof(stack)/sizeof(stack[0]), &tofrees);
 	      break;
 	   case pt_astore:
-	      if (sp >= 1 && stack[sp - 1].type==ps_array) {
+	      if (sp >= 1 && stack[sp-1].type==ps_array) {
 		 struct pskeydict dict;
 
 		 --sp;
 		 dict=stack[sp].u.dict;
 		 if (sp >= dict.cnt) {
-		    for (i=dict.cnt - 1; i >= 0; --i) {
+		    for (i=dict.cnt-1; i >= 0; --i) {
 		       --sp;
 		       dict.entries[i].type=stack[sp].type;
 		       dict.entries[i].u=stack[sp].u;
@@ -2941,18 +2941,18 @@ static void _InterpretPS(IO *wrapper,EntityChar *ec,RetStack *rs) {
 		      printf("%g", (double) stack[sp].u.val);
 		      break;
 		   case ps_bool:
-		      printf("%s", stack[sp].u.tf ? "true" : "false");
+		      printf("%s", stack[sp].u.tf?"true":"false");
 		      break;
 		   case ps_string:
 		   case ps_instr:
 		   case ps_lit:
 		      if (tok==pt_outputd)
-			 printf(stack[sp].type==ps_lit ? "/" :
-				stack[sp].type==ps_string ? "(" : "{");
+			 printf(stack[sp].type==ps_lit?"/" :
+				stack[sp].type==ps_string?"(":"{");
 		      printf("%s", stack[sp].u.str);
 		      if (tok==pt_outputd)
-			 printf(stack[sp].type==ps_lit ? "" :
-				stack[sp].type==ps_string ? ")" : "}");
+			 printf(stack[sp].type==ps_lit?"" :
+				stack[sp].type==ps_string?")":"}");
 		      free(stack[sp].u.str);
 		      break;
 		   case ps_void:
@@ -2978,62 +2978,62 @@ static void _InterpretPS(IO *wrapper,EntityChar *ec,RetStack *rs) {
 	   case pt_cvi:
 	   case pt_cvr:
 	      /* I shan't distinguish between integers and reals */
-	      if (sp >= 1 && stack[sp - 1].type==ps_string) {
-		 double val=strtod(stack[sp - 1].u.str, NULL);
+	      if (sp >= 1 && stack[sp-1].type==ps_string) {
+		 double val=strtod(stack[sp-1].u.str, NULL);
 
-		 free(stack[sp - 1].u.str);
-		 stack[sp - 1].u.val=val;
-		 stack[sp - 1].type=ps_num;
+		 free(stack[sp-1].u.str);
+		 stack[sp-1].u.val=val;
+		 stack[sp-1].type=ps_num;
 	      }
 	      break;
 	   case pt_cvlit:
 	      if (sp >= 1) {
-		 if (stack[sp - 1].type==ps_array)
-		    stack[sp - 1].u.dict.is_executable=false;
+		 if (stack[sp-1].type==ps_array)
+		    stack[sp-1].u.dict.is_executable=false;
 	      }
 	   case pt_cvn:
 	      if (sp >= 1) {
-		 if (stack[sp - 1].type==ps_string)
-		    stack[sp - 1].type=ps_lit;
+		 if (stack[sp-1].type==ps_string)
+		    stack[sp-1].type=ps_lit;
 	      }
 	   case pt_cvx:
 	      if (sp >= 1) {
-		 if (stack[sp - 1].type==ps_array)
-		    stack[sp - 1].u.dict.is_executable=true;
+		 if (stack[sp-1].type==ps_array)
+		    stack[sp-1].u.dict.is_executable=true;
 	      }
 	      break;
 	   case pt_cvrs:
-	      if (sp >= 3 && stack[sp - 1].type==ps_string &&
-		  stack[sp - 2].type==ps_num &&
-		  stack[sp - 3].type==ps_num) {
-		 if (stack[sp - 2].u.val==8)
-		    sprintf(stack[sp - 1].u.str, "%o",
-			    (int) stack[sp - 3].u.val);
-		 else if (stack[sp - 2].u.val==16)
-		    sprintf(stack[sp - 1].u.str, "%X",
-			    (int) stack[sp - 3].u.val);
+	      if (sp >= 3 && stack[sp-1].type==ps_string &&
+		  stack[sp-2].type==ps_num &&
+		  stack[sp-3].type==ps_num) {
+		 if (stack[sp-2].u.val==8)
+		    sprintf(stack[sp-1].u.str, "%o",
+			    (int) stack[sp-3].u.val);
+		 else if (stack[sp-2].u.val==16)
+		    sprintf(stack[sp-1].u.str, "%X",
+			    (int) stack[sp-3].u.val);
 		 else		/* default to radix 10 no matter what they asked for */
-		    sprintf(stack[sp - 1].u.str, "%g",
-			    (double) stack[sp - 3].u.val);
-		 stack[sp - 3]=stack[sp - 1];
+		    sprintf(stack[sp-1].u.str, "%g",
+			    (double) stack[sp-3].u.val);
+		 stack[sp-3]=stack[sp-1];
 		 sp -= 2;
 	      }
 	      break;
 	   case pt_cvs:
-	      if (sp >= 2 && stack[sp - 1].type==ps_string) {
+	      if (sp >= 2 && stack[sp-1].type==ps_string) {
 		 switch (stack[sp].type) {
 		   case ps_num:
-		      sprintf(stack[sp - 1].u.str, "%g",
-			      (double) stack[sp - 2].u.val);
+		      sprintf(stack[sp-1].u.str, "%g",
+			      (double) stack[sp-2].u.val);
 		      break;
 		   case ps_bool:
-		      sprintf(stack[sp - 1].u.str, "%s",
-			      stack[sp - 2].u.tf ? "true" : "false");
+		      sprintf(stack[sp-1].u.str, "%s",
+			      stack[sp-2].u.tf?"true":"false");
 		      break;
 		   case ps_string:
 		   case ps_instr:
 		   case ps_lit:
-		      sprintf(stack[sp - 1].u.str, "%s", stack[sp - 2].u.str);
+		      sprintf(stack[sp-1].u.str, "%s", stack[sp-2].u.str);
 		      free(stack[sp].u.str);
 		      break;
 		   case ps_void:
@@ -3042,17 +3042,17 @@ static void _InterpretPS(IO *wrapper,EntityChar *ec,RetStack *rs) {
 		   case ps_array:
 		      dictfree(&stack[sp].u.dict);
 		   default:
-		      sprintf(stack[sp - 1].u.str, "-- nostringval --");
+		      sprintf(stack[sp-1].u.str, "-- nostringval --");
 		      break;
 		 }
-		 stack[sp - 2]=stack[sp - 1];
+		 stack[sp-2]=stack[sp-1];
 		 --sp;
 	      }
 	      break;
 	   case pt_stringop:	/* the string keyword, not the () thingy */
-	      if (sp >= 1 && stack[sp - 1].type==ps_num) {
-		 stack[sp - 1].type=ps_string;
-		 stack[sp - 1].u.str=calloc(stack[sp - 1].u.val + 1, 1);
+	      if (sp >= 1 && stack[sp-1].type==ps_num) {
+		 stack[sp-1].type=ps_string;
+		 stack[sp-1].u.str=calloc(stack[sp-1].u.val+1, 1);
 	      }
 	      break;
 
@@ -3073,15 +3073,15 @@ static void _InterpretPS(IO *wrapper,EntityChar *ec,RetStack *rs) {
    if (rs != NULL) {
       int i, cnt, j;
 
-      for (i=sp - 1; i >= 0; --i)
+      for (i=sp-1; i >= 0; --i)
 	 if (stack[i].type != ps_num)
 	    break;
-      cnt=sp - 1 - i;
-      if (cnt > rs->max)
+      cnt=sp-1-i;
+      if (cnt>rs->max)
 	 cnt=rs->max;
       rs->cnt=cnt;
-      for (j=i + 1; j < sp; ++j)
-	 rs->stack[j - i - 1]=stack[j].u.val;
+      for (j=i+1; j<sp; ++j)
+	 rs->stack[j-i-1]=stack[j].u.val;
    }
    freestuff(stack, sp, &dict, &gb, &tofrees);
    if (head != NULL) {
@@ -3091,7 +3091,7 @@ static void _InterpretPS(IO *wrapper,EntityChar *ec,RetStack *rs) {
       ent->next=ec->splines;
       ec->splines=ent;
    }
-   while (gsp > 0) {
+   while (gsp>0) {
       --gsp;
       SplinePointListsFree(gsaves[gsp].clippath);
    }
@@ -3240,10 +3240,10 @@ SplinePointList *SplinesFromEntityChar(EntityChar * ec, int *flags,
 	    *flags=sf_correctdir;
       }
 
-      if (*flags & sf_correctdir)	/* Will happen if flags still unset (-1) */
+      if (*flags&sf_correctdir)	/* Will happen if flags still unset (-1) */
 	 EntityCharCorrectDir(ec);
 
-      handle_eraser=*flags != -1 && (*flags & sf_handle_eraser);
+      handle_eraser=*flags != -1 && (*flags&sf_handle_eraser);
       if (handle_eraser)
 	 ec->splines=EntityReverse(ec->splines);
    }
@@ -3270,8 +3270,8 @@ SplinePointList *SplinesFromEntityChar(EntityChar * ec, int *flags,
 	    memset(&si, '\0', sizeof(si));
 	    si.join=ent->u.splines.join;
 	    si.cap=ent->u.splines.cap;
-	    /* si.removeoverlapifneeded=*flags & sf_removeoverlap ? 1 : 0; */
-	    si.radius=ent->u.splines.stroke_width / 2;
+	    /* si.removeoverlapifneeded=*flags&sf_removeoverlap?1:0; */
+	    si.radius=ent->u.splines.stroke_width/2;
 	    if (ent->u.splines.stroke_width==WIDTH_INHERITED)
 	       si.radius=.5;
 	    if (si.cap==lc_inherited)
@@ -3445,7 +3445,7 @@ void PSFontInterpretPS(AFILE *ps, struct charprocs *cp, char **encoding) {
 	    cp->keys=realloc(cp->keys, cp->cnt * sizeof(char *));
 	    cp->values=realloc(cp->values, cp->cnt * sizeof(char *));
 	 }
-	 if (cp->next < cp->cnt) {
+	 if (cp->next<cp->cnt) {
 	    sc=SplineCharCreate(2);
 	    cp->keys[cp->next]=fastrdup(tokbuf);
 	    cp->values[cp->next++]=sc;
@@ -3465,7 +3465,7 @@ void PSFontInterpretPS(AFILE *ps, struct charprocs *cp, char **encoding) {
    /*  with the appropriate splinechar. If we can't find anything then throw */
    /*  out the reference */
    /* Further fixups come later, where all ps refs are fixedup */
-   for (i=0; i < cp->next; ++i) {
+   for (i=0; i<cp->next; ++i) {
       for (p=NULL, ref=cp->values[i]->layers[ly_fore].refs; ref != NULL;
 	   ref=next) {
 	 char *refname=(char *) (ref->sc);
@@ -3473,7 +3473,7 @@ void PSFontInterpretPS(AFILE *ps, struct charprocs *cp, char **encoding) {
 	 next=ref->next;
 	 if (ref->sc==NULL)
 	    refname=encoding[ref->orig_pos];
-	 for (j=0; j < cp->next; ++j)
+	 for (j=0; j<cp->next; ++j)
 	    if (strcmp(cp->keys[j], refname)==0)
 	       break;
 	 free(ref->sc);		/* a string, not a splinechar */
@@ -3525,7 +3525,7 @@ Encoding *PSSlurpEncodings(AFILE *file) {
       }
       if (tok != pt_openarray && tok != pt_opencurly)
 	 return (head);
-      for (i=0; i < sizeof(names) / sizeof(names[0]); ++i) {
+      for (i=0; i<sizeof(names)/sizeof(names[0]); ++i) {
 	 encs[i]=-1;
 	 names[i]=NULL;
       }
@@ -3537,7 +3537,7 @@ Encoding *PSSlurpEncodings(AFILE *file) {
       while ((tok =
 	      nextpstoken(&wrapper, &dval, tokbuf, sizeof(tokbuf))) != pt_eof
 	     && tok != pt_closearray && tok != pt_closecurly) {
-	 if (tok==pt_namelit && i < sizeof(names) / sizeof(names[0])) {
+	 if (tok==pt_namelit && i<sizeof(names)/sizeof(names[0])) {
 	    max=i;
 	    if (strcmp(tokbuf, ".notdef")==0) {
 	       encs[i]=-1;
@@ -3567,7 +3567,7 @@ Encoding *PSSlurpEncodings(AFILE *file) {
 	 }
       }
       if (max != -1) {
-	 if (++max < 256)
+	 if (++max<256)
 	    max=256;
 	 item=calloc(1, sizeof(Encoding));
 	 item->enc_name=encname;
@@ -3578,7 +3578,7 @@ Encoding *PSSlurpEncodings(AFILE *file) {
 	    item->psnames=calloc(max, sizeof(char *));
 	    memcpy(item->psnames, names, max * sizeof(char *));
 	 } else {
-	    for (i=0; i < max; ++i)
+	    for (i=0; i<max; ++i)
 	       free(names[i]);
 	 }
 	 if (head==NULL)
@@ -3606,8 +3606,8 @@ static void closepath(SplinePointList *cur,int is_type2) {
 	 SplinePoint *oldlast=cur->last;
 
 	 cur->first->prevcp=oldlast->prevcp;
-	 cur->first->prevcp.x += (cur->first->me.x - oldlast->me.x);
-	 cur->first->prevcp.y += (cur->first->me.y - oldlast->me.y);
+	 cur->first->prevcp.x += (cur->first->me.x-oldlast->me.x);
+	 cur->first->prevcp.y += (cur->first->me.y-oldlast->me.y);
 	 cur->first->noprevcp=oldlast->noprevcp;
 	 oldlast->prev->from->next=NULL;
 	 cur->last=oldlast->prev->from;
@@ -3657,14 +3657,14 @@ static void RemapHintMask(HintMask *hm,int mapping[96],int max) {
    if (hm==NULL)
       return;
 
-   if (max > 96)
+   if (max>96)
       max=96;
-   mb=(max + 7) >> 3;
+   mb=(max+7) >> 3;
 
    memset(&rpl, 0, mb);
-   for (i=0; i < max; ++i)
-      if ((*hm)[i >> 3] & (0x80 >> (i & 0x7)))
-	 rpl[mapping[i] >> 3] |= (0x80 >> (mapping[i] & 0x7));
+   for (i=0; i<max; ++i)
+      if ((*hm)[i >> 3]&(0x80 >> (i&0x7)))
+	 rpl[mapping[i] >> 3] |= (0x80 >> (mapping[i]&0x7));
    memcpy(hm, &rpl, mb);
 }
 
@@ -3678,12 +3678,12 @@ static void HintsRenumber(SplineChar *sc) {
    SplineSet *spl;
    SplinePoint *sp;
 
-   for (i=0; i < 96; ++i)
+   for (i=0; i<96; ++i)
       mapping[i]=i;
 
    i=0;
    for (h=sc->hstem; h != NULL; h=h->next) {
-      if (h->hintnumber < 96 && i < 96) {
+      if (h->hintnumber<96 && i<96) {
 	 mapping[h->hintnumber]=i;
 	 h->hintnumber=i++;
       }
@@ -3691,7 +3691,7 @@ static void HintsRenumber(SplineChar *sc) {
       h->u.unblended=NULL;
    }
    for (h=sc->vstem; h != NULL; h=h->next) {
-      if (h->hintnumber < 96 && i < 96) {
+      if (h->hintnumber<96 && i<96) {
 	 mapping[h->hintnumber]=i;
 	 h->hintnumber=i++;
       }
@@ -3699,13 +3699,13 @@ static void HintsRenumber(SplineChar *sc) {
       h->u.unblended=NULL;
    }
    max=i;
-   for (i=0; i < max; ++i)
+   for (i=0; i<max; ++i)
       if (mapping[i] != i)
 	 break;
    if (i==max)
       return;			/* Didn't change the order */
 
-   for (i=0; i < sc->countermask_cnt; ++i)
+   for (i=0; i<sc->countermask_cnt; ++i)
       RemapHintMask(&sc->countermasks[i], mapping, max);
    for (spl=sc->layers[ly_fore].splines; spl != NULL; spl=spl->next) {
       for (sp=spl->first;;) {
@@ -3722,9 +3722,9 @@ static void HintsRenumber(SplineChar *sc) {
 int UnblendedCompare(double u1[MmMax], double u2[MmMax], int cnt) {
    int i;
 
-   for (i=0; i < cnt; ++i) {
+   for (i=0; i<cnt; ++i) {
       if (u1[i] != u2[i])
-	 return (u1[i] > u2[i] ? 1 : -1);
+	 return (u1[i]>u2[i]?1:-1);
    }
    return (0);
 }
@@ -3740,9 +3740,9 @@ static StemInfo *SameH(StemInfo *old,double start,double width,
    } else {
       int j;
 
-      for (j=1; j < instance_count; ++j) {
-	 unblended[0][j] += unblended[0][j - 1];
-	 unblended[1][j] += unblended[1][j - 1];
+      for (j=1; j<instance_count; ++j) {
+	 unblended[0][j] += unblended[0][j-1];
+	 unblended[1][j] += unblended[1][j-1];
       }
       for (sameh=old; sameh != NULL; sameh=sameh->next) {
 	 if ((*sameh->u.unblended)[0]==NULL
@@ -3762,7 +3762,7 @@ static double Blend(double u[MmMax],struct pscontext *context) {
    double sum=u[0];
    int i;
 
-   for (i=1; i < context->instance_count; ++i)
+   for (i=1; i<context->instance_count; ++i)
       sum += context->blend_values[i] * u[i];
    return (sum);
 }
@@ -3810,7 +3810,7 @@ SplineChar *PSCharStringToSplines(uint8_t * type1, int len,
    double unblended[2][MmMax];
    int last_was_b1=false, old_last_was_b1;
 
-   if (!is_type2 && context->instance_count > 1)
+   if (!is_type2 && context->instance_count>1)
       memset(unblended, 0, sizeof(unblended));
 
    ret->name=fastrdup(name);
@@ -3821,8 +3821,8 @@ SplineChar *PSCharStringToSplines(uint8_t * type1, int len,
    ret->manualhints=true;
 
    current.x=current.y=0;
-   while (len > 0) {
-      if (sp > 48) {
+   while (len>0) {
+      if (sp>48) {
 	 ErrorMsg(2,"Stack got too big in %s\n", name);
 	 sp=48;
       }
@@ -3830,16 +3830,16 @@ SplineChar *PSCharStringToSplines(uint8_t * type1, int len,
       --len;
       if ((v=*type1++) >= 32) {
 	 if (v <= 246) {
-	    stack[sp++]=v - 139;
+	    stack[sp++]=v-139;
 	 } else if (v <= 250) {
-	    stack[sp++]=(v - 247) * 256 + *type1++ + 108;
+	    stack[sp++]=(v-247)*256+*type1+++108;
 	    --len;
 	 } else if (v <= 254) {
-	    stack[sp++]=-(v - 251) * 256 - *type1++ - 108;
+	    stack[sp++]=-(v-251)*256-*type1++-108;
 	    --len;
 	 } else {
 	    int val =
-	       (*type1 << 24) | (type1[1] << 16) | (type1[2] << 8) | type1[3];
+	       (*type1 << 24)|(type1[1] << 16)|(type1[2] << 8)|type1[3];
 	    stack[sp++]=val;
 	    type1 += 4;
 	    len -= 4;
@@ -3848,16 +3848,16 @@ SplineChar *PSCharStringToSplines(uint8_t * type1, int len,
 	       /*  two's complement number, but it also says it is a */
 	       /*  Fixed, which in truetype is not two's complement */
 	       /*  (mantisa is always unsigned) */
-	       stack[sp - 1] /= 65536.;
+	       stack[sp-1] /= 65536.;
 #else
-	       int mant=val & 0xffff;
+	       int mant=val&0xffff;
 
-	       stack[sp - 1]=(val >> 16) + mant / 65536.;
+	       stack[sp-1]=(val >> 16)+mant/65536.;
 #endif
 	    }
 	 }
       } else if (v==28) {
-	 stack[sp++]=(short) ((type1[0] << 8) | type1[1]);
+	 stack[sp++]=(short) ((type1[0] << 8)|type1[1]);
 	 type1 += 2;
 	 len -= 2;
 	 /* In the Dict tables of CFF, a 5byte fixed value is prefixed by a */
@@ -3875,7 +3875,7 @@ SplineChar *PSCharStringToSplines(uint8_t * type1, int len,
 	      sp=0;
 	      break;
 	   case 1:		/* vstem3 */ /* specifies three v hints zones at once */
-	      if (sp < 6)
+	      if (sp<6)
 		 ErrorMsg(2,"Stack underflow on vstem3 in %s\n", name);
 	      /* according to the standard, if there is a vstem3 there can't */
 	      /*  be any vstems, so there can't be any confusion about hint order */
@@ -3886,11 +3886,11 @@ SplineChar *PSCharStringToSplines(uint8_t * type1, int len,
 	      sameh=NULL;
 	      if (!is_type2)
 		 sameh =
-		    SameH(ret->vstem, stack[0] + ret->lsidebearing, stack[1],
+		    SameH(ret->vstem, stack[0]+ret->lsidebearing, stack[1],
 			  unblended, 0);
-	      hint=HintNew(stack[0] + ret->lsidebearing, stack[1]);
+	      hint=HintNew(stack[0]+ret->lsidebearing, stack[1]);
 	      hint->hintnumber =
-		 sameh != NULL ? sameh->hintnumber : hint_cnt++;
+		 sameh != NULL?sameh->hintnumber:hint_cnt++;
 	      if (activev==NULL)
 		 activev=hp=hint;
 	      else {
@@ -3901,34 +3901,34 @@ SplineChar *PSCharStringToSplines(uint8_t * type1, int len,
 	      sameh=NULL;
 	      if (!is_type2)
 		 sameh =
-		    SameH(ret->vstem, stack[2] + ret->lsidebearing, stack[3],
+		    SameH(ret->vstem, stack[2]+ret->lsidebearing, stack[3],
 			  unblended, 0);
-	      hp->next=HintNew(stack[2] + ret->lsidebearing, stack[3]);
+	      hp->next=HintNew(stack[2]+ret->lsidebearing, stack[3]);
 	      hp->next->hintnumber =
-		 sameh != NULL ? sameh->hintnumber : hint_cnt++;
+		 sameh != NULL?sameh->hintnumber:hint_cnt++;
 	      if (!is_type2)
 		 sameh =
-		    SameH(ret->vstem, stack[4] + ret->lsidebearing, stack[5],
+		    SameH(ret->vstem, stack[4]+ret->lsidebearing, stack[5],
 			  unblended, 0);
 	      hp->next->next =
-		 HintNew(stack[4] + ret->lsidebearing, stack[5]);
+		 HintNew(stack[4]+ret->lsidebearing, stack[5]);
 	      hp->next->next->hintnumber =
-		 sameh != NULL ? sameh->hintnumber : hint_cnt++;
-	      if (!is_type2 && hp->next->next->hintnumber < 96) {
+		 sameh != NULL?sameh->hintnumber:hint_cnt++;
+	      if (!is_type2 && hp->next->next->hintnumber<96) {
 		 if (pending_hm==NULL)
 		    pending_hm=chunkalloc(sizeof(HintMask));
 		 (*pending_hm)[hint->hintnumber >> 3] |=
-		    0x80 >> (hint->hintnumber & 0x7);
+		    0x80 >> (hint->hintnumber&0x7);
 		 (*pending_hm)[hint->next->hintnumber >> 3] |=
-		    0x80 >> (hint->next->hintnumber & 0x7);
+		    0x80 >> (hint->next->hintnumber&0x7);
 		 (*pending_hm)[hint->next->next->hintnumber >> 3] |=
-		    0x80 >> (hint->next->next->hintnumber & 0x7);
+		    0x80 >> (hint->next->next->hintnumber&0x7);
 	      }
 	      hp=hp->next->next;
 	      sp=0;
 	      break;
 	   case 2:		/* hstem3 */ /* specifies three h hints zones at once */
-	      if (sp < 6)
+	      if (sp<6)
 		 ErrorMsg(2,"Stack underflow on hstem3 in %s\n", name);
 	      if (is_type2)
 		 ErrorMsg(2,"%s\'s vstem3 operator is not supported for Type2\n",
@@ -3938,7 +3938,7 @@ SplineChar *PSCharStringToSplines(uint8_t * type1, int len,
 		 sameh=SameH(ret->hstem, stack[0], stack[1], unblended, 0);
 	      hint=HintNew(stack[0], stack[1]);
 	      hint->hintnumber =
-		 sameh != NULL ? sameh->hintnumber : hint_cnt++;
+		 sameh != NULL?sameh->hintnumber:hint_cnt++;
 	      if (activeh==NULL)
 		 activeh=hp=hint;
 	      else {
@@ -3951,29 +3951,29 @@ SplineChar *PSCharStringToSplines(uint8_t * type1, int len,
 		 sameh=SameH(ret->hstem, stack[2], stack[3], unblended, 0);
 	      hp->next=HintNew(stack[2], stack[3]);
 	      hp->next->hintnumber =
-		 sameh != NULL ? sameh->hintnumber : hint_cnt++;
+		 sameh != NULL?sameh->hintnumber:hint_cnt++;
 	      sameh=NULL;
 	      if (!is_type2)
 		 sameh=SameH(ret->hstem, stack[4], stack[5], unblended, 0);
 	      hp->next->next=HintNew(stack[4], stack[5]);
 	      hp->next->next->hintnumber =
-		 sameh != NULL ? sameh->hintnumber : hint_cnt++;
-	      if (!is_type2 && hp->next->next->hintnumber < 96) {
+		 sameh != NULL?sameh->hintnumber:hint_cnt++;
+	      if (!is_type2 && hp->next->next->hintnumber<96) {
 		 if (pending_hm==NULL)
 		    pending_hm=chunkalloc(sizeof(HintMask));
 		 (*pending_hm)[hint->hintnumber >> 3] |=
-		    0x80 >> (hint->hintnumber & 0x7);
+		    0x80 >> (hint->hintnumber&0x7);
 		 (*pending_hm)[hint->next->hintnumber >> 3] |=
-		    0x80 >> (hint->next->hintnumber & 0x7);
+		    0x80 >> (hint->next->hintnumber&0x7);
 		 (*pending_hm)[hint->next->next->hintnumber >> 3] |=
-		    0x80 >> (hint->next->next->hintnumber & 0x7);
+		    0x80 >> (hint->next->next->hintnumber&0x7);
 	      }
 	      hp=hp->next->next;
 	      sp=0;
 	      break;
 	   case 6:		/* seac */ /* build accented characters */
 	    seac:
-	      if (sp < 5)
+	      if (sp<5)
 		 ErrorMsg(2,"Stack underflow on seac in %s\n", name);
 	      if (is_type2) {
 		 if (v==6)
@@ -3988,7 +3988,7 @@ SplineChar *PSCharStringToSplines(uint8_t * type1, int len,
 	      r2=RefCharCreate();
 	      r2->transform[0]=1;
 	      r2->transform[3]=1;
-	      r2->transform[4]=stack[1] - (stack[0] - ret->lsidebearing);
+	      r2->transform[4]=stack[1]-(stack[0]-ret->lsidebearing);
 	      r2->transform[5]=stack[2];
 	      /* the translation of the accent here is said to be relative */
 	      /*  to the origins of the base character. I think they place */
@@ -4000,7 +4000,7 @@ SplineChar *PSCharStringToSplines(uint8_t * type1, int len,
 	      r1->transform[3]=1;
 	      r1->adobe_enc=stack[3];
 	      r2->adobe_enc=stack[4];
-	      if (stack[3] < 0 || stack[3] >= 256 || stack[4] < 0
+	      if (stack[3]<0 || stack[3] >= 256 || stack[4]<0
 		  || stack[4] >= 256) {
 		 ErrorMsg(2,"Reference encoding out of bounds in %s\n",
 			  name);
@@ -4017,7 +4017,7 @@ SplineChar *PSCharStringToSplines(uint8_t * type1, int len,
 	      sp=0;
 	      break;
 	   case 7:		/* sbw */ /* generalized width/sidebearing command */
-	      if (sp < 4)
+	      if (sp<4)
 		 ErrorMsg(2,"Stack underflow on sbw in %s\n", name);
 	      if (is_type2)
 		 ErrorMsg(2,"%s\'s sbw operator is not supported for Type2\n",
@@ -4032,22 +4032,22 @@ SplineChar *PSCharStringToSplines(uint8_t * type1, int len,
 	   case 9:
 	   case 14:
 	   case 26:
-	      if (sp < 1)
+	      if (sp<1)
 		 ErrorMsg(2,"Stack underflow on unary operator in %s\n",
 			  name);
 	      switch (v) {
 		case 5:
-		   stack[sp - 1]=(stack[sp - 1]==0);
+		   stack[sp-1]=(stack[sp-1]==0);
 		   break;	/* not */
 		case 9:
-		   if (stack[sp - 1] < 0)
-		      stack[sp - 1]=-stack[sp - 1];
+		   if (stack[sp-1]<0)
+		      stack[sp-1]=-stack[sp-1];
 		   break;	/* abs */
 		case 14:
-		   stack[sp - 1]=-stack[sp - 1];
+		   stack[sp-1]=-stack[sp-1];
 		   break;	/* neg */
 		case 26:
-		   stack[sp - 1]=sqrt(stack[sp - 1]);
+		   stack[sp-1]=sqrt(stack[sp-1]);
 		   break;	/* sqrt */
 	      }
 	      break;
@@ -4058,43 +4058,43 @@ SplineChar *PSCharStringToSplines(uint8_t * type1, int len,
 	   case 12:
 	   case 15:
 	   case 24:
-	      if (sp < 2)
+	      if (sp<2)
 		 ErrorMsg(2,"Stack underflow on binary operator in %s\n",
 			  name);
 	      else
 		 switch (v) {
 		   case 3:	/* and */
-		      stack[sp - 2]=(stack[sp - 1] != 0
-				       && stack[sp - 2] != 0);
+		      stack[sp-2]=(stack[sp-1] != 0
+				       && stack[sp-2] != 0);
 		      break;
 		   case 4:	/* and */
-		      stack[sp - 2]=(stack[sp - 1] != 0
-				       || stack[sp - 2] != 0);
+		      stack[sp-2]=(stack[sp-1] != 0
+				       || stack[sp-2] != 0);
 		      break;
 		   case 10:	/* add */
-		      stack[sp - 2] += stack[sp - 1];
+		      stack[sp-2] += stack[sp-1];
 		      break;
 		   case 11:	/* sub */
-		      stack[sp - 2] -= stack[sp - 1];
+		      stack[sp-2] -= stack[sp-1];
 		      break;
 		   case 12:	/* div */
-		      stack[sp - 2] /= stack[sp - 1];
+		      stack[sp-2] /= stack[sp-1];
 		      break;
 		   case 24:	/* mul */
-		      stack[sp - 2] *= stack[sp - 1];
+		      stack[sp-2] *= stack[sp-1];
 		      break;
 		   case 15:	/* eq */
-		      stack[sp - 2]=(stack[sp - 1]==stack[sp - 2]);
+		      stack[sp-2]=(stack[sp-1]==stack[sp-2]);
 		      break;
 		 }
 	      --sp;
 	      break;
 	   case 22:		/* ifelse */
-	      if (sp < 4)
+	      if (sp<4)
 		 ErrorMsg(2,"Stack underflow on ifelse in %s\n", name);
 	      else {
-		 if (stack[sp - 2] > stack[sp - 1])
-		    stack[sp - 4]=stack[sp - 3];
+		 if (stack[sp-2]>stack[sp-1])
+		    stack[sp-4]=stack[sp-3];
 		 sp -= 3;
 	      }
 	      break;
@@ -4111,22 +4111,22 @@ SplineChar *PSCharStringToSplines(uint8_t * type1, int len,
 	      /*  real postscript stack */
 	      if (is_type2)
 		 ErrorMsg(2,"Type2 fonts do not support the Type1 callothersubrs operator\n");
-	      if (sp < 2 || sp < 2 + stack[sp - 2]) {
+	      if (sp<2 || sp<2+stack[sp-2]) {
 		 ErrorMsg(2,"Stack underflow on callothersubr in %s\n",
 			  name);
 		 sp=0;
 	      } else {
-		 int tot=stack[sp - 2], i, k, j;
+		 int tot=stack[sp-2], i, k, j;
 
 		 popsp=0;
-		 for (k=sp - 3; k >= sp - 2 - tot; --k)
+		 for (k=sp-3; k >= sp-2-tot; --k)
 		    pops[popsp++]=stack[k];
 		 /* othersubrs 0-3 must be interpretted. 0-2 are Flex, 3 is Hint Replacement */
 		 /* othersubrs 12,13 are for counter hints. We don't need to */
 		 /*  do anything to ignore them */
 		 /* Subroutines 14-18 are multiple master blenders. We need */
 		 /*  to pay attention to them too */
-		 switch ((int) stack[sp - 1]) {
+		 switch ((int) stack[sp-1]) {
 		   case 3:{
 			 /* when we weren't capabable of hint replacement we */
 			 /*  punted by putting 3 on the stack (T1 spec page 70) */
@@ -4259,7 +4259,7 @@ SplineChar *PSCharStringToSplines(uint8_t * type1, int len,
 		   case 16:	/* results in 3 blended values */
 		   case 17:	/* results in 4 blended values */
 		   case 18:{	/* results in 6 blended values */
-			 int cnt=stack[sp - 1] - 13;
+			 int cnt=stack[sp-1]-13;
 
 			 if (cnt==5)
 			    cnt=6;
@@ -4272,68 +4272,68 @@ SplineChar *PSCharStringToSplines(uint8_t * type1, int len,
 			 else {
 			    /* Hints need to keep track of the original blends */
 			    if (cnt==1 && !is_type2) {
-			       if (sp - 2 - tot >= 1
+			       if (sp-2-tot >= 1
 				   && (!old_last_was_b1
 				       || stack[0] != Blend(unblended[1],
 							    context))) {
 				  unblended[0][0]=stack[0];
-				  for (i=1; i < context->instance_count;
+				  for (i=1; i<context->instance_count;
 				       ++i)
 				     unblended[0][i]=0;
 			       } else
-				  memcpy(unblended, unblended + 1,
+				  memcpy(unblended, unblended+1,
 					 context->instance_count *
 					 sizeof(double));
-			       for (j=0; j < context->instance_count; ++j)
-				  unblended[1][j]=stack[sp - 2 - tot + j];
+			       for (j=0; j<context->instance_count; ++j)
+				  unblended[1][j]=stack[sp-2-tot+j];
 			    } else if (cnt==2 && !is_type2) {
-			       unblended[0][0]=stack[sp - 2 - tot];
-			       unblended[1][0]=stack[sp - 2 - tot + 1];
-			       for (i=0; i < 2; ++i)
-				  for (j=1; j < context->instance_count;
+			       unblended[0][0]=stack[sp-2-tot];
+			       unblended[1][0]=stack[sp-2-tot+1];
+			       for (i=0; i<2; ++i)
+				  for (j=1; j<context->instance_count;
 				       ++j)
 				     unblended[i][j] =
-					stack[sp - 2 - tot + 2 +
+					stack[sp-2-tot+2 +
 					      i * (context->instance_count -
-						   1) + (j - 1)];
+						   1)+(j-1)];
 			    }
 			    popsp=0;
-			    for (i=0; i < cnt; ++i) {
-			       double sum=stack[sp - 2 - tot + i];
+			    for (i=0; i<cnt; ++i) {
+			       double sum=stack[sp-2-tot+i];
 
-			       for (j=1; j < context->instance_count; ++j)
+			       for (j=1; j<context->instance_count; ++j)
 				  sum += context->blend_values[j] *
-				     stack[sp - 2 - tot + cnt +
-					   i * (context->instance_count - 1) +
-					   j - 1];
-			       pops[cnt - 1 - popsp++]=sum;
+				     stack[sp-2-tot+cnt +
+					   i * (context->instance_count-1) +
+					   j-1];
+			       pops[cnt-1-popsp++]=sum;
 			    }
 			 }
 		      }
 		      break;
 		 }
-		 sp=k + 1;
+		 sp=k+1;
 	      }
 	      break;
 	   case 20:		/* put */
-	      if (sp < 2)
+	      if (sp<2)
 		 ErrorMsg(2,"Too few items on stack for put in %s\n", name);
-	      else if (stack[sp - 1] < 0 || stack[sp - 1] >= 32)
+	      else if (stack[sp-1]<0 || stack[sp-1] >= 32)
 		 ErrorMsg(2,"Reference to transient memory out of bounds in put in %s\n",
 			  name);
 	      else {
-		 transient[(int) stack[sp - 1]]=stack[sp - 2];
+		 transient[(int) stack[sp-1]]=stack[sp-2];
 		 sp -= 2;
 	      }
 	      break;
 	   case 21:		/* get */
-	      if (sp < 1)
+	      if (sp<1)
 		 ErrorMsg(2,"Too few items on stack for get in %s\n", name);
-	      else if (stack[sp - 1] < 0 || stack[sp - 1] >= 32)
+	      else if (stack[sp-1]<0 || stack[sp-1] >= 32)
 		 ErrorMsg(2,"Reference to transient memory out of bounds in put in %s\n",
 			  name);
 	      else
-		 stack[sp - 1]=transient[(int) stack[sp - 1]];
+		 stack[sp-1]=transient[(int) stack[sp-1]];
 	      break;
 	   case 17:		/* pop */
 	      /* pops something from the postscript stack and pushes it on ours */
@@ -4346,40 +4346,40 @@ SplineChar *PSCharStringToSplines(uint8_t * type1, int len,
 		 stack[sp++]=pops[--popsp];
 	      break;
 	   case 18:		/* drop */
-	      if (sp > 0)
+	      if (sp>0)
 		 --sp;
 	      break;
 	   case 27:		/* dup */
 	      if (sp >= 1) {
-		 stack[sp]=stack[sp - 1];
+		 stack[sp]=stack[sp-1];
 		 ++sp;
 	      }
 	      break;
 	   case 28:		/* exch */
 	      if (sp >= 2) {
-		 double temp=stack[sp - 1];
+		 double temp=stack[sp-1];
 
-		 stack[sp - 1]=stack[sp - 2];
-		 stack[sp - 2]=temp;
+		 stack[sp-1]=stack[sp-2];
+		 stack[sp-2]=temp;
 	      }
 	      break;
 	   case 29:		/* index */
 	      if (sp >= 1) {
 		 int index=stack[--sp];
 
-		 if (index < 0 || sp < index + 1)
+		 if (index<0 || sp<index+1)
 		    ErrorMsg(2,"Index out of range in %s\n", name);
 		 else {
-		    stack[sp]=stack[sp - index - 1];
+		    stack[sp]=stack[sp-index-1];
 		    ++sp;
 		 }
 	      }
 	      break;
 	   case 30:		/* roll */
 	      if (sp >= 2) {
-		 int j=stack[sp - 1], N=stack[sp - 2];
+		 int j=stack[sp-1], N=stack[sp-2];
 
-		 if (N > sp || j >= N || j < 0 || N < 0)
+		 if (N>sp || j >= N || j<0 || N<0)
 		    ErrorMsg(2,"roll out of range in %s\n", name);
 		 else if (j==0 || N==0)
 		    /* No op */ ;
@@ -4387,10 +4387,10 @@ SplineChar *PSCharStringToSplines(uint8_t * type1, int len,
 		    double *temp=malloc(N * sizeof(double));
 		    int i;
 
-		    for (i=0; i < N; ++i)
-		       temp[i]=stack[sp - N + i];
-		    for (i=0; i < N; ++i)
-		       stack[sp - N + i]=temp[(i + j) % N];
+		    for (i=0; i<N; ++i)
+		       temp[i]=stack[sp-N+i];
+		    for (i=0; i<N; ++i)
+		       stack[sp-N+i]=temp[(i+j)%N];
 		    free(temp);
 		 }
 	      }
@@ -4398,7 +4398,7 @@ SplineChar *PSCharStringToSplines(uint8_t * type1, int len,
 	   case 33:		/* setcurrentpoint */
 	      if (is_type2)
 		 ErrorMsg(2,"Type2 fonts do not support the Type1 setcurrentpoint operator\n");
-	      if (sp < 2)
+	      if (sp<2)
 		 ErrorMsg(2,"Stack underflow on setcurrentpoint in %s\n",
 			  name);
 	      else {
@@ -4440,40 +4440,40 @@ SplineChar *PSCharStringToSplines(uint8_t * type1, int len,
 		   break;
 		case 36:	/* hflex1 */
 		   dx6=stack[base++];
-		   dy6=-dy - dy2 - dy5;
+		   dy6=-dy-dy2-dy5;
 		   break;
 		case 37:	/* flex1 */
-		   xt=dx + dx2 + dx3 + dx4 + dx5;
-		   yt=dy + dy2 + dy3 + dy4 + dy5;
-		   if (xt < 0)
+		   xt=dx+dx2+dx3+dx4+dx5;
+		   yt=dy+dy2+dy3+dy4+dy5;
+		   if (xt<0)
 		      xt=-xt;
-		   if (yt < 0)
+		   if (yt<0)
 		      yt=-yt;
-		   if (xt > yt) {
+		   if (xt>yt) {
 		      dx6=stack[base++];
-		      dy6=-dy - dy2 - dy3 - dy4 - dy5;
+		      dy6=-dy-dy2-dy3-dy4-dy5;
 		   } else {
 		      dy6=stack[base++];
-		      dx6=-dx - dx2 - dx3 - dx4 - dx5;
+		      dx6=-dx-dx2-dx3-dx4-dx5;
 		   }
 		   break;
 	      }
 	      if (cur != NULL && cur->first != NULL
 		  && (cur->first != cur->last || cur->first->next==NULL)) {
-		 current.x=rint((current.x + dx) * 1024) / 1024;
-		 current.y=rint((current.y + dy) * 1024) / 1024;
+		 current.x=rint((current.x+dx)*1024)/1024;
+		 current.y=rint((current.y+dy)*1024)/1024;
 		 cur->last->nextcp.x=current.x;
 		 cur->last->nextcp.y=current.y;
 		 cur->last->nonextcp=false;
-		 current.x=rint((current.x + dx2) * 1024) / 1024;
-		 current.y=rint((current.y + dy2) * 1024) / 1024;
+		 current.x=rint((current.x+dx2)*1024)/1024;
+		 current.y=rint((current.y+dy2)*1024)/1024;
 		 pt=chunkalloc(sizeof(SplinePoint));
 		 pt->hintmask=pending_hm;
 		 pending_hm=NULL;
 		 pt->prevcp.x=current.x;
 		 pt->prevcp.y=current.y;
-		 current.x=rint((current.x + dx3) * 1024) / 1024;
-		 current.y=rint((current.y + dy3) * 1024) / 1024;
+		 current.x=rint((current.x+dx3)*1024)/1024;
+		 current.y=rint((current.y+dy3)*1024)/1024;
 		 pt->me.x=current.x;
 		 pt->me.y=current.y;
 		 pt->nonextcp=true;
@@ -4481,18 +4481,18 @@ SplineChar *PSCharStringToSplines(uint8_t * type1, int len,
 		 SplineMake3(cur->last, pt);
 		 cur->last=pt;
 
-		 current.x=rint((current.x + dx4) * 1024) / 1024;
-		 current.y=rint((current.y + dy4) * 1024) / 1024;
+		 current.x=rint((current.x+dx4)*1024)/1024;
+		 current.y=rint((current.y+dy4)*1024)/1024;
 		 cur->last->nextcp.x=current.x;
 		 cur->last->nextcp.y=current.y;
 		 cur->last->nonextcp=false;
-		 current.x=rint((current.x + dx5) * 1024) / 1024;
-		 current.y=rint((current.y + dy5) * 1024) / 1024;
+		 current.x=rint((current.x+dx5)*1024)/1024;
+		 current.y=rint((current.y+dy5)*1024)/1024;
 		 pt=chunkalloc(sizeof(SplinePoint));
 		 pt->prevcp.x=current.x;
 		 pt->prevcp.y=current.y;
-		 current.x=rint((current.x + dx6) * 1024) / 1024;
-		 current.y=rint((current.y + dy6) * 1024) / 1024;
+		 current.x=rint((current.x+dx6)*1024)/1024;
+		 current.y=rint((current.y+dy6)*1024)/1024;
 		 pt->me.x=current.x;
 		 pt->me.y=current.y;
 		 pt->nonextcp=true;
@@ -4514,11 +4514,11 @@ SplineChar *PSCharStringToSplines(uint8_t * type1, int len,
 	   case 1:		/* hstem */
 	   case 18:		/* hstemhm */
 	      base=0;
-	      if ((sp & 1) && ret->width==(int16_t) 0x8000)
+	      if ((sp&1) && ret->width==(int16_t) 0x8000)
 		 ret->width=stack[0];
-	      if (sp & 1)
+	      if (sp&1)
 		 base=1;
-	      if (sp - base < 2)
+	      if (sp-base<2)
 		 ErrorMsg(2,"Stack underflow on hstem in %s\n", name);
 	      /* stack[0] is absolute y for start of horizontal hint */
 	      /*  (actually relative to the y specified as lsidebearing y in sbw */
@@ -4527,15 +4527,15 @@ SplineChar *PSCharStringToSplines(uint8_t * type1, int len,
 	      hp=NULL;
 	      if (activeh != NULL)
 		 for (hp=activeh; hp->next != NULL; hp=hp->next);
-	      while (sp - base >= 2) {
+	      while (sp-base >= 2) {
 		 sameh=NULL;
 		 if (!is_type2)
 		    sameh =
-		       SameH(ret->hstem, stack[base] + coord, stack[base + 1],
+		       SameH(ret->hstem, stack[base]+coord, stack[base+1],
 			     unblended, context->instance_count);
-		 hint=HintNew(stack[base] + coord, stack[base + 1]);
+		 hint=HintNew(stack[base]+coord, stack[base+1]);
 		 hint->hintnumber =
-		    sameh != NULL ? sameh->hintnumber : hint_cnt++;
+		    sameh != NULL?sameh->hintnumber:hint_cnt++;
 		 if (!is_type2 && context->instance_count != 0) {
 		    hint->u.unblended=chunkalloc(sizeof(double[2][MmMax]));
 		    memcpy(hint->u.unblended, unblended,
@@ -4546,14 +4546,14 @@ SplineChar *PSCharStringToSplines(uint8_t * type1, int len,
 		 else
 		    hp->next=hint;
 		 hp=hint;
-		 if (!is_type2 && hint->hintnumber < 96) {
+		 if (!is_type2 && hint->hintnumber<96) {
 		    if (pending_hm==NULL)
 		       pending_hm=chunkalloc(sizeof(HintMask));
 		    (*pending_hm)[hint->hintnumber >> 3] |=
-		       0x80 >> (hint->hintnumber & 0x7);
+		       0x80 >> (hint->hintnumber&0x7);
 		 }
 		 base += 2;
-		 coord=hint->start + hint->width;
+		 coord=hint->start+hint->width;
 	      }
 	      sp=0;
 	      break;
@@ -4564,17 +4564,17 @@ SplineChar *PSCharStringToSplines(uint8_t * type1, int len,
 	   case 23:		/* vstemhm */
 	      base=0;
 	      if (cur==NULL || v==3 || v==23) {
-		 if ((sp & 1) && is_type2 && ret->width==(int16_t) 0x8000) {
+		 if ((sp&1) && is_type2 && ret->width==(int16_t) 0x8000) {
 		    ret->width=stack[0];
 		 }
-		 if (sp & 1)
+		 if (sp&1)
 		    base=1;
 		 /* I've seen a vstemhm with no arguments. I've no idea what that */
 		 /*  means. It came right after a hintmask */
 		 /* I'm confused about v/hstemhm because the manual says it needs */
 		 /*  to be used if one uses a hintmask, but that's not what the */
 		 /*  examples show.  Or I'm not understanding. */
-		 if (sp - base < 2 && v != 19 && v != 20)
+		 if (sp-base<2 && v != 19 && v != 20)
 		    ErrorMsg(2,"Stack underflow on vstem in %s\n", name);
 		 /* stack[0] is absolute x for start of vertical hint */
 		 /*      (actually relative to the x specified as lsidebearing in h/sbw */
@@ -4583,26 +4583,26 @@ SplineChar *PSCharStringToSplines(uint8_t * type1, int len,
 		 hp=NULL;
 		 if (activev != NULL)
 		    for (hp=activev; hp->next != NULL; hp=hp->next);
-		 while (sp - base >= 2) {
+		 while (sp-base >= 2) {
 		    sameh=NULL;
 		    if (!is_type2)
 		       sameh =
-			  SameH(ret->vstem, stack[base] + coord,
-				stack[base + 1], unblended,
+			  SameH(ret->vstem, stack[base]+coord,
+				stack[base+1], unblended,
 				context->instance_count);
-		    hint=HintNew(stack[base] + coord, stack[base + 1]);
+		    hint=HintNew(stack[base]+coord, stack[base+1]);
 		    hint->hintnumber =
-		       sameh != NULL ? sameh->hintnumber : hint_cnt++;
+		       sameh != NULL?sameh->hintnumber:hint_cnt++;
 		    if (!is_type2 && context->instance_count != 0) {
 		       hint->u.unblended=chunkalloc(sizeof(double[2][MmMax]));
 		       memcpy(hint->u.unblended, unblended,
 			      sizeof(double[2][MmMax]));
 		    }
-		    if (!is_type2 && hint->hintnumber < 96) {
+		    if (!is_type2 && hint->hintnumber<96) {
 		       if (pending_hm==NULL)
 			  pending_hm=chunkalloc(sizeof(HintMask));
 		       (*pending_hm)[hint->hintnumber >> 3] |=
-			  0x80 >> (hint->hintnumber & 0x7);
+			  0x80 >> (hint->hintnumber&0x7);
 		    }
 		    if (activev==NULL)
 		       activev=hint;
@@ -4610,14 +4610,14 @@ SplineChar *PSCharStringToSplines(uint8_t * type1, int len,
 		       hp->next=hint;
 		    hp=hint;
 		    base += 2;
-		    coord=hint->start + hint->width;
+		    coord=hint->start+hint->width;
 		 }
 		 sp=0;
 	      }
 	      if (v==19 || v==20) {	/* hintmask, cntrmask */
-		 int bytes=(hint_cnt + 7) / 8;
+		 int bytes=(hint_cnt+7)/8;
 
-		 if (bytes > sizeof(HintMask))
+		 if (bytes>sizeof(HintMask))
 		    bytes=sizeof(HintMask);
 		 if (v==19) {
 		    ret->hstem=HintsAppend(ret->hstem, activeh);
@@ -4627,15 +4627,15 @@ SplineChar *PSCharStringToSplines(uint8_t * type1, int len,
 		    if (pending_hm==NULL)
 		       pending_hm=chunkalloc(sizeof(HintMask));
 		    memcpy(pending_hm, type1, bytes);
-		 } else if (cp < sizeof(counters) / sizeof(counters[0])) {
+		 } else if (cp<sizeof(counters)/sizeof(counters[0])) {
 		    counters[cp]=chunkalloc(sizeof(HintMask));
 		    memcpy(counters[cp], type1, bytes);
 		    ++cp;
 		 }
-		 if (bytes != hint_cnt / 8) {
-		    int mask=0xff >> (hint_cnt & 7);
+		 if (bytes != hint_cnt/8) {
+		    int mask=0xff >> (hint_cnt&7);
 
-		    if (type1[bytes - 1] & mask)
+		    if (type1[bytes-1]&mask)
 		       ErrorMsg(2,"Hint mask (or counter mask) with too many hints in %s\n",
 				name);
 		 }
@@ -4645,7 +4645,7 @@ SplineChar *PSCharStringToSplines(uint8_t * type1, int len,
 	      break;
 	   case 14:		/* endchar */
 	      /* endchar is allowed to terminate processing even within a subroutine */
-	      if ((sp & 1) && is_type2 && ret->width==(int16_t) 0x8000)
+	      if ((sp&1) && is_type2 && ret->width==(int16_t) 0x8000)
 		 ret->width=stack[0];
 	      if (context->painttype != 2)
 		 closepath(cur, is_type2);
@@ -4677,7 +4677,7 @@ SplineChar *PSCharStringToSplines(uint8_t * type1, int len,
 	      goto done;
 	      break;
 	   case 13:		/* hsbw (set left sidebearing and width) */
-	      if (sp < 2)
+	      if (sp<2)
 		 ErrorMsg(2,"Stack underflow on hsbw in %s\n", name);
 	      ret->lsidebearing=stack[0];
 	      current.x=stack[0];	/* sets the current point too */
@@ -4696,12 +4696,12 @@ SplineChar *PSCharStringToSplines(uint8_t * type1, int len,
 		     && ret->width==(int16_t) 0x8000)
 		    /* Character's width may be specified on the first moveto */
 		    ret->width=stack[0];
-		 if (v==21 && sp > 2) {
-		    stack[0]=stack[sp - 2];
-		    stack[1]=stack[sp - 1];
+		 if (v==21 && sp>2) {
+		    stack[0]=stack[sp-2];
+		    stack[1]=stack[sp-1];
 		    sp=2;
-		 } else if (v != 21 && sp > 1) {
-		    stack[0]=stack[sp - 1];
+		 } else if (v != 21 && sp>1) {
+		    stack[0]=stack[sp-1];
 		    sp=1;
 		 }
 		 if (context->painttype != 2)
@@ -4712,18 +4712,18 @@ SplineChar *PSCharStringToSplines(uint8_t * type1, int len,
 	   case 7:		/* vlineto */
 	      polarity=0;
 	      base=0;
-	      while (base < sp) {
+	      while (base<sp) {
 		 dx=dy=0;
 		 if (v==5 || v==21) {
-		    if (sp < base + 2) {
+		    if (sp<base+2) {
 		       ErrorMsg(2,"Stack underflow on rlineto/rmoveto in %s\n",
 				name);
 		       break;
 		    }
 		    dx=stack[base++];
 		    dy=stack[base++];
-		 } else if ((v==6 && !(polarity & 1))
-			    || (v==7 && (polarity & 1)) || v==22) {
+		 } else if ((v==6 && !(polarity&1))
+			    || (v==7 && (polarity&1)) || v==22) {
 		    if (sp <= base) {
 		       ErrorMsg(2,"Stack underflow on hlineto/hmoveto in %s\n",
 				name);
@@ -4740,8 +4740,8 @@ SplineChar *PSCharStringToSplines(uint8_t * type1, int len,
 		    dy=stack[base++];
 		 }
 		 ++polarity;
-		 current.x=rint((current.x + dx) * 1024) / 1024;
-		 current.y=rint((current.y + dy) * 1024) / 1024;
+		 current.x=rint((current.x+dx)*1024)/1024;
+		 current.y=rint((current.y+dy)*1024)/1024;
 		 pt=chunkalloc(sizeof(SplinePoint));
 		 pt->hintmask=pending_hm;
 		 pending_hm=NULL;
@@ -4785,9 +4785,9 @@ SplineChar *PSCharStringToSplines(uint8_t * type1, int len,
 	      break;
 	   case 25:		/* rlinecurve */
 	      base=0;
-	      while (sp > base + 6) {
-		 current.x=rint((current.x + stack[base++]) * 1024) / 1024;
-		 current.y=rint((current.y + stack[base++]) * 1024) / 1024;
+	      while (sp>base+6) {
+		 current.x=rint((current.x+stack[base++])*1024)/1024;
+		 current.y=rint((current.y+stack[base++])*1024)/1024;
 		 if (cur != NULL) {
 		    pt=chunkalloc(sizeof(SplinePoint));
 		    pt->hintmask=pending_hm;
@@ -4808,10 +4808,10 @@ SplineChar *PSCharStringToSplines(uint8_t * type1, int len,
 	   case 27:		/* hhcurveto */
 	   case 26:		/* vvcurveto */
 	      polarity=0;
-	      while (sp > base + 2) {
+	      while (sp>base+2) {
 		 dx=dy=dx2=dy2=dx3=dy3=0;
 		 if (v==8 || v==25 || v==24) {
-		    if (sp < 6 + base) {
+		    if (sp<6+base) {
 		       ErrorMsg(2,"Stack underflow on rrcurveto in %s\n",
 				name);
 		       base=sp;
@@ -4824,12 +4824,12 @@ SplineChar *PSCharStringToSplines(uint8_t * type1, int len,
 		       dy3=stack[base++];
 		    }
 		 } else if (v==27) {	/* hhcurveto */
-		    if (sp < 4 + base) {
+		    if (sp<4+base) {
 		       ErrorMsg(2,"Stack underflow on hhcurveto in %s\n",
 				name);
 		       base=sp;
 		    } else {
-		       if ((sp - base) & 1)
+		       if ((sp-base)&1)
 			  dy=stack[base++];
 		       dx=stack[base++];
 		       dx2=stack[base++];
@@ -4837,21 +4837,21 @@ SplineChar *PSCharStringToSplines(uint8_t * type1, int len,
 		       dx3=stack[base++];
 		    }
 		 } else if (v==26) {	/* vvcurveto */
-		    if (sp < 4 + base) {
+		    if (sp<4+base) {
 		       ErrorMsg(2,"Stack underflow on hhcurveto in %s\n",
 				name);
 		       base=sp;
 		    } else {
-		       if ((sp - base) & 1)
+		       if ((sp-base)&1)
 			  dx=stack[base++];
 		       dy=stack[base++];
 		       dx2=stack[base++];
 		       dy2=stack[base++];
 		       dy3=stack[base++];
 		    }
-		 } else if ((v==31 && !(polarity & 1))
-			    || (v==30 && (polarity & 1))) {
-		    if (sp < 4 + base) {
+		 } else if ((v==31 && !(polarity&1))
+			    || (v==30 && (polarity&1))) {
+		    if (sp<4+base) {
 		       ErrorMsg(2,"Stack underflow on hvcurveto in %s\n",
 				name);
 		       base=sp;
@@ -4860,12 +4860,12 @@ SplineChar *PSCharStringToSplines(uint8_t * type1, int len,
 		       dx2=stack[base++];
 		       dy2=stack[base++];
 		       dy3=stack[base++];
-		       if (sp==base + 1)
+		       if (sp==base+1)
 			  dx3=stack[base++];
 		    }
 		 } else {	/*if ((v==30 && !(polarity&1)) || (v==31 && (polarity&1)) ) */
 
-		    if (sp < 4 + base) {
+		    if (sp<4+base) {
 		       ErrorMsg(2,"Stack underflow on vhcurveto in %s\n",
 				name);
 		       base=sp;
@@ -4874,7 +4874,7 @@ SplineChar *PSCharStringToSplines(uint8_t * type1, int len,
 		       dx2=stack[base++];
 		       dy2=stack[base++];
 		       dx3=stack[base++];
-		       if (sp==base + 1)
+		       if (sp==base+1)
 			  dy3=stack[base++];
 		    }
 		 }
@@ -4882,20 +4882,20 @@ SplineChar *PSCharStringToSplines(uint8_t * type1, int len,
 		 if (cur != NULL && cur->first != NULL
 		     && (cur->first != cur->last
 			 || cur->first->next==NULL)) {
-		    current.x=rint((current.x + dx) * 1024) / 1024;
-		    current.y=rint((current.y + dy) * 1024) / 1024;
+		    current.x=rint((current.x+dx)*1024)/1024;
+		    current.y=rint((current.y+dy)*1024)/1024;
 		    cur->last->nextcp.x=current.x;
 		    cur->last->nextcp.y=current.y;
 		    cur->last->nonextcp=false;
-		    current.x=rint((current.x + dx2) * 1024) / 1024;
-		    current.y=rint((current.y + dy2) * 1024) / 1024;
+		    current.x=rint((current.x+dx2)*1024)/1024;
+		    current.y=rint((current.y+dy2)*1024)/1024;
 		    pt=chunkalloc(sizeof(SplinePoint));
 		    pt->hintmask=pending_hm;
 		    pending_hm=NULL;
 		    pt->prevcp.x=current.x;
 		    pt->prevcp.y=current.y;
-		    current.x=rint((current.x + dx3) * 1024) / 1024;
-		    current.y=rint((current.y + dy3) * 1024) / 1024;
+		    current.x=rint((current.x+dx3)*1024)/1024;
+		    current.y=rint((current.y+dy3)*1024)/1024;
 		    pt->me.x=current.x;
 		    pt->me.y=current.y;
 		    pt->nonextcp=true;
@@ -4907,8 +4907,8 @@ SplineChar *PSCharStringToSplines(uint8_t * type1, int len,
 			     name);
 	      }
 	      if (v==24) {
-		 current.x=rint((current.x + stack[base++]) * 1024) / 1024;
-		 current.y=rint((current.y + stack[base++]) * 1024) / 1024;
+		 current.x=rint((current.x+stack[base++])*1024)/1024;
+		 current.y=rint((current.y+stack[base++])*1024)/1024;
 		 if (cur != NULL) {	/* In legal code, cur can't be null here, but I got something illegal... */
 		    pt=chunkalloc(sizeof(SplinePoint));
 		    pt->hintmask=pending_hm;
@@ -4927,10 +4927,10 @@ SplineChar *PSCharStringToSplines(uint8_t * type1, int len,
 	   case 29:		/* callgsubr */
 	   case 10:		/* callsubr */
 	      /* stack[sp-1] contains the number of the subroutine to call */
-	      if (sp < 1) {
+	      if (sp<1) {
 		 ErrorMsg(2,"Stack underflow on callsubr in %s\n", name);
 		 break;
-	      } else if (pcsp > 10) {
+	      } else if (pcsp>10) {
 		 ErrorMsg(2,"Too many subroutine calls in %s\n", name);
 		 break;
 	      }
@@ -4938,26 +4938,26 @@ SplineChar *PSCharStringToSplines(uint8_t * type1, int len,
 	      if (v==29)
 		 s=gsubrs;
 	      if (s != NULL)
-		 stack[sp - 1] += s->bias;
+		 stack[sp-1] += s->bias;
 	      /* Type2 subrs have a bias that must be added to the subr-number */
 	      /* Type1 subrs do not. We set the bias on them to 0 */
-	      if (s==NULL || stack[sp - 1] >= s->cnt || stack[sp - 1] < 0 ||
-		  s->values[(int) stack[sp - 1]]==NULL)
+	      if (s==NULL || stack[sp-1] >= s->cnt || stack[sp-1]<0 ||
+		  s->values[(int) stack[sp-1]]==NULL)
 		 ErrorMsg(2,"Subroutine number out of bounds in %s\n", name);
 	      else {
 		 pcstack[pcsp].type1=type1;
 		 pcstack[pcsp].len=len;
-		 pcstack[pcsp].subnum=stack[sp - 1];
+		 pcstack[pcsp].subnum=stack[sp-1];
 		 ++pcsp;
-		 type1=s->values[(int) stack[sp - 1]];
-		 len=s->lens[(int) stack[sp - 1]];
+		 type1=s->values[(int) stack[sp-1]];
+		 len=s->lens[(int) stack[sp-1]];
 	      }
-	      if (--sp < 0)
+	      if (--sp<0)
 		 sp=0;
 	      break;
 	   case 11:		/* return */
 	      /* return from a subr outine */
-	      if (pcsp < 1)
+	      if (pcsp<1)
 		 ErrorMsg(2,"return when not in subroutine in %s\n", name);
 	      else {
 		 --pcsp;
@@ -4970,8 +4970,8 @@ SplineChar *PSCharStringToSplines(uint8_t * type1, int len,
 
 		 if (context->instance_count==0)
 		    ErrorMsg(2,"Attempt to use a multiple master subroutine in a non-mm font.\n");
-		 else if (sp < 1
-			  || sp < context->instance_count * stack[sp - 1] + 1)
+		 else if (sp<1
+			  || sp<context->instance_count * stack[sp-1]+1)
 		    ErrorMsg(2,"Too few items on stack for blend in %s\n",
 			     name);
 		 else {
@@ -4979,16 +4979,16 @@ SplineChar *PSCharStringToSplines(uint8_t * type1, int len,
 		       ErrorMsg(2,"Use of obsolete blend operator.\n");
 		       context->blend_warn=true;
 		    }
-		    cnt=stack[sp - 1];
-		    sp -= context->instance_count * stack[sp - 1] + 1;
-		    for (i=0; i < cnt; ++i) {
-		       for (j=1; j < context->instance_count; ++j)
-			  stack[sp + i] +=
-			     context->blend_values[j] * stack[sp + cnt +
+		    cnt=stack[sp-1];
+		    sp -= context->instance_count * stack[sp-1]+1;
+		    for (i=0; i<cnt; ++i) {
+		       for (j=1; j<context->instance_count; ++j)
+			  stack[sp+i] +=
+			     context->blend_values[j] * stack[sp+cnt +
 							      i *
 							      (context->
 							       instance_count
-							       - 1) + j - 1];
+							      -1)+j-1];
 		    }
 		    /* there will always be fewer pushes than there were pops */
 		    /*  so I don't bother to check the stack */
@@ -5017,7 +5017,7 @@ SplineChar *PSCharStringToSplines(uint8_t * type1, int len,
 
       ret->countermasks=malloc(cp * sizeof(HintMask));
       ret->countermask_cnt=cp;
-      for (i=0; i < cp; ++i) {
+      for (i=0; i<cp; ++i) {
 	 memcpy(&ret->countermasks[i], counters[i], sizeof(HintMask));
 	 chunkfree(counters[i], sizeof(HintMask));
       }

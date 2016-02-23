@@ -1,4 +1,4 @@
-/* $Id: bezctx_ff.c 4525 2015-12-20 19:51:59Z mskala $ */
+/* $Id: bezctx_ff.c 4532 2015-12-22 13:18:53Z mskala $ */
 /* This file written by George Williams to provide a gateway to fontanvil */
 /* it it a modification of Raph's bezctx_ps.c */
 #include "fontanvil.h"
@@ -80,10 +80,10 @@ bezctx_ff_quadto(bezctx * z, double xm, double ym, double x3, double y3) {
    if ((sp=SplinePointCreate(x3, y3)) != NULL) {
       x0=bc->ss->last->me.x;
       y0=bc->ss->last->me.y;
-      x1=xm+(1./3) * (x0-xm);
-      y1=ym+(1./3) * (y0-ym);
-      x2=xm+(1./3) * (x3-xm);
-      y2=ym+(1./3) * (y3-ym);
+      x1=xm+(1./3)*(x0-xm);
+      y1=ym+(1./3)*(y0-ym);
+      x2=xm+(1./3)*(x3-xm);
+      y2=ym+(1./3)*(y3-ym);
       bc->ss->last->nextcp.x=x1;
       bc->ss->last->nextcp.y=y1;
       bc->ss->last->nonextcp=false;

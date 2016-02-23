@@ -1,4 +1,4 @@
-/* $Id: parsettfvar.c 4506 2015-12-17 09:35:51Z mskala $ */
+/* $Id: parsettfvar.c 4532 2015-12-22 13:18:53Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -58,23 +58,23 @@ void VariationFree(struct ttfinfo *info) {
    if (variation==NULL)
       return;
    if (variation->axes != NULL) {
-      for (i=0; i < variation->axis_count; ++i) {
+      for (i=0; i<variation->axis_count; ++i) {
 	 free(variation->axes[i].mapfrom);
 	 free(variation->axes[i].mapto);
       }
       free(variation->axes);
    }
    if (variation->instances != NULL) {
-      for (i=0; i < variation->instance_count; ++i) {
+      for (i=0; i<variation->instance_count; ++i) {
 	 free(variation->instances[i].coords);
       }
       free(variation->instances);
    }
    if (variation->tuples != NULL) {
-      for (i=0; i < variation->tuple_count; ++i) {
+      for (i=0; i<variation->tuple_count; ++i) {
 	 free(variation->tuples[i].coords);
 	 if (variation->tuples[i].chars != NULL)
-	    for (j=0; j < info->glyph_cnt; ++j)
+	    for (j=0; j<info->glyph_cnt; ++j)
 	       SplineCharFree(variation->tuples[i].chars[j]);
 	 free(variation->tuples[i].chars);
 	 KernClassListFree(variation->tuples[i].khead);
@@ -95,14 +95,14 @@ static void parsefvar(struct ttfinfo *info,AFILE *ttf) {
       return;
    data_off=aget_uint16_be(ttf);
    cnt=aget_uint16_be(ttf);
-   if (cnt > 2)
+   if (cnt>2)
       ErrorMsg(2,"Hmm, this 'fvar' table has more count/size pairs than I expect\n");
-   else if (cnt < 2) {
+   else if (cnt<2) {
       ErrorMsg(2,"Hmm, this 'fvar' table has too few count/size pairs, I shan't parse it\n");
       return;
    }
    axis_count=aget_uint16_be(ttf);
-   if (axis_count==0 || axis_count > 4) {
+   if (axis_count==0 || axis_count>4) {
       if (axis_count==0)
 	 ErrorMsg(2,"Hmm, this 'fvar' table has no axes, that doesn't make sense.\n");
       else
@@ -114,11 +114,11 @@ static void parsefvar(struct ttfinfo *info,AFILE *ttf) {
       return;
    }
    instance_count=aget_uint16_be(ttf);
-   if (aget_uint16_be(ttf) != 4 + 4 * axis_count) {
+   if (aget_uint16_be(ttf) != 4+4*axis_count) {
       ErrorMsg(2,"Hmm, this 'fvar' table has an unexpected size for an instance, I shan't parse it\n");
       return;
    }
-   if (data_off + axis_count * 20 + instance_count * (4 + 4 * axis_count) >
+   if (data_off+axis_count*20+instance_count * (4+4*axis_count) >
        info->fvar_len) {
       ErrorMsg(2,"Hmm, this 'fvar' table is too short\n");
       return;
@@ -130,28 +130,28 @@ static void parsefvar(struct ttfinfo *info,AFILE *ttf) {
    info->variations->axes=calloc(axis_count, sizeof(struct taxis));
    info->variations->instances =
       calloc(instance_count, sizeof(struct tinstance));
-   for (i=0; i < instance_count; ++i)
+   for (i=0; i<instance_count; ++i)
       info->variations->instances[i].coords =
 	 malloc(axis_count * sizeof(double));
 
-   afseek(ttf, info->fvar_start + data_off, SEEK_SET);
-   for (i=0; i < axis_count; ++i) {
+   afseek(ttf, info->fvar_start+data_off, SEEK_SET);
+   for (i=0; i<axis_count; ++i) {
       struct taxis *a=&info->variations->axes[i];
 
       a->tag=aget_int32_be(ttf);
-      a->min=aget_int32_be(ttf) / 65536.0;
-      a->def=aget_int32_be(ttf) / 65536.0;
-      a->max=aget_int32_be(ttf) / 65536.0;
+      a->min=aget_int32_be(ttf)/65536.0;
+      a->def=aget_int32_be(ttf)/65536.0;
+      a->max=aget_int32_be(ttf)/65536.0;
       /* flags=*/ aget_uint16_be(ttf);
       a->nameid=aget_uint16_be(ttf);
    }
-   for (i=0; i < instance_count; ++i) {
+   for (i=0; i<instance_count; ++i) {
       struct tinstance *ti=&info->variations->instances[i];
 
       ti->nameid=aget_uint16_be(ttf);
       /* flags=*/ aget_uint16_be(ttf);
-      for (j=0; j < axis_count; ++j)
-	 ti->coords[j]=aget_int32_be(ttf) / 65536.0;
+      for (j=0; j<axis_count; ++j)
+	 ti->coords[j]=aget_int32_be(ttf)/65536.0;
    }
 }
 
@@ -174,19 +174,19 @@ static void parseavar(struct ttfinfo *info,AFILE *ttf) {
       VariationFree(info);
       return;
    }
-   for (i=0; i < axis_count; ++i) {
+   for (i=0; i<axis_count; ++i) {
       pair_count=aget_uint16_be(ttf);
       if (pair_count != 0) {
 	 info->variations->axes[i].mapfrom =
 	    malloc(pair_count * sizeof(double));
 	 info->variations->axes[i].mapto=malloc(pair_count * sizeof(double));
-	 for (j=0; j < pair_count; ++j) {
-	    info->variations->axes[i].mapfrom[j]=aget_uint16_be(ttf) / 16384.0;
-	    info->variations->axes[i].mapto[j]=aget_uint16_be(ttf) / 16384.0;
+	 for (j=0; j<pair_count; ++j) {
+	    info->variations->axes[i].mapfrom[j]=aget_uint16_be(ttf)/16384.0;
+	    info->variations->axes[i].mapto[j]=aget_uint16_be(ttf)/16384.0;
 	 }
       }
    }
-   if (aftell(ttf) - info->avar_start > info->avar_len) {
+   if (aftell(ttf)-info->avar_start>info->avar_len) {
       ErrorMsg(2,"Hmm, the 'avar' table is too long.\n");
       VariationFree(info);
       return;
@@ -198,7 +198,7 @@ static SplineChar **InfoCopyGlyphs(struct ttfinfo *info) {
    int i;
    RefChar *r;
 
-   for (i=0; i < info->glyph_cnt; ++i) {
+   for (i=0; i<info->glyph_cnt; ++i) {
       if (info->chars[i]==NULL)
 	 chars[i]=NULL;
       else {
@@ -215,7 +215,7 @@ static SplineChar **InfoCopyGlyphs(struct ttfinfo *info) {
       }
    }
 
-   for (i=0; i < info->glyph_cnt; ++i)
+   for (i=0; i<info->glyph_cnt; ++i)
       ttfFixupRef(chars, i);
    return (chars);
 }
@@ -228,23 +228,23 @@ static int *readpackeddeltas(AFILE *ttf,int n) {
    deltas=malloc(n * sizeof(int));
 
    i=0;
-   while (i < n) {
+   while (i<n) {
       runcnt=agetc(ttf);
-      if (runcnt & 0x80) {
+      if (runcnt&0x80) {
 	 /* runcnt zeros get added */
-	 for (j=0; j <= (runcnt & 0x3f) && i < n; ++j)
+	 for (j=0; j <= (runcnt&0x3f) && i<n; ++j)
 	    deltas[i++]=0;
-      } else if (runcnt & 0x40) {
+      } else if (runcnt&0x40) {
 	 /* runcnt shorts from the stack */
-	 for (j=0; j <= (runcnt & 0x3f) && i < n; ++j)
+	 for (j=0; j <= (runcnt&0x3f) && i<n; ++j)
 	    deltas[i++]=(int16_t) aget_uint16_be(ttf);
       } else {
 	 /* runcnt signed bytes from the stack */
-	 for (j=0; j <= (runcnt & 0x3f) && i < n; ++j)
+	 for (j=0; j <= (runcnt&0x3f) && i<n; ++j)
 	    deltas[i++]=(int8_t) agetc(ttf);
       }
-      if (j <= (runcnt & 0x3f)) {
-	 if (n > 0)
+      if (j <= (runcnt&0x3f)) {
+	 if (n>0)
 	    deltas[0]=BAD_DELTA;
       }
    }
@@ -261,24 +261,24 @@ static int *readpackedpoints(AFILE *ttf) {
    n=agetc(ttf);
    if (n==EOF)
       n=0;
-   if (n & 0x80)
-      n=agetc(ttf) | ((n & 0x7f) << 8);
-   points=malloc((n + 1) * sizeof(int));
+   if (n&0x80)
+      n=agetc(ttf)|((n&0x7f) << 8);
+   points=malloc((n+1)*sizeof(int));
    if (n==0)
       points[0]=ALL_POINTS;
    else {
       i=0;
-      while (i < n) {
+      while (i<n) {
 	 runcnt=agetc(ttf);
-	 if (runcnt & 0x80) {
-	    runcnt=(runcnt & 0x7f);
+	 if (runcnt&0x80) {
+	    runcnt=(runcnt&0x7f);
 	    points[i++]=first=aget_uint16_be(ttf);
 	    /* first point not included in runcount */
-	    for (j=0; j < runcnt && i < n; ++j)
+	    for (j=0; j<runcnt && i<n; ++j)
 	       points[i++]=(first += aget_uint16_be(ttf));
 	 } else {
 	    points[i++]=first=agetc(ttf);
-	    for (j=0; j < runcnt && i < n; ++j)
+	    for (j=0; j<runcnt && i<n; ++j)
 	       points[i++]=(first += agetc(ttf));
 	 }
       }
@@ -297,7 +297,7 @@ static int TuplesMatch(struct variations *v,int vtest,int dbase) {
 
    if (vtest==dbase)
       return (true);
-   for (i=0; i < v->axis_count; ++i) {
+   for (i=0; i<v->axis_count; ++i) {
       if (v->tuples[vtest].coords[i]==0 && v->tuples[dbase].coords[i] != 0)
 	 return (false);
       if (v->tuples[dbase].coords[i] != 0 &&
@@ -410,10 +410,10 @@ static void VaryGlyph(SplineChar *sc,int *points,int *xdeltas,
 	    }
 	 }
       }
-      SCShiftAllBy(sc, -xdeltas[pcnt - 4], 0);
-      SCShiftAllBy(sc, 0, -ydeltas[pcnt - 2]);
-      sc->width += xdeltas[pcnt - 3];
-      sc->vwidth += ydeltas[pcnt - 1];
+      SCShiftAllBy(sc, -xdeltas[pcnt-4], 0);
+      SCShiftAllBy(sc, 0, -ydeltas[pcnt-2]);
+      sc->width += xdeltas[pcnt-3];
+      sc->vwidth += ydeltas[pcnt-1];
    } else {
       j=0;
       if (sc->layers[ly_fore].refs != NULL) {
@@ -466,19 +466,19 @@ static void VaryGlyph(SplineChar *sc,int *points,int *xdeltas,
       }
       if (points[j]==i)
 	 SCShiftAllBy(sc, -xdeltas[j++], 0);
-      if (points[j]==i + 1)
+      if (points[j]==i+1)
 	 sc->width += xdeltas[j++];
-      if (points[j]==i + 2)
+      if (points[j]==i+2)
 	 SCShiftAllBy(sc, 0, -ydeltas[j++]);
-      if (points[j]==i + 3)
+      if (points[j]==i+3)
 	 sc->vwidth += ydeltas[j++];
    }
    if (sc->layers[ly_fore].refs==NULL) {
       for (ss=sc->layers[ly_fore].splines; ss != NULL; ss=ss->next) {
 	 for (sp=ss->first; sp != NULL; ++i) {
 	    if (sp->ttfindex==0xffff) {
-	       sp->me.x=(sp->nextcp.x + sp->prevcp.x) / 2;
-	       sp->me.y=(sp->nextcp.y + sp->prevcp.y) / 2;
+	       sp->me.x=(sp->nextcp.x+sp->prevcp.x)/2;
+	       sp->me.y=(sp->nextcp.y+sp->prevcp.y)/2;
 	    }
 	    if (sp->next==NULL)
 	       break;
@@ -514,14 +514,14 @@ static void VaryGlyphs(struct ttfinfo *info,int tupleIndex,int gnum,
    }
 
    if (points[0]==ALL_POINTS)
-      pcnt=PointCount(info->chars[gnum]) + 4;
+      pcnt=PointCount(info->chars[gnum])+4;
    else {
       for (pcnt=0; points[pcnt] != END_OF_POINTS; ++pcnt);
    }
    xdeltas=readpackeddeltas(ttf, pcnt);
    ydeltas=readpackeddeltas(ttf, pcnt);
    if (xdeltas[0] != BAD_DELTA && ydeltas[0] != BAD_DELTA)
-      for (tc=0; tc < v->tuple_count; ++tc) {
+      for (tc=0; tc<v->tuple_count; ++tc) {
 	 if (TuplesMatch(v, tc, tupleIndex))
 	    VaryGlyph(v->tuples[tc].chars[gnum], points, xdeltas, ydeltas,
 		      pcnt);
@@ -531,7 +531,7 @@ static void VaryGlyphs(struct ttfinfo *info,int tupleIndex,int gnum,
       if (!warned)
 	 ErrorMsg(2,"Incorrect number of deltas in glyph %d (%s)\n", gnum,
 		  info->chars[gnum]->name !=
-		  NULL ? info->chars[gnum]->name : "<Nameless>");
+		  NULL?info->chars[gnum]->name:"<Nameless>");
       warned=true;
    }
    free(xdeltas);
@@ -557,11 +557,11 @@ static void parsegvar(struct ttfinfo *info,AFILE *ttf) {
       return;
    }
    globaltc=aget_uint16_be(ttf);
-   tupoff=aget_int32_be(ttf) + info->gvar_start;
+   tupoff=aget_int32_be(ttf)+info->gvar_start;
    gc=aget_uint16_be(ttf);
    gvarflags=aget_uint16_be(ttf);
-   dataoff=aget_int32_be(ttf) + info->gvar_start;
-   if (globaltc==0 || globaltc > AppleMmMax) {
+   dataoff=aget_int32_be(ttf)+info->gvar_start;
+   if (globaltc==0 || globaltc>AppleMmMax) {
       if (globaltc==0)
 	 ErrorMsg(2,"Hmm, no global tuples specified in the 'gvar' table.\n");
       else
@@ -570,41 +570,41 @@ static void parsegvar(struct ttfinfo *info,AFILE *ttf) {
       VariationFree(info);
       return;
    }
-   if (gc > info->glyph_cnt) {
+   if (gc>info->glyph_cnt) {
       ErrorMsg(2,"Hmm, more glyph variation data specified than there are glyphs in font.\n");
       VariationFree(info);
       return;
    }
 
-   gvars=malloc((gc + 1) * sizeof(uint32_t));
-   if (gvarflags & 1) {		/* 32 bit data */
+   gvars=malloc((gc+1)*sizeof(uint32_t));
+   if (gvarflags&1) {		/* 32 bit data */
       for (i=0; i <= gc; ++i)
-	 gvars[i]=aget_int32_be(ttf) + dataoff;
+	 gvars[i]=aget_int32_be(ttf)+dataoff;
    } else {
       for (i=0; i <= gc; ++i)
-	 gvars[i]=aget_uint16_be(ttf) * 2 + dataoff;	/* Undocumented *2 */
+	 gvars[i]=aget_uint16_be(ttf)*2+dataoff;	/* Undocumented *2 */
    }
 
    v->tuple_count=globaltc;
    v->tuples=calloc(globaltc, sizeof(struct tuples));
    afseek(ttf, tupoff, SEEK_SET);
-   for (i=0; i < globaltc; ++i) {
+   for (i=0; i<globaltc; ++i) {
       v->tuples[i].coords=malloc(axiscount * sizeof(float));
-      for (j=0; j < axiscount; ++j)
-	 v->tuples[i].coords[j]=((short) aget_uint16_be(ttf)) / 16384.0;
+      for (j=0; j<axiscount; ++j)
+	 v->tuples[i].coords[j]=((short) aget_uint16_be(ttf))/16384.0;
       v->tuples[i].chars=InfoCopyGlyphs(info);
    }
 
-   for (g=0; g < gc; ++g)
-      if (gvars[g] != gvars[g + 1]) {
+   for (g=0; g<gc; ++g)
+      if (gvars[g] != gvars[g+1]) {
 	 int tc;
 	 uint32_t datoff;
 	 int *sharedpoints=NULL;
 
 	 afseek(ttf, gvars[g], SEEK_SET);
 	 tc=aget_uint16_be(ttf);
-	 datoff=gvars[g] + aget_uint16_be(ttf);
-	 if (tc & 0x8000) {
+	 datoff=gvars[g]+aget_uint16_be(ttf);
+	 if (tc&0x8000) {
 	    uint32_t here=aftell(ttf);
 
 	    afseek(ttf, datoff, SEEK_SET);
@@ -612,29 +612,29 @@ static void parsegvar(struct ttfinfo *info,AFILE *ttf) {
 	    datoff=aftell(ttf);
 	    afseek(ttf, here, SEEK_SET);
 	 }
-	 for (i=0; i < (tc & 0xfff); ++i) {
+	 for (i=0; i<(tc&0xfff); ++i) {
 	    int tupleDataSize, tupleIndex;
 
 	    tupleDataSize=aget_uint16_be(ttf);
 	    tupleIndex=aget_uint16_be(ttf);
-	    if (tupleIndex & 0xc000) {
+	    if (tupleIndex&0xc000) {
 	       if (!warned)
 		  ErrorMsg(2,"Warning: Glyph %d contains either private or intermediate tuple data.\n FontAnvil supports neither.\n",
 			   g);
 	       warned=true;
-	       if (tupleIndex & 0x8000)
-		  afseek(ttf, 2 * axiscount, SEEK_CUR);
-	       if (tupleIndex & 0x4000)
-		  afseek(ttf, 4 * axiscount, SEEK_CUR);
+	       if (tupleIndex&0x8000)
+		  afseek(ttf, 2*axiscount, SEEK_CUR);
+	       if (tupleIndex&0x4000)
+		  afseek(ttf, 4*axiscount, SEEK_CUR);
 	    } else {
 	       int *localpoints=NULL;
 	       uint32_t here=aftell(ttf);
 
 	       afseek(ttf, datoff, SEEK_SET);
-	       if (tupleIndex & 0x2000)
+	       if (tupleIndex&0x2000)
 		  localpoints=readpackedpoints(ttf);
-	       VaryGlyphs(info, tupleIndex & 0xfff, g,
-			  (tupleIndex & 0x2000) ? localpoints : sharedpoints,
+	       VaryGlyphs(info, tupleIndex&0xfff, g,
+			  (tupleIndex&0x2000)?localpoints:sharedpoints,
 			  ttf);
 	       free(localpoints);
 	       afseek(ttf, here, SEEK_SET);
@@ -647,9 +647,9 @@ static void parsegvar(struct ttfinfo *info,AFILE *ttf) {
 }
 
 static void AlterEntry(struct ttf_table *cvt,int i,int delta) {
-   int val=memushort(cvt->data, cvt->len, 2 * i);
+   int val=memushort(cvt->data, cvt->len, 2*i);
 
-   memputshort(cvt->data, 2 * i, val + delta);
+   memputshort(cvt->data, 2*i, val+delta);
 }
 
 static void VaryCvt(struct tuples *tuple,int *points,int *deltas,
@@ -665,10 +665,10 @@ static void VaryCvt(struct tuples *tuple,int *points,int *deltas,
       memcpy(cvt->data, orig_cvt->data, cvt->len);
    }
    if (points[0]==ALL_POINTS) {
-      for (i=0; i < pcnt; ++i)
+      for (i=0; i<pcnt; ++i)
 	 AlterEntry(cvt, i, deltas[i]);
    } else {
-      for (i=0; i < pcnt; ++i)
+      for (i=0; i<pcnt; ++i)
 	 AlterEntry(cvt, points[i], deltas[i]);
    }
 }
@@ -684,13 +684,13 @@ static void VaryCvts(struct ttfinfo *info,int tupleIndex,int *points,
    struct variations *v=info->variations;
 
    if (points[0]==ALL_POINTS)
-      pcnt=origcvt->len / sizeof(uint16_t);
+      pcnt=origcvt->len/sizeof(uint16_t);
    else {
       for (pcnt=0; points[pcnt] != END_OF_POINTS; ++pcnt);
    }
    deltas=readpackeddeltas(ttf, pcnt);
    if (deltas[0] != BAD_DELTA)
-      for (tc=0; tc < v->tuple_count; ++tc) {
+      for (tc=0; tc<v->tuple_count; ++tc) {
 	 if (TuplesMatch(v, tc, tupleIndex))
 	    VaryCvt(&v->tuples[tc], points, deltas, pcnt, origcvt);
    } else {
@@ -724,11 +724,11 @@ static void parsecvar(struct ttfinfo *info,AFILE *ttf) {
    }
 
    tuplecount=aget_uint16_be(ttf);
-   offset=info->cvar_start + aget_uint16_be(ttf);
+   offset=info->cvar_start+aget_uint16_be(ttf);
    /* The documentation implies there are flags packed into the tuplecount */
    /*  but John Jenkins tells me that shared points don't apply to cvar */
    /*  Might as well parse it just in case */
-   if (tuplecount & 0x8000) {
+   if (tuplecount&0x8000) {
       uint32_t here=aftell(ttf);
 
       afseek(ttf, offset, SEEK_SET);
@@ -736,34 +736,34 @@ static void parsecvar(struct ttfinfo *info,AFILE *ttf) {
       offset=aftell(ttf);
       afseek(ttf, here, SEEK_SET);
    }
-   for (i=0; i < (tuplecount & 0xfff); ++i) {
+   for (i=0; i<(tuplecount&0xfff); ++i) {
       int tupleDataSize, tupleIndex;
 
       tupleDataSize=aget_uint16_be(ttf);
       tupleIndex=aget_uint16_be(ttf);
       /* there is no provision here for a global tuple coordinate section */
       /*  so John says there are no tuple indices. Just embedded tuples */
-      if (tupleIndex & 0x4000) {
+      if (tupleIndex&0x4000) {
 	 if (!warned)
 	    ErrorMsg(2,"Warning: 'cvar' contains intermediate tuple data.\n FontAnvil doesn't support this.\n");
 	 warned=true;
-	 if (tupleIndex & 0x8000)
-	    afseek(ttf, 2 * info->variations->axis_count, SEEK_CUR);
-	 if (tupleIndex & 0x4000)
-	    afseek(ttf, 4 * info->variations->axis_count, SEEK_CUR);
+	 if (tupleIndex&0x8000)
+	    afseek(ttf, 2*info->variations->axis_count, SEEK_CUR);
+	 if (tupleIndex&0x4000)
+	    afseek(ttf, 4*info->variations->axis_count, SEEK_CUR);
       } else {
 	 int *localpoints=NULL;
 	 uint32_t here;
 	 int j, k, ti;
 
-	 ti=tupleIndex & 0xfff;
-	 if (tupleIndex & 0x8000) {
+	 ti=tupleIndex&0xfff;
+	 if (tupleIndex&0x8000) {
 	    double *coords =
 	       malloc(info->variations->axis_count * sizeof(double));
-	    for (j=0; j < info->variations->axis_count; ++j)
-	       coords[j]=((int16_t) aget_uint16_be(ttf)) / 16384.0;
-	    for (k=0; k < info->variations->tuple_count; ++k) {
-	       for (j=0; j < info->variations->axis_count; ++j)
+	    for (j=0; j<info->variations->axis_count; ++j)
+	       coords[j]=((int16_t) aget_uint16_be(ttf))/16384.0;
+	    for (k=0; k<info->variations->tuple_count; ++k) {
+	       for (j=0; j<info->variations->axis_count; ++j)
 		  if (coords[j] != info->variations->tuples[k].coords[j])
 		     break;
 	       if (j==info->variations->axis_count)
@@ -776,10 +776,10 @@ static void parsecvar(struct ttfinfo *info,AFILE *ttf) {
 	 if (ti != -1) {
 	    here=aftell(ttf);
 	    afseek(ttf, offset, SEEK_SET);
-	    if (tupleIndex & 0x2000)
+	    if (tupleIndex&0x2000)
 	       localpoints=readpackedpoints(ttf);
 	    VaryCvts(info, ti,
-		     (tupleIndex & 0x2000) ? localpoints : sharedpoints, ttf,
+		     (tupleIndex&0x2000)?localpoints:sharedpoints, ttf,
 		     cvt);
 	    free(localpoints);
 	    afseek(ttf, here, SEEK_SET);

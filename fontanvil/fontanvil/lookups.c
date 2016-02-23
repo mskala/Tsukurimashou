@@ -1,4 +1,4 @@
-/* $Id: lookups.c 4494 2015-12-12 08:13:24Z mskala $ */
+/* $Id: lookups.c 4532 2015-12-22 13:18:53Z mskala $ */
 /* Copyright (C) 2007-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -45,11 +45,11 @@ struct sllk {
 
 struct opentype_feature_friendlynames friendlies[]={
    {CHR('a', 'a', 'l', 't'), "aalt", "Access All Alternates",
-    gsub_single_mask | gsub_alternate_mask},
+    gsub_single_mask|gsub_alternate_mask},
    {CHR('a', 'b', 'v', 'f'), "abvf", "Above Base Forms",
     gsub_single_mask},
    {CHR('a', 'b', 'v', 'm'), "abvm", "Above Base Mark",
-    gpos_mark2base_mask | gpos_mark2ligature_mask},
+    gpos_mark2base_mask|gpos_mark2ligature_mask},
    {CHR('a', 'b', 'v', 's'), "abvs", "Above Base Substitutions",
     gsub_ligature_mask},
    {CHR('a', 'f', 'r', 'c'), "afrc", "Vertical Fractions",
@@ -60,7 +60,7 @@ struct opentype_feature_friendlynames friendlies[]={
    {CHR('b', 'l', 'w', 'f'), "blwf", "Below Base Forms",
     gsub_ligature_mask},
    {CHR('b', 'l', 'w', 'm'), "blwm", "Below Base Mark",
-    gpos_mark2base_mask | gpos_mark2ligature_mask},
+    gpos_mark2base_mask|gpos_mark2ligature_mask},
    {CHR('b', 'l', 'w', 's'), "blws", "Below Base Substitutions",
     gsub_ligature_mask},
    {CHR('c', '2', 'p', 'c'), "c2pc", "Capitals to Petite Capitals",
@@ -68,11 +68,11 @@ struct opentype_feature_friendlynames friendlies[]={
    {CHR('c', '2', 's', 'c'), "c2sc", "Capitals to Small Capitals",
     gsub_single_mask},
    {CHR('c', 'a', 'l', 't'), "calt", "Contextual Alternates",
-    gsub_context_mask | gsub_contextchain_mask | morx_context_mask},
+    gsub_context_mask|gsub_contextchain_mask|morx_context_mask},
    {CHR('c', 'a', 's', 'e'), "case", "Case-Sensitive Forms",
-    gsub_single_mask | gpos_single_mask},
+    gsub_single_mask|gpos_single_mask},
    {CHR('c', 'c', 'm', 'p'), "ccmp", "Glyph Composition/Decomposition",
-    gsub_multiple_mask | gsub_ligature_mask},
+    gsub_multiple_mask|gsub_ligature_mask},
    {CHR('c', 'f', 'a', 'r'), "cfar", "Conjunct Form After Ro",
     gsub_single_mask},
    {CHR('c', 'j', 'c', 't'), "cjct", "Conjunct Forms",
@@ -122,16 +122,16 @@ struct opentype_feature_friendlynames friendlies[]={
    {CHR('f', 'a', 'l', 't'), "falt", "Final Glyph On Line",
     gsub_alternate_mask},
    {CHR('f', 'i', 'n', '2'), "fin2", "Terminal Forms #2",
-    gsub_context_mask | gsub_contextchain_mask | morx_context_mask},
+    gsub_context_mask|gsub_contextchain_mask|morx_context_mask},
    {CHR('f', 'i', 'n', '3'), "fin3", "Terminal Forms #3",
-    gsub_context_mask | gsub_contextchain_mask | morx_context_mask},
+    gsub_context_mask|gsub_contextchain_mask|morx_context_mask},
    {CHR('f', 'i', 'n', 'a'), "fina", "Terminal Forms", gsub_single_mask},
    {CHR('f', 'l', 'a', 'c'), "flac", "Flattened Accents over Capitals",
-    gsub_single_mask | gsub_ligature_mask},
+    gsub_single_mask|gsub_ligature_mask},
    {CHR('f', 'r', 'a', 'c'), "frac", "Diagonal Fractions",
-    gsub_single_mask | gsub_ligature_mask},
+    gsub_single_mask|gsub_ligature_mask},
    {CHR('f', 'w', 'i', 'd'), "fwid", "Full Widths",
-    gsub_single_mask | gpos_single_mask},
+    gsub_single_mask|gpos_single_mask},
    {CHR('h', 'a', 'l', 'f'), "half", "Half Forms", gsub_ligature_mask},
    {CHR('h', 'a', 'l', 'n'), "haln", "Halant Forms", gsub_ligature_mask},
    {CHR('h', 'a', 'l', 't'), "halt", "Alternative Half Widths",
@@ -143,25 +143,25 @@ struct opentype_feature_friendlynames friendlies[]={
    {CHR('h', 'l', 'i', 'g'), "hlig", "Historic Ligatures",
     gsub_ligature_mask},
    {CHR('h', 'n', 'g', 'l'), "hngl", "Hanja to Hangul",
-    gsub_single_mask | gsub_alternate_mask},
+    gsub_single_mask|gsub_alternate_mask},
    {CHR('h', 'o', 'j', 'o'), "hojo", "Hojo (JIS X 0212-1990) Kanji Forms",
     gsub_single_mask},
    {CHR('h', 'w', 'i', 'd'), "hwid", "Half Widths",
-    gsub_single_mask | gpos_single_mask},
+    gsub_single_mask|gpos_single_mask},
    {CHR('i', 'n', 'i', 't'), "init", "Initial Forms", gsub_single_mask},
    {CHR('i', 's', 'o', 'l'), "isol", "Isolated Forms", gsub_single_mask},
    {CHR('i', 't', 'a', 'l'), "ital", "Italics", gsub_single_mask},
    {CHR('j', 'a', 'l', 't'), "jalt", "Justification Alternatives",
     gsub_alternate_mask},
    {CHR('j', 'a', 'j', 'p'), "jajp", "Japanese Forms (Obsolete)",
-    gsub_single_mask | gsub_alternate_mask},
+    gsub_single_mask|gsub_alternate_mask},
    {CHR('j', 'p', '0', '4'), "jp04", "JIS2004 Forms", gsub_single_mask},
    {CHR('j', 'p', '7', '8'), "jp78", "JIS78 Forms",
-    gsub_single_mask | gsub_alternate_mask},
+    gsub_single_mask|gsub_alternate_mask},
    {CHR('j', 'p', '8', '3'), "jp83", "JIS83 Forms", gsub_single_mask},
    {CHR('j', 'p', '9', '0'), "jp90", "JIS90 Forms", gsub_single_mask},
    {CHR('k', 'e', 'r', 'n'), "kern", "Horizontal Kerning",
-    gpos_pair_mask | gpos_context_mask | gpos_contextchain_mask |
+    gpos_pair_mask|gpos_context_mask|gpos_contextchain_mask |
     kern_statemachine_mask},
    {CHR('l', 'f', 'b', 'd'), "lfbd", "Left Bounds", gpos_single_mask},
    {CHR('l', 'i', 'g', 'a'), "liga", "Standard Ligatures",
@@ -171,17 +171,17 @@ struct opentype_feature_friendlynames friendlies[]={
    {CHR('l', 'n', 'u', 'm'), "lnum", "Lining Figures", gsub_single_mask},
    {CHR('l', 'o', 'c', 'l'), "locl", "Localized Forms", gsub_single_mask},
    {CHR('m', 'a', 'r', 'k'), "mark", "Mark Positioning",
-    gpos_mark2base_mask | gpos_mark2ligature_mask},
+    gpos_mark2base_mask|gpos_mark2ligature_mask},
    {CHR('m', 'e', 'd', '2'), "med2", "Medial Forms 2",
-    gsub_context_mask | gsub_contextchain_mask | morx_context_mask},
+    gsub_context_mask|gsub_contextchain_mask|morx_context_mask},
    {CHR('m', 'e', 'd', 'i'), "medi", "Medial Forms", gsub_single_mask},
    {CHR('m', 'g', 'r', 'k'), "mgrk", "Mathematical Greek",
     gsub_single_mask},
    {CHR('m', 'k', 'm', 'k'), "mkmk", "Mark to Mark", gpos_mark2mark_mask},
    {CHR('m', 's', 'e', 't'), "mset", "Mark Positioning via Substitution",
-    gsub_context_mask | gsub_contextchain_mask | morx_context_mask},
+    gsub_context_mask|gsub_contextchain_mask|morx_context_mask},
    {CHR('n', 'a', 'l', 't'), "nalt", "Alternate Annotation Forms",
-    gsub_single_mask | gsub_alternate_mask},
+    gsub_single_mask|gsub_alternate_mask},
    {CHR('n', 'l', 'c', 'k'), "nlck", "NLC Kanji Forms", gsub_single_mask},
    {CHR('n', 'u', 'k', 't'), "nukt", "Nukta Forms", gsub_ligature_mask},
    {CHR('n', 'u', 'm', 'r'), "numr", "Numerators", gsub_single_mask},
@@ -189,10 +189,10 @@ struct opentype_feature_friendlynames friendlies[]={
     gsub_single_mask},
    {CHR('o', 'p', 'b', 'd'), "opbd", "Optical Bounds", gpos_single_mask},
    {CHR('o', 'r', 'd', 'n'), "ordn", "Ordinals",
-    gsub_ligature_mask | gsub_context_mask | gsub_contextchain_mask |
+    gsub_ligature_mask|gsub_context_mask|gsub_contextchain_mask |
     morx_context_mask},
    {CHR('o', 'r', 'n', 'm'), "ornm", "Ornaments",
-    gsub_single_mask | gsub_alternate_mask},
+    gsub_single_mask|gsub_alternate_mask},
    {CHR('p', 'a', 'l', 't'), "palt", "Proportional Alternate Metrics",
     gpos_single_mask},
    {CHR('p', 'c', 'a', 'p'), "pcap", "Lowercase to Petite Capitals",
@@ -204,7 +204,7 @@ struct opentype_feature_friendlynames friendlies[]={
    {CHR('p', 'r', 'e', 'f'), "pref", "Pre Base Forms",
     gsub_ligature_mask},
    {CHR('p', 'r', 'e', 's'), "pres", "Pre Base Substitutions",
-    gsub_ligature_mask | gsub_context_mask | gsub_contextchain_mask |
+    gsub_ligature_mask|gsub_context_mask|gsub_contextchain_mask |
     morx_context_mask},
    {CHR('p', 's', 't', 'f'), "pstf", "Post Base Forms",
     gsub_ligature_mask},
@@ -213,7 +213,7 @@ struct opentype_feature_friendlynames friendlies[]={
    {CHR('p', 'w', 'i', 'd'), "pwid", "Proportional Width",
     gsub_single_mask},
    {CHR('q', 'w', 'i', 'd'), "qwid", "Quarter Widths",
-    gsub_single_mask | gpos_single_mask},
+    gsub_single_mask|gpos_single_mask},
    {CHR('r', 'a', 'n', 'd'), "rand", "Randomize", gsub_alternate_mask},
    {CHR('r', 'k', 'r', 'f'), "rkrf", "Rakar Forms", gsub_ligature_mask},
    {CHR('r', 'l', 'i', 'g'), "rlig", "Required Ligatures",
@@ -227,7 +227,7 @@ struct opentype_feature_friendlynames friendlies[]={
    {CHR('r', 'u', 'b', 'y'), "ruby", "Ruby Notational Forms",
     gsub_single_mask},
    {CHR('s', 'a', 'l', 't'), "salt", "Stylistic Alternatives",
-    gsub_single_mask | gsub_alternate_mask},
+    gsub_single_mask|gsub_alternate_mask},
    {CHR('s', 'i', 'n', 'f'), "sinf", "Scientific Inferiors",
     gsub_single_mask},
    {CHR('s', 'm', 'c', 'p'), "smcp", "Lowercase to Small Capitals",
@@ -255,11 +255,11 @@ struct opentype_feature_friendlynames friendlies[]={
    {CHR('s', 's', '1', '9'), "ss19", "Style Set 19", gsub_single_mask},
    {CHR('s', 's', '2', '0'), "ss20", "Style Set 20", gsub_single_mask},
    {CHR('s', 's', 't', 'y'), "ssty", "Script Style",
-    gsub_single_mask | gsub_alternate_mask},
+    gsub_single_mask|gsub_alternate_mask},
    {CHR('s', 'u', 'b', 's'), "subs", "Subscript", gsub_single_mask},
    {CHR('s', 'u', 'p', 's'), "sups", "Superscript", gsub_single_mask},
    {CHR('s', 'w', 's', 'h'), "swsh", "Swash",
-    gsub_single_mask | gsub_alternate_mask},
+    gsub_single_mask|gsub_alternate_mask},
    {CHR('t', 'i', 't', 'l'), "titl", "Titling", gsub_single_mask},
    {CHR('t', 'j', 'm', 'o'), "tjmo", "Trailing Jamo Forms",
     gsub_ligature_mask},
@@ -267,9 +267,9 @@ struct opentype_feature_friendlynames friendlies[]={
     gsub_single_mask},
    {CHR('t', 'n', 'u', 'm'), "tnum", "Tabular Numbers", gsub_single_mask},
    {CHR('t', 'r', 'a', 'd'), "trad", "Traditional Forms",
-    gsub_single_mask | gsub_alternate_mask},
+    gsub_single_mask|gsub_alternate_mask},
    {CHR('t', 'w', 'i', 'd'), "twid", "Third Widths",
-    gsub_single_mask | gpos_single_mask},
+    gsub_single_mask|gpos_single_mask},
    {CHR('u', 'n', 'i', 'c'), "unic", "Unicase", gsub_single_mask},
    {CHR('v', 'a', 'l', 't'), "valt", "Alternate Vertical Metrics",
     gpos_single_mask},
@@ -284,7 +284,7 @@ struct opentype_feature_friendlynames friendlies[]={
    {CHR('v', 'k', 'n', 'a'), "vkna", "Vertical Kana Alternates",
     gsub_single_mask},
    {CHR('v', 'k', 'r', 'n'), "vkrn", "Vertical Kerning",
-    gpos_pair_mask | gpos_context_mask | gpos_contextchain_mask |
+    gpos_pair_mask|gpos_context_mask|gpos_contextchain_mask |
     kern_statemachine_mask},
    {CHR('v', 'p', 'a', 'l'), "vpal",
     "Proportional Alternate Vertical Metrics", gpos_single_mask},
@@ -293,19 +293,19 @@ struct opentype_feature_friendlynames friendlies[]={
    {CHR('z', 'e', 'r', 'o'), "zero", "Slashed Zero", gsub_single_mask},
 /* This is my hack for setting the "Required feature" field of a script */
    {CHR(' ', 'R', 'Q', 'D'), " RQD", "Required feature",
-    gsub_single_mask | gsub_multiple_mask | gsub_alternate_mask |
-    gsub_ligature_mask | gsub_context_mask | gsub_contextchain_mask |
-    gsub_reversecchain_mask | morx_context_mask | gpos_single_mask |
-    gpos_pair_mask | gpos_cursive_mask | gpos_mark2base_mask |
-    gpos_mark2ligature_mask | gpos_mark2mark_mask | gpos_context_mask |
+    gsub_single_mask|gsub_multiple_mask|gsub_alternate_mask |
+    gsub_ligature_mask|gsub_context_mask|gsub_contextchain_mask |
+    gsub_reversecchain_mask|morx_context_mask|gpos_single_mask |
+    gpos_pair_mask|gpos_cursive_mask|gpos_mark2base_mask |
+    gpos_mark2ligature_mask|gpos_mark2mark_mask|gpos_context_mask |
     gpos_contextchain_mask},
    OPENTYPE_FEATURE_FRIENDLYNAMES_EMPTY
 };
 
 static int uint32_cmp(const void *_ui1,const void *_ui2) {
-   if (*(uint32_t *) _ui1 > *(uint32_t *) _ui2)
+   if (*(uint32_t *) _ui1>*(uint32_t *) _ui2)
       return (1);
-   if (*(uint32_t *) _ui1 < *(uint32_t *) _ui2)
+   if (*(uint32_t *) _ui1<*(uint32_t *) _ui2)
       return (-1);
 
    return (0);
@@ -319,9 +319,9 @@ static int lang_cmp(const void *_ui1,const void *_ui2) {
    if (*(uint32_t *) _ui2==DEFAULT_LANG)
       return (1);
 
-   if (*(uint32_t *) _ui1 > *(uint32_t *) _ui2)
+   if (*(uint32_t *) _ui1>*(uint32_t *) _ui2)
       return (1);
-   if (*(uint32_t *) _ui1 < *(uint32_t *) _ui2)
+   if (*(uint32_t *) _ui1<*(uint32_t *) _ui2)
       return (-1);
 
    return (0);
@@ -366,8 +366,8 @@ int FeatureScriptTagInFeatureScriptList(uint32_t feature, uint32_t script,
 int DefaultLangTagInOneScriptList(struct scriptlanglist *sl) {
    int l;
 
-   for (l=0; l < sl->lang_cnt; ++l) {
-      uint32_t lang=l < MAX_LANG ? sl->langs[l] : sl->morelangs[l - MAX_LANG];
+   for (l=0; l<sl->lang_cnt; ++l) {
+      uint32_t lang=l<MAX_LANG?sl->langs[l]:sl->morelangs[l-MAX_LANG];
 
       if (lang==DEFAULT_LANG)
 	 return (true);
@@ -430,7 +430,7 @@ a GPOS, but he says the GPOS won't work without a GSUB.)
 
    /* So here always give scripts for both (see comment above) no */
    /*  matter what they asked for */
-   for (gpos=0; gpos < 2; ++gpos) {
+   for (gpos=0; gpos<2; ++gpos) {
       for (test=sf->gsplookups[gpos]; test != NULL;
 	   test=test->next) {
 	 if (test->unused)
@@ -439,13 +439,13 @@ a GPOS, but he says the GPOS won't work without a GSUB.)
 	    if (fl->ismac)
 	       continue;
 	    for (sl=fl->scripts; sl != NULL; sl=sl->next) {
-	       for (i=0; i < cnt; ++i) {
+	       for (i=0; i<cnt; ++i) {
 		  if (sl->script==scripts[i])
 		     break;
 	       }
 	       if (i==cnt) {
 		  if (cnt >= tot)
-		     scripts=realloc(scripts, (tot += 10) * sizeof(uint32_t));
+		     scripts=realloc(scripts, (tot += 10)*sizeof(uint32_t));
 		  scripts[cnt++]=sl->script;
 	       }
 	    }
@@ -460,7 +460,7 @@ a GPOS, but he says the GPOS won't work without a GSUB.)
    qsort(scripts, cnt, sizeof(uint32_t), uint32_cmp);
    /* add a 0 entry to mark the end of the list */
    if (cnt >= tot)
-      scripts=realloc(scripts, (tot + 1) * sizeof(uint32_t));
+      scripts=realloc(scripts, (tot+1)*sizeof(uint32_t));
    scripts[cnt]=0;
    return (scripts);
 }
@@ -475,7 +475,7 @@ uint32_t *SFLangsInScript(SplineFont *sf, int gpos, uint32_t script) {
    FeatureScriptLangList *fl;
    struct scriptlanglist *sl;
 
-   for (g=0; g < 2; ++g) {
+   for (g=0; g<2; ++g) {
       if ((gpos==0 && g==1) || (gpos==1 && g==0))
 	 continue;
       for (test=sf->gsplookups[g]; test != NULL;
@@ -485,21 +485,21 @@ uint32_t *SFLangsInScript(SplineFont *sf, int gpos, uint32_t script) {
 	 for (fl=test->features; fl != NULL; fl=fl->next) {
 	    for (sl=fl->scripts; sl != NULL; sl=sl->next) {
 	       if (sl->script==script) {
-		  for (l=0; l < sl->lang_cnt; ++l) {
+		  for (l=0; l<sl->lang_cnt; ++l) {
 		     int lang;
 
-		     if (l < MAX_LANG)
+		     if (l<MAX_LANG)
 			lang=sl->langs[l];
 		     else
-			lang=sl->morelangs[l - MAX_LANG];
-		     for (i=0; i < cnt; ++i) {
+			lang=sl->morelangs[l-MAX_LANG];
+		     for (i=0; i<cnt; ++i) {
 			if (lang==langs[i])
 			   break;
 		     }
 		     if (i==cnt) {
 			if (cnt >= tot)
 			   langs =
-			      realloc(langs, (tot += 10) * sizeof(uint32_t));
+			      realloc(langs, (tot += 10)*sizeof(uint32_t));
 			langs[cnt++]=lang;
 		     }
 		  }
@@ -526,7 +526,7 @@ uint32_t *SFLangsInScript(SplineFont *sf, int gpos, uint32_t script) {
    qsort(langs, cnt, sizeof(uint32_t), lang_cmp);
    /* add a 0 entry to mark the end of the list */
    if (cnt >= tot)
-      langs=realloc(langs, (tot + 1) * sizeof(uint32_t));
+      langs=realloc(langs, (tot+1)*sizeof(uint32_t));
    langs[cnt]=0;
    return (langs);
 }
@@ -539,11 +539,11 @@ uint32_t *SFFeaturesInScriptLang(SplineFont *sf, int gpos, uint32_t script,
    FeatureScriptLangList *fl;
    struct scriptlanglist *sl;
 
-   /* gpos==0 => GSUB, gpos==1 => GPOS, gpos==-1 => both, gpos==-2 => Both & morx & kern */
+   /* gpos==0 => GSUB, gpos==1 => GPOS, gpos==-1 => both, gpos==-2 => Both&morx&kern */
 
    if (sf->cidmaster)
       sf=sf->cidmaster;
-   for (isg=0; isg < 2; ++isg) {
+   for (isg=0; isg<2; ++isg) {
       if (gpos >= 0 && isg != gpos)
 	 continue;
       for (test=sf->gsplookups[isg]; test != NULL;
@@ -554,14 +554,14 @@ uint32_t *SFFeaturesInScriptLang(SplineFont *sf, int gpos, uint32_t script,
 	    if (fl->ismac && gpos != -2)
 	       continue;
 	    if (script==0xffffffff) {
-	       for (i=0; i < cnt; ++i) {
+	       for (i=0; i<cnt; ++i) {
 		  if (fl->featuretag==features[i])
 		     break;
 	       }
 	       if (i==cnt) {
 		  if (cnt >= tot)
 		     features =
-			realloc(features, (tot += 10) * sizeof(uint32_t));
+			realloc(features, (tot += 10)*sizeof(uint32_t));
 		  features[cnt++]=fl->featuretag;
 	       }
 	    } else
@@ -572,20 +572,20 @@ uint32_t *SFFeaturesInScriptLang(SplineFont *sf, int gpos, uint32_t script,
 		     if (fl->ismac && gpos==-2)
 			matched=true;
 		     else
-			for (l=0; l < sl->lang_cnt; ++l) {
+			for (l=0; l<sl->lang_cnt; ++l) {
 			   int testlang;
 
-			   if (l < MAX_LANG)
+			   if (l<MAX_LANG)
 			      testlang=sl->langs[l];
 			   else
-			      testlang=sl->morelangs[l - MAX_LANG];
+			      testlang=sl->morelangs[l-MAX_LANG];
 			   if (testlang==lang) {
 			      matched=true;
 			      break;
 			   }
 			}
 		     if (matched) {
-			for (i=0; i < cnt; ++i) {
+			for (i=0; i<cnt; ++i) {
 			   if (fl->featuretag==features[i])
 			      break;
 			}
@@ -593,7 +593,7 @@ uint32_t *SFFeaturesInScriptLang(SplineFont *sf, int gpos, uint32_t script,
 			   if (cnt >= tot)
 			      features =
 				 realloc(features,
-					 (tot += 10) * sizeof(uint32_t));
+					 (tot += 10)*sizeof(uint32_t));
 			   features[cnt++]=fl->featuretag;
 			}
 		     }
@@ -610,7 +610,7 @@ uint32_t *SFFeaturesInScriptLang(SplineFont *sf, int gpos, uint32_t script,
       /*  gets a 'size' feature which contains no lookups but feature */
       /*  params */
       if (cnt >= tot)
-	 features=realloc(features, (tot += 2) * sizeof(uint32_t));
+	 features=realloc(features, (tot += 2)*sizeof(uint32_t));
       features[cnt++]=CHR('s', 'i', 'z', 'e');
    }
 
@@ -624,7 +624,7 @@ uint32_t *SFFeaturesInScriptLang(SplineFont *sf, int gpos, uint32_t script,
 
    /* add a 0 entry to mark the end of the list */
    if (cnt >= tot)
-      features=realloc(features, (tot + 1) * sizeof(uint32_t));
+      features=realloc(features, (tot+1)*sizeof(uint32_t));
    features[cnt]=0;
    return (features);
 }
@@ -646,18 +646,18 @@ OTLookup **SFLookupsInScriptLangFeature(SplineFont *sf, int gpos,
 	 if (fl->featuretag==feature) {
 	    for (sl=fl->scripts; sl != NULL; sl=sl->next) {
 	       if (sl->script==script) {
-		  for (l=0; l < sl->lang_cnt; ++l) {
+		  for (l=0; l<sl->lang_cnt; ++l) {
 		     int testlang;
 
-		     if (l < MAX_LANG)
+		     if (l<MAX_LANG)
 			testlang=sl->langs[l];
 		     else
-			testlang=sl->morelangs[l - MAX_LANG];
+			testlang=sl->morelangs[l-MAX_LANG];
 		     if (testlang==lang) {
 			if (cnt >= tot)
 			   lookups =
 			      realloc(lookups,
-				      (tot += 10) * sizeof(OTLookup *));
+				      (tot += 10)*sizeof(OTLookup *));
 			lookups[cnt++]=test;
 			goto found;
 		     }
@@ -675,7 +675,7 @@ OTLookup **SFLookupsInScriptLangFeature(SplineFont *sf, int gpos,
    /* lookup order is irrelevant here. might as well leave it in invocation order */
    /* add a 0 entry to mark the end of the list */
    if (cnt >= tot)
-      lookups=realloc(lookups, (tot + 1) * sizeof(OTLookup *));
+      lookups=realloc(lookups, (tot+1)*sizeof(OTLookup *));
    lookups[cnt]=0;
    return (lookups);
 }
@@ -720,7 +720,7 @@ static int PSTValid(SplineFont *sf,PST *pst) {
 	   if (ch==0)
 	      start=pt;
 	   else
-	      start=pt + 1;
+	      start=pt+1;
 	}
    }
    return (true);
@@ -736,11 +736,11 @@ SplineChar **SFGlyphsWithPSTinSubtable(SplineFont *sf,
    int ispair=subtable->lookup->lookup_type==gpos_pair;
    int isliga=subtable->lookup->lookup_type==gsub_ligature;
 
-   for (i=0; i < sf->glyphcnt; ++i)
+   for (i=0; i<sf->glyphcnt; ++i)
       if (SCWorthOutputting(sc=sf->glyphs[i])) {
 	 if (ispair) {
-	    for (k=0; k < 2; ++k) {
-	       for (kp=k ? sc->kerns : sc->vkerns; kp != NULL;
+	    for (k=0; k<2; ++k) {
+	       for (kp=k?sc->kerns:sc->vkerns; kp != NULL;
 		    kp=kp->next) {
 		  if (!SCWorthOutputting(kp->sc))
 		     continue;
@@ -769,7 +769,7 @@ SplineChar **SFGlyphsWithPSTinSubtable(SplineFont *sf,
        continue_:;
       }
 
-   for (i=cnt=0; i < sf->glyphcnt; ++i)
+   for (i=cnt=0; i<sf->glyphcnt; ++i)
       if (used[i])
 	 ++cnt;
 
@@ -777,8 +777,8 @@ SplineChar **SFGlyphsWithPSTinSubtable(SplineFont *sf,
       free(used);
       return (NULL);
    }
-   glyphs=malloc((cnt + 1) * sizeof(SplineChar *));
-   for (i=cnt=0; i < sf->glyphcnt; ++i) {
+   glyphs=malloc((cnt+1)*sizeof(SplineChar *));
+   for (i=cnt=0; i<sf->glyphcnt; ++i) {
       if (used[i])
 	 glyphs[cnt++]=sf->glyphs[i];
    }
@@ -793,10 +793,10 @@ static void TickLookupKids(OTLookup *otl) {
 
    for (sub=otl->subtables; sub != NULL; sub=sub->next) {
       if (sub->fpst != NULL) {
-	 for (i=0; i < sub->fpst->rule_cnt; ++i) {
+	 for (i=0; i<sub->fpst->rule_cnt; ++i) {
 	    struct fpst_rule *rule=&sub->fpst->rules[i];
 
-	    for (j=0; j < rule->lookup_cnt; ++j) {
+	    for (j=0; j<rule->lookup_cnt; ++j) {
 	       if (rule->lookups[j].lookup != NULL)
 		  rule->lookups[j].lookup->in_gpos=true;
 	    }
@@ -855,8 +855,8 @@ void SFFindUnusedLookups(SplineFont *sf) {
    /*  and mark the appropriate parts of them as used */
    k=0;
    do {
-      sf=_sf->subfontcnt==0 ? _sf : _sf->subfonts[k];
-      for (gid=0; gid < sf->glyphcnt; ++gid)
+      sf=_sf->subfontcnt==0?_sf:_sf->subfonts[k];
+      for (gid=0; gid<sf->glyphcnt; ++gid)
 	 if (SCWorthOutputting(sc=sf->glyphs[gid])) {
 	    for (ap=sc->anchor; ap != NULL; ap=ap->next) {
 	       switch (ap->type) {
@@ -872,8 +872,8 @@ void SFFindUnusedLookups(SplineFont *sf) {
 		    break;
 	       }
 	    }
-	    for (isv=0; isv < 2; ++isv) {
-	       for (kp=isv ? sc->kerns : sc->vkerns; kp != NULL;
+	    for (isv=0; isv<2; ++isv) {
+	       for (kp=isv?sc->kerns:sc->vkerns; kp != NULL;
 		    kp=kp->next) {
 		  if (SCWorthOutputting(kp->sc))
 		     kp->subtable->unused=false;
@@ -888,7 +888,7 @@ void SFFindUnusedLookups(SplineFont *sf) {
 	    }
 	 }
       ++k;
-   } while (k < _sf->subfontcnt);
+   } while (k<_sf->subfontcnt);
 
    /* Finally for any anchor class that has both a mark and a base then it is */
    /*  used, and its lookup is also used */
@@ -903,7 +903,7 @@ void SFFindUnusedLookups(SplineFont *sf) {
    }
 
    /* Now for each lookup, a lookup is unused if ALL subtables are unused */
-   for (gpos=0; gpos < 2; ++gpos) {
+   for (gpos=0; gpos<2; ++gpos) {
       for (test=_sf->gsplookups[gpos]; test != NULL;
 	   test=test->next) {
 	 test->unused=test->empty=true;
@@ -929,7 +929,7 @@ void SFFindUnusedLookups(SplineFont *sf) {
    }
    for (jscripts=sf->justify; jscripts != NULL; jscripts=jscripts->next) {
       for (jlangs=jscripts->langs; jlangs != NULL; jlangs=jlangs->next) {
-	 for (i=0; i < jlangs->cnt; ++i) {
+	 for (i=0; i<jlangs->cnt; ++i) {
 	    struct jstf_prio *prio=&jlangs->prios[i];
 
 	    if (prio->enableShrink != NULL)
@@ -984,8 +984,8 @@ static OTLookup **RemoveFromList(OTLookup ** list,OTLookup *dying) {
       return (NULL);
    for (i=0; list[i] != NULL; ++i) {
       if (list[i]==dying) {
-	 for (j=i + 1;; ++j) {
-	    list[j - 1]=list[j];
+	 for (j=i+1;; ++j) {
+	    list[j-1]=list[j];
 	    if (list[j]==NULL)
 	       break;
 	 }
@@ -1005,7 +1005,7 @@ static void RemoveJSTFReferences(SplineFont *sf,OTLookup *dying) {
 
    for (jscript=sf->justify; jscript != NULL; jscript=jscript->next) {
       for (jlang=jscript->langs; jlang != NULL; jlang=jlang->next) {
-	 for (i=0; i < jlang->cnt; ++i) {
+	 for (i=0; i<jlang->cnt; ++i) {
 	    struct jstf_prio *prio=&jlang->prios[i];
 
 	    prio->enableShrink=RemoveFromList(prio->enableShrink, dying);
@@ -1032,7 +1032,7 @@ static void RemoveNestedReferences(SplineFont *sf,int isgpos,
 	    ASM *sm=sub->sm;
 
 	    if (sm->type==asm_context) {
-	       for (i=0; i < sm->state_cnt * sm->class_cnt; ++i) {
+	       for (i=0; i<sm->state_cnt * sm->class_cnt; ++i) {
 		  struct asm_state *state=&sm->state[i];
 
 		  if (state->u.context.mark_lookup==otl)
@@ -1053,11 +1053,11 @@ static void RemoveNestedReferences(SplineFont *sf,int isgpos,
 	 for (sub=otl->subtables; sub != NULL; sub=sub->next) {
 	    FPST *fpst=sub->fpst;
 
-	    for (i=0; i < fpst->rule_cnt; ++i) {
-	       for (j=0; j < fpst->rules[i].lookup_cnt; ++j) {
+	    for (i=0; i<fpst->rule_cnt; ++i) {
+	       for (j=0; j<fpst->rules[i].lookup_cnt; ++j) {
 		  if (fpst->rules[i].lookups[j].lookup==otl) {
-		     for (k=j + 1; k < fpst->rules[i].lookup_cnt; ++k)
-			fpst->rules[i].lookups[k - 1] =
+		     for (k=j+1; k<fpst->rules[i].lookup_cnt; ++k)
+			fpst->rules[i].lookups[k-1] =
 			   fpst->rules[i].lookups[k];
 		     --fpst->rules[i].lookup_cnt;
 		     --j;
@@ -1146,8 +1146,8 @@ void SFRemoveLookupSubTable(SplineFont *sf, struct lookup_subtable *sub,
 
       k=0;
       do {
-	 _sf=sf->subfontcnt==0 ? sf : sf->subfonts[k];
-	 for (i=0; i < _sf->glyphcnt; ++i)
+	 _sf=sf->subfontcnt==0?sf:sf->subfonts[k];
+	 for (i=0; i<_sf->glyphcnt; ++i)
 	    if ((sc=_sf->glyphs[i]) != NULL) {
 	       for (pst=sc->possub, prev=NULL; pst != NULL; pst=next) {
 		  next=pst->next;
@@ -1161,8 +1161,8 @@ void SFRemoveLookupSubTable(SplineFont *sf, struct lookup_subtable *sub,
 		  } else
 		     prev=pst;
 	       }
-	       for (v=0; v < 2; ++v) {
-		  for (kp=v ? sc->vkerns : sc->kerns, kpprev=NULL;
+	       for (v=0; v<2; ++v) {
+		  for (kp=v?sc->vkerns:sc->kerns, kpprev=NULL;
 		       kp != NULL; kp=kpnext) {
 		     kpnext=kp->next;
 		     if (kp->subtable==sub) {
@@ -1180,7 +1180,7 @@ void SFRemoveLookupSubTable(SplineFont *sf, struct lookup_subtable *sub,
 	       }
 	    }
 	 ++k;
-      } while (k < sf->subfontcnt);
+      } while (k<sf->subfontcnt);
    }
 
    subprev=NULL;
@@ -1291,21 +1291,21 @@ void FListAppendScriptLang(FeatureScriptLangList * fl, uint32_t script_tag,
       sl->next=fl->scripts;
       fl->scripts=sl;
    }
-   for (l=0; l < MAX_LANG && l < sl->lang_cnt && sl->langs[l] != lang_tag;
+   for (l=0; l<MAX_LANG && l<sl->lang_cnt && sl->langs[l] != lang_tag;
 	++l);
-   if (l >= MAX_LANG && l < sl->lang_cnt) {
-      while (l < sl->lang_cnt && sl->morelangs[l - MAX_LANG] != lang_tag)
+   if (l >= MAX_LANG && l<sl->lang_cnt) {
+      while (l<sl->lang_cnt && sl->morelangs[l-MAX_LANG] != lang_tag)
 	 ++l;
    }
    if (l >= sl->lang_cnt) {
-      if (l < MAX_LANG)
+      if (l<MAX_LANG)
 	 sl->langs[l]=lang_tag;
       else {
-	 if (l % MAX_LANG==0)
+	 if (l%MAX_LANG==0)
 	    sl->morelangs=realloc(sl->morelangs, l * sizeof(uint32_t));
 	 /* We've just allocated MAX_LANG-1 more than we need */
 	 /*  so we don't do quite some many allocations */
-	 sl->morelangs[l - MAX_LANG]=lang_tag;
+	 sl->morelangs[l-MAX_LANG]=lang_tag;
       }
       ++sl->lang_cnt;
    }
@@ -1513,8 +1513,8 @@ void LookupInit(void) {
    if (done)
       return;
    done=true;
-   for (j=0; j < 2; ++j) {
-      for (i=0; i < 10; ++i)
+   for (j=0; j<2; ++j) {
+      for (i=0; i<10; ++i)
 	 if (lookup_type_names[j][i] != NULL)
 	    lookup_type_names[j][i]=(char *)lookup_type_names[j][i];
    }
@@ -1525,18 +1525,18 @@ void LookupInit(void) {
 }
 
 char *TagFullName(SplineFont *sf, uint32_t tag, int ismac, int onlyifknown) {
-   char ubuf[200], *end=ubuf + sizeof(ubuf), *setname;
+   char ubuf[200], *end=ubuf+sizeof(ubuf), *setname;
    int k;
 
    if (ismac==-1)
       /* Guess */
-      ismac=(tag >> 24) < ' ' || (tag >> 24) > 0x7e;
+      ismac=(tag >> 24)<' ' || (tag >> 24)>0x7e;
 
    if (ismac) {
-      sprintf(ubuf, "<%d,%d> ", (int) (tag >> 16), (int) (tag & 0xffff));
+      sprintf(ubuf, "<%d,%d> ", (int) (tag >> 16), (int) (tag&0xffff));
       if ((setname =
 	   PickNameFromMacName(FindMacSettingName
-			       (sf, tag >> 16, tag & 0xffff))) != NULL) {
+			       (sf, tag >> 16, tag&0xffff))) != NULL) {
 	 strcat(ubuf, setname);
 	 free(setname);
       }
@@ -1555,14 +1555,14 @@ char *TagFullName(SplineFont *sf, uint32_t tag, int ismac, int onlyifknown) {
 	 }
 	 ubuf[0]='\'';
 	 ubuf[1]=tag >> 24;
-	 ubuf[2]=(tag >> 16) & 0xff;
-	 ubuf[3]=(tag >> 8) & 0xff;
-	 ubuf[4]=tag & 0xff;
+	 ubuf[2]=(tag >> 16)&0xff;
+	 ubuf[3]=(tag >> 8)&0xff;
+	 ubuf[4]=tag&0xff;
 	 ubuf[5]='\'';
 	 ubuf[6]=' ';
 	 if (friendlies[k].tag != 0)
-	    strncpy(ubuf + 7, (char *) friendlies[k].friendlyname,
-		    end - ubuf - 7);
+	    strncpy(ubuf+7, (char *) friendlies[k].friendlyname,
+		    end-ubuf-7);
 	 else if (onlyifknown)
 	    return (NULL);
 	 else
@@ -1584,7 +1584,7 @@ void NameOTLookup(OTLookup * otl, SplineFont *sf) {
    LookupInit();
 
    if (otl->lookup_name==NULL) {
-      for (k=0; k < 2; ++k) {
+      for (k=0; k<2; ++k) {
 	 for (fl=otl->features; fl != NULL; fl=fl->next) {
 	    /* look first for a feature attached to a default language */
 	    if (k==1
@@ -1599,20 +1599,20 @@ void NameOTLookup(OTLookup * otl, SplineFont *sf) {
 	    break;
       }
       if (userfriendly==NULL) {
-	 if ((otl->lookup_type & 0xff) >= 0xf0)
+	 if ((otl->lookup_type&0xff) >= 0xf0)
 	    lookuptype="State Machine";
-	 else if ((otl->lookup_type >> 8) < 2
-		  && (otl->lookup_type & 0xff) < 10)
+	 else if ((otl->lookup_type >> 8)<2
+		  && (otl->lookup_type&0xff)<10)
 	    lookuptype =
 	       lookup_type_names[otl->lookup_type >> 8]
-		 [otl->lookup_type & 0xff];
+		 [otl->lookup_type&0xff];
 	 else
 	    lookuptype="LookupType|Unknown";
 	 for (fl=otl->features; fl != NULL && !fl->ismac; fl=fl->next);
 	 if (fl==NULL)
 	    userfriendly=fastrdup(lookuptype);
 	 else {
-	    userfriendly=malloc(strlen(lookuptype) + 10);
+	    userfriendly=malloc(strlen(lookuptype)+10);
 	    sprintf(userfriendly, "%s '%c%c%c%c'", lookuptype,
 		    fl->featuretag >> 24,
 		    fl->featuretag >> 16,
@@ -1657,9 +1657,9 @@ void NameOTLookup(OTLookup * otl, SplineFont *sf) {
 	    else {
 	       buf[0]='\'';
 	       buf[1]=fl->scripts->script >> 24;
-	       buf[2]=(fl->scripts->script >> 16) & 0xff;
-	       buf[3]=(fl->scripts->script >> 8) & 0xff;
-	       buf[4]=fl->scripts->script & 0xff;
+	       buf[2]=(fl->scripts->script >> 16)&0xff;
+	       buf[3]=(fl->scripts->script >> 8)&0xff;
+	       buf[4]=fl->scripts->script&0xff;
 	       buf[5]='\'';
 	       buf[6]=0;
 	       script=fastrdup(buf);
@@ -1674,14 +1674,14 @@ void NameOTLookup(OTLookup * otl, SplineFont *sf) {
 /* GT: In case that is needed */
 	 format="%s in %s lookup %d";
 	 otl->lookup_name =
-	    malloc(strlen(userfriendly) + strlen(format) + strlen(script) +
+	    malloc(strlen(userfriendly)+strlen(format)+strlen(script) +
 		   10);
 	 sprintf(otl->lookup_name, format, userfriendly, script,
 		 otl->lookup_index);
       } else {
 	 format="%s lookup %d";
 	 otl->lookup_name =
-	    malloc(strlen(userfriendly) + strlen(format) + 10);
+	    malloc(strlen(userfriendly)+strlen(format)+10);
 	 sprintf(otl->lookup_name, format, userfriendly, otl->lookup_index);
       }
       free(script);
@@ -1715,7 +1715,7 @@ void NameOTLookup(OTLookup * otl, SplineFont *sf) {
 	       format="%s !!!!!!!! %d";
 	    }
 	    subtable->subtable_name =
-	       malloc(strlen(otl->lookup_name) + strlen(format) + 10);
+	       malloc(strlen(otl->lookup_name)+strlen(format)+10);
 	    sprintf(subtable->subtable_name, format, otl->lookup_name, cnt);
 	 }
    }
@@ -1736,19 +1736,19 @@ static void LangOrder(struct scriptlanglist *sl) {
    int i, j;
    uint32_t lang, lang2;
 
-   for (i=0; i < sl->lang_cnt; ++i) {
-      lang=i < MAX_LANG ? sl->langs[i] : sl->morelangs[i - MAX_LANG];
-      for (j=i + 1; j < sl->lang_cnt; ++j) {
-	 lang2=j < MAX_LANG ? sl->langs[j] : sl->morelangs[j - MAX_LANG];
-	 if (lang > lang2) {
-	    if (i < MAX_LANG)
+   for (i=0; i<sl->lang_cnt; ++i) {
+      lang=i<MAX_LANG?sl->langs[i]:sl->morelangs[i-MAX_LANG];
+      for (j=i+1; j<sl->lang_cnt; ++j) {
+	 lang2=j<MAX_LANG?sl->langs[j]:sl->morelangs[j-MAX_LANG];
+	 if (lang>lang2) {
+	    if (i<MAX_LANG)
 	       sl->langs[i]=lang2;
 	    else
-	       sl->morelangs[i - MAX_LANG]=lang2;
-	    if (j < MAX_LANG)
+	       sl->morelangs[i-MAX_LANG]=lang2;
+	    if (j<MAX_LANG)
 	       sl->langs[j]=lang;
 	    else
-	       sl->morelangs[j - MAX_LANG]=lang;
+	       sl->morelangs[j-MAX_LANG]=lang;
 	    lang=lang2;
 	 }
       }
@@ -1763,13 +1763,13 @@ static struct scriptlanglist *SLOrder(struct scriptlanglist *sl) {
       LangOrder(sl2);
    if (cnt <= 1)
       return (sl);
-   if (cnt > 30)
+   if (cnt>30)
       test=allocked=malloc(cnt * sizeof(struct scriptlanglist *));
    for (sl2=sl, cnt=0; sl2 != NULL; sl2=sl2->next, ++cnt)
       test[cnt]=sl2;
-   for (i=0; i < cnt; ++i)
-      for (j=i + 1; j < cnt; ++j) {
-	 if (test[i]->script > test[j]->script) {
+   for (i=0; i<cnt; ++i)
+      for (j=i+1; j<cnt; ++j) {
+	 if (test[i]->script>test[j]->script) {
 	    struct scriptlanglist *temp;
 
 	    temp=test[i];
@@ -1778,9 +1778,9 @@ static struct scriptlanglist *SLOrder(struct scriptlanglist *sl) {
 	 }
       }
    sl=test[0];
-   for (i=1; i < cnt; ++i)
-      test[i - 1]->next=test[i];
-   test[i - 1]->next=NULL;
+   for (i=1; i<cnt; ++i)
+      test[i-1]->next=test[i];
+   test[i-1]->next=NULL;
    free(allocked);
    return (sl);
 }
@@ -1793,13 +1793,13 @@ FeatureScriptLangList *FLOrder(FeatureScriptLangList * fl) {
       fl2->scripts=SLOrder(fl2->scripts);
    if (cnt <= 1)
       return (fl);
-   if (cnt > 30)
+   if (cnt>30)
       test=allocked=malloc(cnt * sizeof(FeatureScriptLangList *));
    for (fl2=fl, cnt=0; fl2 != NULL; fl2=fl2->next, ++cnt)
       test[cnt]=fl2;
-   for (i=0; i < cnt; ++i)
-      for (j=i + 1; j < cnt; ++j) {
-	 if (test[i]->featuretag > test[j]->featuretag) {
+   for (i=0; i<cnt; ++i)
+      for (j=i+1; j<cnt; ++j) {
+	 if (test[i]->featuretag>test[j]->featuretag) {
 	    FeatureScriptLangList *temp;
 
 	    temp=test[i];
@@ -1808,9 +1808,9 @@ FeatureScriptLangList *FLOrder(FeatureScriptLangList * fl) {
 	 }
       }
    fl=test[0];
-   for (i=1; i < cnt; ++i)
-      test[i - 1]->next=test[i];
-   test[i - 1]->next=NULL;
+   for (i=1; i<cnt; ++i)
+      test[i-1]->next=test[i];
+   test[i-1]->next=NULL;
    free(allocked);
    return (fl);
 }
@@ -1822,11 +1822,11 @@ struct scriptlanglist *SLCopy(struct scriptlanglist *sl) {
    *newsl=*sl;
    newsl->next=NULL;
 
-   if (sl->lang_cnt > MAX_LANG) {
+   if (sl->lang_cnt>MAX_LANG) {
       newsl->morelangs =
-	 malloc((newsl->lang_cnt - MAX_LANG) * sizeof(uint32_t));
+	 malloc((newsl->lang_cnt-MAX_LANG)*sizeof(uint32_t));
       memcpy(newsl->morelangs, sl->morelangs,
-	     (newsl->lang_cnt - MAX_LANG) * sizeof(uint32_t));
+	     (newsl->lang_cnt-MAX_LANG)*sizeof(uint32_t));
    }
    return (newsl);
 }
@@ -1864,22 +1864,22 @@ static void LangMerge(struct scriptlanglist *into,
    int i, j;
    uint32_t flang, tlang;
 
-   for (i=0; i < from->lang_cnt; ++i) {
-      flang=i < MAX_LANG ? from->langs[i] : from->morelangs[i - MAX_LANG];
-      for (j=0; j < into->lang_cnt; ++j) {
+   for (i=0; i<from->lang_cnt; ++i) {
+      flang=i<MAX_LANG?from->langs[i]:from->morelangs[i-MAX_LANG];
+      for (j=0; j<into->lang_cnt; ++j) {
 	 tlang =
-	    j < MAX_LANG ? into->langs[j] : into->morelangs[j - MAX_LANG];
+	    j<MAX_LANG?into->langs[j]:into->morelangs[j-MAX_LANG];
 	 if (tlang==flang)
 	    break;
       }
       if (j==into->lang_cnt) {
-	 if (into->lang_cnt < MAX_LANG)
+	 if (into->lang_cnt<MAX_LANG)
 	    into->langs[into->lang_cnt++]=flang;
 	 else {
 	    into->morelangs =
 	       realloc(into->morelangs,
-		       (into->lang_cnt + 1 - MAX_LANG) * sizeof(uint32_t));
-	    into->morelangs[into->lang_cnt++ - MAX_LANG]=flang;
+		       (into->lang_cnt+1-MAX_LANG)*sizeof(uint32_t));
+	    into->morelangs[into->lang_cnt++-MAX_LANG]=flang;
 	 }
       }
    }
@@ -1962,8 +1962,8 @@ void SFSubTablesMerge(SplineFont *_sf, struct lookup_subtable *subfirst,
    } else {
       k=0;
       do {
-	 sf=_sf->subfontcnt==0 ? _sf : _sf->subfonts[k];
-	 for (gid=0; gid < sf->glyphcnt; ++gid)
+	 sf=_sf->subfontcnt==0?_sf:_sf->subfonts[k];
+	 for (gid=0; gid<sf->glyphcnt; ++gid)
 	    if ((sc=sf->glyphs[gid]) != NULL) {
 	       if (lookup_type==gsub_single || lookup_type==gsub_multiple
 		   || lookup_type==gsub_alternate
@@ -1986,7 +1986,7 @@ void SFSubTablesMerge(SplineFont *_sf, struct lookup_subtable *subfirst,
 		     ErrorMsg(2,"The glyph, %s, contains a %s from %s and one from %s.\nThe one from %s will be removed.\n",
 			      sc->name,
 			      lookup_type ==
-			      gpos_single ? "positioning" :
+			      gpos_single?"positioning" :
 			      "substitution", subfirst->subtable_name,
 			      subsecond->subtable_name,
 			      subsecond->subtable_name);
@@ -2019,7 +2019,7 @@ void SFSubTablesMerge(SplineFont *_sf, struct lookup_subtable *subfirst,
 			   ErrorMsg(2,"The glyph, %s, contains the same %s from %s and from %s.\nThe one from %s will be removed.\n",
 				    sc->name,
 				    lookup_type ==
-				    gsub_ligature ? "ligature" :
+				    gsub_ligature?"ligature" :
 				    "kern pair", subfirst->subtable_name,
 				    subsecond->subtable_name,
 				    subsecond->subtable_name);
@@ -2034,13 +2034,13 @@ void SFSubTablesMerge(SplineFont *_sf, struct lookup_subtable *subfirst,
 		     }
 		     pstprev=spst;
 		  }
-		  for (isv=0; isv < 2; ++isv) {
+		  for (isv=0; isv<2; ++isv) {
 		     kpprev=NULL;
-		     for (skp=isv ? sc->vkerns : sc->kerns; skp != NULL;
+		     for (skp=isv?sc->vkerns:sc->kerns; skp != NULL;
 			  skp=kpnext) {
 			kpnext=skp->next;
 			if (skp->subtable==subsecond) {
-			   for (fkp=isv ? sc->vkerns : sc->kerns;
+			   for (fkp=isv?sc->vkerns:sc->kerns;
 				fkp != NULL; fkp=fkp->next) {
 			      if (fkp->subtable==subfirst
 				  && fkp->sc==skp->sc)
@@ -2070,7 +2070,7 @@ void SFSubTablesMerge(SplineFont *_sf, struct lookup_subtable *subfirst,
 	       }
 	    }
 	 ++k;
-      } while (k < _sf->subfontcnt);
+      } while (k<_sf->subfontcnt);
    }
 }
 
@@ -2085,7 +2085,7 @@ static char **ClassCopy(int class_cnt,char **classes) {
    if (classes==NULL || class_cnt==0)
       return (NULL);
    newclasses=malloc(class_cnt * sizeof(char *));
-   for (i=0; i < class_cnt; ++i)
+   for (i=0; i<class_cnt; ++i)
       newclasses[i]=fastrdup(classes[i]);
    return (newclasses);
 }
@@ -2102,7 +2102,7 @@ static OTLookup *OTLookupCopyNested(struct sfmergecontext *mc,
    if (from_otl==NULL)
       return (NULL);
 
-   for (l=0; l < mc->lcnt; ++l) {
+   for (l=0; l<mc->lcnt; ++l) {
       if (mc->lks[l].from==from_otl)
 	 return (mc->lks[l].to);
    }
@@ -2111,7 +2111,7 @@ static OTLookup *OTLookupCopyNested(struct sfmergecontext *mc,
    to_nested_otl=SFFindLookup(mc->sf_to, newname);
    free(newname);
    if (to_nested_otl==NULL)
-      to_nested_otl=_OTLookupCopyInto(mc, from_otl, (OTLookup *) - 1, true);
+      to_nested_otl=_OTLookupCopyInto(mc, from_otl, (OTLookup *)-1, true);
    return (to_nested_otl);
 }
 
@@ -2163,13 +2163,13 @@ static FPST *SF_AddFPST(struct sfmergecontext *mc,FPST *fpst,
 	  newfpst->rule_cnt * sizeof(struct fpst_rule));
 
    cur=0;
-   for (i=0; i < newfpst->rule_cnt; ++i) {
+   for (i=0; i<newfpst->rule_cnt; ++i) {
       struct fpst_rule *r=&newfpst->rules[i], *oldr=&fpst->rules[i];
 
       r->lookups=malloc(r->lookup_cnt * sizeof(struct seqlookup));
       memcpy(r->lookups, oldr->lookups,
 	     r->lookup_cnt * sizeof(struct seqlookup));
-      for (k=0; k < r->lookup_cnt; ++k) {
+      for (k=0; k<r->lookup_cnt; ++k) {
 	 r->lookups[k].lookup=OTLookupCopyNested(mc, r->lookups[k].lookup);
       }
 
@@ -2229,21 +2229,21 @@ static ASM *SF_AddASM(struct sfmergecontext *mc,ASM *sm,
    memcpy(newsm->state, sm->state,
 	  newsm->class_cnt * newsm->state_cnt * sizeof(struct asm_state));
    if (newsm->type==asm_kern) {
-      for (i=newsm->class_cnt * newsm->state_cnt - 1; i >= 0; --i) {
+      for (i=newsm->class_cnt * newsm->state_cnt-1; i >= 0; --i) {
 	 newsm->state[i].u.kern.kerns =
 	    malloc(newsm->state[i].u.kern.kcnt * sizeof(int16_t));
 	 memcpy(newsm->state[i].u.kern.kerns, sm->state[i].u.kern.kerns,
 		newsm->state[i].u.kern.kcnt * sizeof(int16_t));
       }
    } else if (newsm->type==asm_insert) {
-      for (i=0; i < newsm->class_cnt * newsm->state_cnt; ++i) {
+      for (i=0; i<newsm->class_cnt * newsm->state_cnt; ++i) {
 	 struct asm_state *this=&newsm->state[i];
 
 	 this->u.insert.mark_ins=fastrdup(this->u.insert.mark_ins);
 	 this->u.insert.cur_ins=fastrdup(this->u.insert.cur_ins);
       }
    } else if (newsm->type==asm_context) {
-      for (i=0; i < newsm->class_cnt * newsm->state_cnt; ++i) {
+      for (i=0; i<newsm->class_cnt * newsm->state_cnt; ++i) {
 	 newsm->state[i].u.context.mark_lookup=OTLookupCopyNested(mc,
 								    newsm->
 								    state[i].
@@ -2302,8 +2302,8 @@ static void SF_AddAnchorClasses(struct sfmergecontext *mc,
 	 do {
 	    fsf =
 	       mc->sf_from->subfontcnt ==
-	       0 ? mc->sf_from : mc->sf_from->subfonts[k];
-	    for (gid=0; gid < fsf->glyphcnt; ++gid)
+	       0?mc->sf_from:mc->sf_from->subfonts[k];
+	    for (gid=0; gid<fsf->glyphcnt; ++gid)
 	       if ((fsc=fsf->glyphs[gid]) != NULL) {
 		  for (ap=fsc->anchor; ap != NULL; ap=ap->next) {
 		     if (ap->anchor==ac) {
@@ -2315,7 +2315,7 @@ static void SF_AddAnchorClasses(struct sfmergecontext *mc,
 		  }
 	       }
 	    ++k;
-	 } while (k < mc->sf_from->subfontcnt);
+	 } while (k<mc->sf_from->subfontcnt);
       }
 }
 
@@ -2385,13 +2385,13 @@ static void SF_AddPSTKern(struct sfmergecontext *mc,
    do {
       fsf =
 	 mc->sf_from->subfontcnt ==
-	 0 ? mc->sf_from : mc->sf_from->subfonts[k];
-      for (gid=0; gid < fsf->glyphcnt; ++gid)
+	 0?mc->sf_from:mc->sf_from->subfonts[k];
+      for (gid=0; gid<fsf->glyphcnt; ++gid)
 	 if ((fsc=fsf->glyphs[gid]) != NULL) {
-	    tsc=(SplineChar *) - 1;
+	    tsc=(SplineChar *)-1;
 	    for (pst=fsc->possub; pst != NULL; pst=pst->next) {
 	       if (pst->subtable==from_sub) {
-		  if (tsc==(SplineChar *) - 1) {
+		  if (tsc==(SplineChar *)-1) {
 		     tsc=SCFindOrMake(mc->sf_to, fsc);
 		     if (tsc==NULL)
 			break;
@@ -2400,13 +2400,13 @@ static void SF_AddPSTKern(struct sfmergecontext *mc,
 	       }
 	    }
 	    if (tsc != NULL && iskern) {
-	       for (isv=0; isv < 2 && tsc != NULL; ++isv) {
-		  for (kp=isv ? fsc->vkerns : fsc->kerns; kp != NULL;
+	       for (isv=0; isv<2 && tsc != NULL; ++isv) {
+		  for (kp=isv?fsc->vkerns:fsc->kerns; kp != NULL;
 		       kp=kp->next) {
 		     if (kp->subtable==sub) {
 			/* Kerning data tend to be individualistic. Only copy if */
 			/*  glyphs exist */
-			if (tsc==(SplineChar *) - 1) {
+			if (tsc==(SplineChar *)-1) {
 			   tsc =
 			      SFGetChar(mc->sf_to, fsc->unicodeenc,
 					fsc->name);
@@ -2420,7 +2420,7 @@ static void SF_AddPSTKern(struct sfmergecontext *mc,
 	    }
 	 }
       ++k;
-   } while (k < mc->sf_from->subfontcnt);
+   } while (k<mc->sf_from->subfontcnt);
 }
 
 int _FeatureOrderId(int isgpos, uint32_t tag) {
@@ -2550,7 +2550,7 @@ int FeatureOrderId(int isgpos, FeatureScriptLangList * fl) {
 
    while (fl != NULL) {
       temp=_FeatureOrderId(isgpos, fl->featuretag);
-      if (temp < pos)
+      if (temp<pos)
 	 pos=temp;
       fl=fl->next;
    }
@@ -2585,9 +2585,9 @@ static void OrderNewLookup(SplineFont *into_sf,OTLookup *otl,
    OTLookup **head=into_sf->gsplookups+isgpos;
    OTLookup *prev;
 
-   if (before==(OTLookup *) - 2)
+   if (before==(OTLookup *)-2)
       SortInsertLookup(into_sf, otl);
-   else if (before==(OTLookup *) - 1 || *head==NULL || *head==before) {
+   else if (before==(OTLookup *)-1 || *head==NULL || *head==before) {
       otl->next=*head;
       *head=otl;
    } else {
@@ -2605,7 +2605,7 @@ static OTLookup *_OTLookupCopyInto(struct sfmergecontext *mc,
    struct lookup_subtable *sub, *last, *from_sub;
    int scnt, l;
 
-   for (l=0; l < mc->lcnt; ++l) {
+   for (l=0; l<mc->lcnt; ++l) {
       if (mc->lks[l].from==from_otl) {
 	 if (mc->lks[l].old)
 	    return (mc->lks[l].to);
@@ -2616,7 +2616,7 @@ static OTLookup *_OTLookupCopyInto(struct sfmergecontext *mc,
 
    if (l >= mc->lmax)
       mc->lks =
-	 realloc(mc->lks, (mc->lmax += 20) * sizeof(struct lookup_cvt));
+	 realloc(mc->lks, (mc->lmax += 20)*sizeof(struct lookup_cvt));
    mc->sf_to->changed=true;
 
    if (l >= mc->lcnt) {
@@ -2683,17 +2683,17 @@ static int NeedsPrefix(SplineFont *into_sf,SplineFont *from_sf,
       for (from_sub=from_otl->subtables; from_sub != NULL;
 	   from_sub=from_sub->next) {
 	 if (from_sub->fpst != NULL) {
-	    for (i=0; i < from_sub->fpst->rule_cnt; ++i) {
+	    for (i=0; i<from_sub->fpst->rule_cnt; ++i) {
 	       struct fpst_rule *r=&from_sub->fpst->rules[i];
 
-	       for (j=0; j < r->lookup_cnt; ++j) {
+	       for (j=0; j<r->lookup_cnt; ++j) {
 		  sublist[0]=r->lookups[j].lookup;
 		  if (NeedsPrefix(into_sf, from_sf, sublist))
 		     return (true);
 	       }
 	    }
 	 } else if (from_sub->sm != NULL && from_sub->sm->type==asm_context) {
-	    for (i=0; i < from_sub->sm->class_cnt * from_sub->sm->state_cnt;
+	    for (i=0; i<from_sub->sm->class_cnt * from_sub->sm->state_cnt;
 		 ++i) {
 	       sublist[0]=from_sub->sm->state[i].u.context.mark_lookup;
 	       if (NeedsPrefix(into_sf, from_sf, sublist))
@@ -2762,14 +2762,14 @@ static void ApplyMacIndicRearrangement(struct lookup_data *data,int verb,
    switch (verb) {
      case 1:			/* Ax => xA */
 	temp=data->str[first_pos];
-	for (i=first_pos; i < last_pos; ++i)
-	   data->str[i]=data->str[i + 1];
+	for (i=first_pos; i<last_pos; ++i)
+	   data->str[i]=data->str[i+1];
 	data->str[last_pos]=temp;
 	break;
      case 2:			/* xD => Dx */
 	temp=data->str[last_pos];
-	for (i=last_pos; i > first_pos; --i)
-	   data->str[i]=data->str[i - 1];
+	for (i=last_pos; i>first_pos; --i)
+	   data->str[i]=data->str[i-1];
 	data->str[first_pos]=temp;
 	break;
      case 3:			/* AxD => DxA */
@@ -2779,114 +2779,114 @@ static void ApplyMacIndicRearrangement(struct lookup_data *data,int verb,
 	break;
      case 4:			/* ABx => xAB */
 	temp=data->str[first_pos];
-	temp2=data->str[first_pos + 1];
-	for (i=first_pos; i < last_pos - 1; ++i)
-	   data->str[i]=data->str[i + 21];
-	data->str[last_pos - 1]=temp;
+	temp2=data->str[first_pos+1];
+	for (i=first_pos; i<last_pos-1; ++i)
+	   data->str[i]=data->str[i+21];
+	data->str[last_pos-1]=temp;
 	data->str[last_pos]=temp2;
 	break;
      case 5:			/* ABx => xBA */
 	temp=data->str[first_pos];
-	temp2=data->str[first_pos + 1];
-	for (i=first_pos; i < last_pos - 1; ++i)
-	   data->str[i]=data->str[i + 21];
-	data->str[last_pos - 1]=temp2;
+	temp2=data->str[first_pos+1];
+	for (i=first_pos; i<last_pos-1; ++i)
+	   data->str[i]=data->str[i+21];
+	data->str[last_pos-1]=temp2;
 	data->str[last_pos]=temp;
 	break;
      case 6:			/* xCD => CDx */
 	temp=data->str[last_pos];
-	temp2=data->str[last_pos - 1];
-	for (i=last_pos; i > first_pos + 1; --i)
-	   data->str[i]=data->str[i - 2];
-	data->str[first_pos + 1]=temp;
+	temp2=data->str[last_pos-1];
+	for (i=last_pos; i>first_pos+1; --i)
+	   data->str[i]=data->str[i-2];
+	data->str[first_pos+1]=temp;
 	data->str[first_pos]=temp2;
 	break;
      case 7:			/* xCD => DCx */
 	temp=data->str[last_pos];
-	temp2=data->str[last_pos - 1];
-	for (i=last_pos; i > first_pos + 1; --i)
-	   data->str[i]=data->str[i - 2];
-	data->str[first_pos + 1]=temp2;
+	temp2=data->str[last_pos-1];
+	for (i=last_pos; i>first_pos+1; --i)
+	   data->str[i]=data->str[i-2];
+	data->str[first_pos+1]=temp2;
 	data->str[first_pos]=temp;
 	break;
      case 8:			/* AxCD => CDxA */
 	temp=data->str[first_pos];
-	temp2=data->str[last_pos - 1];
+	temp2=data->str[last_pos-1];
 	temp3=data->str[last_pos];
-	for (i=last_pos - 1; i > first_pos; --i)
-	   data->str[i]=data->str[i - 1];
-	data->str[first_pos + 1]=temp2;
+	for (i=last_pos-1; i>first_pos; --i)
+	   data->str[i]=data->str[i-1];
+	data->str[first_pos+1]=temp2;
 	data->str[first_pos]=temp3;
 	data->str[last_pos]=temp;
 	break;
      case 9:			/* AxCD => DCxA */
 	temp=data->str[first_pos];
-	temp2=data->str[last_pos - 1];
+	temp2=data->str[last_pos-1];
 	temp3=data->str[last_pos];
-	for (i=last_pos - 1; i > first_pos; --i)
-	   data->str[i]=data->str[i - 1];
-	data->str[first_pos + 1]=temp3;
+	for (i=last_pos-1; i>first_pos; --i)
+	   data->str[i]=data->str[i-1];
+	data->str[first_pos+1]=temp3;
 	data->str[first_pos]=temp2;
 	data->str[last_pos]=temp;
 	break;
      case 10:			/* ABxD => DxAB */
 	temp=data->str[first_pos];
-	temp2=data->str[first_pos + 1];
+	temp2=data->str[first_pos+1];
 	temp3=data->str[last_pos];
-	for (i=first_pos + 1; i < last_pos; ++i)
-	   data->str[i]=data->str[i + 1];
+	for (i=first_pos+1; i<last_pos; ++i)
+	   data->str[i]=data->str[i+1];
 	data->str[first_pos]=temp3;
-	data->str[last_pos - 1]=temp;
+	data->str[last_pos-1]=temp;
 	data->str[last_pos]=temp2;
 	break;
      case 11:			/* ABxD => DxBA */
 	temp=data->str[first_pos];
-	temp2=data->str[first_pos + 1];
+	temp2=data->str[first_pos+1];
 	temp3=data->str[last_pos];
-	for (i=first_pos + 1; i < last_pos; ++i)
-	   data->str[i]=data->str[i + 1];
+	for (i=first_pos+1; i<last_pos; ++i)
+	   data->str[i]=data->str[i+1];
 	data->str[first_pos]=temp3;
-	data->str[last_pos - 1]=temp2;
+	data->str[last_pos-1]=temp2;
 	data->str[last_pos]=temp;
 	break;
      case 12:			/* ABxCD => CDxAB */
 	temp=data->str[first_pos];
-	temp2=data->str[first_pos + 1];
-	temp3=data->str[last_pos - 1];
+	temp2=data->str[first_pos+1];
+	temp3=data->str[last_pos-1];
 	temp4=data->str[last_pos];
 	data->str[last_pos]=temp2;
-	data->str[last_pos - 1]=temp;
-	data->str[first_pos + 1]=temp4;
+	data->str[last_pos-1]=temp;
+	data->str[first_pos+1]=temp4;
 	data->str[first_pos]=temp3;
 	break;
      case 13:			/* ABxCD => CDxBA */
 	temp=data->str[first_pos];
-	temp2=data->str[first_pos + 1];
-	temp3=data->str[last_pos - 1];
+	temp2=data->str[first_pos+1];
+	temp3=data->str[last_pos-1];
 	temp4=data->str[last_pos];
 	data->str[last_pos]=temp;
-	data->str[last_pos - 1]=temp2;
-	data->str[first_pos + 1]=temp4;
+	data->str[last_pos-1]=temp2;
+	data->str[first_pos+1]=temp4;
 	data->str[first_pos]=temp3;
 	break;
      case 14:			/* ABxCD => DCxAB */
 	temp=data->str[first_pos];
-	temp2=data->str[first_pos + 1];
-	temp3=data->str[last_pos - 1];
+	temp2=data->str[first_pos+1];
+	temp3=data->str[last_pos-1];
 	temp4=data->str[last_pos];
 	data->str[last_pos]=temp2;
-	data->str[last_pos - 1]=temp;
-	data->str[first_pos + 1]=temp3;
+	data->str[last_pos-1]=temp;
+	data->str[first_pos+1]=temp3;
 	data->str[first_pos]=temp4;
 	break;
      case 15:			/* ABxCD => DCxBA */
 	temp=data->str[first_pos];
-	temp2=data->str[first_pos + 1];
-	temp3=data->str[last_pos - 1];
+	temp2=data->str[first_pos+1];
+	temp3=data->str[last_pos-1];
 	temp4=data->str[last_pos];
 	data->str[last_pos]=temp;
-	data->str[last_pos - 1]=temp2;
-	data->str[first_pos + 1]=temp3;
+	data->str[last_pos-1]=temp2;
+	data->str[first_pos+1]=temp3;
 	data->str[first_pos]=temp4;
 	break;
    }
@@ -2901,7 +2901,7 @@ static int ApplyMacInsert(struct lookup_data *data,int ipos,int cnt,
    if (cnt==0 || glyphnames==NULL || ipos==-1)
       return (0);
 
-   for (i=0, start=glyphnames; i < cnt;) {
+   for (i=0, start=glyphnames; i<cnt;) {
       while (*start==' ')
 	 ++start;
       if (*start=='\0')
@@ -2918,11 +2918,11 @@ static int ApplyMacInsert(struct lookup_data *data,int ipos,int cnt,
    if (i==0)
       return (0);
    for (i=data->cnt; i >= ipos; --i)
-      data->str[i + cnt]=data->str[i];
-   memset(data->str + ipos, 0, cnt * sizeof(struct opentype_str));
-   for (i=0; i < cnt; ++i) {
-      data->str[ipos + i].sc=inserts[i];
-      data->str[ipos + i].orig_index=orig_index;
+      data->str[i+cnt]=data->str[i];
+   memset(data->str+ipos, 0, cnt * sizeof(struct opentype_str));
+   for (i=0; i<cnt; ++i) {
+      data->str[ipos+i].sc=inserts[i];
+      data->str[ipos+i].orig_index=orig_index;
    }
    return (cnt);
 }
@@ -2956,14 +2956,14 @@ static void ApplyAppleStateMachine(uint32_t tag,OTLookup *otl,
 	 if (pos==data->cnt)
 	    class=0;
 	 else {
-	    for (class=sm->class_cnt - 1; class > 3; --class)
+	    for (class=sm->class_cnt-1; class>3; --class)
 	       if (GlyphNameInClass
 		   (data->str[i].sc->name, sm->classes[class]))
 		  break;
 	    if (class==3)
 	       class=1; /* Glyph not in any class */ ;
 	 }
-	 entry=&sm->state[state * sm->class_cnt + class];
+	 entry=&sm->state[state * sm->class_cnt+class];
 	 switch (otl->lookup_type) {
 	   case morx_context:
 	      if (entry->u.context.cur_lookup != NULL)
@@ -2975,10 +2975,10 @@ static void ApplyAppleStateMachine(uint32_t tag,OTLookup *otl,
 	      }
 	      break;
 	   case morx_indic:
-	      if (entry->flags & 0x2000)
+	      if (entry->flags&0x2000)
 		 markend_pos=pos;
-	      if ((entry->flags & 0xf) != 0) {
-		 ApplyMacIndicRearrangement(data, entry->flags & 0xf,
+	      if ((entry->flags&0xf) != 0) {
+		 ApplyMacIndicRearrangement(data, entry->flags&0xf,
 					    mark_pos, markend_pos);
 		 mark_pos=markend_pos=-1;
 	      }
@@ -2986,52 +2986,52 @@ static void ApplyAppleStateMachine(uint32_t tag,OTLookup *otl,
 	   case morx_insert:
 	      /* I live in total ignorance of what I should do if the glyph */
 	      /*  "is Kashida like"... so I ignore those flags. */
-	      cnt_cur=(entry->flags >> 5) & 0x1f;
-	      cnt_mark=(entry->flags & 0x1f);
-	      if (data->cnt + cnt_cur + cnt_mark >= data->max)
+	      cnt_cur=(entry->flags >> 5)&0x1f;
+	      cnt_mark=(entry->flags&0x1f);
+	      if (data->cnt+cnt_cur+cnt_mark >= data->max)
 		 data->str =
 		    realloc(data->str,
 			    (data->max =
-			     data->cnt + cnt_cur + cnt_mark +
-			     20) * sizeof(struct opentype_str));
+			     data->cnt+cnt_cur+cnt_mark +
+			     20)*sizeof(struct opentype_str));
 	      if (cnt_cur != 0)
 		 cnt_cur =
 		    ApplyMacInsert(data,
-				   (entry->flags & 0x0800) ? pos : pos + 1,
+				   (entry->flags&0x0800)?pos:pos+1,
 				   cnt_cur, entry->u.insert.cur_ins,
 				   data->str[pos].orig_index);
 	      if (cnt_mark != 0 && mark_pos != -1) {
 		 cnt_mark =
 		    ApplyMacInsert(data,
 				   (entry->
-				    flags & 0x0800) ? mark_pos : mark_pos + 1,
+				    flags&0x0800)?mark_pos:mark_pos+1,
 				   cnt_mark, entry->u.insert.mark_ins,
 				   data->str[mark_pos].orig_index);
 		 mark_pos=-1;
 	      } else
 		 cnt_mark=0;
-	      pos += cnt_cur + cnt_mark;
+	      pos += cnt_cur+cnt_mark;
 	      break;
 	   case kern_statemachine:
 	      if (entry->u.kern.kcnt != 0) {
-		 for (i=0; i < kcnt && i < entry->u.kern.kcnt; ++i)
+		 for (i=0; i<kcnt && i<entry->u.kern.kcnt; ++i)
 		    data->str[kern_stack[i]].vr.h_adv_off +=
 		       entry->u.kern.kerns[i];
 		 kcnt=0;
 	      }
-	      if (entry->flags & 0x8000) {
+	      if (entry->flags&0x8000) {
 		 for (i=6; i >= 0; --i)
-		    kern_stack[i + 1]=kern_stack[i];
+		    kern_stack[i+1]=kern_stack[i];
 		 kern_stack[0]=pos;
-		 if (++kcnt > 8)
+		 if (++kcnt>8)
 		    kcnt=8;
 	      }
 	      break;
 	 }
-	 if (entry->flags & 0x8000)
+	 if (entry->flags&0x8000)
 	    mark_pos=pos;	/* The docs do not state whether this happens before or after substitutions are applied at the mark */
 	 /* after is more useful. So assume that */
-	 if (!(entry->flags & 0x4000))
+	 if (!(entry->flags&0x4000))
 	    ++pos;
 	 state=entry->next_state;
       }
@@ -3061,7 +3061,7 @@ static void LigatureSearch(struct lookup_subtable *sub,
 
    LigatureFree(data);
    cnt=0;
-   for (gid=0; gid < sf->glyphcnt; ++gid)
+   for (gid=0; gid<sf->glyphcnt; ++gid)
       if ((sc=sf->glyphs[gid]) != NULL) {
 	 for (pst=sc->possub; pst != NULL; pst=pst->next)
 	    if (pst->subtable==sub) {
@@ -3071,8 +3071,8 @@ static void LigatureSearch(struct lookup_subtable *sub,
 	       if (cnt >= data->lmax)
 		  data->ligs =
 		     realloc(data->ligs,
-			     (data->lmax += 100) * sizeof(SplineChar **));
-	       data->ligs[cnt]=malloc((ccnt + 3) * sizeof(SplineChar *));
+			     (data->lmax += 100)*sizeof(SplineChar **));
+	       data->ligs[cnt]=malloc((ccnt+3)*sizeof(SplineChar *));
 	       data->ligs[cnt][0]=sc;
 	       ccnt=1;
 	       err=0;
@@ -3086,7 +3086,7 @@ static void LigatureSearch(struct lookup_subtable *sub,
 		  *pt='\0';
 		  data->ligs[cnt][ccnt++]=SFGetChar(sf, -1, start);
 		  *pt=ch;
-		  if (data->ligs[cnt][ccnt - 1]==NULL)
+		  if (data->ligs[cnt][ccnt-1]==NULL)
 		     err=1;
 	       }
 	       if (!err)
@@ -3095,7 +3095,7 @@ static void LigatureSearch(struct lookup_subtable *sub,
       }
    if (cnt >= data->lmax)
       data->ligs =
-	 realloc(data->ligs, (data->lmax += 1) * sizeof(SplineChar **));
+	 realloc(data->ligs, (data->lmax += 1)*sizeof(SplineChar **));
    data->ligs[cnt]=NULL;
    data->lcnt=cnt;
 }
@@ -3109,18 +3109,18 @@ static int skipglyphs(int lookup_flags,struct lookup_data *data,int pos) {
    if (lookup_flags==0)
       return (pos);
    mc=(lookup_flags >> 8);
-   if (mc < 0 || mc >= data->sf->mark_class_cnt)
+   if (mc<0 || mc >= data->sf->mark_class_cnt)
       mc=0;
    ms=lookup_flags >> 16;
-   if (!(lookup_flags & pst_usemarkfilteringset)
+   if (!(lookup_flags&pst_usemarkfilteringset)
        || ms >= data->sf->mark_set_cnt)
       ms=-1;
-   while (pos < data->cnt) {
+   while (pos<data->cnt) {
       glyph_class=gdefclass(data->str[pos].sc);
       /* 1=>base, 2=>ligature, 3=>mark, 4=>component?, 0=>.notdef */
-      if ((glyph_class==1 && (lookup_flags & pst_ignorebaseglyphs)) ||
-	  (glyph_class==2 && (lookup_flags & pst_ignoreligatures)) ||
-	  (glyph_class==3 && (lookup_flags & pst_ignorecombiningmarks)) ||
+      if ((glyph_class==1 && (lookup_flags&pst_ignorebaseglyphs)) ||
+	  (glyph_class==2 && (lookup_flags&pst_ignoreligatures)) ||
+	  (glyph_class==3 && (lookup_flags&pst_ignorecombiningmarks)) ||
 	  (glyph_class==3 && mc != 0 &&
 	   !GlyphNameInClass(data->str[pos].sc->name,
 			     data->sf->mark_classes[mc])) || (ms >= 0
@@ -3146,10 +3146,10 @@ static int bskipmarkglyphs(int lookup_flags,struct lookup_data *data,
    /*  should ignore. Here we skip backward */
 
    mc=(lookup_flags >> 8);
-   if (mc < 0 || mc >= data->sf->mark_class_cnt)
+   if (mc<0 || mc >= data->sf->mark_class_cnt)
       mc=0;
    ms=lookup_flags >> 16;
-   if (!(lookup_flags & pst_usemarkfilteringset)
+   if (!(lookup_flags&pst_usemarkfilteringset)
        || ms >= data->sf->mark_set_cnt)
       ms=-1;
    while (pos >= 0) {
@@ -3157,9 +3157,9 @@ static int bskipmarkglyphs(int lookup_flags,struct lookup_data *data,
       /* 1=>base, 2=>ligature, 3=>mark, 4=>component?, 0=>.notdef */
       if (glyph_class==3)
 	 --pos;
-      else if ((glyph_class==1 && (lookup_flags & pst_ignorebaseglyphs)) ||
-	       (glyph_class==2 && (lookup_flags & pst_ignoreligatures)) ||
-	       (glyph_class==3 && (lookup_flags & pst_ignorecombiningmarks))
+      else if ((glyph_class==1 && (lookup_flags&pst_ignorebaseglyphs)) ||
+	       (glyph_class==2 && (lookup_flags&pst_ignoreligatures)) ||
+	       (glyph_class==3 && (lookup_flags&pst_ignorecombiningmarks))
 	       || (glyph_class==3 && mc != 0
 		   && !GlyphNameInClass(data->str[pos].sc->name,
 					data->sf->mark_classes[mc]))
@@ -3182,18 +3182,18 @@ static int bskipglyphs(int lookup_flags,struct lookup_data *data,int pos) {
    if (lookup_flags==0)
       return (pos);
    mc=(lookup_flags >> 8);
-   if (mc < 0 || mc >= data->sf->mark_class_cnt)
+   if (mc<0 || mc >= data->sf->mark_class_cnt)
       mc=0;
    ms=lookup_flags >> 16;
-   if (!(lookup_flags & pst_usemarkfilteringset)
+   if (!(lookup_flags&pst_usemarkfilteringset)
        || ms >= data->sf->mark_set_cnt)
       ms=-1;
    while (pos >= 0) {
       glyph_class=gdefclass(data->str[pos].sc);
       /* 1=>base, 2=>ligature, 3=>mark, 4=>component?, 0=>.notdef */
-      if ((glyph_class==1 && (lookup_flags & pst_ignorebaseglyphs)) ||
-	  (glyph_class==2 && (lookup_flags & pst_ignoreligatures)) ||
-	  (glyph_class==3 && (lookup_flags & pst_ignorecombiningmarks)) ||
+      if ((glyph_class==1 && (lookup_flags&pst_ignorebaseglyphs)) ||
+	  (glyph_class==2 && (lookup_flags&pst_ignoreligatures)) ||
+	  (glyph_class==3 && (lookup_flags&pst_ignorecombiningmarks)) ||
 	  (glyph_class==3 && mc != 0 &&
 	   !GlyphNameInClass(data->str[pos].sc->name,
 			     data->sf->mark_classes[mc])) || (ms >= 0
@@ -3224,18 +3224,18 @@ static int ContextualMatch(struct lookup_subtable *sub,
    if (cpos != pos)
       return (0);
 
-   for (r=0; r < fpst->rule_cnt; ++r) {
+   for (r=0; r<fpst->rule_cnt; ++r) {
       struct fpst_rule *rule=&fpst->rules[r];
 
-      for (i=pos; i < data->cnt; ++i)
+      for (i=pos; i<data->cnt; ++i)
 	 data->str[i].context_pos=-1;
 
 /* Handle backtrack (backtrace in the rule is stored in reverse textual order) */
       if (fpst->type==pst_chainpos || fpst->type==pst_chainsub) {
 	 if (fpst->format==pst_glyphs) {
 	    pt=rule->u.glyph.back;
-	    for (i=bskipglyphs(lookup_flags, data, pos - 1), cpos=0;
-		 i >= 0; i=bskipglyphs(lookup_flags, data, i - 1)) {
+	    for (i=bskipglyphs(lookup_flags, data, pos-1), cpos=0;
+		 i >= 0; i=bskipglyphs(lookup_flags, data, i-1)) {
 	       char *name=data->str[i].sc->name;
 	       int len=strlen(name);
 
@@ -3249,9 +3249,9 @@ static int ContextualMatch(struct lookup_subtable *sub,
 	    if (*pt != '\0')
 	       continue;	/* didn't match */
 	 } else if (fpst->format==pst_class) {
-	    for (i=bskipglyphs(lookup_flags, data, pos - 1), cpos=0;
-		 i >= 0 && cpos < rule->u.class.bcnt;
-		 i=bskipglyphs(lookup_flags, data, i - 1)) {
+	    for (i=bskipglyphs(lookup_flags, data, pos-1), cpos=0;
+		 i >= 0 && cpos<rule->u.class.bcnt;
+		 i=bskipglyphs(lookup_flags, data, i-1)) {
 	       if (!GlyphNameInClass
 		   (data->str[i].sc->name,
 		    fpst->bclass[rule->u.class.bclasses[cpos]]))
@@ -3261,23 +3261,23 @@ static int ContextualMatch(struct lookup_subtable *sub,
 	    if (cpos != rule->u.class.bcnt)
 	       continue;	/* didn't match */
 	 } else if (fpst->format==pst_coverage) {
-	    for (i=bskipglyphs(lookup_flags, data, pos - 1), cpos=0;
-		 i >= 0 && cpos < rule->u.coverage.bcnt;
-		 i=bskipglyphs(lookup_flags, data, i - 1)) {
+	    for (i=bskipglyphs(lookup_flags, data, pos-1), cpos=0;
+		 i >= 0 && cpos<rule->u.coverage.bcnt;
+		 i=bskipglyphs(lookup_flags, data, i-1)) {
 	       if (!GlyphNameInClass
 		   (data->str[i].sc->name, rule->u.coverage.bcovers[cpos]))
 		  break;
 	       ++cpos;
 	    }
-	    if (cpos < rule->u.coverage.bcnt)
+	    if (cpos<rule->u.coverage.bcnt)
 	       continue;	/* didn't match */
 	 }
       }
 /* Handle Match */
       if (fpst->format==pst_glyphs) {
 	 pt=rule->u.glyph.names;
-	 for (i=pos, cpos=0; i < data->cnt && *pt != '\0';
-	      i=skipglyphs(lookup_flags, data, i + 1)) {
+	 for (i=pos, cpos=0; i<data->cnt && *pt != '\0';
+	      i=skipglyphs(lookup_flags, data, i+1)) {
 	    char *name=data->str[i].sc->name;
 	    int len=strlen(name);
 
@@ -3292,8 +3292,8 @@ static int ContextualMatch(struct lookup_subtable *sub,
 	 if (*pt != '\0')
 	    continue;		/* didn't match */
       } else if (fpst->format==pst_class) {
-	 for (i=pos, cpos=0; i < data->cnt && cpos < rule->u.class.ncnt;
-	      i=skipglyphs(lookup_flags, data, i + 1)) {
+	 for (i=pos, cpos=0; i<data->cnt && cpos<rule->u.class.ncnt;
+	      i=skipglyphs(lookup_flags, data, i+1)) {
 	    int class=rule->u.class.nclasses[cpos];
 
 	    if (class != 0) {
@@ -3304,7 +3304,7 @@ static int ContextualMatch(struct lookup_subtable *sub,
 	       int c;
 
 	       /* Ok, to match class 0 we must fail to match all other classes */
-	       for (c=1; c < fpst->nccnt; ++c)
+	       for (c=1; c<fpst->nccnt; ++c)
 		  if (!GlyphNameInClass
 		      (data->str[i].sc->name, fpst->nclass[c]))
 		     break;
@@ -3313,18 +3313,18 @@ static int ContextualMatch(struct lookup_subtable *sub,
 	    }
 	    data->str[i].context_pos=cpos++;
 	 }
-	 if (cpos < rule->u.class.ncnt)
+	 if (cpos<rule->u.class.ncnt)
 	    continue;		/* didn't match */
       } else if (fpst->format==pst_coverage) {
 	 for (i=pos, cpos=0;
-	      i < data->cnt && cpos < rule->u.coverage.ncnt;
-	      i=skipglyphs(lookup_flags, data, i + 1)) {
+	      i<data->cnt && cpos<rule->u.coverage.ncnt;
+	      i=skipglyphs(lookup_flags, data, i+1)) {
 	    if (!GlyphNameInClass
 		(data->str[i].sc->name, rule->u.coverage.ncovers[cpos]))
 	       break;
 	    data->str[i].context_pos=cpos++;
 	 }
-	 if (cpos < rule->u.coverage.ncnt)
+	 if (cpos<rule->u.coverage.ncnt)
 	    continue;		/* didn't match */
       } else
 	 return (0);		/* Not ready to deal with reverse chainging */
@@ -3334,8 +3334,8 @@ static int ContextualMatch(struct lookup_subtable *sub,
       if (fpst->type==pst_chainpos || fpst->type==pst_chainsub) {
 	 if (fpst->format==pst_glyphs) {
 	    pt=rule->u.glyph.fore;
-	    for (i=retpos; i < data->cnt && *pt != '\0';
-		 i=skipglyphs(lookup_flags, data, i + 1)) {
+	    for (i=retpos; i<data->cnt && *pt != '\0';
+		 i=skipglyphs(lookup_flags, data, i+1)) {
 	       char *name=data->str[i].sc->name;
 	       int len=strlen(name);
 
@@ -3350,26 +3350,26 @@ static int ContextualMatch(struct lookup_subtable *sub,
 	       continue;	/* didn't match */
 	 } else if (fpst->format==pst_class) {
 	    for (i=retpos, cpos=0;
-		 i < data->cnt && cpos < rule->u.class.fcnt;
-		 i=skipglyphs(lookup_flags, data, i + 1)) {
+		 i<data->cnt && cpos<rule->u.class.fcnt;
+		 i=skipglyphs(lookup_flags, data, i+1)) {
 	       if (!GlyphNameInClass
 		   (data->str[i].sc->name,
 		    fpst->fclass[rule->u.class.fclasses[cpos]]))
 		  break;
 	       cpos++;
 	    }
-	    if (cpos < rule->u.class.fcnt)
+	    if (cpos<rule->u.class.fcnt)
 	       continue;	/* didn't match */
 	 } else if (fpst->format==pst_coverage) {
 	    for (i=retpos, cpos=0;
-		 i < data->cnt && cpos < rule->u.coverage.fcnt;
-		 i=skipglyphs(lookup_flags, data, i + 1)) {
+		 i<data->cnt && cpos<rule->u.coverage.fcnt;
+		 i=skipglyphs(lookup_flags, data, i+1)) {
 	       if (!GlyphNameInClass
 		   (data->str[i].sc->name, rule->u.coverage.fcovers[cpos]))
 		  break;
 	       cpos++;
 	    }
-	    if (cpos < rule->u.coverage.fcnt)
+	    if (cpos<rule->u.coverage.fcnt)
 	       continue;	/* didn't match */
 	 }
       }
@@ -3392,13 +3392,13 @@ static int ApplySingleSubsAtPos(struct lookup_subtable *sub,
    sc=SFGetChar(data->sf, -1, pst->u.subs.variant);
    if (sc != NULL) {
       data->str[pos].sc=sc;
-      return (pos + 1);
+      return (pos+1);
    } else if (strcmp(pst->u.subs.variant, MAC_DELETED_GLYPH_NAME)==0) {
       /* Under AAT we delete the glyph. But OpenType doesn't have that concept */
       int i;
 
-      for (i=pos + 1; i < data->cnt; ++i)
-	 data->str[pos - 1]=data->str[pos];
+      for (i=pos+1; i<data->cnt; ++i)
+	 data->str[pos-1]=data->str[pos];
       --data->cnt;
       return (pos);
    } else {
@@ -3429,7 +3429,7 @@ static int ApplyMultSubsAtPos(struct lookup_subtable *sub,
       *pt=ch;
       if (sc==NULL)
 	 return (0);
-      if (mcnt < 20)
+      if (mcnt<20)
 	 mults[mcnt++]=sc;
       while (*pt==' ')
 	 ++pt;
@@ -3438,27 +3438,27 @@ static int ApplyMultSubsAtPos(struct lookup_subtable *sub,
 
    if (mcnt==0) {
       /* Is this legal? that is can we remove a glyph with an empty multiple? */
-      for (i=pos + 1; i < data->cnt; ++i)
-	 data->str[i - 1]=data->str[i];
+      for (i=pos+1; i<data->cnt; ++i)
+	 data->str[i-1]=data->str[i];
       --data->cnt;
       return (pos);
    } else if (mcnt==1) {
       data->str[pos].sc=mults[0];
-      return (pos + 1);
+      return (pos+1);
    } else {
-      if (data->cnt + mcnt - 1 >= data->max)
+      if (data->cnt+mcnt-1 >= data->max)
 	 data->str =
 	    realloc(data->str,
-		    (data->max += mcnt) * sizeof(struct opentype_str));
-      for (i=data->cnt - 1; i > pos; --i)
-	 data->str[i + mcnt - 1]=data->str[i];
-      memset(data->str + pos, 0, mcnt * sizeof(struct opentype_str));
-      for (i=0; i < mcnt; ++i) {
-	 data->str[pos + i].sc=mults[i];
-	 data->str[pos + i].orig_index=data->str[pos].orig_index;
+		    (data->max += mcnt)*sizeof(struct opentype_str));
+      for (i=data->cnt-1; i>pos; --i)
+	 data->str[i+mcnt-1]=data->str[i];
+      memset(data->str+pos, 0, mcnt * sizeof(struct opentype_str));
+      for (i=0; i<mcnt; ++i) {
+	 data->str[pos+i].sc=mults[i];
+	 data->str[pos+i].orig_index=data->str[pos].orig_index;
       }
-      data->cnt += (mcnt - 1);
-      return (pos + mcnt);
+      data->cnt += (mcnt-1);
+      return (pos+mcnt);
    }
 }
 
@@ -3482,7 +3482,7 @@ static int ApplyAltSubsAtPos(struct lookup_subtable *sub,
       *pt=ch;
       if (sc != NULL) {
 	 data->str[pos].sc=sc;
-	 return (pos + 1);
+	 return (pos+1);
       }
       while (*pt==' ')
 	 ++pt;
@@ -3499,10 +3499,10 @@ static int ApplyLigatureSubsAtPos(struct lookup_subtable *sub,
 
    if (data->lig_owner != sub)
       LigatureSearch(sub, data);
-   for (i=0; i < data->lcnt; ++i) {
+   for (i=0; i<data->lcnt; ++i) {
       if (data->ligs[i][1]==data->str[pos].sc) {
 	 lpos=0;
-	 npos=pos + 1;
+	 npos=pos+1;
 	 for (k=2; data->ligs[i][k] != NULL; ++k) {
 	    npos=skipglyphs(lookup_flags, data, npos);
 	    if (npos >= data->cnt || data->str[npos].sc != data->ligs[i][k])
@@ -3510,7 +3510,7 @@ static int ApplyLigatureSubsAtPos(struct lookup_subtable *sub,
 	    ++npos;
 	 }
 	 if (data->ligs[i][k]==NULL) {
-	    if (match_found==-1 || k > match_len) {
+	    if (match_found==-1 || k>match_len) {
 	       match_found=i;
 	       match_len=k;
 	    }
@@ -3521,22 +3521,22 @@ static int ApplyLigatureSubsAtPos(struct lookup_subtable *sub,
       /* Matched. Remove the component glyphs, and note which component */
       /*  any intervening marks should be attached to */
       data->str[pos].sc=data->ligs[match_found][0];
-      npos=pos + 1;
+      npos=pos+1;
       for (k=2; data->ligs[match_found][k] != NULL; ++k) {
 	 lpos=skipglyphs(lookup_flags, data, npos);
-	 for (; npos < lpos; ++npos)
-	    data->str[npos].lig_pos=k - 2;
+	 for (; npos<lpos; ++npos)
+	    data->str[npos].lig_pos=k-2;
 	 /* Remove this glyph (copy the final NUL too) */
 	 for (++lpos; lpos <= data->cnt; ++lpos)
-	    data->str[lpos - 1]=data->str[lpos];
+	    data->str[lpos-1]=data->str[lpos];
 	 --data->cnt;
       }
       /* Any marks after the last component (which should be attached */
       /*  to it) will not have been tagged, so do that now */
       lpos=skipglyphs(lookup_flags, data, npos);
-      for (; npos < lpos; ++npos)
-	 data->str[npos].lig_pos=k - 2;
-      return (pos + 1);
+      for (; npos<lpos; ++npos)
+	 data->str[npos].lig_pos=k-2;
+      return (pos+1);
    }
 
    return (0);
@@ -3553,8 +3553,8 @@ static int ApplyContextual(struct lookup_subtable *sub,
    retpos=ContextualMatch(sub, data, pos, &rule);
    if (retpos==0)
       return (0);
-   for (i=0; i < rule->lookup_cnt; ++i) {
-      for (j=pos; j < data->cnt; ++j) {
+   for (i=0; i<rule->lookup_cnt; ++i) {
+      for (j=pos; j<data->cnt; ++j) {
 	 if (data->str[j].context_pos==rule->lookups[i].seq) {
 	    ApplyLookupAtPos(0, rule->lookups[i].lookup, data, j);
 	    break;
@@ -3566,10 +3566,10 @@ static int ApplyContextual(struct lookup_subtable *sub,
 
 static int FigureDeviceTable(DeviceTable *dt,int pixelsize) {
    if (dt==NULL || dt->corrections==NULL
-       || pixelsize < dt->first_pixel_size || pixelsize > dt->last_pixel_size)
+       || pixelsize<dt->first_pixel_size || pixelsize>dt->last_pixel_size)
       return (0);
 
-   return (dt->corrections[pixelsize - dt->last_pixel_size]);
+   return (dt->corrections[pixelsize-dt->last_pixel_size]);
 }
 
 static int ApplySinglePosAtPos(struct lookup_subtable *sub,
@@ -3595,7 +3595,7 @@ static int ApplySinglePosAtPos(struct lookup_subtable *sub,
       data->str[pos].vr.v_adv_off +=
 	 FigureDeviceTable(&pst->u.pos.adjust->yadv, data->pixelsize);
    }
-   return (pos + 1);
+   return (pos+1);
 }
 
 static int ApplyPairPosAtPos(struct lookup_subtable *sub,
@@ -3605,7 +3605,7 @@ static int ApplyPairPosAtPos(struct lookup_subtable *sub,
    int npos, isv, within, f, l, kcspecd;
    KernPair *kp;
 
-   npos=skipglyphs(sub->lookup->lookup_flags, data, pos + 1);
+   npos=skipglyphs(sub->lookup->lookup_flags, data, pos+1);
    if (npos >= data->cnt)
       return (0);
    if (sub->kc != NULL) {
@@ -3616,7 +3616,7 @@ static int ApplyPairPosAtPos(struct lookup_subtable *sub,
 		     sub->kc->second_cnt, allow_class0);
       if (f==-1 || l==-1 || (!kcspecd && f==0 && l==0))
 	 return (0);
-      data->str[pos].kc_index=within=f * sub->kc->second_cnt + l;
+      data->str[pos].kc_index=within=f * sub->kc->second_cnt+l;
       data->str[pos].kc=sub->kc;
       data->str[pos].prev_kc0=(!kcspecd && f==0);
       data->str[pos].next_kc0=(l==0);
@@ -3625,7 +3625,7 @@ static int ApplyPairPosAtPos(struct lookup_subtable *sub,
 	    rint(sub->kc->offsets[within] * data->scale);
 	 data->str[pos].vr.v_adv_off +=
 	    FigureDeviceTable(&sub->kc->adjusts[within], data->pixelsize);
-      } else if (sub->lookup->lookup_flags & pst_r2l) {
+      } else if (sub->lookup->lookup_flags&pst_r2l) {
 	 data->str[npos].vr.h_adv_off +=
 	    rint(sub->kc->offsets[within] * data->scale);
 	 data->str[npos].vr.h_adv_off +=
@@ -3638,7 +3638,7 @@ static int ApplyPairPosAtPos(struct lookup_subtable *sub,
       }
       /* Return 1 if the result we have got comes from a combination with an {Everything Else} class */
       /* This is acceptable, but we should continue looking for a better match */
-      return (pos + 1);
+      return (pos+1);
    } else {
       for (pst=data->str[pos].sc->possub; pst != NULL; pst=pst->next) {
 	 if (pst->subtable==sub
@@ -3665,11 +3665,11 @@ static int ApplyPairPosAtPos(struct lookup_subtable *sub,
 		  FigureDeviceTable(&pst->u.pair.vr[0].adjust->xadv,
 				    data->pixelsize);
 	    }
-	    return (pos + 1);	/* We do NOT want to return npos+1 */
+	    return (pos+1);	/* We do NOT want to return npos+1 */
 	 }
       }
-      for (isv=0; isv < 2; ++isv) {
-	 for (kp=isv ? data->str[pos].sc->vkerns : data->str[pos].sc->kerns;
+      for (isv=0; isv<2; ++isv) {
+	 for (kp=isv?data->str[pos].sc->vkerns:data->str[pos].sc->kerns;
 	      kp != NULL; kp=kp->next) {
 	    if (kp->subtable==sub && kp->sc==data->str[npos].sc) {
 	       data->str[pos].kp=kp;
@@ -3677,7 +3677,7 @@ static int ApplyPairPosAtPos(struct lookup_subtable *sub,
 		  data->str[pos].vr.v_adv_off += rint(kp->off * data->scale);
 		  data->str[pos].vr.v_adv_off +=
 		     FigureDeviceTable(kp->adjust, data->pixelsize);
-	       } else if (sub->lookup->lookup_flags & pst_r2l) {
+	       } else if (sub->lookup->lookup_flags&pst_r2l) {
 		  data->str[npos].vr.h_adv_off += rint(kp->off * data->scale);
 		  data->str[npos].vr.h_adv_off +=
 		     FigureDeviceTable(kp->adjust, data->pixelsize);
@@ -3686,7 +3686,7 @@ static int ApplyPairPosAtPos(struct lookup_subtable *sub,
 		  data->str[pos].vr.h_adv_off +=
 		     FigureDeviceTable(kp->adjust, data->pixelsize);
 	       }
-	       return (pos + 1);
+	       return (pos+1);
 	    }
 	 }
       }
@@ -3727,9 +3727,9 @@ static int ApplyAnchorPosAtPos(struct lookup_subtable *sub,
 
    if (sub->lookup->lookup_type==gpos_mark2base ||
        sub->lookup->lookup_type==gpos_mark2ligature)
-      bpos=bskipmarkglyphs(sub->lookup->lookup_flags, data, pos - 1);
+      bpos=bskipmarkglyphs(sub->lookup->lookup_flags, data, pos-1);
    else
-      bpos=bskipglyphs(sub->lookup->lookup_flags, data, pos - 1);
+      bpos=bskipglyphs(sub->lookup->lookup_flags, data, pos-1);
    if (bpos==-1)
       return (0);		/* No match */
 
@@ -3756,32 +3756,32 @@ static int ApplyAnchorPosAtPos(struct lookup_subtable *sub,
 
 /* This probably doesn't work for vertical text */
    data->str[pos].vr.yoff=data->str[bpos].vr.yoff +
-      rint((ap1->me.y - ap2->me.y) * data->scale);
+      rint((ap1->me.y-ap2->me.y)*data->scale);
    data->str[pos].vr.yoff +=
       FigureDeviceTable(&ap1->yadjust,
-			data->pixelsize) - FigureDeviceTable(&ap2->yadjust,
+			data->pixelsize)-FigureDeviceTable(&ap2->yadjust,
 							     data->pixelsize);
-   if (sub->lookup->lookup_flags & pst_r2l) {
+   if (sub->lookup->lookup_flags&pst_r2l) {
       data->str[pos].vr.xoff=data->str[bpos].vr.xoff +
-	 rint(-(ap1->me.x - ap2->me.x) * data->scale);
+	 rint(-(ap1->me.x-ap2->me.x)*data->scale);
       data->str[pos].vr.xoff -=
 	 FigureDeviceTable(&ap1->xadjust,
-			   data->pixelsize) - FigureDeviceTable(&ap2->xadjust,
+			   data->pixelsize)-FigureDeviceTable(&ap2->xadjust,
 								data->
 								pixelsize);
    } else {
       data->str[pos].vr.xoff=data->str[bpos].vr.xoff +
-	 rint((ap1->me.x - ap2->me.x -
-	       data->str[bpos].sc->width) * data->scale -
+	 rint((ap1->me.x-ap2->me.x -
+	       data->str[bpos].sc->width)*data->scale -
 	      data->str[bpos].vr.h_adv_off);
       data->str[pos].vr.xoff +=
 	 FigureDeviceTable(&ap1->xadjust,
-			   data->pixelsize) - FigureDeviceTable(&ap2->xadjust,
+			   data->pixelsize)-FigureDeviceTable(&ap2->xadjust,
 								data->
 								pixelsize);
    }
 
-   return (pos + 1);
+   return (pos+1);
 }
 
 static int ConditionalTagOk(uint32_t tag,OTLookup *otl,
@@ -3792,13 +3792,13 @@ static int ConditionalTagOk(uint32_t tag,OTLookup *otl,
 
    if (tag==CHR('i', 'n', 'i', 't') || tag==CHR('i', 's', 'o', 'l') ||
        tag==CHR('f', 'i', 'n', 'a') || tag==CHR('m', 'e', 'd', 'i')) {
-      npos=skipglyphs(otl->lookup_flags, data, pos + 1);
-      bpos=bskipglyphs(otl->lookup_flags, data, pos - 1);
+      npos=skipglyphs(otl->lookup_flags, data, pos+1);
+      bpos=bskipglyphs(otl->lookup_flags, data, pos-1);
       script=SCScriptFromUnicode(data->str[pos].sc);
       before_in_script=(bpos >= 0
 			  && SCScriptFromUnicode(data->str[bpos].sc) ==
 			  script);
-      after_in_script=(npos < data->cnt
+      after_in_script=(npos<data->cnt
 			 && SCScriptFromUnicode(data->str[npos].sc) ==
 			 script);
       if (tag==CHR('i', 'n', 'i', 't'))
@@ -3821,13 +3821,13 @@ static int ApplyLookupAtPos(uint32_t tag,OTLookup *otl,
 
    /* Need two passes for pair kerning lookups. At the second pass we accept */
    /* also combinations with the {Everything Else} class */
-   int i, pcnt=otl->lookup_type==gpos_pair ? 2 : 1;
+   int i, pcnt=otl->lookup_type==gpos_pair?2:1;
 
    /* Some tags imply a conditional check. Do that now */
    if (!ConditionalTagOk(tag, otl, data, pos))
       return (0);
 
-   for (i=0; i < pcnt; i++) {
+   for (i=0; i<pcnt; i++) {
       for (sub=otl->subtables; sub != NULL; sub=sub->next) {
 	 switch (otl->lookup_type) {
 	   case gsub_single:
@@ -3856,7 +3856,7 @@ static int ApplyLookupAtPos(uint32_t tag,OTLookup *otl,
 	      newpos=ApplySinglePosAtPos(sub, data, pos);
 	      break;
 	   case gpos_pair:
-	      newpos=ApplyPairPosAtPos(sub, data, pos, i > 0);
+	      newpos=ApplyPairPosAtPos(sub, data, pos, i>0);
 	      break;
 	   case gpos_cursive:
 	      newpos=ApplyAnchorPosAtPos(sub, data, pos);
@@ -3898,10 +3898,10 @@ static void ApplyLookup(uint32_t tag,OTLookup *otl,struct lookup_data *data) {
       ApplyAppleStateMachine(tag, otl, data);
    else {
       /* OpenType */
-      for (pos=0; pos < data->cnt;) {
+      for (pos=0; pos<data->cnt;) {
 	 npos=ApplyLookupAtPos(tag, otl, data, pos);
 	 if (npos <= pos)	/* !!!!! */
-	    npos=pos + 1;
+	    npos=pos+1;
 	 pos=npos;
       }
    }
@@ -3925,9 +3925,9 @@ static uint32_t FSLLMatches(FeatureScriptLangList *fl,uint32_t *flist,
 	    if (sl->script==script) {
 	       if (fl->ismac)	/* Language irrelevant on macs (scripts too, but we pretend they matter) */
 		  return (fl->featuretag);
-	       for (l=0; l < sl->lang_cnt; ++l)
-		  if ((l < MAX_LANG && sl->langs[l]==lang) ||
-		      (l >= MAX_LANG && sl->morelangs[l - MAX_LANG]==lang))
+	       for (l=0; l<sl->lang_cnt; ++l)
+		  if ((l<MAX_LANG && sl->langs[l]==lang) ||
+		      (l >= MAX_LANG && sl->morelangs[l-MAX_LANG]==lang))
 		     return (fl->featuretag);
 	    }
 	 }
@@ -3953,7 +3953,7 @@ struct opentype_str *ApplyTickedFeatures(SplineFont *sf, uint32_t * flist,
 
    memset(&data, 0, sizeof(data));
    for (cnt=0; glyphs[cnt] != NULL; ++cnt);
-   data.str=calloc(cnt + 1, sizeof(struct opentype_str));
+   data.str=calloc(cnt+1, sizeof(struct opentype_str));
    data.cnt=data.max=cnt;
    for (cnt=0; glyphs[cnt] != NULL; ++cnt) {
       data.str[cnt].sc=glyphs[cnt];
@@ -3964,10 +3964,10 @@ struct opentype_str *ApplyTickedFeatures(SplineFont *sf, uint32_t * flist,
       sf=sf->cidmaster;
    data.sf=sf;
    data.pixelsize=pixelsize;
-   data.scale=pixelsize / (double) (sf->ascent + sf->descent);
+   data.scale=pixelsize/(double) (sf->ascent+sf->descent);
 
    /* Indic glyph reordering???? */
-   for (isgpos=0; isgpos < 2; ++isgpos) {
+   for (isgpos=0; isgpos<2; ++isgpos) {
       /* Check that this table has an entry for this language */
       /*  if it doesn't use the default language */
       /* GPOS/GSUB may have different language sets, so we must be prepared */
@@ -3988,7 +3988,7 @@ struct opentype_str *ApplyTickedFeatures(SplineFont *sf, uint32_t * flist,
    LigatureFree(&data);
    free(data.ligs);
 
-   data.str=realloc(data.str, (data.cnt + 1) * sizeof(struct opentype_str));
+   data.str=realloc(data.str, (data.cnt+1)*sizeof(struct opentype_str));
    memset(&data.str[data.cnt], 0, sizeof(struct opentype_str));
    return (data.str);
 }
@@ -3996,13 +3996,13 @@ struct opentype_str *ApplyTickedFeatures(SplineFont *sf, uint32_t * flist,
 static void doreplace(char **haystack,char *start,char *search,char *rpl,
 		      int slen) {
    int rlen;
-   char *pt=start + slen;
+   char *pt=start+slen;
 
    rlen=strlen(rpl);
    if (slen >= rlen) {
       memcpy(start, rpl, rlen);
-      if (slen > rlen) {
-	 int diff=slen - rlen;
+      if (slen>rlen) {
+	 int diff=slen-rlen;
 
 	 for (; *pt; ++pt)
 	    pt[-diff]=*pt;
@@ -4010,11 +4010,11 @@ static void doreplace(char **haystack,char *start,char *search,char *rpl,
       }
    } else {
       char *base=*haystack;
-      char *new=malloc(pt - base + strlen(pt) + rlen - slen + 1);
+      char *new=malloc(pt-base+strlen(pt)+rlen-slen+1);
 
-      memcpy(new, base, start - base);
-      memcpy(new + (start - base), rpl, rlen);
-      strcpy(new + (start - base) + rlen, pt);
+      memcpy(new, base, start-base);
+      memcpy(new+(start-base), rpl, rlen);
+      strcpy(new+(start-base)+rlen, pt);
       free(base);
       *haystack=new;
    }
@@ -4037,7 +4037,7 @@ static int rplstr(char **haystack,char *search,char *rpl,
       start=pt;
       while (*pt != ' ' && *pt != '\0')
 	 ++pt;
-      if (pt - start != slen)
+      if (pt-start != slen)
 	 match=-1;
       else {
 	 ch=*pt;
@@ -4051,10 +4051,10 @@ static int rplstr(char **haystack,char *search,char *rpl,
 	    return (true);
 	 any=true;
 	 if (base != *haystack) {
-	    pt=*haystack + (start - base) + strlen(rpl);
+	    pt=*haystack+(start-base)+strlen(rpl);
 	    base=*haystack;
 	 } else
-	    pt=start + strlen(rpl);
+	    pt=start+strlen(rpl);
       }
    }
 }
@@ -4079,7 +4079,7 @@ static int rplglyphname(char **haystack,char *search,char *rpl) {
 	 ++pt;
       if (*pt=='\0' && start==base)	/* Don't change any unsegmented names */
 	 return (false);	/* In particular don't rename ourselves */
-      if (pt - start != slen)
+      if (pt-start != slen)
 	 match=-1;
       else {
 	 ch=*pt;
@@ -4091,10 +4091,10 @@ static int rplglyphname(char **haystack,char *search,char *rpl) {
 	 doreplace(haystack, start, search, rpl, slen);
 	 any=true;
 	 if (base != *haystack) {
-	    pt=*haystack + (start - base) + strlen(rpl);
+	    pt=*haystack+(start-base)+strlen(rpl);
 	    base=*haystack;
 	 } else
-	    pt=start + strlen(rpl);
+	    pt=start+strlen(rpl);
       }
    }
 }
@@ -4117,7 +4117,7 @@ static int glyphnameIsComponent(char *haystack,char *search) {
 	 ++pt;
       if (*pt=='\0' && start==haystack)	/* Don't change any unsegmented names */
 	 return (false);	/* In particular don't rename ourselves */
-      if (pt - start==slen && strncmp(start, search, slen)==0)
+      if (pt-start==slen && strncmp(start, search, slen)==0)
 	 return (true);
    }
 }
@@ -4129,7 +4129,7 @@ static int gvfixup(struct glyphvariants *gv,char *old,char *new) {
    if (gv==NULL)
       return (false);
    ret=rplstr(&gv->variants, old, new, false);
-   for (i=0; i < gv->part_cnt; ++i) {
+   for (i=0; i<gv->part_cnt; ++i) {
       if (strcmp(gv->parts[i].component, old)==0) {
 	 free(gv->parts[i].component);
 	 gv->parts[i].component=fastrdup(new);
@@ -4142,7 +4142,7 @@ static int gvfixup(struct glyphvariants *gv,char *old,char *new) {
 void SFGlyphRenameFixup(SplineFont *sf, char *old, char *new,
 			int rename_related_glyphs) {
 /* NOTE: Existing GUI behaviour renames glyphs, rename_related_glyphs turns */
-/* off this behaviour for scripting - see github issue #523 */
+/* off this behaviour for scripting-see github issue #523 */
    int k, gid, isv;
    int i, r;
    SplineFont *master=sf;
@@ -4162,8 +4162,8 @@ void SFGlyphRenameFixup(SplineFont *sf, char *old, char *new,
    /*  and be ready to change them too */
    k=0;
    do {
-      sf=k < master->subfontcnt ? master->subfonts[k] : master;
-      for (gid=0; gid < sf->glyphcnt; ++gid)
+      sf=k<master->subfontcnt?master->subfonts[k]:master;
+      for (gid=0; gid<sf->glyphcnt; ++gid)
 	 if ((sc=sf->glyphs[gid]) != NULL) {
 	    if (rename_related_glyphs && glyphnameIsComponent(sc->name, old)) {
 	       char *newer=fastrdup(sc->name);
@@ -4191,28 +4191,28 @@ void SFGlyphRenameFixup(SplineFont *sf, char *old, char *new,
 	       sc->changed=true;
 	 }
       ++k;
-   } while (k < master->subfontcnt);
+   } while (k<master->subfontcnt);
 
    /* Now look for contextual fpsts which might use the name */
    for (fpst=master->possub; fpst != NULL; fpst=fpst->next) {
       if (fpst->format==pst_class) {
-	 for (i=0; i < fpst->nccnt; ++i)
+	 for (i=0; i<fpst->nccnt; ++i)
 	    if (fpst->nclass[i] != NULL) {
 	       if (rplstr(&fpst->nclass[i], old, new, false))
 		  break;
 	    }
-	 for (i=0; i < fpst->bccnt; ++i)
+	 for (i=0; i<fpst->bccnt; ++i)
 	    if (fpst->bclass[i] != NULL) {
 	       if (rplstr(&fpst->bclass[i], old, new, false))
 		  break;
 	    }
-	 for (i=0; i < fpst->fccnt; ++i)
+	 for (i=0; i<fpst->fccnt; ++i)
 	    if (fpst->fclass[i] != NULL) {
 	       if (rplstr(&fpst->fclass[i], old, new, false))
 		  break;
 	    }
       }
-      for (r=0; r < fpst->rule_cnt; ++r) {
+      for (r=0; r<fpst->rule_cnt; ++r) {
 	 struct fpst_rule *rule=&fpst->rules[r];
 
 	 if (fpst->format==pst_glyphs) {
@@ -4221,11 +4221,11 @@ void SFGlyphRenameFixup(SplineFont *sf, char *old, char *new,
 	    rplstr(&rule->u.glyph.fore, old, new, true);
 	 } else if (fpst->format==pst_coverage ||
 		    fpst->format==pst_reversecoverage) {
-	    for (i=0; i < rule->u.coverage.ncnt; ++i)
+	    for (i=0; i<rule->u.coverage.ncnt; ++i)
 	       rplstr(&rule->u.coverage.ncovers[i], old, new, false);
-	    for (i=0; i < rule->u.coverage.bcnt; ++i)
+	    for (i=0; i<rule->u.coverage.bcnt; ++i)
 	       rplstr(&rule->u.coverage.bcovers[i], old, new, false);
-	    for (i=0; i < rule->u.coverage.fcnt; ++i)
+	    for (i=0; i<rule->u.coverage.fcnt; ++i)
 	       rplstr(&rule->u.coverage.fcovers[i], old, new, false);
 	    if (fpst->format==pst_reversecoverage)
 	       rplstr(&rule->u.rcoverage.replacements, old, new, true);
@@ -4235,7 +4235,7 @@ void SFGlyphRenameFixup(SplineFont *sf, char *old, char *new,
 
    /* Now look for contextual apple state machines which might use the name */
    for (sm=master->sm; sm != NULL; sm=sm->next) {
-      for (i=0; i < sm->class_cnt; ++i)
+      for (i=0; i<sm->class_cnt; ++i)
 	 if (sm->classes[i] != NULL) {
 	    if (rplstr(&sm->classes[i], old, new, false))
 	       break;
@@ -4243,15 +4243,15 @@ void SFGlyphRenameFixup(SplineFont *sf, char *old, char *new,
    }
 
    /* Now look for contextual kerning classes which might use the name */
-   for (isv=0; isv < 2; ++isv) {
-      for (kc=isv ? master->vkerns : master->kerns; kc != NULL;
+   for (isv=0; isv<2; ++isv) {
+      for (kc=isv?master->vkerns:master->kerns; kc != NULL;
 	   kc=kc->next) {
-	 for (i=0; i < kc->first_cnt; ++i)
+	 for (i=0; i<kc->first_cnt; ++i)
 	    if (kc->firsts[i] != NULL) {
 	       if (rplstr(&kc->firsts[i], old, new, false))
 		  break;
 	    }
-	 for (i=0; i < kc->second_cnt; ++i)
+	 for (i=0; i<kc->second_cnt; ++i)
 	    if (kc->seconds[i] != NULL) {
 	       if (rplstr(&kc->seconds[i], old, new, false))
 		  break;
@@ -4310,18 +4310,18 @@ static void AddOTLToSllk(struct sllk *sllk,OTLookup *otl,
    int i, j, k, l;
 
    if (otl->lookup_type==gsub_single || otl->lookup_type==gsub_alternate) {
-      for (i=0; i < sllk->cnt; ++i)
+      for (i=0; i<sllk->cnt; ++i)
 	 if (sllk->lookups[i]==otl)
 	    break;
       if (i==sllk->cnt) {
 	 if (sllk->cnt >= sllk->max)
 	    sllk->lookups =
-	       realloc(sllk->lookups, (sllk->max += 5) * sizeof(OTLookup *));
+	       realloc(sllk->lookups, (sllk->max += 5)*sizeof(OTLookup *));
 	 sllk->lookups[sllk->cnt++]=otl;
-	 for (l=0; l < sl->lang_cnt; ++l) {
+	 for (l=0; l<sl->lang_cnt; ++l) {
 	    uint32_t lang =
-	       l < MAX_LANG ? sl->langs[l] : sl->morelangs[l - MAX_LANG];
-	    for (j=0; j < sllk->lcnt; ++j)
+	       l<MAX_LANG?sl->langs[l]:sl->morelangs[l-MAX_LANG];
+	    for (j=0; j<sllk->lcnt; ++j)
 	       if (sllk->langs[j]==lang)
 		  break;
 	    if (j==sllk->lcnt) {
@@ -4329,7 +4329,7 @@ static void AddOTLToSllk(struct sllk *sllk,OTLookup *otl,
 		  sllk->langs =
 		     realloc(sllk->langs,
 			     (sllk->lmax +=
-			      sl->lang_cnt + MAX_LANG) * sizeof(uint32_t));
+			      sl->lang_cnt+MAX_LANG)*sizeof(uint32_t));
 	       sllk->langs[sllk->lcnt++]=lang;
 	    }
 	 }
@@ -4341,10 +4341,10 @@ static void AddOTLToSllk(struct sllk *sllk,OTLookup *otl,
       for (sub=otl->subtables; sub != NULL; sub=sub->next) {
 	 FPST *fpst=sub->fpst;
 
-	 for (j=0; j < fpst->rule_cnt; ++j) {
+	 for (j=0; j<fpst->rule_cnt; ++j) {
 	    struct fpst_rule *r=&fpst->rules[j];
 
-	    for (k=0; k < r->lookup_cnt; ++k)
+	    for (k=0; k<r->lookup_cnt; ++k)
 	       AddOTLToSllk(sllk, r->lookups[k].lookup, sl);
 	 }
       }
@@ -4374,8 +4374,8 @@ int IsAnchorClassUsed(SplineChar * sc, AnchorClass * an) {
 	       sawentry=true;
 	 } else if (ap->type != at_baselig)
 	    return (-1);
-	 else if (waslig < ap->lig_index + 1)
-	    waslig=ap->lig_index + 1;
+	 else if (waslig<ap->lig_index+1)
+	    waslig=ap->lig_index+1;
       }
    }
    if (sawentry && sawexit)
@@ -4392,7 +4392,7 @@ int PSTContains(const char *components, const char *name) {
    int len=strlen(name);
 
    for (pt=strstr(components, name); pt != NULL;
-	pt=strstr(pt + len, name)) {
+	pt=strstr(pt+len, name)) {
       if ((pt==components || pt[-1]==' ')
 	  && (pt[len]==' ' || pt[len]=='\0'))
 	 return (true);
@@ -4404,7 +4404,7 @@ int KernClassContains(KernClass * kc, char *name1, char *name2, int ordered) {
    int infirst=0, insecond=0, scpos1, kwpos1, scpos2, kwpos2;
    int i;
 
-   for (i=1; i < kc->first_cnt; ++i) {
+   for (i=1; i<kc->first_cnt; ++i) {
       if (PSTContains(kc->firsts[i], name1)) {
 	 scpos1=i;
 	 if (++infirst >= 3)	/* The name occurs twice??? */
@@ -4415,9 +4415,9 @@ int KernClassContains(KernClass * kc, char *name1, char *name2, int ordered) {
 	    break;
       }
    }
-   if (infirst==0 || infirst > 3)
+   if (infirst==0 || infirst>3)
       return (0);
-   for (i=1; i < kc->second_cnt; ++i) {
+   for (i=1; i<kc->second_cnt; ++i) {
       if (PSTContains(kc->seconds[i], name1)) {
 	 scpos2=i;
 	 if (++insecond >= 3)
@@ -4428,16 +4428,16 @@ int KernClassContains(KernClass * kc, char *name1, char *name2, int ordered) {
 	    break;
       }
    }
-   if (insecond==0 || insecond > 3)
+   if (insecond==0 || insecond>3)
       return (0);
-   if ((infirst & 1) && (insecond & 2)) {
-      if (kc->offsets[scpos1 * kc->second_cnt + kwpos2] != 0)
-	 return (kc->offsets[scpos1 * kc->second_cnt + kwpos2]);
+   if ((infirst&1) && (insecond&2)) {
+      if (kc->offsets[scpos1*kc->second_cnt+kwpos2] != 0)
+	 return (kc->offsets[scpos1*kc->second_cnt+kwpos2]);
    }
    if (!ordered) {
-      if ((infirst & 2) && (insecond & 1)) {
-	 if (kc->offsets[kwpos1 * kc->second_cnt + scpos2] != 0)
-	    return (kc->offsets[kwpos1 * kc->second_cnt + scpos2]);
+      if ((infirst&2) && (insecond&1)) {
+	 if (kc->offsets[kwpos1*kc->second_cnt+scpos2] != 0)
+	    return (kc->offsets[kwpos1*kc->second_cnt+scpos2]);
       }
    }
    return (0);
@@ -4447,13 +4447,13 @@ int KCFindName(char *name, char **classnames, int cnt, int allow_class0) {
    int i;
    char *pt, *end, ch;
 
-   for (i=0; i < cnt; ++i) {
+   for (i=0; i<cnt; ++i) {
       if (classnames[i]==NULL)
 	 continue;
-      for (pt=classnames[i]; *pt; pt=end + 1) {
+      for (pt=classnames[i]; *pt; pt=end+1) {
 	 end=strchr(pt, ' ');
 	 if (end==NULL)
-	    end=pt + strlen(pt);
+	    end=pt+strlen(pt);
 	 ch=*end;
 	 *end='\0';
 	 if (strcmp(pt, name)==0) {
@@ -4467,5 +4467,5 @@ int KCFindName(char *name, char **classnames, int cnt, int allow_class0) {
    }
    /* If class 0 is specified, then we didn't find anything. If class 0 is */
    /*  unspecified then it means "anything" so we found something */
-   return (classnames[0] != NULL || !allow_class0 ? -1 : 0);
+   return (classnames[0] != NULL || !allow_class0?-1:0);
 }

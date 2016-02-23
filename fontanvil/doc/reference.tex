@@ -163,13 +163,53 @@ to FontForge (and inherited by FontAnvil).
 
 \PEFuncRef{AddLookup}
 
-\texttt{AddLookup(}\textit{arg}, \textit{arg}, \textit{arg}, \textit{arg}, \textit{arg}\texttt{)}
+\texttt{AddLookup(}\textit{name}, \textit{type}, \textit{flags},
+\textit{features}, [\textit{after}]\texttt{)}
+
+Add a new lookup to the font.  The new lookup will be empty; other functions
+can be used to put things in it.
+
+The \textit{name} is a string.  The
+\textit{type} is a string from the following list, identifying the algorithm
+used for looking up glyphs or glyph sequences and the kind of substitution
+or return value the lookup can produce: gpos\_context, gpos\_contextchain,
+gpos\_cursive, gpos\_mark2base, gpos\_mark2ligature, gpos\_mark2mark,
+gpos\_marktobase, gpos\_marktoligature, gpos\_marktomark, gpos\_pair,
+gpos\_single, gsub\_alternate, gsub\_context, gsub\_contextchain,
+gsub\_ligature, gsub\_multiple, gsub\_revesechain, gsub\_single,
+kern\_statemachine, morx\_context, morx\_indic, morx\_insert.  The type
+also implicitly specifies which table will contain the new lookup.
+
+The \textit{flags} argument is an integer formed by adding these flag
+values, which are equivalent to flag names in feature file syntax:
+\begin{itemize}
+  \item 1: RightToLeft;
+  \item 2: IgnoreBaseGlyphs;
+  \item 4: IgnoreLigatures; and
+  \item 8: IgnoreMarks.
+\end{itemize}
+
+The \textit{features} argument expressed which OpenType features
+will invoke this lookup.  It should be an array value, each of whose entries
+is a two-element array, containing as its first element a four-letter string
+identifying the feature, and as its second element another array of
+four-letter strings listing the language systems in which that feature will
+use this lookup.
+
+The \textit{after} argument, if specified, causes the new lookup to be added
+after the lookup with the specified name.  Otherwise, it will be added first
+in its table.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{AddLookupSubtable}
 
-\texttt{AddLookupSubtable(}\textit{arg}, \textit{arg}, \textit{arg}\texttt{)}
+\texttt{AddLookupSubtable(}\textit{lookup}, \textit{name}, [\textit{after}]\texttt{)}
+
+Add a new subtable to a lookup.  The lookup to use is specified as the first
+argument, and the second is the name for the new subtable.  The optional
+\textit{after} argument causes the new subtable to be added after the named
+subtable; otherwise, it will be first in the lookup.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -247,6 +287,8 @@ FontAnvil extension, not supported by FontForge.
 
 \texttt{AutoCounter(}\texttt{)}
 
+Automatically generate ``counter masks'' for selected glyphs.
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \PEFuncRef{AutoHint}
@@ -275,7 +317,12 @@ Automatically generate Microsoft-style rasterization hints (that is,
 
 \PEFuncRef{AutoTrace}
 
-\texttt{AutoTrace(}, \ldots\texttt{)}
+\texttt{AutoTrace()}
+
+Automatically trace the background images of the selected glyphs into
+outlines.  \FFdiff In FontForge, this function will only work if Autotrace
+or Potrace is installed where the interpreter can find it.  FontAnvil uses
+built-in code derived from Potrace instead of calling an external program.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 

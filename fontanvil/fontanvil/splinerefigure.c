@@ -1,4 +1,4 @@
-/* $Id: splinerefigure.c 4157 2015-09-02 07:55:07Z mskala $ */
+/* $Id: splinerefigure.c 4532 2015-12-22 13:18:53Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -57,18 +57,18 @@ void SplineRefigure3(Spline * spline) {
       to->noprevcp=true;
    if (from->nonextcp && to->noprevcp) {
       spline->islinear=true;
-      xsp->c=to->me.x - from->me.x;
-      ysp->c=to->me.y - from->me.y;
+      xsp->c=to->me.x-from->me.x;
+      ysp->c=to->me.y-from->me.y;
       xsp->a=xsp->b=0;
       ysp->a=ysp->b=0;
    } else {
       /* from p. 393 (Operator Details, curveto) PostScript Lang. Ref. Man. (Red book) */
-      xsp->c=3 * (from->nextcp.x - from->me.x);
-      ysp->c=3 * (from->nextcp.y - from->me.y);
-      xsp->b=3 * (to->prevcp.x - from->nextcp.x) - xsp->c;
-      ysp->b=3 * (to->prevcp.y - from->nextcp.y) - ysp->c;
-      xsp->a=to->me.x - from->me.x - xsp->c - xsp->b;
-      ysp->a=to->me.y - from->me.y - ysp->c - ysp->b;
+      xsp->c=3*(from->nextcp.x-from->me.x);
+      ysp->c=3*(from->nextcp.y-from->me.y);
+      xsp->b=3*(to->prevcp.x-from->nextcp.x)-xsp->c;
+      ysp->b=3*(to->prevcp.y-from->nextcp.y)-ysp->c;
+      xsp->a=to->me.x-from->me.x-xsp->c-xsp->b;
+      ysp->a=to->me.y-from->me.y-ysp->c-ysp->b;
       if (RealNear(xsp->c, 0))
 	 xsp->c=0;
       if (RealNear(ysp->c, 0))
@@ -82,12 +82,12 @@ void SplineRefigure3(Spline * spline) {
       if (RealNear(ysp->a, 0))
 	 ysp->a=0;
       if (xsp->a != 0
-	  && (Within16RoundingErrors(xsp->a + from->me.x, from->me.x)
-	      || Within16RoundingErrors(xsp->a + to->me.x, to->me.x)))
+	  && (Within16RoundingErrors(xsp->a+from->me.x, from->me.x)
+	      || Within16RoundingErrors(xsp->a+to->me.x, to->me.x)))
 	 xsp->a=0;
       if (ysp->a != 0
-	  && (Within16RoundingErrors(ysp->a + from->me.y, from->me.y)
-	      || Within16RoundingErrors(ysp->a + to->me.y, to->me.y)))
+	  && (Within16RoundingErrors(ysp->a+from->me.y, from->me.y)
+	      || Within16RoundingErrors(ysp->a+to->me.y, to->me.y)))
 	 ysp->a=0;
       SplineIsLinear(spline);
       spline->islinear=false;

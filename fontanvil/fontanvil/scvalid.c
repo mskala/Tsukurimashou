@@ -1,4 +1,4 @@
-/* $Id: scvalid.c 4494 2015-12-12 08:13:24Z mskala $ */
+/* $Id: scvalid.c 4532 2015-12-22 13:18:53Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -81,7 +81,7 @@ StemInfo *SCHintOverlapInMask(SplineChar * sc, HintMask * hm) {
    StemInfo *h1, *h2;
    int v;
 
-   for (v=0; v < 2; ++v) {
+   for (v=0; v<2; ++v) {
       if (v==0) {
 	 h1=sc->hstem;
 	 hi1=0;
@@ -89,28 +89,28 @@ StemInfo *SCHintOverlapInMask(SplineChar * sc, HintMask * hm) {
 	 h1=sc->vstem;
 	 hi1=hcnt;
       }
-      for (; h1 != NULL && hi1 < HntMax; ++hi1, h1=h1->next) {
-	 if (hm==NULL || ((*hm)[(hi1 >> 3)] & (0x80 >> (hi1 & 7)))) {
-	    for (hi2=hi1 + 1, h2=h1->next; h2 != NULL && hi2 < HntMax;
+      for (; h1 != NULL && hi1<HntMax; ++hi1, h1=h1->next) {
+	 if (hm==NULL || ((*hm)[(hi1 >> 3)]&(0x80 >> (hi1&7)))) {
+	    for (hi2=hi1+1, h2=h1->next; h2 != NULL && hi2<HntMax;
 		 ++hi2, h2=h2->next) {
-	       if (hm==NULL || ((*hm)[(hi2 >> 3)] & (0x80 >> (hi2 & 7)))) {
+	       if (hm==NULL || ((*hm)[(hi2 >> 3)]&(0x80 >> (hi2&7)))) {
 		  double start1, end1, start2, end2;
 
-		  if (h1->width > 0) {
+		  if (h1->width>0) {
 		     start1=h1->start;
-		     end1=start1 + h1->width;
+		     end1=start1+h1->width;
 		  } else {
 		     end1=h1->start;
-		     start1=start1 + h1->width;
+		     start1=start1+h1->width;
 		  }
-		  if (h2->width > 0) {
+		  if (h2->width>0) {
 		     start2=h2->start;
-		     end2=start2 + h2->width;
+		     end2=start2+h2->width;
 		  } else {
 		     end2=h2->start;
-		     start2=start2 + h2->width;
+		     start2=start2+h2->width;
 		  }
-		  if (end1 < start2 || start1 > end2)
+		  if (end1<start2 || start1>end2)
 		     /* No overlap */ ;
 		  else {
 		     ErrorMsg(1,"Hint overlap between (%f,%f) and (%f,%f)\n",
@@ -147,7 +147,7 @@ int SCValidate(SplineChar * sc, int layer, int force) {
    SplineChar *othersc;
    struct altuni *alt;
 
-   if ((sc->layers[layer].validation_state & vs_known) && !force)
+   if ((sc->layers[layer].validation_state&vs_known) && !force)
       goto end;
 
    sc->layers[layer].validation_state=0;
@@ -155,8 +155,8 @@ int SCValidate(SplineChar * sc, int layer, int force) {
    base=LayerAllSplines(&sc->layers[layer]);
 
    if (!allow_utf8_glyphnames) {
-      if (strlen(sc->name) > 31)
-	 sc->layers[layer].validation_state |= vs_badglyphname | vs_known;
+      if (strlen(sc->name)>31)
+	 sc->layers[layer].validation_state |= vs_badglyphname|vs_known;
       else {
 	 char *pt;
 
@@ -167,7 +167,7 @@ int SCValidate(SplineChar * sc, int layer, int force) {
 	       /* That's ok */ ;
 	    else {
 	       sc->layers[layer].validation_state |=
-		  vs_badglyphname | vs_known;
+		  vs_badglyphname|vs_known;
 	       break;
 	    }
 	 }
@@ -178,47 +178,47 @@ int SCValidate(SplineChar * sc, int layer, int force) {
       if (pst->type==pst_substitution &&
 	  !SCWorthOutputting(SFGetChar(sc->parent, -1, pst->u.subs.variant)))
       {
-	 sc->layers[layer].validation_state |= vs_badglyphname | vs_known;
+	 sc->layers[layer].validation_state |= vs_badglyphname|vs_known;
 	 break;
       } else if (pst->type==pst_pair &&
 		 !SCWorthOutputting(SFGetChar
 				    (sc->parent, -1, pst->u.pair.paired))) {
-	 sc->layers[layer].validation_state |= vs_badglyphname | vs_known;
+	 sc->layers[layer].validation_state |= vs_badglyphname|vs_known;
 	 break;
       } else
 	 if ((pst->type==pst_alternate || pst->type==pst_multiple
 	      || pst->type==pst_ligature)
 	     && !SFValidNameList(sc->parent, pst->u.mult.components)) {
-	 sc->layers[layer].validation_state |= vs_badglyphname | vs_known;
+	 sc->layers[layer].validation_state |= vs_badglyphname|vs_known;
 	 break;
       }
    }
    if (sc->vert_variants != NULL && sc->vert_variants->variants != NULL &&
        !SFValidNameList(sc->parent, sc->vert_variants->variants))
-      sc->layers[layer].validation_state |= vs_badglyphname | vs_known;
+      sc->layers[layer].validation_state |= vs_badglyphname|vs_known;
    else if (sc->horiz_variants != NULL && sc->horiz_variants->variants != NULL
 	    && !SFValidNameList(sc->parent, sc->horiz_variants->variants))
-      sc->layers[layer].validation_state |= vs_badglyphname | vs_known;
+      sc->layers[layer].validation_state |= vs_badglyphname|vs_known;
    else {
       int i;
 
       if (sc->vert_variants != NULL) {
-	 for (i=0; i < sc->vert_variants->part_cnt; ++i) {
+	 for (i=0; i<sc->vert_variants->part_cnt; ++i) {
 	    if (!SCWorthOutputting
 		(SFGetChar
 		 (sc->parent, -1, sc->vert_variants->parts[i].component)))
 	       sc->layers[layer].validation_state |=
-		  vs_badglyphname | vs_known;
+		  vs_badglyphname|vs_known;
 	    break;
 	 }
       }
       if (sc->horiz_variants != NULL) {
-	 for (i=0; i < sc->horiz_variants->part_cnt; ++i) {
+	 for (i=0; i<sc->horiz_variants->part_cnt; ++i) {
 	    if (!SCWorthOutputting
 		(SFGetChar
 		 (sc->parent, -1, sc->horiz_variants->parts[i].component)))
 	       sc->layers[layer].validation_state |=
-		  vs_badglyphname | vs_known;
+		  vs_badglyphname|vs_known;
 	    break;
 	 }
       }
@@ -229,35 +229,35 @@ int SCValidate(SplineChar * sc, int layer, int force) {
       if (ss->first->next==NULL)
 	 /* Do Nothing */ ;
       else if (ss->first->prev==NULL) {
-	 sc->layers[layer].validation_state |= vs_opencontour | vs_known;
+	 sc->layers[layer].validation_state |= vs_opencontour|vs_known;
 	 break;
       }
    }
 
    /* If there's an open contour we can't really tell whether it self-intersects */
-   if (sc->layers[layer].validation_state & vs_opencontour)
+   if (sc->layers[layer].validation_state&vs_opencontour)
       /* sc->layers[layer].validation_state |= vs_selfintersects */ ;
    else {
       if (SplineSetIntersect(base, &s1, &s2))
-	 sc->layers[layer].validation_state |= vs_selfintersects | vs_known;
+	 sc->layers[layer].validation_state |= vs_selfintersects|vs_known;
    }
 
    /* If there's a self-intersection we are guaranteed that both the self- */
    /*  intersecting contours will be in the wrong direction at some point */
-   if (sc->layers[layer].validation_state & vs_selfintersects)
+   if (sc->layers[layer].validation_state&vs_selfintersects)
       /*sc->layers[layer].validation_state |= vs_wrongdirection */ ;
    else {
       if (SplineSetsDetectDir(&base, &lastscan) != NULL)
-	 sc->layers[layer].validation_state |= vs_wrongdirection | vs_known;
+	 sc->layers[layer].validation_state |= vs_wrongdirection|vs_known;
    }
 
    /* Different kind of "wrong direction" */
    for (ref=sc->layers[layer].refs; ref != NULL; ref=ref->next) {
-      if (ref->transform[0] * ref->transform[3] < 0 ||
+      if (ref->transform[0] * ref->transform[3]<0 ||
 	  (ref->transform[0]==0
-	   && ref->transform[1] * ref->transform[2] > 0)) {
+	   && ref->transform[1] * ref->transform[2]>0)) {
 	 sc->layers[layer].validation_state |=
-	    vs_flippedreferences | vs_known;
+	    vs_flippedreferences|vs_known;
 	 break;
       }
    }
@@ -265,7 +265,7 @@ int SCValidate(SplineChar * sc, int layer, int force) {
    for (h=sc->hstem, cnt=0; h != NULL; h=h->next, ++cnt);
    for (h=sc->vstem; h != NULL; h=h->next, ++cnt);
    if (cnt >= 96)
-      sc->layers[layer].validation_state |= vs_toomanyhints | vs_known;
+      sc->layers[layer].validation_state |= vs_toomanyhints|vs_known;
 
    if (sc->layers[layer].splines != NULL) {
       int anyhm=0;
@@ -289,7 +289,7 @@ int SCValidate(SplineChar * sc, int layer, int force) {
       if (!anyhm)
 	 h=SCHintOverlapInMask(sc, NULL);
       if (h != NULL)
-	 sc->layers[layer].validation_state |= vs_overlappedhints | vs_known;
+	 sc->layers[layer].validation_state |= vs_overlappedhints|vs_known;
    }
 
    memset(&lastpt, 0, sizeof(lastpt));
@@ -304,11 +304,11 @@ int SCValidate(SplineChar * sc, int layer, int force) {
 	     || sp->nextcp.y != rint(sp->nextcp.y)
 	     || sp->prevcp.x != rint(sp->prevcp.x)
 	     || sp->prevcp.y != rint(sp->prevcp.y))
-	    sc->layers[layer].validation_state |= vs_nonintegral | vs_known;
+	    sc->layers[layer].validation_state |= vs_nonintegral|vs_known;
 	 if (BPTooFar(&lastpt, &sp->prevcp) ||
 	     BPTooFar(&sp->prevcp, &sp->me) || BPTooFar(&sp->me, &sp->nextcp))
 	    sc->layers[layer].validation_state |=
-	       vs_pointstoofarapart | vs_known;
+	       vs_pointstoofarapart|vs_known;
 	 memcpy(&lastpt, &sp->nextcp, sizeof(lastpt));
 	 ++pt_cnt;
 	 if (sp->next==NULL)
@@ -326,15 +326,15 @@ int SCValidate(SplineChar * sc, int layer, int force) {
 	 }
       }
    }
-   if (pt_cnt > 1500)
-      sc->layers[layer].validation_state |= vs_toomanypoints | vs_known;
+   if (pt_cnt>1500)
+      sc->layers[layer].validation_state |= vs_toomanypoints|vs_known;
 
    LayerUnAllSplines(&sc->layers[layer]);
 
    /* Only check the splines in the glyph, not those in refs */
    bound2=sc->parent->extrema_bound;
    if (bound2 <= 0)
-      bound2=(sc->parent->ascent + sc->parent->descent) / 32.0;
+      bound2=(sc->parent->ascent+sc->parent->descent)/32.0;
    bound2 *= bound2;
    for (ss=sc->layers[layer].splines, cnt=0; ss != NULL; ss=ss->next) {
       first=NULL;
@@ -344,13 +344,13 @@ int SCValidate(SplineChar * sc, int layer, int force) {
 	 if (s->acceptableextrema)
 	    continue;		/* If marked as good, don't check it */
 	 /* rough appoximation to spline's length */
-	 x=(s->to->me.x - s->from->me.x);
-	 y=(s->to->me.y - s->from->me.y);
-	 len2=x * x + y * y;
+	 x=(s->to->me.x-s->from->me.x);
+	 y=(s->to->me.y-s->from->me.y);
+	 len2=x * x+y * y;
 	 /* short splines (serifs) are not required to have points at their extrema */
-	 if (len2 > bound2 && Spline2DFindExtrema(s, extrema) > 0) {
+	 if (len2>bound2 && Spline2DFindExtrema(s, extrema)>0) {
 	    sc->layers[layer].validation_state |=
-	       vs_missingextrema | vs_known;
+	       vs_missingextrema|vs_known;
 	    goto break_2_loops;
 	 }
       }
@@ -362,26 +362,26 @@ int SCValidate(SplineChar * sc, int layer, int force) {
       /* If we have a maxp table then do some truetype checks */
       /* these are only errors for fontlint, we'll fix them up when we */
       /*  generate the font -- but fontlint needs to know this stuff */
-      int pt_max=memushort(tab->data, tab->len, 3 * sizeof(uint16_t));
-      int path_max=memushort(tab->data, tab->len, 4 * sizeof(uint16_t));
+      int pt_max=memushort(tab->data, tab->len, 3*sizeof(uint16_t));
+      int path_max=memushort(tab->data, tab->len, 4*sizeof(uint16_t));
       int composit_pt_max =
-	 memushort(tab->data, tab->len, 5 * sizeof(uint16_t));
+	 memushort(tab->data, tab->len, 5*sizeof(uint16_t));
       int composit_path_max =
-	 memushort(tab->data, tab->len, 6 * sizeof(uint16_t));
-      int instr_len_max=memushort(tab->data, tab->len, 13 * sizeof(uint16_t));
-      int num_comp_max=memushort(tab->data, tab->len, 14 * sizeof(uint16_t));
+	 memushort(tab->data, tab->len, 6*sizeof(uint16_t));
+      int instr_len_max=memushort(tab->data, tab->len, 13*sizeof(uint16_t));
+      int num_comp_max=memushort(tab->data, tab->len, 14*sizeof(uint16_t));
       int comp_depth_max =
-	 memushort(tab->data, tab->len, 15 * sizeof(uint16_t));
+	 memushort(tab->data, tab->len, 15*sizeof(uint16_t));
       int rd, rdtest;
 
       /* Already figured out two of these */
       if (sc->layers[layer].splines==NULL) {
-	 if (pt_cnt > composit_pt_max)
+	 if (pt_cnt>composit_pt_max)
 	    sc->layers[layer].validation_state |=
-	       vs_maxp_toomanycomppoints | vs_known;
-	 if (path_cnt > composit_path_max)
+	       vs_maxp_toomanycomppoints|vs_known;
+	 if (path_cnt>composit_path_max)
 	    sc->layers[layer].validation_state |=
-	       vs_maxp_toomanycomppaths | vs_known;
+	       vs_maxp_toomanycomppaths|vs_known;
       }
 
       for (ss=sc->layers[layer].splines, pt_cnt=path_cnt=0; ss != NULL;
@@ -395,27 +395,27 @@ int SCValidate(SplineChar * sc, int layer, int force) {
 	       break;
 	 }
       }
-      if (pt_cnt > pt_max)
+      if (pt_cnt>pt_max)
 	 sc->layers[layer].validation_state |=
-	    vs_maxp_toomanypoints | vs_known;
-      if (path_cnt > path_max)
+	    vs_maxp_toomanypoints|vs_known;
+      if (path_cnt>path_max)
 	 sc->layers[layer].validation_state |=
-	    vs_maxp_toomanypaths | vs_known;
+	    vs_maxp_toomanypaths|vs_known;
 
-      if (sc->ttf_instrs_len > instr_len_max)
+      if (sc->ttf_instrs_len>instr_len_max)
 	 sc->layers[layer].validation_state |=
-	    vs_maxp_instrtoolong | vs_known;
+	    vs_maxp_instrtoolong|vs_known;
 
       rd=0;
       for (r=sc->layers[layer].refs, cnt=0; r != NULL; r=r->next, ++cnt) {
 	 rdtest=RefDepth(r, layer);
-	 if (rdtest > rd)
+	 if (rdtest>rd)
 	    rd=rdtest;
       }
-      if (cnt > num_comp_max)
-	 sc->layers[layer].validation_state |= vs_maxp_toomanyrefs | vs_known;
-      if (rd > comp_depth_max)
-	 sc->layers[layer].validation_state |= vs_maxp_refstoodeep | vs_known;
+      if (cnt>num_comp_max)
+	 sc->layers[layer].validation_state |= vs_maxp_toomanyrefs|vs_known;
+      if (rd>comp_depth_max)
+	 sc->layers[layer].validation_state |= vs_maxp_refstoodeep|vs_known;
    }
 
    k=0;
@@ -423,22 +423,22 @@ int SCValidate(SplineChar * sc, int layer, int force) {
    if (cid->cidmaster != NULL)
       cid=cid->cidmaster;
    do {
-      sf=cid->subfontcnt==0 ? cid : cid->subfonts[k];
-      for (gid=0; gid < sf->glyphcnt; ++gid)
+      sf=cid->subfontcnt==0?cid:cid->subfonts[k];
+      for (gid=0; gid<sf->glyphcnt; ++gid)
 	 if ((othersc=sf->glyphs[gid]) != NULL) {
 	    if (othersc==sc)
 	       continue;
 	    if (strcmp(sc->name, othersc->name)==0)
-	       sc->layers[layer].validation_state |= vs_dupname | vs_known;
+	       sc->layers[layer].validation_state |= vs_dupname|vs_known;
 	    if (sc->unicodeenc != -1 && UniMatch(-1, sc->unicodeenc, othersc))
-	       sc->layers[layer].validation_state |= vs_dupunicode | vs_known;
+	       sc->layers[layer].validation_state |= vs_dupunicode|vs_known;
 	    for (alt=sc->altuni; alt != NULL; alt=alt->next)
 	       if (UniMatch(alt->vs, alt->unienc, othersc))
 		  sc->layers[layer].validation_state |=
-		     vs_dupunicode | vs_known;
+		     vs_dupunicode|vs_known;
 	 }
       ++k;
-   } while (k < cid->subfontcnt);
+   } while (k<cid->subfontcnt);
 
  end:;
    /* This test is intentionally here and should be done even if the glyph */
@@ -449,9 +449,9 @@ int SCValidate(SplineChar * sc, int layer, int force) {
    sc->layers[layer].validation_state |= vs_known;
    if (sc->unlink_rm_ovrlp_save_undo)
       return (sc->layers[layer].
-	      validation_state & ~(vs_known | vs_selfintersects));
+	      validation_state&~(vs_known|vs_selfintersects));
 
-   return (sc->layers[layer].validation_state & ~vs_known);
+   return (sc->layers[layer].validation_state&~vs_known);
 }
 
 int SFValidate(SplineFont *sf, int layer, int force) {
@@ -466,25 +466,25 @@ int SFValidate(SplineFont *sf, int layer, int force) {
 
    k=0;
    do {
-      sub=sf->subfontcnt==0 ? sf : sf->subfonts[k];
-      for (gid=0; gid < sub->glyphcnt; ++gid)
+      sub=sf->subfontcnt==0?sf:sf->subfonts[k];
+      for (gid=0; gid<sub->glyphcnt; ++gid)
 	 if ((sc=sub->glyphs[gid]) != NULL) {
-	    if (force || !(sc->layers[layer].validation_state & vs_known)) {
+	    if (force || !(sc->layers[layer].validation_state&vs_known)) {
 	       SCValidate(sc, layer, true);
 	    } else if (SCValidateAnchors(sc) != NULL)
 	       sc->layers[layer].validation_state |= vs_missinganchor;
 
 	    if (sc->unlink_rm_ovrlp_save_undo)
-	       any |= sc->layers[layer].validation_state & ~vs_selfintersects;
+	       any |= sc->layers[layer].validation_state&~vs_selfintersects;
 	    else
 	       any |= sc->layers[layer].validation_state;
 	 }
       ++k;
-   } while (k < sf->subfontcnt);
+   } while (k<sf->subfontcnt);
 
    /* a lot of asian ttf files have a bad postscript fontname stored in the */
    /*  name table */
-   return (any & ~vs_known);
+   return (any&~vs_known);
 }
 
 void SCTickValidationState(SplineChar * sc, int layer) {
@@ -503,8 +503,8 @@ void SCTickValidationState(SplineChar * sc, int layer) {
 
 static int CheckBluePair(char *blues,char *others,int bluefuzz,
 			 int magicpointsize) {
-   int bound=2 * bluefuzz + 1;
-   int bluevals[10 + 14], cnt, pos=0, maxzoneheight;
+   int bound=2*bluefuzz+1;
+   int bluevals[10+14], cnt, pos=0, maxzoneheight;
    int err=0;
    char *end;
 
@@ -533,7 +533,7 @@ static int CheckBluePair(char *blues,char *others,int bluefuzz,
 	 else
 	    bluevals[pos++]=temp;
       }
-      if (cnt & 1)
+      if (cnt&1)
 	 err |= pds_odd;
    }
 
@@ -561,26 +561,26 @@ static int CheckBluePair(char *blues,char *others,int bluefuzz,
       else
 	 bluevals[pos++]=temp;
    }
-   if (cnt & 1)
+   if (cnt&1)
       err |= pds_odd;
 
    /* Now there is nothing which says that otherblues must all be less than */
    /*  blues. But the examples suggest it. And I shall assume it */
 
    maxzoneheight=-1;
-   for (cnt=0; cnt < pos; cnt += 2) {
-      if (cnt + 1 < pos && bluevals[cnt] > bluevals[cnt + 1])
+   for (cnt=0; cnt<pos; cnt += 2) {
+      if (cnt+1<pos && bluevals[cnt]>bluevals[cnt+1])
 	 err |= pds_outoforder;
-      else if (cnt + 1 < pos
-	       && maxzoneheight < bluevals[cnt + 1] - bluevals[cnt])
-	 maxzoneheight=bluevals[cnt + 1] - bluevals[cnt];
-      if (cnt != 0 && bluevals[cnt - 1] >= bluevals[cnt])
+      else if (cnt+1<pos
+	       && maxzoneheight<bluevals[cnt+1]-bluevals[cnt])
+	 maxzoneheight=bluevals[cnt+1]-bluevals[cnt];
+      if (cnt != 0 && bluevals[cnt-1] >= bluevals[cnt])
 	 err |= pds_outoforder;
-      if (cnt != 0 && bluevals[cnt - 1] + bound > bluevals[cnt])
+      if (cnt != 0 && bluevals[cnt-1]+bound>bluevals[cnt])
 	 err |= pds_tooclose;
    }
 
-   if (maxzoneheight > 0 && (magicpointsize - .49) * maxzoneheight >= 240)
+   if (maxzoneheight>0 && (magicpointsize-.49)*maxzoneheight >= 240)
       err |= pds_toobig;
 
    return (err);
@@ -649,12 +649,12 @@ static int CheckStemSnap(struct psdict *dict,char *snapkey,char *stdkey) {
       if (cnt >= 12)
 	 return (false);
       stems[cnt]=temp;
-      if (cnt > 0 && stems[cnt - 1] >= stems[cnt])
+      if (cnt>0 && stems[cnt-1] >= stems[cnt])
 	 return (false);
       if (stems[cnt]==std_val)
 	 found=true;
    }
-   if (!found && std_val > 0)
+   if (!found && std_val>0)
       return (-1);
 
    return (true);
@@ -672,16 +672,16 @@ int ValidatePrivate(SplineFont *sf) {
 
    if ((bf=PSDictHasEntry(sf->private, "BlueFuzz")) != NULL) {
       fuzz=strtol(bf, &end, 10);
-      if (*end != '\0' || fuzz < 0)
+      if (*end != '\0' || fuzz<0)
 	 errs |= pds_badbluefuzz;
    }
 
    if ((test=PSDictHasEntry(sf->private, "BlueScale")) != NULL) {
       bluescale=strtod(test, &end);
-      if (*end != '\0' || end==test || bluescale < 0)
+      if (*end != '\0' || end==test || bluescale<0)
 	 errs |= pds_badbluescale;
    }
-   magicpointsize=rint(bluescale * 240 + 0.49);
+   magicpointsize=rint(bluescale*240+0.49);
 
    if ((blues=PSDictHasEntry(sf->private, "BlueValues"))==NULL)
       errs |= pds_missingblue;
@@ -699,7 +699,7 @@ int ValidatePrivate(SplineFont *sf) {
    if ((test=PSDictHasEntry(sf->private, "BlueShift")) != NULL) {
       int val=strtol(test, &end, 10);
 
-      if (*end != '\0' || end==test || val < 0)
+      if (*end != '\0' || end==test || val<0)
 	 errs |= pds_badblueshift;
    }
 

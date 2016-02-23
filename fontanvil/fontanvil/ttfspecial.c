@@ -1,4 +1,4 @@
-/* $Id: ttfspecial.c 4524 2015-12-20 19:28:13Z mskala $ */
+/* $Id: ttfspecial.c 4532 2015-12-22 13:18:53Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -62,7 +62,7 @@ static void PfEd_FontComment(SplineFont *sf,struct PfEd_subtabs *pfed,
 			     uint32_t tag) {
    AFILE *fcmt;
    char *pt;
-   char *text=tag==fcmt_TAG ? sf->comments : sf->fontlog;
+   char *text=tag==fcmt_TAG?sf->comments:sf->fontlog;
 
    if (text==NULL || *text=='\0')
       return;
@@ -74,9 +74,9 @@ static void PfEd_FontComment(SplineFont *sf,struct PfEd_subtabs *pfed,
    for (pt=text; *pt; ++pt)
       aputc(*pt, fcmt);
    aput_int16_be_checked(0,fcmt);
-   if (aftell(fcmt) & 1)
+   if (aftell(fcmt)&1)
       aputc(0, fcmt);
-   if (aftell(fcmt) & 2)
+   if (aftell(fcmt)&2)
       aput_int16_be_checked(0,fcmt);
 }
 
@@ -89,7 +89,7 @@ static void PfEd_GlyphComments(SplineFont *sf,struct PfEd_subtabs *pfed,
 
    any=0;
    /* We don't need to check in bygid order. We just want to know existance */
-   for (i=0; i < sf->glyphcnt; ++i) {
+   for (i=0; i<sf->glyphcnt; ++i) {
       if (sf->glyphs[i] != NULL && sf->glyphs[i]->ttf_glyph != -1 &&
 	  sf->glyphs[i]->comment != NULL) {
 	 any=true;
@@ -107,15 +107,15 @@ static void PfEd_GlyphComments(SplineFont *sf,struct PfEd_subtabs *pfed,
    /* Version 0 used ucs2, version 1 uses utf8 */
 
    offset=0;
-   for (j=0; j < 4; ++j) {
+   for (j=0; j<4; ++j) {
       cnt=0;
-      for (i=0; i < gi->gcnt; ++i)
+      for (i=0; i<gi->gcnt; ++i)
 	 if (gi->bygid[i] != -1) {
 	    sc=sf->glyphs[gi->bygid[i]];
 	    if (sc != NULL && sc->comment != NULL) {
 	       last=i;
 	       skipped=false;
-	       for (k=i + 1; k < gi->gcnt; ++k) {
+	       for (k=i+1; k<gi->gcnt; ++k) {
 		  if (gi->bygid[k] != -1)
 		     sc2=sf->glyphs[gi->bygid[k]];
 		  if ((gi->bygid[k]==-1 || sc2->comment==NULL) && skipped)
@@ -131,7 +131,7 @@ static void PfEd_GlyphComments(SplineFont *sf,struct PfEd_subtabs *pfed,
 		  aput_int16_be_checked(i,cmnt);
 		  aput_int16_be_checked(last,cmnt);
 		  putlong(cmnt, offset);
-		  offset += sizeof(uint32_t) * (last - i + 2);
+		  offset += sizeof(uint32_t)*(last-i+2);
 	       } else if (j==2) {
 		  for (; i <= last; ++i) {
 		     if (gi->bygid[i]==-1
@@ -139,7 +139,7 @@ static void PfEd_GlyphComments(SplineFont *sf,struct PfEd_subtabs *pfed,
 			putlong(cmnt, 0);
 		     else {
 			putlong(cmnt, offset);
-			offset += strlen(sc->comment) + 1;
+			offset += strlen(sc->comment)+1;
 		     }
 		  }
 		  putlong(cmnt, offset);	/* Guard data, to let us calculate the string lengths */
@@ -158,12 +158,12 @@ static void PfEd_GlyphComments(SplineFont *sf,struct PfEd_subtabs *pfed,
       if (j==0) {
 	 aput_int16_be_checked(cnt,cmnt);
 	 offset =
-	    2 * sizeof(short) + cnt * (2 * sizeof(short) + sizeof(uint32_t));
+	    2*sizeof(short)+cnt * (2*sizeof(short)+sizeof(uint32_t));
       }
    }
-   if (aftell(cmnt) & 1)
+   if (aftell(cmnt)&1)
       aputc('\0', cmnt);
-   if (aftell(cmnt) & 2)
+   if (aftell(cmnt)&2)
       aput_int16_be_checked(0,cmnt);
 }
 
@@ -180,13 +180,13 @@ static void PfEd_CvtComments(SplineFont *sf,struct PfEd_subtabs *pfed) {
 
    aput_int16_be_checked(0,cvtcmt);		/* sub-table version number */
    aput_int16_be_checked(i,cvtcmt);
-   offset=2 * 2 + i * 2;
+   offset=2*2+i*2;
    for (i=0; sf->cvt_names[i] != END_CVT_NAMES; ++i) {
       if (sf->cvt_names[i]==NULL)
 	 aput_int16_be_checked(0,cvtcmt);
       else {
 	 aput_int16_be_checked(offset,cvtcmt);
-	 offset += strlen(sf->cvt_names[i]) + 1;
+	 offset += strlen(sf->cvt_names[i])+1;
       }
    }
    for (i=0; sf->cvt_names[i] != END_CVT_NAMES; ++i) {
@@ -195,9 +195,9 @@ static void PfEd_CvtComments(SplineFont *sf,struct PfEd_subtabs *pfed) {
 	 aputc('\0', cvtcmt);
       }
    }
-   if (aftell(cvtcmt) & 1)
+   if (aftell(cvtcmt)&1)
       aputc(0, cvtcmt);
-   if (aftell(cvtcmt) & 2)
+   if (aftell(cvtcmt)&2)
       aput_int16_be_checked(0,cvtcmt);
 }
 
@@ -208,7 +208,7 @@ static void PfEd_Colours(SplineFont *sf,struct PfEd_subtabs *pfed,
    AFILE *colr;
 
    any=0;
-   for (i=0; i < sf->glyphcnt; ++i) {
+   for (i=0; i<sf->glyphcnt; ++i) {
       if (sf->glyphs[i] != NULL && sf->glyphs[i]->ttf_glyph != -1 &&
 	  sf->glyphs[i]->color != COLOR_DEFAULT) {
 	 any=true;
@@ -224,12 +224,12 @@ static void PfEd_Colours(SplineFont *sf,struct PfEd_subtabs *pfed,
 
    aput_int16_be_checked(0,colr);		/* sub-table version number */
    cnt=0;
-   for (i=0; i < gi->gcnt; ++i)
+   for (i=0; i<gi->gcnt; ++i)
      if (gi->bygid[i] != -1) {
 	sc=sf->glyphs[gi->bygid[i]];
 	if (sc != NULL && sc->color != COLOR_DEFAULT) {
 	   last=i;
-	   for (k=i + 1; k < gi->gcnt; ++k) {
+	   for (k=i+1; k<gi->gcnt; ++k) {
 	      if (gi->bygid[k]==-1)
 		break;
 	      sc2=sf->glyphs[gi->bygid[k]];
@@ -243,12 +243,12 @@ static void PfEd_Colours(SplineFont *sf,struct PfEd_subtabs *pfed,
      }
    aput_int16_be_checked(cnt,colr);
    cnt=0;
-   for (i=0; i < gi->gcnt; ++i)
+   for (i=0; i<gi->gcnt; ++i)
      if (gi->bygid[i] != -1) {
 	sc=sf->glyphs[gi->bygid[i]];
 	if (sc != NULL && sc->color != COLOR_DEFAULT) {
 	   last=i;
-	   for (k=i + 1; k < gi->gcnt; ++k) {
+	   for (k=i+1; k<gi->gcnt; ++k) {
 	      if (gi->bygid[k]==-1)
 		break;
 	      sc2=sf->glyphs[gi->bygid[k]];
@@ -263,7 +263,7 @@ static void PfEd_Colours(SplineFont *sf,struct PfEd_subtabs *pfed,
 	   i=last;
 	}
      }
-   if (aftell(colr) & 2)
+   if (aftell(colr)&2)
      aput_int16_be_checked(0,colr);
 }
 
@@ -300,18 +300,18 @@ static void PfEd_Lookups(SplineFont *sf,struct PfEd_subtabs *pfed,
    aput_int16_be_checked(0,lkf);		/* Subtable version */
    aput_int16_be_checked(lcnt,lkf);
 
-   sub_info=4 + 4 * lcnt;
-   ac_info=sub_info + 2 * lcnt + 4 * scnt;
-   name_info=ac_info + 2 * ascnt + 2 * acnt;
+   sub_info=4+4*lcnt;
+   ac_info=sub_info+2*lcnt+4*scnt;
+   name_info=ac_info+2*ascnt+2*acnt;
    for (otl=lookups; otl != NULL; otl=otl->next)
       if (!otl->unused) {
 	 aput_int16_be_checked(name_info,lkf);
-	 name_info += strlen(otl->lookup_name) + 1;
+	 name_info += strlen(otl->lookup_name)+1;
 	 aput_int16_be_checked(sub_info,lkf);
 	 for (subs=otl->subtables, s=0; subs != NULL; subs=subs->next)
 	    if (!subs->unused)
 	       ++s;
-	 sub_info += 2 + 4 * s;
+	 sub_info += 2+4*s;
       }
    if (sub_info != ac_info)
       ErrorMsg(2,"Lookup name data didn't behave as expected\n");
@@ -324,13 +324,13 @@ static void PfEd_Lookups(SplineFont *sf,struct PfEd_subtabs *pfed,
 	 for (subs=otl->subtables, s=0; subs != NULL; subs=subs->next)
 	    if (!subs->unused) {
 	       aput_int16_be_checked(name_info,lkf);
-	       name_info += strlen(subs->subtable_name) + 1;
+	       name_info += strlen(subs->subtable_name)+1;
 	       if (subs->anchor_classes) {
 		  aput_int16_be_checked(ac_info,lkf);
 		  for (ac=sf->anchor, a=0; ac != NULL; ac=ac->next)
 		     if (ac->subtable==subs && ac->has_base && ac->has_mark)
 			++a;
-		  ac_info += 2 + 2 * a;
+		  ac_info += 2+2*a;
 	       } else
 		  aput_int16_be_checked(0,lkf);
 	    }
@@ -347,7 +347,7 @@ static void PfEd_Lookups(SplineFont *sf,struct PfEd_subtabs *pfed,
 		  for (ac=sf->anchor, a=0; ac != NULL; ac=ac->next)
 		     if (ac->subtable==subs && ac->has_base && ac->has_mark) {
 			aput_int16_be_checked(name_info,lkf);
-			name_info += strlen(ac->name) + 1;
+			name_info += strlen(ac->name)+1;
 		     }
 	       }
 	    }
@@ -376,9 +376,9 @@ static void PfEd_Lookups(SplineFont *sf,struct PfEd_subtabs *pfed,
 		  }
 	    }
       }
-   if (aftell(lkf) & 1)
+   if (aftell(lkf)&1)
       aputc('\0', lkf);
-   if (aftell(lkf) & 2)
+   if (aftell(lkf)&2)
       aput_int16_be_checked(0,lkf);
 }
 
@@ -388,9 +388,9 @@ static int pfed_mod_type(float val,int last_mod) {
    if (last_mod==V_F)
       return (V_F);
    ival=rint(val);
-   if (ival != val || ival < -32768 || ival > 32767)
+   if (ival != val || ival<-32768 || ival>32767)
       return (V_F);
-   if (last_mod==V_S || ival < -128 || ival > 127)
+   if (last_mod==V_S || ival<-128 || ival>127)
       return (V_S);
 
    return (V_B);
@@ -398,7 +398,7 @@ static int pfed_mod_type(float val,int last_mod) {
 
 static void pfed_write_data(AFILE *ttf,float val,int mod) {
    if (mod==V_F)
-      putlong(ttf, (int) rint(val * 256.0));
+      putlong(ttf, (int) rint(val*256.0));
    else if (mod==V_S)
       aput_int16_be_checked((int) rint(val),ttf);
    else
@@ -427,19 +427,19 @@ static void pfed_glyph_layer(AFILE *layr,Layer *layer,int do_spiro) {
    aput_int16_be_checked(ref_cnt,layr);
    aput_int16_be_checked(image_cnt,layr);
 
-   name_off=2 * 3 + 4 * contour_cnt + (4 * 7 + 2) * ref_cnt;
+   name_off=2*3+4*contour_cnt+(4*7+2)*ref_cnt;
    for (ss=layer->splines; ss != NULL; ss=ss->next) {
       aput_int16_be_checked(0,layr);	/* fill in later */
       if (ss->contour_name != NULL) {
 	 aput_int16_be_checked(name_off,layr);
-	 name_off += strlen(ss->contour_name) + 1;
+	 name_off += strlen(ss->contour_name)+1;
       } else {
 	 aput_int16_be_checked(0,layr);
       }
    }
    for (ref=layer->refs; ref != NULL; ref=ref->next) {
-      for (j=0; j < 6; ++j)
-	 putlong(layr, (int) rint(ref->transform[j] * 32768));
+      for (j=0; j<6; ++j)
+	 putlong(layr, (int) rint(ref->transform[j]*32768));
       aput_int16_be_checked(ref->sc->ttf_glyph,layr);
    }
    for (ss=layer->splines; ss != NULL; ss=ss->next) {
@@ -453,94 +453,94 @@ static void pfed_glyph_layer(AFILE *layr,Layer *layer,int do_spiro) {
    for (ss=layer->splines; ss != NULL; ss=ss->next, ++contour_cnt) {
       uint32_t pos=aftell(layr);
 
-      afseek(layr, base + 6 + 4 * contour_cnt, SEEK_SET);
-      aput_int16_be_checked(pos - base,layr);
+      afseek(layr, base+6+4*contour_cnt, SEEK_SET);
+      aput_int16_be_checked(pos-base,layr);
       afseek(layr, pos, SEEK_SET);
 
       if (!do_spiro) {
 	 sp=ss->first;
 	 mod=pfed_mod_type(sp->me.x, pfed_mod_type(sp->me.y, V_B));
-	 aputc((V_MoveTo | mod), layr);
+	 aputc((V_MoveTo|mod), layr);
 	 pfed_write_data(layr, sp->me.x, mod);
 	 pfed_write_data(layr, sp->me.y, mod);
 	 was_implicit=false;
 
 	 while (sp->next != NULL) {
 	    SplinePoint *nsp=sp->next->to;
-	    float offx=nsp->me.x - sp->me.x;
-	    float offy=nsp->me.y - sp->me.y;
+	    float offx=nsp->me.x-sp->me.x;
+	    float offy=nsp->me.y-sp->me.y;
 
 	    if (offx==0 && offy==0)
 	       /* Do Nothing */ ;
 	    else if (sp->next->knownlinear) {
 	       mod=pfed_mod_type(offx, pfed_mod_type(offy, V_B));
 	       if (offx==0) {
-		  aputc((V_VLineTo | mod), layr);
+		  aputc((V_VLineTo|mod), layr);
 		  pfed_write_data(layr, offy, mod);
 	       } else if (offy==0) {
-		  aputc((V_HLineTo | mod), layr);
+		  aputc((V_HLineTo|mod), layr);
 		  pfed_write_data(layr, offx, mod);
 	       } else {
-		  aputc((V_LineTo | mod), layr);
+		  aputc((V_LineTo|mod), layr);
 		  pfed_write_data(layr, offx, mod);
 		  pfed_write_data(layr, offy, mod);
 	       }
 	    } else if (sp->next->order2) {
 	       float offx1, offx2, offy1, offy2;
-	       BasePoint *base=was_implicit ? &sp->prevcp : &sp->me;
+	       BasePoint *base=was_implicit?&sp->prevcp:&sp->me;
 
-	       offx1=sp->nextcp.x - base->x;
-	       offy1=sp->nextcp.y - base->y;
+	       offx1=sp->nextcp.x-base->x;
+	       offy1=sp->nextcp.y-base->y;
 	       mod=pfed_mod_type(offx1, pfed_mod_type(offy1, V_B));
 	       if (SPInterpolate(nsp) && nsp != ss->first) {
 		  was_implicit=true;
 		  if (offx1==0) {
-		     aputc((V_QVImplicit | mod), layr);
+		     aputc((V_QVImplicit|mod), layr);
 		     pfed_write_data(layr, offy1, mod);
 		  } else if (offy1==0) {
-		     aputc((V_QHImplicit | mod), layr);
+		     aputc((V_QHImplicit|mod), layr);
 		     pfed_write_data(layr, offx1, mod);
 		  } else {
-		     aputc((V_QImplicit | mod), layr);
+		     aputc((V_QImplicit|mod), layr);
 		     pfed_write_data(layr, offx1, mod);
 		     pfed_write_data(layr, offy1, mod);
 		  }
 	       } else {
-		  offx2=nsp->me.x - sp->nextcp.x;
-		  offy2=nsp->me.y - sp->nextcp.y;
+		  offx2=nsp->me.x-sp->nextcp.x;
+		  offy2=nsp->me.y-sp->nextcp.y;
 		  mod=pfed_mod_type(offx2, pfed_mod_type(offy2, mod));
 		  was_implicit=false;
-		  aputc((V_QCurveTo | mod), layr);
+		  aputc((V_QCurveTo|mod), layr);
 		  pfed_write_data(layr, offx1, mod);
 		  pfed_write_data(layr, offy1, mod);
 		  pfed_write_data(layr, offx2, mod);
 		  pfed_write_data(layr, offy2, mod);
 	       }
 	    } else {
-	       float offx1=sp->nextcp.x - sp->me.x;
-	       float offy1=sp->nextcp.y - sp->me.y;
-	       float offx2=nsp->prevcp.x - sp->nextcp.x;
-	       float offy2=nsp->prevcp.y - sp->nextcp.y;
-	       float offx3=nsp->me.x - nsp->prevcp.x;
-	       float offy3=nsp->me.y - nsp->prevcp.y;
+	       float offx1=sp->nextcp.x-sp->me.x;
+	       float offy1=sp->nextcp.y-sp->me.y;
+	       float offx2=nsp->prevcp.x-sp->nextcp.x;
+	       float offy2=nsp->prevcp.y-sp->nextcp.y;
+	       float offx3=nsp->me.x-nsp->prevcp.x;
+	       float offy3=nsp->me.y-nsp->prevcp.y;
 
 	       mod=pfed_mod_type(offx1, pfed_mod_type(offy1, V_B));
 	       mod=pfed_mod_type(offx2, pfed_mod_type(offy2, mod));
 	       mod=pfed_mod_type(offx3, pfed_mod_type(offy3, mod));
 	       if (offx1==0 && offy3==0) {
-		  aputc((V_VHCurveTo | mod), layr);
+		  aputc((V_VHCurveTo|mod), layr);
 		  pfed_write_data(layr, offy1, mod);
 		  pfed_write_data(layr, offx2, mod);
 		  pfed_write_data(layr, offy2, mod);
 		  pfed_write_data(layr, offx3, mod);
 	       } else if (offy1==0 && offx3==0) {
-		  aputc((V_HVCurveTo | mod), layr);
+		  aputc((V_HVCurveTo|mod), layr);
 		  pfed_write_data(layr, offx1, mod);
 		  pfed_write_data(layr, offx2, mod);
 		  pfed_write_data(layr, offy2, mod);
 		  pfed_write_data(layr, offy3, mod);
 	       } else {
-		  aputc((V_CurveTo | mod), layr);
+		  aputc((V_CurveTo|mod), layr);
 		  pfed_write_data(layr, offx1, mod);
 		  pfed_write_data(layr, offy1, mod);
 		  pfed_write_data(layr, offx2, mod);
@@ -563,15 +563,15 @@ static void pfed_glyph_layer(AFILE *layr,Layer *layer,int do_spiro) {
       } else if (ss->spiro_cnt==0)
 	 aputc(SPIRO_CLOSE_CONTOUR, layr);	/* Mark for an empty spiro contour */
       else {
-	 for (i=0; i < ss->spiro_cnt; ++i) {
-	    if (i==ss->spiro_cnt - 1 && ss->first->prev==NULL)
+	 for (i=0; i<ss->spiro_cnt; ++i) {
+	    if (i==ss->spiro_cnt-1 && ss->first->prev==NULL)
 	       aputc(SPIRO_CLOSE_CONTOUR, layr);
 	    else if (i==0 && ss->first->prev==NULL)	/* Open */
 	       aputc(SPIRO_OPEN_CONTOUR, layr);
 	    else
-	       aputc(ss->spiros[i].ty & 0x7f, layr);
-	    putlong(layr, rint(ss->spiros[i].x * 256.0));
-	    putlong(layr, rint(ss->spiros[i].y * 256.0));
+	       aputc(ss->spiros[i].ty&0x7f, layr);
+	    putlong(layr, rint(ss->spiros[i].x*256.0));
+	    putlong(layr, rint(ss->spiros[i].y*256.0));
 	 }
 	 aputc(SPIRO_END, layr);	/* Add the z whether open or not. Might as well */
       }
@@ -586,9 +586,9 @@ struct pos_name {
 static int pfed_guide_real_comp(const void *_r1,const void *_r2) {
    const struct pos_name *r1=_r1, *r2=_r2;
 
-   if (r1->pos > r2->pos)
+   if (r1->pos>r2->pos)
       return (1);
-   else if (r1->pos < r2->pos)
+   else if (r1->pos<r2->pos)
       return (-1);
    else
       return (0);
@@ -598,10 +598,10 @@ static int pfed_guide_sortuniq(struct pos_name *array,int cnt) {
    int i, j;
 
    qsort(array, cnt, sizeof(struct pos_name), pfed_guide_real_comp);
-   for (i=j=0; i < cnt; ++i) {
-      if (array[i].pos < -32768 || array[i].pos > 32767)
+   for (i=j=0; i<cnt; ++i) {
+      if (array[i].pos<-32768 || array[i].pos>32767)
 	 /* Out of bounds, ignore it */ ;
-      else if (i != 0 && array[i].pos==array[i - 1].pos)
+      else if (i != 0 && array[i].pos==array[i-1].pos)
 	 /* Duplicate, ignore it */ ;
       else
 	 array[j++]=array[i];
@@ -614,7 +614,7 @@ static int pfed_guide_dump_pos_name(AFILE *guid,struct pos_name *pn,
    aput_int16_be_checked((short) rint(pn->pos),guid);
    if (pn->name != NULL) {
       aput_int16_be_checked(namestart,guid);
-      namestart += strlen(pn->name) + 1;
+      namestart += strlen(pn->name)+1;
    } else {
       aput_int16_be_checked(0,guid);
    }
@@ -639,12 +639,12 @@ static void PfEd_Guides(SplineFont *sf,struct PfEd_subtabs *pfed) {
 	 if (first==NULL)
 	    first=s;
 	 if (s->from->me.x==s->to->me.x) {
-	    if (s->from->me.y != s->to->me.y && v < 100) {
+	    if (s->from->me.y != s->to->me.y && v<100) {
 	       vs[v].name=ss->contour_name;
 	       vs[v++].pos=s->from->me.x;
 	    }
 	 } else if (s->from->me.y==s->to->me.y) {
-	    if (h < 100) {
+	    if (h<100) {
 	       hs[h].name=ss->contour_name;
 	       hs[h++].pos=s->from->me.y;
 	    }
@@ -658,31 +658,31 @@ static void PfEd_Guides(SplineFont *sf,struct PfEd_subtabs *pfed) {
    pfed->subtabs[pfed->next].tag=guid_TAG;
    pfed->subtabs[pfed->next++].data=guid=atmpfile();
 
-   nameoff=5 * 2 + (h + v) * 4;
+   nameoff=5*2+(h+v)*4;
    namelen=0;
-   for (i=0; i < v; ++i)
+   for (i=0; i<v; ++i)
       if (vs[i].name != NULL)
-	 namelen += strlen(vs[i].name) + 1;
-   for (i=0; i < h; ++i)
+	 namelen += strlen(vs[i].name)+1;
+   for (i=0; i<h; ++i)
       if (hs[i].name != NULL)
-	 namelen += strlen(hs[i].name) + 1;
+	 namelen += strlen(hs[i].name)+1;
 
    aput_int16_be_checked(1,guid);		/* sub-table version number */
    aput_int16_be_checked(v,guid);
    aput_int16_be_checked(h,guid);
    aput_int16_be_checked(0,guid);		/* Diagonal lines someday? nothing for now */
-   aput_int16_be_checked(nameoff + namelen,guid);	/* full spline output */
-   for (i=0; i < v; ++i)
+   aput_int16_be_checked(nameoff+namelen,guid);	/* full spline output */
+   for (i=0; i<v; ++i)
       nameoff=pfed_guide_dump_pos_name(guid, &vs[i], nameoff);
-   for (i=0; i < h; ++i)
+   for (i=0; i<h; ++i)
       nameoff=pfed_guide_dump_pos_name(guid, &hs[i], nameoff);
 
-   for (i=0; i < v; ++i)
+   for (i=0; i<v; ++i)
       if (vs[i].name != NULL) {
 	 afputs(vs[i].name, guid);
 	 aputc('\0', guid);
       }
-   for (i=0; i < h; ++i)
+   for (i=0; i<h; ++i)
       if (hs[i].name != NULL) {
 	 afputs(hs[i].name, guid);
 	 aputc('\0', guid);
@@ -690,9 +690,9 @@ static void PfEd_Guides(SplineFont *sf,struct PfEd_subtabs *pfed) {
 
    pfed_glyph_layer(guid, &sf->grid, false);
 
-   if (aftell(guid) & 1)
+   if (aftell(guid)&1)
       aputc('\0', guid);
-   if (aftell(guid) & 2)
+   if (aftell(guid)&2)
       aput_int16_be_checked(0,guid);
 }
 
@@ -700,7 +700,7 @@ static int pfed_has_spiros(Layer *layer) {
    SplineSet *ss;
 
    for (ss=layer->splines; ss != NULL; ss=ss->next) {
-      if (ss->spiro_cnt > 1)
+      if (ss->spiro_cnt>1)
 	 return (true);
    }
    return (false);
@@ -713,7 +713,7 @@ static void PfEd_Layer(SplineFont *sf,struct glyphinfo *gi,int layer,
    uint32_t offset;
    uint32_t *glyph_data_offset_location;
 
-   for (i=0; i < gi->gcnt; ++i)
+   for (i=0; i<gi->gcnt; ++i)
       if (gi->bygid[i] != -1)
 	 if ((sc=sf->glyphs[gi->bygid[i]]) != NULL) {
 	    sc->ticked=false;
@@ -729,14 +729,14 @@ static void PfEd_Layer(SplineFont *sf,struct glyphinfo *gi,int layer,
 
    offset=aftell(layr);
    glyph_data_offset_location=calloc(gi->gcnt, sizeof(uint32_t));
-   for (j=0; j < 4; ++j) {
+   for (j=0; j<4; ++j) {
       cnt=0;
-      for (i=0; i < gi->gcnt; ++i)
+      for (i=0; i<gi->gcnt; ++i)
 	 if ((gid=gi->bygid[i]) != -1 && (sc=sf->glyphs[gid]) != NULL) {
 	    if (sc->ticked) {
 	       last=i;
 	       skipped=false;
-	       for (k=i + 1; k < gi->gcnt; ++k) {
+	       for (k=i+1; k<gi->gcnt; ++k) {
 		  sc2=NULL;
 		  if (gi->bygid[k] != -1)
 		     sc2=sf->glyphs[gi->bygid[k]];
@@ -753,7 +753,7 @@ static void PfEd_Layer(SplineFont *sf,struct glyphinfo *gi,int layer,
 		  aput_int16_be_checked(i,layr);
 		  aput_int16_be_checked(last,layr);
 		  putlong(layr, offset);
-		  offset += sizeof(uint32_t) * (last - i + 1);
+		  offset += sizeof(uint32_t)*(last-i+1);
 	       } else if (j==2) {
 		  for (; i <= last; ++i) {
 		     if (gi->bygid[i]==-1
@@ -781,7 +781,7 @@ static void PfEd_Layer(SplineFont *sf,struct glyphinfo *gi,int layer,
 	    }
 	 }
       if (j==0) {
-	 offset += sizeof(short) + cnt * (2 * sizeof(short) + sizeof(uint32_t));
+	 offset += sizeof(short)+cnt * (2*sizeof(short)+sizeof(uint32_t));
 	 aput_int16_be_checked(cnt,layr);
       }
    }
@@ -806,11 +806,11 @@ static void PfEd_Layers(SplineFont *sf,struct PfEd_subtabs *pfed,
 
    /* We don't need to check in bygid order. We just want to know existance */
    /* We don't check for refs because a reference to an empty glyph is empty too */
-   for (i=0; i < sf->glyphcnt; ++i) {
+   for (i=0; i<sf->glyphcnt; ++i) {
       if ((sc=sf->glyphs[i]) != NULL && sc->ttf_glyph != -1) {
 	 if (pfed_has_spiros(&sc->layers[ly_fore]))
 	    has_spiro=true;
-	 for (l=ly_back; l < sf->layer_cnt; ++l)
+	 for (l=ly_back; l<sf->layer_cnt; ++l)
 	    if (sc->layers[l].splines != NULL)
 	       otherlayers[l]=true;
       }
@@ -818,7 +818,7 @@ static void PfEd_Layers(SplineFont *sf,struct PfEd_subtabs *pfed,
    otherlayers[gi->layer]=(!sf->layers[gi->layer].order2 && gi->is_ttf) ||
       (sf->layers[gi->layer].order2 && !gi->is_ttf);
 
-   for (l=cnt=0; l < sf->layer_cnt; ++l)
+   for (l=cnt=0; l<sf->layer_cnt; ++l)
       if (otherlayers[l])
 	 ++cnt;
    cnt += has_spiro;
@@ -831,28 +831,28 @@ static void PfEd_Layers(SplineFont *sf,struct PfEd_subtabs *pfed,
    aput_int16_be_checked(1,layr);		/* sub-table version */
    aput_int16_be_checked(cnt,layr);		/* layer count */
 
-   name_off=4 + 8 * cnt;
+   name_off=4+8*cnt;
    if (has_spiro) {
       aput_int16_be_checked(1,layr);	/* spiros */
       aput_int16_be_checked(name_off,layr);
-      name_off += strlen("Spiro") + 1;
+      name_off += strlen("Spiro")+1;
       putlong(layr, 0);		/* Fill in later */
    }
-   for (l=0; l < sf->layer_cnt; ++l)
+   for (l=0; l<sf->layer_cnt; ++l)
       if (otherlayers[l]) {
-         aput_int16_be_checked((sf->layers[l].order2 ? 2 : 3) |	/* Quadratic/cubic */
-		  (sf->layers[l].background ? 0 : 0x100),layr);	/* Fore/Back */
+         aput_int16_be_checked((sf->layers[l].order2?2:3) |	/* Quadratic/cubic */
+		  (sf->layers[l].background?0:0x100),layr);	/* Fore/Back */
 	 aput_int16_be_checked(name_off,layr);
 	 if (l==ly_fore)
 	    name_off += strlen("Old_");
-	 name_off += strlen(sf->layers[l].name) + 1;
+	 name_off += strlen(sf->layers[l].name)+1;
 	 putlong(layr, 0);	/* Fill in later */
       }
    if (has_spiro) {
       afputs("Spiro", layr);
       aputc('\0', layr);
    }
-   for (l=0; l < sf->layer_cnt; ++l)
+   for (l=0; l<sf->layer_cnt; ++l)
       if (otherlayers[l]) {
 	 if (l==ly_fore)
 	    afputs("Old_", layr);
@@ -864,26 +864,26 @@ static void PfEd_Layers(SplineFont *sf,struct PfEd_subtabs *pfed,
    if (has_spiro) {
       uint32_t pos=aftell(layr);
 
-      afseek(layr, 4 + 0 * 8 + 4, SEEK_SET);
+      afseek(layr, 4+0*8+4, SEEK_SET);
       putlong(layr, pos);
       afseek(layr, 0, SEEK_END);
       PfEd_Layer(sf, gi, ly_fore, true, layr);
       ++sofar;
    }
-   for (l=0; l < sf->layer_cnt; ++l)
+   for (l=0; l<sf->layer_cnt; ++l)
       if (otherlayers[l]) {
 	 uint32_t pos=aftell(layr);
 
-	 afseek(layr, 4 + sofar * 8 + 4, SEEK_SET);
+	 afseek(layr, 4+sofar*8+4, SEEK_SET);
 	 putlong(layr, pos);
 	 afseek(layr, 0, SEEK_END);
 	 PfEd_Layer(sf, gi, l, false, layr);
 	 ++sofar;
       }
 
-   if (aftell(layr) & 1)
+   if (aftell(layr)&1)
       aputc('\0', layr);
-   if (aftell(layr) & 2)
+   if (aftell(layr)&2)
       aput_int16_be_checked(0,layr);
    free(otherlayers);
 }
@@ -895,21 +895,21 @@ void pfed_dump(struct alltabs *at, SplineFont *sf) {
    uint32_t offset;
 
    memset(&pfed, 0, sizeof(pfed));
-   if (at->gi.flags & ttf_flag_pfed_comments) {
+   if (at->gi.flags&ttf_flag_pfed_comments) {
       PfEd_FontComment(sf, &pfed, fcmt_TAG);
       PfEd_FontComment(sf, &pfed, flog_TAG);
       PfEd_GlyphComments(sf, &pfed, &at->gi);
       PfEd_CvtComments(sf, &pfed);
    }
-   if (at->gi.flags & ttf_flag_pfed_colors)
+   if (at->gi.flags&ttf_flag_pfed_colors)
       PfEd_Colours(sf, &pfed, &at->gi);
-   if ((at->gi.flags & ttf_flag_pfed_lookupnames) && at->opentypemode) {
+   if ((at->gi.flags&ttf_flag_pfed_lookupnames) && at->opentypemode) {
       PfEd_Lookups(sf, &pfed, sf->gsplookups[0], GSUB_TAG);
       PfEd_Lookups(sf, &pfed, sf->gsplookups[1], GPOS_TAG);
    }
-   if (at->gi.flags & ttf_flag_pfed_guides)
+   if (at->gi.flags&ttf_flag_pfed_guides)
       PfEd_Guides(sf, &pfed);
-   if (at->gi.flags & ttf_flag_pfed_layers)
+   if (at->gi.flags&ttf_flag_pfed_layers)
       PfEd_Layers(sf, &pfed, &at->gi);
 
    if (pfed.next==0)
@@ -918,20 +918,20 @@ void pfed_dump(struct alltabs *at, SplineFont *sf) {
    at->pfed=file=atmpfile();
    putlong(file, 0x00010000);	/* Version number */
    putlong(file, pfed.next);	/* sub-table count */
-   offset=2 * sizeof(uint32_t) + 2 * pfed.next * sizeof(uint32_t);
-   for (i=0; i < pfed.next; ++i) {
+   offset=2*sizeof(uint32_t)+2*pfed.next * sizeof(uint32_t);
+   for (i=0; i<pfed.next; ++i) {
       putlong(file, pfed.subtabs[i].tag);
       putlong(file, offset);
       afseek(pfed.subtabs[i].data, 0, SEEK_END);
       pfed.subtabs[i].offset=offset;
       offset += aftell(pfed.subtabs[i].data);
    }
-   for (i=0; i < pfed.next; ++i) {
+   for (i=0; i<pfed.next; ++i) {
       afseek(pfed.subtabs[i].data, 0, SEEK_SET);
       ttfcopyfile(file, pfed.subtabs[i].data, pfed.subtabs[i].offset,
 		  "PfEd-subtable");
    }
-   if (aftell(file) & 3)
+   if (aftell(file)&3)
       ErrorMsg(2,"'PfEd' table not properly aligned\n");
    at->pfedlen=aftell(file);
 }
@@ -950,14 +950,14 @@ static void pfed_readfontcomment(AFILE *ttf,struct ttfinfo *info,
    if (use_utf8 != 0 && use_utf8 != 1)
       return;			/* Bad version number */
    len=aget_uint16_be(ttf);
-   start=pt=malloc(len + 1);
+   start=pt=malloc(len+1);
 
-   end=pt + len;
+   end=pt+len;
    if (use_utf8) {
-      while (pt < end)
+      while (pt<end)
 	 *pt++=agetc(ttf);
    } else {
-      while (pt < end)
+      while (pt<end)
 	 *pt++=aget_uint16_be(ttf);
    }
    *pt='\0';
@@ -981,7 +981,7 @@ static char *pfed_read_utf8(AFILE *ttf,uint32_t start) {
    while ((ch=agetc(ttf)) != '\0' && ch != EOF)
       ++len;
    afseek(ttf, start, SEEK_SET);
-   str=pt=malloc(len + 1);
+   str=pt=malloc(len+1);
    while ((ch=agetc(ttf)) != '\0' && ch != EOF)
       *pt++=ch;
    *pt='\0';
@@ -993,20 +993,20 @@ static char *pfed_read_ucs2_len(AFILE *ttf,uint32_t offset,int len) {
    uint32_t uch, uch2;
    int i;
 
-   if (len < 0)
+   if (len<0)
       return (NULL);
 
    len >>= 1;
-   if ((pt=str=malloc(len > 0 ? 3 * len : 1))==NULL)
+   if ((pt=str=malloc(len>0?3*len:1))==NULL)
       return (NULL);
    afseek(ttf, offset, SEEK_SET);
-   for (i=0; i < len; ++i) {
+   for (i=0; i<len; ++i) {
       uch=aget_uint16_be(ttf);
-      if (uch >= 0xd800 && uch < 0xdc00) {
+      if (uch >= 0xd800 && uch<0xdc00) {
 	 /* Is this a possible utf16 surrogate value? */
 	 uch2=aget_uint16_be(ttf);
-	 if (uch2 >= 0xdc00 && uch2 < 0xe000)
-	    uch=((uch - 0xd800) << 10) | (uch2 & 0x3ff);
+	 if (uch2 >= 0xdc00 && uch2<0xe000)
+	    uch=((uch-0xd800) << 10)|(uch2&0x3ff);
 	 else {
 	    pt=utf8_idpb(pt, uch, 0);
 	    uch=uch2;
@@ -1015,19 +1015,19 @@ static char *pfed_read_ucs2_len(AFILE *ttf,uint32_t offset,int len) {
       pt=utf8_idpb(pt, uch, 0);
    }
    *pt++=0;
-   return (realloc(str, pt - str));
+   return (realloc(str, pt-str));
 }
 
 static char *pfed_read_utf8_len(AFILE *ttf,uint32_t offset,int len) {
    char *pt, *str;
    int i;
 
-   if (len < 0)
+   if (len<0)
       return (NULL);
 
-   pt=str=malloc(len + 1);
+   pt=str=malloc(len+1);
    afseek(ttf, offset, SEEK_SET);
-   for (i=0; i < len; ++i)
+   for (i=0; i<len; ++i)
       *pt++=agetc(ttf);
    *pt='\0';
    return (str);
@@ -1044,14 +1044,14 @@ static void pfed_readcvtcomments(AFILE *ttf,struct ttfinfo *info,
    count=aget_uint16_be(ttf);
 
    offsets=malloc(count * sizeof(uint16_t));
-   info->cvt_names=malloc((count + 1) * sizeof(char *));
-   for (i=0; i < count; ++i)
+   info->cvt_names=malloc((count+1)*sizeof(char *));
+   for (i=0; i<count; ++i)
       offsets[i]=aget_uint16_be(ttf);
-   for (i=0; i < count; ++i) {
+   for (i=0; i<count; ++i) {
       if (offsets[i]==0)
 	 info->cvt_names[i]=NULL;
       else
-	 info->cvt_names[i]=pfed_read_utf8(ttf, base + offsets[i]);
+	 info->cvt_names[i]=pfed_read_utf8(ttf, base+offsets[i]);
    }
    free(offsets);
 }
@@ -1072,30 +1072,30 @@ static void pfed_readglyphcomments(AFILE *ttf,struct ttfinfo *info,
       return;			/* Bad version number */
    n=aget_uint16_be(ttf);
    grange=malloc(n * sizeof(struct grange));
-   for (i=0; i < n; ++i) {
+   for (i=0; i<n; ++i) {
       grange[i].start=aget_uint16_be(ttf);
       grange[i].end=aget_uint16_be(ttf);
       grange[i].offset=aget_int32_be(ttf);
-      if (grange[i].start > grange[i].end || grange[i].end > info->glyph_cnt) {
+      if (grange[i].start>grange[i].end || grange[i].end>info->glyph_cnt) {
 	 ErrorMsg(2,"Bad glyph range specified in glyph comment subtable of PfEd table\n");
 	 grange[i].start=1;
 	 grange[i].end=0;
       }
    }
-   for (i=0; i < n; ++i) {
+   for (i=0; i<n; ++i) {
       for (j=grange[i].start; j <= grange[i].end; ++j) {
 	 afseek(ttf,
-	       base + grange[i].offset + (j -
-					  grange[i].start) * sizeof(uint32_t),
+	       base+grange[i].offset+(j -
+					  grange[i].start)*sizeof(uint32_t),
 	       SEEK_SET);
 	 offset=aget_int32_be(ttf);
 	 next=aget_int32_be(ttf);
 	 if (use_utf8)
 	    info->chars[j]->comment =
-	       pfed_read_utf8_len(ttf, base + offset, next - offset);
+	       pfed_read_utf8_len(ttf, base+offset, next-offset);
 	 else
 	    info->chars[j]->comment =
-	       pfed_read_ucs2_len(ttf, base + offset, next - offset);
+	       pfed_read_ucs2_len(ttf, base+offset, next-offset);
 	 if (info->chars[j]->comment==NULL)
 	    ErrorMsg(2,"Invalid comment string (negative length?) in 'PfEd' table for glyph %s.\n",
 		     info->chars[j]->name);
@@ -1112,11 +1112,11 @@ static void pfed_readcolours(AFILE *ttf,struct ttfinfo *info,uint32_t base) {
    if (aget_uint16_be(ttf) != 0)
       return;			/* Bad version number */
    n=aget_uint16_be(ttf);
-   for (i=0; i < n; ++i) {
+   for (i=0; i<n; ++i) {
       start=aget_uint16_be(ttf);
       end=aget_uint16_be(ttf);
       col=aget_int32_be(ttf);
-      if (start > end || end > info->glyph_cnt)
+      if (start>end || end>info->glyph_cnt)
 	 ErrorMsg(2,"Bad glyph range specified in color subtable of PfEd table\n");
       else {
 	 for (j=start; j <= end; ++j)
@@ -1140,38 +1140,38 @@ static void pfed_readlookupnames(AFILE *ttf,struct ttfinfo *info,
       return;			/* Bad version number */
    n=aget_uint16_be(ttf);
    ls=malloc(n * sizeof(struct lstruct));
-   for (i=0; i < n; ++i) {
+   for (i=0; i<n; ++i) {
       ls[i].name_off=aget_uint16_be(ttf);
       ls[i].subs_off=aget_uint16_be(ttf);
    }
-   for (i=0, otl=lookups; i < n && otl != NULL; ++i, otl=otl->next) {
+   for (i=0, otl=lookups; i<n && otl != NULL; ++i, otl=otl->next) {
       if (ls[i].name_off != 0) {
 	 free(otl->lookup_name);
-	 otl->lookup_name=pfed_read_utf8(ttf, base + ls[i].name_off);
+	 otl->lookup_name=pfed_read_utf8(ttf, base+ls[i].name_off);
       }
       if (ls[i].subs_off != 0) {
-	 afseek(ttf, base + ls[i].subs_off, SEEK_SET);
+	 afseek(ttf, base+ls[i].subs_off, SEEK_SET);
 	 s=aget_uint16_be(ttf);
 	 ss=malloc(s * sizeof(struct lstruct));
-	 for (j=0; j < s; ++j) {
+	 for (j=0; j<s; ++j) {
 	    ss[j].name_off=aget_uint16_be(ttf);
 	    ss[j].subs_off=aget_uint16_be(ttf);
 	 }
-	 for (j=0, sub=otl->subtables; j < s && sub != NULL;
+	 for (j=0, sub=otl->subtables; j<s && sub != NULL;
 	      ++j, sub=sub->next) {
 	    if (ss[j].name_off != 0) {
 	       free(sub->subtable_name);
 	       sub->subtable_name =
-		  pfed_read_utf8(ttf, base + ss[j].name_off);
+		  pfed_read_utf8(ttf, base+ss[j].name_off);
 	    }
 	    if (ss[j].subs_off != 0) {
 	       if (!sub->anchor_classes)
 		  ErrorMsg(2,"Whoops, attempt to name anchors in a subtable which doesn't contain any\n");
 	       else {
-		  afseek(ttf, base + ss[j].subs_off, SEEK_SET);
+		  afseek(ttf, base+ss[j].subs_off, SEEK_SET);
 		  a=aget_uint16_be(ttf);
 		  as=malloc(a * sizeof(struct lstruct));
-		  for (k=0; k < a; ++k) {
+		  for (k=0; k<a; ++k) {
 		     as[k].name_off=aget_uint16_be(ttf);
 		  }
 		  k=0;
@@ -1180,7 +1180,7 @@ static void pfed_readlookupnames(AFILE *ttf,struct ttfinfo *info,
 			if (as[k].name_off != 0) {
 			   free(ac->name);
 			   ac->name =
-			      pfed_read_utf8(ttf, base + as[k].name_off);
+			      pfed_read_utf8(ttf, base+as[k].name_off);
 			}
 			++k;
 		     }
@@ -1190,14 +1190,14 @@ static void pfed_readlookupnames(AFILE *ttf,struct ttfinfo *info,
 	    }
 	 }
 	 /* I guess it's ok for some subtables to be unnamed, so no check for sub!=NULL */
-	 if (j < s)
+	 if (j<s)
 	    ErrorMsg(2,"Whoops, more names than subtables of lookup %s\n",
 		     otl->lookup_name);
 	 free(ss);
       }
    }
    /* I guess it's ok for some lookups to be unnamed, so no check for otf!=NULL */
-   if (i < n)
+   if (i<n)
       ErrorMsg(2,"Whoops, more names than lookups\n");
    free(ls);
 }
@@ -1208,7 +1208,7 @@ static float pfed_get_coord(AFILE *ttf,int mod) {
    else if (mod==V_S)
       return ((float) (short) aget_uint16_be(ttf));
    else if (mod==V_F)
-      return (aget_int32_be(ttf) / 256.0);
+      return (aget_int32_be(ttf)/256.0);
    else {
       ErrorMsg(2,"Bad data type in contour verb in 'PfEd'\n");
       return (0);
@@ -1252,7 +1252,7 @@ static void pfed_read_normal_contour(AFILE *ttf,SplineSet *ss,
 	    offx=pfed_get_coord(ttf, m);
 	 else if (v==V_VLineTo)
 	    offy=pfed_get_coord(ttf, m);
-	 sp=SplinePointCreate(current->me.x + offx, current->me.y + offy);
+	 sp=SplinePointCreate(current->me.x+offx, current->me.y+offy);
       } else if (v >= V_QCurveTo && v <= V_QVImplicit) {
 	 int will_be_implicit=true;
 
@@ -1273,17 +1273,17 @@ static void pfed_read_normal_contour(AFILE *ttf,SplineSet *ss,
 	    offy=pfed_get_coord(ttf, m);
 	 }
 
-	 current->nextcp.x=current->me.x + offx;
-	 current->nextcp.y=current->me.y + offy;
+	 current->nextcp.x=current->me.x+offx;
+	 current->nextcp.y=current->me.y+offy;
 	 current->nonextcp=false;
 	 sp =
-	    SplinePointCreate(current->nextcp.x + offx1,
-			      current->nextcp.y + offy1);
+	    SplinePointCreate(current->nextcp.x+offx1,
+			      current->nextcp.y+offy1);
 	 sp->prevcp=current->nextcp;
 	 sp->noprevcp=false;
 	 if (was_implicit) {
-	    current->me.x=(current->prevcp.x + current->nextcp.x) / 2;
-	    current->me.y=(current->prevcp.y + current->nextcp.y) / 2;
+	    current->me.x=(current->prevcp.x+current->nextcp.x)/2;
+	    current->me.y=(current->prevcp.y+current->nextcp.y)/2;
 	    SplineRefigure(current->prev);
 	 }
 	 was_implicit=will_be_implicit;
@@ -1307,14 +1307,14 @@ static void pfed_read_normal_contour(AFILE *ttf,SplineSet *ss,
 	    offy1=pfed_get_coord(ttf, m);
 	    offy2=pfed_get_coord(ttf, m);
 	 }
-	 current->nextcp.x=current->me.x + offx;
-	 current->nextcp.y=current->me.y + offy;
+	 current->nextcp.x=current->me.x+offx;
+	 current->nextcp.y=current->me.y+offy;
 	 current->nonextcp=false;
 	 sp =
-	    SplinePointCreate(current->nextcp.x + offx1 + offx2,
-			      current->nextcp.y + offy1 + offy2);
-	 sp->prevcp.x=current->nextcp.x + offx1;
-	 sp->prevcp.y=current->nextcp.y + offy1;
+	    SplinePointCreate(current->nextcp.x+offx1+offx2,
+			      current->nextcp.y+offy1+offy2);
+	 sp->prevcp.x=current->nextcp.x+offx1;
+	 sp->prevcp.y=current->nextcp.y+offy1;
 	 sp->noprevcp=false;
       } else {
 	 ErrorMsg(2,"Whoops, unexpected verb in contour %d.%d\n", v, m);
@@ -1325,8 +1325,8 @@ static void pfed_read_normal_contour(AFILE *ttf,SplineSet *ss,
    }
    if (verb==V_Close) {
       if (was_implicit) {
-	 current->me.x=(current->prevcp.x + ss->first->nextcp.x) / 2;
-	 current->me.y=(current->prevcp.y + ss->first->nextcp.y) / 2;
+	 current->me.x=(current->prevcp.x+ss->first->nextcp.x)/2;
+	 current->me.y=(current->prevcp.y+ss->first->nextcp.y)/2;
       }
       if (current->me.x==ss->first->me.x
 	  && current->me.y==ss->first->me.y) {
@@ -1360,11 +1360,11 @@ static void pfed_read_spiro_contour(AFILE *ttf,SplineSet *ss,
       }
       if (ss->spiro_cnt >= ss->spiro_max)
 	 ss->spiros =
-	    realloc(ss->spiros, (ss->spiro_max += 10) * sizeof(spiro_cp));
+	    realloc(ss->spiros, (ss->spiro_max += 10)*sizeof(spiro_cp));
       ss->spiros[ss->spiro_cnt].ty=ch;
       if (ch != SPIRO_END) {
-	 ss->spiros[ss->spiro_cnt].x=aget_int32_be(ttf) / 256.0;
-	 ss->spiros[ss->spiro_cnt].y=aget_int32_be(ttf) / 256.0;
+	 ss->spiros[ss->spiro_cnt].x=aget_int32_be(ttf)/256.0;
+	 ss->spiros[ss->spiro_cnt].y=aget_int32_be(ttf)/256.0;
       } else {
 	 ss->spiros[ss->spiro_cnt].x=0;
 	 ss->spiros[ss->spiro_cnt].y=0;
@@ -1373,12 +1373,12 @@ static void pfed_read_spiro_contour(AFILE *ttf,SplineSet *ss,
       if (ch==SPIRO_END || ch=='}')
 	 break;
    }
-   if (ss->spiro_cnt != 0 && ss->spiros[ss->spiro_cnt - 1].ty != SPIRO_END) {
-      if (ss->spiros[ss->spiro_cnt - 1].ty==SPIRO_CLOSE_CONTOUR)
-	 ss->spiros[ss->spiro_cnt - 1].ty=SPIRO_G4;
+   if (ss->spiro_cnt != 0 && ss->spiros[ss->spiro_cnt-1].ty != SPIRO_END) {
+      if (ss->spiros[ss->spiro_cnt-1].ty==SPIRO_CLOSE_CONTOUR)
+	 ss->spiros[ss->spiro_cnt-1].ty=SPIRO_G4;
       if (ss->spiro_cnt >= ss->spiro_max)
 	 ss->spiros =
-	    realloc(ss->spiros, (ss->spiro_max += 2) * sizeof(spiro_cp));
+	    realloc(ss->spiros, (ss->spiro_max += 2)*sizeof(spiro_cp));
       ss->spiros[ss->spiro_cnt].ty=SPIRO_END;
       ss->spiros[ss->spiro_cnt].x=0;
       ss->spiros[ss->spiro_cnt].y=0;
@@ -1404,15 +1404,15 @@ static void pfed_read_glyph_layer(AFILE *ttf,struct ttfinfo *info,
       rc=aget_uint16_be(ttf);	/* References */
    ic=aget_uint16_be(ttf);		/* Images */
    contours=malloc(cc * sizeof(struct contours));
-   for (i=0; i < cc; ++i) {
+   for (i=0; i<cc; ++i) {
       contours[i].data_off=aget_uint16_be(ttf);
       contours[i].name_off=aget_uint16_be(ttf);
    }
    last=NULL;
-   for (i=0; i < rc; ++i) {
+   for (i=0; i<rc; ++i) {
       cur=RefCharCreate();
-      for (j=0; j < 6; ++j)
-	 cur->transform[j]=aget_int32_be(ttf) / 32768.0;
+      for (j=0; j<6; ++j)
+	 cur->transform[j]=aget_int32_be(ttf)/32768.0;
       gid=aget_uint16_be(ttf);
       if (gid >= info->glyph_cnt) {
 	 ErrorMsg(2,"Bad glyph reference in layer info.\n");
@@ -1429,22 +1429,22 @@ static void pfed_read_glyph_layer(AFILE *ttf,struct ttfinfo *info,
    }
 
    ss=ly->splines;		/* Only relevant for spiros where they live in someone else's layer */
-   for (i=0; i < cc; ++i) {
+   for (i=0; i<cc; ++i) {
       if (type != 1) {		/* Not spiros */
 	 contours[i].ss=chunkalloc(sizeof(SplineSet));
 	 if (i==0)
 	    ly->splines=contours[i].ss;
 	 else
-	    contours[i - 1].ss->next=contours[i].ss;
+	    contours[i-1].ss->next=contours[i].ss;
 	 if (contours[i].name_off != 0)
 	    contours[i].ss->contour_name =
-	       pfed_read_utf8(ttf, base + contours[i].name_off);
+	       pfed_read_utf8(ttf, base+contours[i].name_off);
 	 pfed_read_normal_contour(ttf, contours[i].ss,
-				  base + contours[i].data_off, type);
+				  base+contours[i].data_off, type);
       } else {			/* Spiros are actually bound to an already existing layer and don't have an independent existance yet */
 	 contours[i].ss=ss;
 	 if (ss != NULL) {
-	    pfed_read_spiro_contour(ttf, ss, base + contours[i].data_off,
+	    pfed_read_spiro_contour(ttf, ss, base+contours[i].data_off,
 				    type);
 	    ss=ss->next;
 	 } else
@@ -1462,7 +1462,7 @@ static void pfed_readguidelines(AFILE *ttf,struct ttfinfo *info,uint32_t base) {
 
    afseek(ttf, base, SEEK_SET);
    version=aget_uint16_be(ttf);
-   if (version > 1)
+   if (version>1)
       return;			/* Bad version number */
    v=aget_uint16_be(ttf);
    h=aget_uint16_be(ttf);
@@ -1470,8 +1470,8 @@ static void pfed_readguidelines(AFILE *ttf,struct ttfinfo *info,uint32_t base) {
    off=aget_uint16_be(ttf);
 
    if (off != 0) {
-      pfed_read_glyph_layer(ttf, info, &info->guidelines, base + off,
-			    info->to_order2 ? 2 : 3, version);
+      pfed_read_glyph_layer(ttf, info, &info->guidelines, base+off,
+			    info->to_order2?2:3, version);
    } else {
       struct npos {
 	 int pos;
@@ -1480,35 +1480,35 @@ static void pfed_readguidelines(AFILE *ttf,struct ttfinfo *info,uint32_t base) {
 
       vs=malloc(v * sizeof(struct npos));
       hs=malloc(h * sizeof(struct npos));
-      for (i=0; i < v; ++i) {
+      for (i=0; i<v; ++i) {
 	 vs[i].pos=(short) aget_uint16_be(ttf);
 	 vs[i].offset=aget_uint16_be(ttf);
       }
-      for (i=0; i < h; ++i) {
+      for (i=0; i<h; ++i) {
 	 hs[i].pos=(short) aget_uint16_be(ttf);
 	 hs[i].offset=aget_uint16_be(ttf);
       }
-      for (i=0; i < v; ++i) {
+      for (i=0; i<v; ++i) {
 	 sp=SplinePointCreate(vs[i].pos, -info->emsize);
-	 nsp=SplinePointCreate(vs[i].pos, 2 * info->emsize);
+	 nsp=SplinePointCreate(vs[i].pos, 2*info->emsize);
 	 SplineMake(sp, nsp, info->to_order2);
 	 ss=chunkalloc(sizeof(SplineSet));
 	 ss->first=sp;
 	 ss->last=nsp;
 	 if (vs[i].offset != 0)
-	    ss->contour_name=pfed_read_utf8(ttf, base + vs[i].offset);
+	    ss->contour_name=pfed_read_utf8(ttf, base+vs[i].offset);
 	 ss->next=info->guidelines.splines;
 	 info->guidelines.splines=ss;
       }
-      for (i=0; i < h; ++i) {
+      for (i=0; i<h; ++i) {
 	 sp=SplinePointCreate(-info->emsize, hs[i].pos);
-	 nsp=SplinePointCreate(2 * info->emsize, hs[i].pos);
+	 nsp=SplinePointCreate(2*info->emsize, hs[i].pos);
 	 SplineMake(sp, nsp, info->to_order2);
 	 ss=chunkalloc(sizeof(SplineSet));
 	 ss->first=sp;
 	 ss->last=nsp;
 	 if (hs[i].offset != 0)
-	    ss->contour_name=pfed_read_utf8(ttf, base + hs[i].offset);
+	    ss->contour_name=pfed_read_utf8(ttf, base+hs[i].offset);
 	 ss->next=info->guidelines.splines;
 	 info->guidelines.splines=ss;
       }
@@ -1546,13 +1546,13 @@ static void pfed_read_layer(AFILE *ttf,struct ttfinfo *info,int layer,
    afseek(ttf, start, SEEK_SET);
    rcnt=aget_uint16_be(ttf);
    ranges=malloc(rcnt * sizeof(struct range));
-   for (i=0; i < rcnt; ++i) {
+   for (i=0; i<rcnt; ++i) {
       ranges[i].start=aget_uint16_be(ttf);
       ranges[i].last=aget_uint16_be(ttf);
       ranges[i].offset=aget_int32_be(ttf);
    }
-   for (i=0; i < rcnt; ++i) {
-      afseek(ttf, base + ranges[i].offset, SEEK_SET);
+   for (i=0; i<rcnt; ++i) {
+      afseek(ttf, base+ranges[i].offset, SEEK_SET);
       for (j=ranges[i].start; j <= ranges[i].last; ++j)
 	 loca[j]=aget_int32_be(ttf);
       for (j=ranges[i].start; j <= ranges[i].last; ++j) {
@@ -1561,17 +1561,17 @@ static void pfed_read_layer(AFILE *ttf,struct ttfinfo *info,int layer,
 	 sc=info->chars[j];
 	 ly=&sc->layers[layer];
 	 if (loca[j] != 0)
-	    pfed_read_glyph_layer(ttf, info, ly, base + loca[j], type,
+	    pfed_read_glyph_layer(ttf, info, ly, base+loca[j], type,
 				  version);
       }
    }
    free(ranges);
    free(loca);
 
-   for (i=0; i < info->glyph_cnt; ++i)
+   for (i=0; i<info->glyph_cnt; ++i)
       if (info->chars[i] != NULL)
 	 info->chars[i]->ticked=false;
-   for (i=0; i < info->glyph_cnt; ++i)
+   for (i=0; i<info->glyph_cnt; ++i)
       if (info->chars[i] != NULL)
 	 pfed_redo_refs(info->chars[i], layer);
 }
@@ -1589,11 +1589,11 @@ static void pfed_readotherlayers(AFILE *ttf,struct ttfinfo *info,
 
    afseek(ttf, base, SEEK_SET);
    version=aget_uint16_be(ttf);
-   if (version > 1)
+   if (version>1)
       return;			/* Bad version number */
    lcnt=aget_uint16_be(ttf);
    layers=malloc(lcnt * sizeof(struct layer_info));
-   for (i=0; i < lcnt; ++i) {
+   for (i=0; i<lcnt; ++i) {
       layers[i].type=aget_uint16_be(ttf);
       layers[i].name_off=aget_uint16_be(ttf);
       layers[i].data_off=aget_int32_be(ttf);
@@ -1601,11 +1601,11 @@ static void pfed_readotherlayers(AFILE *ttf,struct ttfinfo *info,
    }
    spiro_index=-1;
    non_spiro_cnt=0;
-   for (i=0; i < lcnt; ++i) {
+   for (i=0; i<lcnt; ++i) {
       if (layers[i].name_off==0)
 	 layers[i].name=fastrdup("Unnamed");
       else {
-	 layers[i].name=pfed_read_utf8(ttf, base + layers[i].name_off);
+	 layers[i].name=pfed_read_utf8(ttf, base+layers[i].name_off);
 	 if (layers[i].type==1 && strcmp(layers[i].name, "Spiro")==0)
 	    spiro_index=i;
       }
@@ -1614,7 +1614,7 @@ static void pfed_readotherlayers(AFILE *ttf,struct ttfinfo *info,
 	 ++non_spiro_cnt;
    }
    if (spiro_index==-1) {
-      for (i=0; i < lcnt; ++i)
+      for (i=0; i<lcnt; ++i)
 	 if (layers[i].type==1) {
 	    spiro_index=i;
 	    break;
@@ -1622,52 +1622,52 @@ static void pfed_readotherlayers(AFILE *ttf,struct ttfinfo *info,
    }
 
    if (non_spiro_cnt != 0) {
-      info->layer_cnt=non_spiro_cnt + 1;
-      info->layers=calloc(info->layer_cnt + 1, sizeof(LayerInfo));
+      info->layer_cnt=non_spiro_cnt+1;
+      info->layers=calloc(info->layer_cnt+1, sizeof(LayerInfo));
       info->layers[ly_back].background=true;
       info->layers[ly_fore].order2=info->to_order2;
       info->layers[ly_fore].background=false;
       l=i=0;
-      if ((layers[i].type & 0xff)==1)
+      if ((layers[i].type&0xff)==1)
 	 ++i;
-      if (layers[i].type & 0x100) {
+      if (layers[i].type&0x100) {
 	 /* first layer output is foreground, so it can't replace the background layer */
 	 ++info->layer_cnt;
 	 l=2;
 	 info->layers[ly_back].order2=info->to_order2;
       }
-      for (; i < lcnt; ++i)
-	 if ((layers[i].type & 0xff)==2 || (layers[i].type & 0xff)==3) {
+      for (; i<lcnt; ++i)
+	 if ((layers[i].type&0xff)==2 || (layers[i].type&0xff)==3) {
 	    info->layers[l].name=layers[i].name;
 	    layers[i].name=NULL;
 	    layers[i].sf_layer=l;
-	    info->layers[l].order2=(layers[i].type & 0xff)==2;
-	    info->layers[l].background=(layers[i].type & 0x100) ? 0 : 1;
+	    info->layers[l].order2=(layers[i].type&0xff)==2;
+	    info->layers[l].background=(layers[i].type&0x100)?0:1;
 	    if (l==0)
 	       l=2;
 	    else
 	       ++l;
 	 }
       if (info->layer_cnt != 2) {
-	 for (gid=0; gid < info->glyph_cnt; ++gid)
+	 for (gid=0; gid<info->glyph_cnt; ++gid)
 	    if ((sc=info->chars[gid]) != NULL) {
 	       sc->layers =
 		  realloc(sc->layers, info->layer_cnt * sizeof(Layer));
-	       memset(sc->layers + 2, 0,
-		      (info->layer_cnt - 2) * sizeof(Layer));
+	       memset(sc->layers+2, 0,
+		      (info->layer_cnt-2)*sizeof(Layer));
 	       sc->layer_cnt=info->layer_cnt;
 	    }
       }
    }
    if (spiro_index != -1)
       pfed_read_layer(ttf, info, ly_fore, layers[spiro_index].type, base,
-		      base + layers[spiro_index].data_off, version);
-   for (i=0; i < lcnt; ++i)
+		      base+layers[spiro_index].data_off, version);
+   for (i=0; i<lcnt; ++i)
       if (layers[i].sf_layer != -1) {
-	 pfed_read_layer(ttf, info, layers[i].sf_layer, layers[i].type & 0xff,
-			 base, base + layers[i].data_off, version);
+	 pfed_read_layer(ttf, info, layers[i].sf_layer, layers[i].type&0xff,
+			 base, base+layers[i].data_off, version);
       }
-   for (i=0; i < lcnt; ++i)
+   for (i=0; i<lcnt; ++i)
       free(layers[i].name);
    free(layers);
 }
@@ -1676,60 +1676,60 @@ void pfed_read(AFILE *ttf, struct ttfinfo *info) {
    int n, i;
    struct tagoff {
       uint32_t tag, offset;
-   } tagoff[MAX_SUBTABLE_TYPES + 30];
+   } tagoff[MAX_SUBTABLE_TYPES+30];
 
    afseek(ttf, info->pfed_start, SEEK_SET);
 
    if (aget_int32_be(ttf) != 0x00010000)
       return;
    n=aget_int32_be(ttf);
-   if (n >= MAX_SUBTABLE_TYPES + 30)
-      n=MAX_SUBTABLE_TYPES + 30;
-   for (i=0; i < n; ++i) {
+   if (n >= MAX_SUBTABLE_TYPES+30)
+      n=MAX_SUBTABLE_TYPES+30;
+   for (i=0; i<n; ++i) {
       tagoff[i].tag=aget_int32_be(ttf);
       tagoff[i].offset=aget_int32_be(ttf);
    }
-   for (i=0; i < n; ++i)
+   for (i=0; i<n; ++i)
       switch (tagoff[i].tag) {
 	case fcmt_TAG:
 	case flog_TAG:
 	   pfed_readfontcomment(ttf, info,
-				info->pfed_start + tagoff[i].offset,
+				info->pfed_start+tagoff[i].offset,
 				tagoff[i].tag);
 	   break;
 	case cvtc_TAG:
 	   pfed_readcvtcomments(ttf, info,
-				info->pfed_start + tagoff[i].offset);
+				info->pfed_start+tagoff[i].offset);
 	   break;
 	case cmnt_TAG:
 	   pfed_readglyphcomments(ttf, info,
-				  info->pfed_start + tagoff[i].offset);
+				  info->pfed_start+tagoff[i].offset);
 	   break;
 	case colr_TAG:
-	   pfed_readcolours(ttf, info, info->pfed_start + tagoff[i].offset);
+	   pfed_readcolours(ttf, info, info->pfed_start+tagoff[i].offset);
 	   break;
 	case GPOS_TAG:
 	   pfed_readlookupnames(ttf, info,
-				info->pfed_start + tagoff[i].offset,
+				info->pfed_start+tagoff[i].offset,
 				info->gsplookups[1]);
 	   break;
 	case GSUB_TAG:
 	   pfed_readlookupnames(ttf, info,
-				info->pfed_start + tagoff[i].offset,
+				info->pfed_start+tagoff[i].offset,
 				info->gsplookups[0]);
 	   break;
 	case layr_TAG:
 	   pfed_readotherlayers(ttf, info,
-				info->pfed_start + tagoff[i].offset);
+				info->pfed_start+tagoff[i].offset);
 	   break;
 	case guid_TAG:
 	   pfed_readguidelines(ttf, info,
-			       info->pfed_start + tagoff[i].offset);
+			       info->pfed_start+tagoff[i].offset);
 	   break;
 	default:
 	   ErrorMsg(2,"Unknown subtable '%c%c%c%c' in 'PfEd' table, ignored\n",
-		    tagoff[i].tag >> 24, (tagoff[i].tag >> 16) & 0xff,
-		    (tagoff[i].tag >> 8) & 0xff, tagoff[i].tag & 0xff);
+		    tagoff[i].tag >> 24, (tagoff[i].tag >> 16)&0xff,
+		    (tagoff[i].tag >> 8)&0xff, tagoff[i].tag&0xff);
 	   break;
       }
 }
@@ -1846,13 +1846,13 @@ static void TeX_dumpFontParams(SplineFont *sf,struct TeX_subtabs *tex,
 
    aput_int16_be_checked(0,fprm);		/* sub-table version number */
    pcnt =
-      sf->texdata.type==tex_math ? 22 : sf->texdata.type ==
-      tex_mathext ? 13 : 7;
+      sf->texdata.type==tex_math?22:sf->texdata.type ==
+      tex_mathext?13:7;
    tags =
-      sf->texdata.type==tex_math ? tex_math_params : sf->texdata.type ==
-      tex_mathext ? tex_mathext_params : tex_text_params;
+      sf->texdata.type==tex_math?tex_math_params:sf->texdata.type ==
+      tex_mathext?tex_mathext_params:tex_text_params;
    aput_int16_be_checked(pcnt,fprm);
-   for (i=0; i < pcnt; ++i) {
+   for (i=0; i<pcnt; ++i) {
       putlong(fprm, tags[i]);
       putlong(fprm, sf->texdata.params[i]);
    }
@@ -1865,21 +1865,21 @@ static void TeX_dumpHeightDepth(SplineFont *sf,struct TeX_subtabs *tex,
    int i, j, k, last_g, gid;
    DBounds b;
 
-   for (i=at->gi.gcnt - 1; i >= 0; --i) {
+   for (i=at->gi.gcnt-1; i >= 0; --i) {
       gid=at->gi.bygid[i];
       if (gid != -1 && sf->glyphs[gid] != NULL &&
 	  (sf->glyphs[gid]->tex_height != TEX_UNDEF
 	   || sf->glyphs[gid]->tex_depth != TEX_UNDEF))
 	 break;
    }
-   if (i < 0)			/* No height/depth info */
+   if (i<0)			/* No height/depth info */
       return;
 
    tex->subtabs[tex->next].tag=CHR('h', 't', 'd', 'p');
    tex->subtabs[tex->next++].data=htdp=atmpfile();
 
    aput_int16_be_checked(0,htdp);		/* sub-table version number */
-   aput_int16_be_checked(sf->glyphs[gid]->ttf_glyph + 1,htdp);	/* data for this many glyphs */
+   aput_int16_be_checked(sf->glyphs[gid]->ttf_glyph+1,htdp);	/* data for this many glyphs */
 
    last_g=-1;
    for (j=0; j <= i; ++j) {
@@ -1887,15 +1887,15 @@ static void TeX_dumpHeightDepth(SplineFont *sf,struct TeX_subtabs *tex,
       if (gid != -1 && sf->glyphs[gid] != NULL) {
 	 SplineChar *sc=sf->glyphs[gid];
 
-	 for (k=last_g + 1; k < sc->ttf_glyph; ++k) {
+	 for (k=last_g+1; k<sc->ttf_glyph; ++k) {
 	    aput_int16_be_checked(0,htdp);
 	    aput_int16_be_checked(0,htdp);
 	 }
 	 if (sc->tex_depth==TEX_UNDEF || sc->tex_height==TEX_UNDEF)
 	    SplineCharFindBounds(sc, &b);
 	 aput_int16_be_checked(
-		  sc->tex_height==TEX_UNDEF ? b.maxy : sc->tex_height,htdp);
-	 aput_int16_be_checked(sc->tex_depth==TEX_UNDEF ? -b.miny : sc->tex_depth,htdp);
+		  sc->tex_height==TEX_UNDEF?b.maxy:sc->tex_height,htdp);
+	 aput_int16_be_checked(sc->tex_depth==TEX_UNDEF?-b.miny:sc->tex_depth,htdp);
 	 last_g=sc->ttf_glyph;
       }
    }
@@ -1907,20 +1907,20 @@ static void TeX_dumpItalicCorr(SplineFont *sf,struct TeX_subtabs *tex,
    AFILE *itlc;
    int i, j, k, last_g, gid;
 
-   for (i=at->gi.gcnt - 1; i >= 0; --i) {
+   for (i=at->gi.gcnt-1; i >= 0; --i) {
       gid=at->gi.bygid[i];
       if (gid != -1 && sf->glyphs[gid] != NULL &&
 	  sf->glyphs[gid]->italic_correction != TEX_UNDEF)
 	 break;
    }
-   if (i < 0)			/* No italic_correction info */
+   if (i<0)			/* No italic_correction info */
       return;
 
    tex->subtabs[tex->next].tag=CHR('i', 't', 'l', 'c');
    tex->subtabs[tex->next++].data=itlc=atmpfile();
 
    aput_int16_be_checked(0,itlc);		/* sub-table version number */
-   aput_int16_be_checked(sf->glyphs[gid]->ttf_glyph + 1,itlc);	/* data for this many glyphs */
+   aput_int16_be_checked(sf->glyphs[gid]->ttf_glyph+1,itlc);	/* data for this many glyphs */
 
    last_g=-1;
    for (j=0; j <= i; ++j) {
@@ -1928,13 +1928,13 @@ static void TeX_dumpItalicCorr(SplineFont *sf,struct TeX_subtabs *tex,
       if (gid != -1 && sf->glyphs[gid] != NULL) {
 	 SplineChar *sc=sf->glyphs[gid];
 
-	 for (k=last_g + 1; k < sc->ttf_glyph; ++k) {
+	 for (k=last_g+1; k<sc->ttf_glyph; ++k) {
 	    aput_int16_be_checked(0,itlc);
 	    aput_int16_be_checked(0,itlc);
 	 }
 	 aput_int16_be_checked(
 		  sc->italic_correction !=
-		  TEX_UNDEF ? sc->italic_correction : 0,itlc);
+		  TEX_UNDEF?sc->italic_correction:0,itlc);
 	 last_g=sc->ttf_glyph;
       }
    }
@@ -1947,7 +1947,7 @@ void tex_dump(struct alltabs *at, SplineFont *sf) {
    int i;
    uint32_t offset;
 
-   if (!(at->gi.flags & ttf_flag_TeXtable))
+   if (!(at->gi.flags&ttf_flag_TeXtable))
       return;
 
    memset(&tex, 0, sizeof(tex));
@@ -1961,22 +1961,22 @@ void tex_dump(struct alltabs *at, SplineFont *sf) {
    at->tex=file=atmpfile();
    putlong(file, 0x00010000);	/* Version number */
    putlong(file, tex.next);	/* sub-table count */
-   offset=2 * sizeof(uint32_t) + 2 * tex.next * sizeof(uint32_t);
-   for (i=0; i < tex.next; ++i) {
+   offset=2*sizeof(uint32_t)+2*tex.next * sizeof(uint32_t);
+   for (i=0; i<tex.next; ++i) {
       putlong(file, tex.subtabs[i].tag);
       putlong(file, offset);
       afseek(tex.subtabs[i].data, 0, SEEK_END);
       tex.subtabs[i].offset=offset;
       offset += aftell(tex.subtabs[i].data);
    }
-   for (i=0; i < tex.next; ++i) {
+   for (i=0; i<tex.next; ++i) {
       afseek(tex.subtabs[i].data, 0, SEEK_SET);
       ttfcopyfile(file, tex.subtabs[i].data, tex.subtabs[i].offset,
 		  "TeX-subtable");
    }
-   if (aftell(file) & 2)
+   if (aftell(file)&2)
       aput_int16_be_checked(0,file);
-   if (aftell(file) & 3)
+   if (aftell(file)&3)
       ErrorMsg(2,"'TeX ' table not properly aligned\n");
    at->texlen=aftell(file);
 }
@@ -2002,17 +2002,17 @@ static void TeX_readFontParams(AFILE *ttf,struct ttfinfo *info,uint32_t base) {
       info->texdata.type=tex_mathext;
    else if (pcnt >= 7)
       info->texdata.type=tex_text;
-   for (i=0; i < pcnt; ++i) {
+   for (i=0; i<pcnt; ++i) {
       tag=aget_int32_be(ttf);
       val=aget_int32_be(ttf);
-      for (j=0; j < 3; ++j) {
+      for (j=0; j<3; ++j) {
 	 for (k=0; alltags[j][k] != 0; ++k)
 	    if (alltags[j][k]==tag)
 	       break;
 	 if (alltags[j][k]==tag)
 	    break;
       }
-      if (j < 3)
+      if (j<3)
 	 info->texdata.params[k]=val;
    }
 }
@@ -2024,7 +2024,7 @@ static void TeX_readHeightDepth(AFILE *ttf,struct ttfinfo *info,uint32_t base) {
    if (aget_uint16_be(ttf) != 0)	/* Don't know how to read this version of the subtable */
       return;
    gcnt=aget_uint16_be(ttf);
-   for (i=0; i < gcnt && i < info->glyph_cnt; ++i) {
+   for (i=0; i<gcnt && i<info->glyph_cnt; ++i) {
       int h, d;
 
       h=aget_uint16_be(ttf);
@@ -2043,7 +2043,7 @@ static void TeX_readItalicCorr(AFILE *ttf,struct ttfinfo *info,uint32_t base) {
    if (aget_uint16_be(ttf) != 0)	/* Don't know how to read this version of the subtable */
       return;
    gcnt=aget_uint16_be(ttf);
-   for (i=0; i < gcnt && i < info->glyph_cnt; ++i) {
+   for (i=0; i<gcnt && i<info->glyph_cnt; ++i) {
       int ital;
 
       ital=aget_uint16_be(ttf);
@@ -2057,34 +2057,34 @@ void tex_read(AFILE *ttf, struct ttfinfo *info) {
    int n, i;
    struct tagoff {
       uint32_t tag, offset;
-   } tagoff[MAX_SUBTABLE_TYPES + 30];
+   } tagoff[MAX_SUBTABLE_TYPES+30];
 
    afseek(ttf, info->tex_start, SEEK_SET);
 
    if (aget_int32_be(ttf) != 0x00010000)
       return;
    n=aget_int32_be(ttf);
-   if (n >= MAX_SUBTABLE_TYPES + 30)
-      n=MAX_SUBTABLE_TYPES + 30;
-   for (i=0; i < n; ++i) {
+   if (n >= MAX_SUBTABLE_TYPES+30)
+      n=MAX_SUBTABLE_TYPES+30;
+   for (i=0; i<n; ++i) {
       tagoff[i].tag=aget_int32_be(ttf);
       tagoff[i].offset=aget_int32_be(ttf);
    }
-   for (i=0; i < n; ++i)
+   for (i=0; i<n; ++i)
       switch (tagoff[i].tag) {
 	case CHR('f', 't', 'p', 'm'):
-	   TeX_readFontParams(ttf, info, info->tex_start + tagoff[i].offset);
+	   TeX_readFontParams(ttf, info, info->tex_start+tagoff[i].offset);
 	   break;
 	case CHR('h', 't', 'd', 'p'):
-	   TeX_readHeightDepth(ttf, info, info->tex_start + tagoff[i].offset);
+	   TeX_readHeightDepth(ttf, info, info->tex_start+tagoff[i].offset);
 	   break;
 	case CHR('i', 't', 'l', 'c'):
-	   TeX_readItalicCorr(ttf, info, info->tex_start + tagoff[i].offset);
+	   TeX_readItalicCorr(ttf, info, info->tex_start+tagoff[i].offset);
 	   break;
 	default:
 	   ErrorMsg(2,"Unknown subtable '%c%c%c%c' in 'TeX ' table, ignored\n",
-		    tagoff[i].tag >> 24, (tagoff[i].tag >> 16) & 0xff,
-		    (tagoff[i].tag >> 8) & 0xff, tagoff[i].tag & 0xff);
+		    tagoff[i].tag >> 24, (tagoff[i].tag >> 16)&0xff,
+		    (tagoff[i].tag >> 8)&0xff, tagoff[i].tag&0xff);
 	   break;
       }
 }
@@ -2129,19 +2129,19 @@ ASCII.
 /* Internally FF stores BDF comments as one psuedo property per line. As you */
 /*  might expect. But FreeType merges them into one large lump with newlines */
 /*  between lines. Which means that BDF tables created by FreeType will be in*/
-/*  that format. So we might as well be compatible. We will pack & unpack    */
+/*  that format. So we might as well be compatible. We will pack&unpack    */
 /*  comment lines */
 
 static int BDFPropCntMergedComments(BDFFont *bdf) {
    int i, cnt;
 
    cnt=0;
-   for (i=0; i < bdf->prop_cnt; ++i) {
+   for (i=0; i<bdf->prop_cnt; ++i) {
       ++cnt;
       if (strmatch(bdf->props[i].name, "COMMENT")==0)
 	 break;
    }
-   for (; i < bdf->prop_cnt; ++i) {
+   for (; i<bdf->prop_cnt; ++i) {
       if (strmatch(bdf->props[i].name, "COMMENT")==0)
 	 continue;
       ++cnt;
@@ -2154,27 +2154,27 @@ static char *MergeComments(BDFFont *bdf) {
    char *str;
 
    len=0;
-   for (i=0; i < bdf->prop_cnt; ++i) {
+   for (i=0; i<bdf->prop_cnt; ++i) {
       if (strmatch(bdf->props[i].name, "COMMENT")==0 &&
-	  ((bdf->props[i].type & ~prt_property)==prt_string ||
-	   (bdf->props[i].type & ~prt_property)==prt_atom))
-	 len += strlen(bdf->props[i].u.atom) + 1;
+	  ((bdf->props[i].type&~prt_property)==prt_string ||
+	   (bdf->props[i].type&~prt_property)==prt_atom))
+	 len += strlen(bdf->props[i].u.atom)+1;
    }
    if (len==0)
       return (fastrdup(""));
 
-   str=malloc(len + 1);
+   str=malloc(len+1);
    len=0;
-   for (i=0; i < bdf->prop_cnt; ++i) {
+   for (i=0; i<bdf->prop_cnt; ++i) {
       if (strmatch(bdf->props[i].name, "COMMENT")==0 &&
-	  ((bdf->props[i].type & ~prt_property)==prt_string ||
-	   (bdf->props[i].type & ~prt_property)==prt_atom)) {
-	 strcpy(str + len, bdf->props[i].u.atom);
-	 len += strlen(bdf->props[i].u.atom) + 1;
-	 str[len - 1]='\n';
+	  ((bdf->props[i].type&~prt_property)==prt_string ||
+	   (bdf->props[i].type&~prt_property)==prt_atom)) {
+	 strcpy(str+len, bdf->props[i].u.atom);
+	 len += strlen(bdf->props[i].u.atom)+1;
+	 str[len-1]='\n';
       }
    }
-   str[len - 1]='\0';
+   str[len-1]='\0';
    return (str);
 }
 
@@ -2194,7 +2194,7 @@ int ttf_bdf_dump(SplineFont *sf, struct alltabs *at, int32_t * sizes) {
 
    for (i=0; sizes[i] != 0; ++i) {
       for (bdf=sf->bitmaps;
-	   bdf != NULL && (bdf->pixelsize != (sizes[i] & 0xffff)
+	   bdf != NULL && (bdf->pixelsize != (sizes[i]&0xffff)
 			   || BDFDepth(bdf) != (sizes[i] >> 16));
 	   bdf=bdf->next);
       if (bdf != NULL && bdf->prop_cnt != 0)
@@ -2212,7 +2212,7 @@ int ttf_bdf_dump(SplineFont *sf, struct alltabs *at, int32_t * sizes) {
 
    for (i=0; sizes[i] != 0; ++i) {
       for (bdf=sf->bitmaps;
-	   bdf != NULL && (bdf->pixelsize != (sizes[i] & 0xffff)
+	   bdf != NULL && (bdf->pixelsize != (sizes[i]&0xffff)
 			   || BDFDepth(bdf) != (sizes[i] >> 16));
 	   bdf=bdf->next);
       if (bdf != NULL && bdf->prop_cnt != 0) {
@@ -2223,33 +2223,33 @@ int ttf_bdf_dump(SplineFont *sf, struct alltabs *at, int32_t * sizes) {
 
    for (i=0; sizes[i] != 0; ++i) {
       for (bdf=sf->bitmaps;
-	   bdf != NULL && (bdf->pixelsize != (sizes[i] & 0xffff)
+	   bdf != NULL && (bdf->pixelsize != (sizes[i]&0xffff)
 			   || BDFDepth(bdf) != (sizes[i] >> 16));
 	   bdf=bdf->next);
       if (bdf != NULL && bdf->prop_cnt != 0) {
 	 int saw_comment=0;
 	 char *str;
 
-	 for (j=0; j < bdf->prop_cnt; ++j) {
+	 for (j=0; j<bdf->prop_cnt; ++j) {
 	    if (strmatch(bdf->props[j].name, "COMMENT")==0 && saw_comment)
 	       continue;
 	    /* Try to reuse keyword names in string space */
-	    for (k=0; k < acnt; ++k) {
+	    for (k=0; k<acnt; ++k) {
 	       if (strcmp(atomoff[k].name, bdf->props[j].name)==0)
 		  break;
 	    }
-	    if (k >= acnt && k < AMAX) {
+	    if (k >= acnt && k<AMAX) {
 	       atomoff[k].name=bdf->props[j].name;
 	       atomoff[k].pos=aftell(strings);
 	       ++acnt;
-	       afwrite(atomoff[k].name, 1, strlen(atomoff[k].name) + 1,
+	       afwrite(atomoff[k].name, 1, strlen(atomoff[k].name)+1,
 		      strings);
 	    }
-	    if (k < acnt)
+	    if (k<acnt)
 	       putlong(at->bdf, atomoff[k].pos);
 	    else {
 	       putlong(at->bdf, aftell(strings));
-	       afwrite(bdf->props[j].name, 1, strlen(bdf->props[j].name) + 1,
+	       afwrite(bdf->props[j].name, 1, strlen(bdf->props[j].name)+1,
 		      strings);
 	    }
 	    str=bdf->props[j].u.str;
@@ -2258,10 +2258,10 @@ int ttf_bdf_dump(SplineFont *sf, struct alltabs *at, int32_t * sizes) {
 	       saw_comment=true;
 	    }
 	    aput_int16_be_checked(bdf->props[j].type,at->bdf);
-	    if ((bdf->props[j].type & ~prt_property)==prt_string ||
-		(bdf->props[j].type & ~prt_property)==prt_atom) {
+	    if ((bdf->props[j].type&~prt_property)==prt_string ||
+		(bdf->props[j].type&~prt_property)==prt_atom) {
 	       putlong(at->bdf, aftell(strings));
-	       afwrite(str, 1, strlen(str) + 1, strings);
+	       afwrite(str, 1, strlen(str)+1, strings);
 	       if (str != bdf->props[j].u.str)
 		  free(str);
 	    } else {
@@ -2282,9 +2282,9 @@ int ttf_bdf_dump(SplineFont *sf, struct alltabs *at, int32_t * sizes) {
    at->bdflen=aftell(at->bdf);
 
    /* Align table */
-   if (at->bdflen & 1)
+   if (at->bdflen&1)
       aputc('\0', at->bdf);
-   if ((at->bdflen + 1) & 2)
+   if ((at->bdflen+1)&2)
       aput_int16_be_checked(0,at->bdf);
 
    return (true);
@@ -2298,13 +2298,13 @@ static char *getstring(AFILE *ttf,long start) {
    int len, ch;
    char *str, *pt;
 
-   if (here < 0)
+   if (here<0)
       return (NULL);
    afseek(ttf, start, SEEK_SET);
-   for (len=1; (ch=agetc(ttf)) > 0; ++len);
+   for (len=1; (ch=agetc(ttf))>0; ++len);
    afseek(ttf, start, SEEK_SET);
    pt=str=malloc(len);
-   while ((ch=agetc(ttf)) > 0)
+   while ((ch=agetc(ttf))>0)
       *pt++=ch;
    *pt='\0';
    afseek(ttf, here, SEEK_SET);
@@ -2332,16 +2332,16 @@ static int CheckForNewlines(BDFFont *bdf,int k) {
       start=pt;
       while (*pt != '\n' && *pt != '\0')
 	 ++pt;
-      bdf->props[k + i].name=fastrdup(bdf->props[k].name);
-      bdf->props[k + i].type=bdf->props[k].type;
-      bdf->props[k + i].u.atom=copyn(start, pt - start);
+      bdf->props[k+i].name=fastrdup(bdf->props[k].name);
+      bdf->props[k+i].type=bdf->props[k].type;
+      bdf->props[k+i].u.atom=copyn(start, pt-start);
       if (*pt=='\n')
 	 ++pt;
    }
    pt=fastrdup(bdf->props[k].u.atom);
    free(bdf->props[k].u.atom);
    bdf->props[k].u.atom=pt;
-   return (k + cnt);
+   return (k+cnt);
 }
 
 void ttf_bdf_read(AFILE *ttf, struct ttfinfo *info) {
@@ -2359,10 +2359,10 @@ void ttf_bdf_read(AFILE *ttf, struct ttfinfo *info) {
    if (aget_uint16_be(ttf) != 1)
       return;
    strike_cnt=aget_uint16_be(ttf);
-   string_start=aget_int32_be(ttf) + info->bdf_start;
+   string_start=aget_int32_be(ttf)+info->bdf_start;
 
    bdfinfo=malloc(strike_cnt * sizeof(struct bdfinfo));
-   for (i=0; i < strike_cnt; ++i) {
+   for (i=0; i<strike_cnt; ++i) {
       int ppem, num_items;
 
       ppem=aget_uint16_be(ttf);
@@ -2374,32 +2374,32 @@ void ttf_bdf_read(AFILE *ttf, struct ttfinfo *info) {
       bdfinfo[i].cnt=num_items;
    }
 
-   for (i=0; i < strike_cnt; ++i) {
+   for (i=0; i<strike_cnt; ++i) {
       if ((bdf=bdfinfo[i].bdf)==NULL)
-	 afseek(ttf, 10 * bdfinfo[i].cnt, SEEK_CUR);
+	 afseek(ttf, 10*bdfinfo[i].cnt, SEEK_CUR);
       else {
 	 bdf->prop_cnt=bdfinfo[i].cnt;
 	 bdf->props=malloc(bdf->prop_cnt * sizeof(BDFProperties));
-	 for (j=k=0; j < bdfinfo[i].cnt; ++j, ++k) {
+	 for (j=k=0; j<bdfinfo[i].cnt; ++j, ++k) {
 	    long name=aget_int32_be(ttf);
 	    int type=aget_uint16_be(ttf);
 	    long value=aget_int32_be(ttf);
 
 	    bdf->props[k].type=type;
-	    bdf->props[k].name=getstring(ttf, string_start + name);
-	    switch (type & ~prt_property) {
+	    bdf->props[k].name=getstring(ttf, string_start+name);
+	    switch (type&~prt_property) {
 	      case prt_int:
 	      case prt_uint:
 		 bdf->props[k].u.val=value;
 		 if (strcmp(bdf->props[k].name, "FONT_ASCENT")==0 &&
 		     value <= bdf->pixelsize) {
 		    bdf->ascent=value;
-		    bdf->descent=bdf->pixelsize - value;
+		    bdf->descent=bdf->pixelsize-value;
 		 }
 		 break;
 	      case prt_string:
 	      case prt_atom:
-		 bdf->props[k].u.str=getstring(ttf, string_start + value);
+		 bdf->props[k].u.str=getstring(ttf, string_start+value);
 		 k=CheckForNewlines(bdf, k);
 		 break;
 	    }
@@ -2440,9 +2440,9 @@ int ttf_fftm_dump(SplineFont *sf, struct alltabs *at) {
 
    at->fftmlen=aftell(at->fftmf);	/* had better be 7*4 */
    /* It will never be misaligned */
-   if ((at->fftmlen & 1) != 0)
+   if ((at->fftmlen&1) != 0)
       aputc(0, at->fftmf);
-   if (((at->fftmlen + 1) & 2) != 0)
+   if (((at->fftmlen+1)&2) != 0)
       aput_int16_be_checked(0,at->fftmf);
    return (true);
 }

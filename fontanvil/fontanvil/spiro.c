@@ -1,4 +1,4 @@
-/* $Id: spiro.c 4157 2015-09-02 07:55:07Z mskala $ */
+/* $Id: spiro.c 4532 2015-12-22 13:18:53Z mskala $ */
 /* Copyright (C) 2007-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
 *
@@ -78,16 +78,16 @@ SplineSet *SpiroCP2SplineSet(spiro_cp * spiros) {
 
       if ((bc=new_bezctx_ff())==NULL)
 	 return (NULL);
-      if ((spiros[0].ty & 0x7f)=='{') {
-	 lastty=spiros[n - 1].ty;
-	 spiros[n - 1].ty='}';
+      if ((spiros[0].ty&0x7f)=='{') {
+	 lastty=spiros[n-1].ty;
+	 spiros[n-1].ty='}';
       }
 
       if (!any) {
 #   if _LIBSPIRO_FUN
 	 if (TaggedSpiroCPsToBezier0(spiros, bc)==0) {
 	    if (lastty)
-	       spiros[n - 1].ty=lastty;
+	       spiros[n-1].ty=lastty;
 	    free(bc);
 	    return (NULL);
 	 }
@@ -98,19 +98,19 @@ SplineSet *SpiroCP2SplineSet(spiro_cp * spiros) {
 	 int i;
 	 spiro_cp *nspiros;
 
-	 if ((nspiros=malloc((n + 1) * sizeof(spiro_cp)))==NULL) {
+	 if ((nspiros=malloc((n+1)*sizeof(spiro_cp)))==NULL) {
 	    if (lastty)
-	       spiros[n - 1].ty=lastty;
+	       spiros[n-1].ty=lastty;
 	    free(bc);
 	    return (NULL);
 	 }
-	 memcpy(nspiros, spiros, (n + 1) * sizeof(spiro_cp));
+	 memcpy(nspiros, spiros, (n+1)*sizeof(spiro_cp));
 	 for (i=0; nspiros[i].ty != SPIRO_END; ++i)
 	    nspiros[i].ty &= ~0x80;
 #   if _LIBSPIRO_FUN
 	 if (TaggedSpiroCPsToBezier0(nspiros, bc)==0) {
 	    if (lastty)
-	       spiros[n - 1].ty=lastty;
+	       spiros[n-1].ty=lastty;
 	    free(nspiros);
 	    free(bc);
 	    return (NULL);
@@ -121,13 +121,13 @@ SplineSet *SpiroCP2SplineSet(spiro_cp * spiros) {
 	 free(nspiros);
       }
       if (lastty)
-	 spiros[n - 1].ty=lastty;
+	 spiros[n-1].ty=lastty;
 
       if ((ss=bezctx_ff_close(bc))==NULL)
 	 return (NULL);
    }
    ss->spiros=spiros;
-   ss->spiro_cnt=ss->spiro_max=n + 1;
+   ss->spiro_cnt=ss->spiro_max=n+1;
    SPLCategorizePoints(ss);
    return (ss);
 }
@@ -149,13 +149,13 @@ spiro_cp *SplineSet2SpiroCP(SplineSet * ss, uint16_t * _cnt) {
 	 break;
    }
 
-   ret=malloc((3 * cnt + 1) * sizeof(spiro_cp));
+   ret=malloc((3*cnt+1)*sizeof(spiro_cp));
 
    for (cnt=0, sp=ss->first;;) {
       ret[cnt].x=sp->me.x;
       ret[cnt].y=sp->me.y;
-      ret[cnt].ty=sp->pointtype==pt_corner ? SPIRO_CORNER :
-	 sp->pointtype==pt_tangent ? SPIRO_LEFT : SPIRO_G4;
+      ret[cnt].ty=sp->pointtype==pt_corner?SPIRO_CORNER :
+	 sp->pointtype==pt_tangent?SPIRO_LEFT:SPIRO_G4;
       if (sp->pointtype==pt_tangent && sp->prev != NULL && sp->next != NULL) {
 	 if ((sp->next->knownlinear && sp->prev->knownlinear) ||
 	     (!sp->next->knownlinear && !sp->prev->knownlinear))
@@ -178,32 +178,32 @@ spiro_cp *SplineSet2SpiroCP(SplineSet * ss, uint16_t * _cnt) {
       s=sp->next;
       if (s->isquadratic) {
 	 ret[cnt].x =
-	    s->splines[0].d + .5 * (s->splines[0].c +
-				    .5 * (s->splines[0].b +
-					  .5 * s->splines[0].a));
+	    s->splines[0].d+.5*(s->splines[0].c +
+				    .5*(s->splines[0].b +
+					  .5*s->splines[0].a));
 	 ret[cnt].y =
-	    s->splines[1].d + .5 * (s->splines[1].c +
-				    .5 * (s->splines[1].b +
-					  .5 * s->splines[1].a));
+	    s->splines[1].d+.5*(s->splines[1].c +
+				    .5*(s->splines[1].b +
+					  .5*s->splines[1].a));
 	 ret[cnt++].ty=SPIRO_G4;
       } else if (!s->knownlinear) {
 	 ret[cnt].x =
-	    s->splines[0].d + .333 * (s->splines[0].c +
-				      .333 * (s->splines[0].b +
-					      .333 * s->splines[0].a));
+	    s->splines[0].d+.333*(s->splines[0].c +
+				      .333*(s->splines[0].b +
+					      .333*s->splines[0].a));
 	 ret[cnt].y =
-	    s->splines[1].d + .333 * (s->splines[1].c +
-				      .333 * (s->splines[1].b +
-					      .333 * s->splines[1].a));
+	    s->splines[1].d+.333*(s->splines[1].c +
+				      .333*(s->splines[1].b +
+					      .333*s->splines[1].a));
 	 ret[cnt++].ty=SPIRO_G4;
 	 ret[cnt].x =
-	    s->splines[0].d + .667 * (s->splines[0].c +
-				      .667 * (s->splines[0].b +
-					      .667 * s->splines[0].a));
+	    s->splines[0].d+.667*(s->splines[0].c +
+				      .667*(s->splines[0].b +
+					      .667*s->splines[0].a));
 	 ret[cnt].y =
-	    s->splines[1].d + .667 * (s->splines[1].c +
-				      .667 * (s->splines[1].b +
-					      .667 * s->splines[1].a));
+	    s->splines[1].d+.667*(s->splines[1].c +
+				      .667*(s->splines[1].b +
+					      .667*s->splines[1].a));
 	 ret[cnt++].ty=SPIRO_G4;
       }
       sp=sp->next->to;
@@ -245,7 +245,7 @@ void SSRegenerateFromSpiros(SplineSet * spl) {
       if ((last=first =
 	   SplinePointCreate(spl->spiros[0].x, spl->spiros[0].y))==NULL)
 	 return;
-      for (i=1; i < spl->spiro_cnt; ++i) {
+      for (i=1; i<spl->spiro_cnt; ++i) {
 	 if ((sp=SplinePointCreate(spl->spiros[i].x, spl->spiros[i].y))) {
 	    SplineMake3(last, sp);
 	    last=sp;

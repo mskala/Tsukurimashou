@@ -1,4 +1,4 @@
-/* $Id: palmfonts.c 4524 2015-12-20 19:28:13Z mskala $ */
+/* $Id: palmfonts.c 4532 2015-12-22 13:18:53Z mskala $ */
 /* Copyright (C) 2005-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -73,7 +73,7 @@ static SplineFont *MakeContainer(struct font *fn,char *family,char *style) {
    free(sf->fontname);
    free(sf->fullname);
    sf->familyname=fastrdup(family);
-   sf->fontname=malloc(strlen(family) + strlen(style) + 2);
+   sf->fontname=malloc(strlen(family)+strlen(style)+2);
    strcpy(sf->fontname, family);
    if (*style != '\0') {
       strcat(sf->fontname, "-");
@@ -86,21 +86,21 @@ static SplineFont *MakeContainer(struct font *fn,char *family,char *style) {
 
    sf->map=map=EncMapNew(257, 257, FindOrMakeEncoding("win"));
 
-   em=sf->ascent + sf->descent;
-   sf->ascent=fn->ascent * em / fn->frectheight;
-   sf->descent=em - sf->ascent;
+   em=sf->ascent+sf->descent;
+   sf->ascent=fn->ascent * em/fn->frectheight;
+   sf->descent=em-sf->ascent;
    sf->onlybitmaps=true;
 
    for (i=fn->first; i <= fn->last; ++i)
       if (fn->chars[i].width != -1) {
 	 sc=SFMakeChar(sf, map, i);
-	 sc->width=fn->chars[i].width * em / fn->frectheight;
+	 sc->width=fn->chars[i].width * em/fn->frectheight;
 	 sc->widthset=true;
       }
    sc=SFMakeChar(sf, map, 256);
    free(sc->name);
    sc->name=fastrdup(".notdef");
-   sc->width=fn->chars[i].width * em / fn->frectheight;
+   sc->width=fn->chars[i].width * em/fn->frectheight;
    sc->widthset=true;
    return (sf);
 }
@@ -108,7 +108,7 @@ static SplineFont *MakeContainer(struct font *fn,char *family,char *style) {
 /* scale all metric info by density/72. Not clear what happens for non-integral results */
 static void PalmReadBitmaps(SplineFont *sf,AFILE *file,int imagepos,
 			    struct font *fn, int density) {
-   int pixelsize=density * fn->frectheight / 72;
+   int pixelsize=density * fn->frectheight/72;
    BDFFont *bdf;
    uint16_t *fontImage;
    int imagesize, index, i;
@@ -121,10 +121,10 @@ static void PalmReadBitmaps(SplineFont *sf,AFILE *file,int imagepos,
       return;
 
    imagesize =
-      (density * fn->rowwords / 72) * (density * fn->frectheight / 72);
-   fontImage=malloc(2 * imagesize);
+      (density * fn->rowwords/72)*(density * fn->frectheight/72);
+   fontImage=malloc(2*imagesize);
    afseek(file, imagepos, SEEK_SET);
-   for (i=0; i < imagesize; ++i)
+   for (i=0; i<imagesize; ++i)
       fontImage[i]=aget_uint16_be(file);
    if (afeof(file)) {
       free(fontImage);
@@ -139,12 +139,12 @@ static void PalmReadBitmaps(SplineFont *sf,AFILE *file,int imagepos,
    bdf->glyphmax=sf->glyphmax;
    bdf->pixelsize=pixelsize;
    bdf->glyphs=calloc(sf->glyphmax, sizeof(BDFChar *));
-   bdf->ascent=density * fn->ascent / 72;
-   bdf->descent=pixelsize - bdf->ascent;
+   bdf->ascent=density * fn->ascent/72;
+   bdf->descent=pixelsize-bdf->ascent;
    bdf->res=72;
 
-   for (index=fn->first; index <= fn->last + 1; ++index) {
-      int enc=index==fn->last + 1 ? 256 : index;
+   for (index=fn->first; index <= fn->last+1; ++index) {
+      int enc=index==fn->last+1?256:index;
 
       if ((gid=map->map[enc]) != -1 && fn->chars[index].width != -1) {
 	 BDFChar *bdfc;
@@ -154,29 +154,29 @@ static void PalmReadBitmaps(SplineFont *sf,AFILE *file,int imagepos,
 	 memset(bdfc, '\0', sizeof(BDFChar));
 	 bdfc->xmin=0;
 	 bdfc->xmax =
-	    density * (fn->chars[index + 1].start -
-		       fn->chars[index].start) / 72 - 1;
+	    density * (fn->chars[index+1].start -
+		       fn->chars[index].start)/72-1;
 	 bdfc->ymin=-bdf->descent;
-	 bdfc->ymax=bdf->ascent - 1;
-	 bdfc->width=density * fn->chars[index].width / 72;
+	 bdfc->ymax=bdf->ascent-1;
+	 bdfc->width=density * fn->chars[index].width/72;
 	 bdfc->vwidth=pixelsize;
-	 bdfc->bytes_per_line=((bdfc->xmax - bdfc->xmin) >> 3) + 1;
+	 bdfc->bytes_per_line=((bdfc->xmax-bdfc->xmin) >> 3)+1;
 	 bdfc->bitmap =
-	    calloc(bdfc->bytes_per_line * (density * fn->frectheight) / 72,
+	    calloc(bdfc->bytes_per_line * (density * fn->frectheight)/72,
 		   sizeof(uint8_t));
 	 bdfc->orig_pos=gid;
 	 bdfc->sc=sf->glyphs[gid];
 	 bdf->glyphs[gid]=bdfc;
 
-	 bits=density * fn->chars[index].start / 72;
-	 bite=density * fn->chars[index + 1].start / 72;
-	 for (i=0; i < density * fn->frectheight / 72; ++i) {
-	    uint16_t *test=fontImage + i * density * fn->rowwords / 72;
-	    uint8_t *bpt=bdfc->bitmap + i * bdfc->bytes_per_line;
+	 bits=density * fn->chars[index].start/72;
+	 bite=density * fn->chars[index+1].start/72;
+	 for (i=0; i<density * fn->frectheight/72; ++i) {
+	    uint16_t *test=fontImage+i * density * fn->rowwords/72;
+	    uint8_t *bpt=bdfc->bitmap+i * bdfc->bytes_per_line;
 
-	    for (bit=bits, j=0; bit < bite; ++bit, ++j) {
-	       if (test[bit >> 4] & (0x8000 >> (bit & 0xf)))
-		  bpt[j >> 3] |= (0x80 >> (j & 7));
+	    for (bit=bits, j=0; bit<bite; ++bit, ++j) {
+	       if (test[bit >> 4]&(0x8000 >> (bit&0xf)))
+		  bpt[j >> 3] |= (0x80 >> (j&7));
 	    }
 	 }
 	 BCCompressBitmap(bdfc);
@@ -205,7 +205,7 @@ static SplineFont *PalmTestFont(AFILE *file,int end,char *family,
       ErrorMsg(2,"Warning: Byte swapped font mark in palm font.\n");
       type=type << 8;
    }
-   if ((type & 0x9000) != 0x9000)
+   if ((type&0x9000) != 0x9000)
       return (NULL);
    memset(&fn, 0, sizeof(fn));
    fn.first=aget_uint16_be(file);
@@ -216,47 +216,47 @@ static SplineFont *PalmTestFont(AFILE *file,int end,char *family,
    frectwidth=aget_uint16_be(file);
    fn.frectheight=aget_uint16_be(file);
    owtloc=aftell(file);
-   owtloc += 2 * aget_uint16_be(file);
+   owtloc += 2*aget_uint16_be(file);
    fn.ascent=aget_uint16_be(file);
    descent=aget_uint16_be(file);
    fn.leading=aget_uint16_be(file);
    fn.rowwords=aget_uint16_be(file);
-   if (afeof(file) || aftell(file) >= end || fn.first > fn.last || fn.last > 255
-       || pos + (fn.last - fn.first + 2) * 2 +
-       2 * fn.rowwords * fn.frectheight > end
-       || owtloc + 2 * (fn.last - fn.first + 2) > end)
+   if (afeof(file) || aftell(file) >= end || fn.first>fn.last || fn.last>255
+       || pos+(fn.last-fn.first+2)*2 +
+       2*fn.rowwords * fn.frectheight>end
+       || owtloc+2*(fn.last-fn.first+2)>end)
       return (NULL);
    dencount=0;
-   if (type & 0x200) {
+   if (type&0x200) {
       if (aget_uint16_be(file) != 1)	/* Extended data version number */
 	 return (NULL);
       dencount=aget_uint16_be(file);
-      if (dencount > 6)		/* only a few sizes allowed */
+      if (dencount>6)		/* only a few sizes allowed */
 	 return (NULL);
-      for (i=0; i < dencount; ++i) {
+      for (i=0; i<dencount; ++i) {
 	 density[i].density=aget_uint16_be(file);
 	 density[i].offset=aget_int32_be(file);
-	 if (aftell(file) > end || (density[i].density != 72 && density[i].density != 108 && density[i].density != 144 && density[i].density != 216 &&	/*Documented, but not supported */
+	 if (aftell(file)>end || (density[i].density != 72 && density[i].density != 108 && density[i].density != 144 && density[i].density != 216 &&	/*Documented, but not supported */
 				   density[i].density != 288))	/*Documented, but not supported */
 	    return (NULL);
       }
    } else {
       imagepos=aftell(file);
-      afseek(file, 2 * fn.rowwords * fn.frectheight, SEEK_CUR);
+      afseek(file, 2*fn.rowwords * fn.frectheight, SEEK_CUR);
    }
 
    /* Bitmap location table */
    /*  two extra entries. One gives loc of .notdef glyph, one points just after it */
-   maxbit=fn.rowwords * 16;
-   for (i=fn.first; i <= fn.last + 2; ++i) {
+   maxbit=fn.rowwords*16;
+   for (i=fn.first; i <= fn.last+2; ++i) {
       fn.chars[i].start=aget_uint16_be(file);
-      if (fn.chars[i].start > maxbit
-	  || (i != 0 && fn.chars[i].start < fn.chars[i - 1].start))
+      if (fn.chars[i].start>maxbit
+	  || (i != 0 && fn.chars[i].start<fn.chars[i-1].start))
 	 return (NULL);
    }
 
    afseek(file, owtloc, SEEK_SET);
-   for (i=fn.first; i <= fn.last + 1; ++i) {
+   for (i=fn.first; i <= fn.last+1; ++i) {
       int offset, width;
 
       offset=(int8_t) agetc(file);
@@ -267,13 +267,13 @@ static SplineFont *PalmTestFont(AFILE *file,int end,char *family,
 	 return (NULL);
       fn.chars[i].width=width;
    }
-   if (afeof(file) || aftell(file) > end)
+   if (afeof(file) || aftell(file)>end)
       return (NULL);
 
    sf=MakeContainer(&fn, family, style);
-   if (type & 0x200) {
-      for (i=0; i < dencount; ++i)
-	 PalmReadBitmaps(sf, file, pos + density[i].offset, &fn,
+   if (type&0x200) {
+      for (i=0; i<dencount; ++i)
+	 PalmReadBitmaps(sf, file, pos+density[i].offset, &fn,
 			 density[i].density);
    } else {
       PalmReadBitmaps(sf, file, imagepos, &fn, 72);
@@ -287,7 +287,7 @@ static char *palmreadstring(AFILE *file) {
    char *str, *pt;
 
    for (i=0; (ch=agetc(file)) != 0 && ch != EOF; ++i);
-   str=pt=malloc(i + 1);
+   str=pt=malloc(i+1);
    afseek(file, pos, SEEK_SET);
    while ((ch=agetc(file)) != 0 && ch != EOF)
       *pt++=ch;
@@ -310,7 +310,7 @@ static SplineFont *PalmTestRecord(AFILE *file,int start,int end,char *name) {
    if (afeof(file))
       goto ret;
    afseek(file, start, SEEK_SET);
-   if ((type & 0x9000)==0x9000 || type==0x0090 || type==0x0092) {
+   if ((type&0x9000)==0x9000 || type==0x0090 || type==0x0092) {
       sf=PalmTestFont(file, end, name, "");
       if (sf != NULL)
 	 goto ret;
@@ -329,15 +329,15 @@ static SplineFont *PalmTestRecord(AFILE *file,int start,int end,char *name) {
    (void) aget_uint16_be(file);	/* blank bits */
    size=aget_int32_be(file);
    pos=aftell(file);		/* Potential start of font data */
-   if (pos + size > end)
+   if (pos+size>end)
       goto ret;
    afseek(file, size, SEEK_CUR);
    family=palmreadstring(file);
    style=palmreadstring(file);
-   if (afeof(file) || aftell(file) > end)
+   if (afeof(file) || aftell(file)>end)
       goto ret;
    afseek(file, pos, SEEK_SET);
-   sf=PalmTestFont(file, pos + size, family, style);
+   sf=PalmTestFont(file, pos+size, family, style);
 
  ret:
    free(family);
@@ -372,10 +372,10 @@ SplineFont *SFReadPalmPdb(char *filename, int toback) {
    (void) aget_int32_be(file);	/* random junk */
    if (offset >= file_end)
       goto fail;
-   for (i=1; i < num_records; ++i) {
+   for (i=1; i<num_records; ++i) {
       next_offset=aget_int32_be(file);
       (void) aget_int32_be(file);
-      if (afeof(file) || next_offset < offset || next_offset > file_end)
+      if (afeof(file) || next_offset<offset || next_offset>file_end)
 	 goto fail;
       sf=PalmTestRecord(file, offset, next_offset, name);
       if (sf != NULL) {
@@ -397,7 +397,7 @@ SplineFont *SFReadPalmPdb(char *filename, int toback) {
 
 static AFILE *MakeFewRecordPdb(char *filename,int cnt) {
    AFILE *file;
-   char *fn=malloc(strlen(filename) + 8), *pt1, *pt2;
+   char *fn=malloc(strlen(filename)+8), *pt1, *pt2;
    long now;
    int i;
 
@@ -408,8 +408,8 @@ static AFILE *MakeFewRecordPdb(char *filename,int cnt) {
    else
       ++pt1;
    pt2=strrchr(fn, '.');
-   if (pt2==NULL || pt2 < pt1)
-      pt2=fn + strlen(fn);
+   if (pt2==NULL || pt2<pt1)
+      pt2=fn+strlen(fn);
    strcpy(pt2, ".pdb");
    file=afopen(fn, "wb");
    if (file==NULL) {
@@ -419,9 +419,9 @@ static AFILE *MakeFewRecordPdb(char *filename,int cnt) {
    }
 
    *pt2='\0';
-   for (i=0; i < 31 && *pt1; ++i, ++pt1)
+   for (i=0; i<31 && *pt1; ++i, ++pt1)
       aputc(*pt1, file);
-   while (i < 32) {
+   while (i<32) {
       aputc('\0', file);
       ++i;
    }
@@ -442,10 +442,10 @@ static AFILE *MakeFewRecordPdb(char *filename,int cnt) {
    putlong(file, 0);		/* next record id */
    aput_int16_be_checked(cnt,file);		/* numRecords */
 
-   putlong(file, aftell(file) + 8 * cnt);	/* offset to data */
+   putlong(file, aftell(file)+8*cnt);	/* offset to data */
    putlong(file, 0);
 
-   for (i=1; i < cnt; ++i) {
+   for (i=1; i<cnt; ++i) {
       putlong(file, 0);
       putlong(file, 0);
    }
@@ -456,7 +456,7 @@ static BDFFont *getbdfsize(SplineFont *sf,int32_t size) {
    BDFFont *bdf;
 
    for (bdf=sf->bitmaps;
-	bdf != NULL && (bdf->pixelsize != (size & 0xffff)
+	bdf != NULL && (bdf->pixelsize != (size&0xffff)
 			|| BDFDepth(bdf) != (size >> 16)); bdf=bdf->next);
    return (bdf);
 }
@@ -491,7 +491,7 @@ static int ValidMetrics(BDFFont *test,BDFFont *base,EncMap *map,int den) {
       ErrorMsg(1,"Only the first 256 glyphs in "
                  "the encoding will be used.\n");
 
-   for (i=0; i < map->enccount && i < 256; ++i)
+   for (i=0; i<map->enccount && i<256; ++i)
       if ((gid=map->map[i]) != -1
 	  && (test->glyphs[gid] != NULL || base->glyphs[gid] != NULL)) {
 	 if (base->glyphs[gid]==NULL || test->glyphs[gid]==NULL) {
@@ -503,8 +503,8 @@ static int ValidMetrics(BDFFont *test,BDFFont *base,EncMap *map,int den) {
 	 /* references, in which case those properties would be mostly irrelevant */
 	 BDFCharQuickBounds(test->glyphs[gid], &ib, 0, 0, false, true);
 	 if (!warned &&
-	     (ib.minx < 0 || ib.maxx > test->glyphs[gid]->width ||
-	      ib.maxy >= test->ascent || ib.miny < -test->descent)) {
+	     (ib.minx<0 || ib.maxx>test->glyphs[gid]->width ||
+	      ib.maxy >= test->ascent || ib.miny<-test->descent)) {
 	    ErrorMsg(1,"In font %1$d, the glyph %2$.30s starts "
 	               "before 0, extends after the advance width, "
 	               "is above the ascent, or is below the descent.\n",
@@ -519,7 +519,7 @@ static int ValidMetrics(BDFFont *test,BDFFont *base,EncMap *map,int den) {
                        test->pixelsize,test->glyphs[gid]->sc->name);
 	    wwarned=true;
 	 }
-	 if (base->glyphs[gid]->width > 127) {
+	 if (base->glyphs[gid]->width>127) {
             ErrorMsg(2,"Advance width of glyph %.30s must be less than 127.\n",
                        test->pixelsize,test->glyphs[gid]->sc->name);
 	    return (false);
@@ -532,22 +532,22 @@ static void PalmAddChar(uint16_t *image,int rw,int rbits,
 			BDFFont * bdf, BDFChar * bc, int width) {
    int i, j;
 
-   for (i=0; i < bdf->pixelsize; ++i) {
-      int y=bdf->ascent - 1 - i;
+   for (i=0; i<bdf->pixelsize; ++i) {
+      int y=bdf->ascent-1-i;
 
       if (y <= bc->ymax && y >= bc->ymin) {
-	 int bi=bc->ymax - y;
+	 int bi=bc->ymax-y;
 	 int ipos=i * rw;
 	 int bipos=bi * bc->bytes_per_line;
 
-	 for (j=bc->xmin <= 0 ? 0 : bc->xmin; j < width && j <= bc->xmax;
+	 for (j=bc->xmin <= 0?0:bc->xmin; j<width && j <= bc->xmax;
 	      ++j)
 	    if (bc->
 		bitmap[bipos +
-		       ((j - bc->xmin) >> 3)] & (0x80 >> ((j -
-							   bc->xmin) & 7)))
-	       image[ipos + ((rbits + j) >> 4)] |=
-		  (0x8000 >> ((rbits + j) & 0xf));
+		       ((j-bc->xmin) >> 3)]&(0x80 >> ((j -
+							   bc->xmin)&7)))
+	       image[ipos+((rbits+j) >> 4)] |=
+		  (0x8000 >> ((rbits+j)&0xf));
       }
    }
 }
@@ -563,11 +563,11 @@ static uint16_t *BDF2Image(struct FontTag *fn,BDFFont *bdf,int **offsets,
 
    if (bdf==NULL)
       return (NULL);
-   for (i=0; i < map->enccount; i++)
+   for (i=0; i<map->enccount; i++)
       if ((gid=map->map[i]) != -1 && (bdfc=bdf->glyphs[gid]) != NULL)
 	 BCPrepareForOutput(bdfc, true);
 
-   den=bdf->pixelsize / fn->fRectHeight;
+   den=bdf->pixelsize/fn->fRectHeight;
 
    rbits=0;
    for (i=fn->firstChar; i <= fn->lastChar; ++i)
@@ -577,61 +577,61 @@ static uint16_t *BDF2Image(struct FontTag *fn,BDFFont *bdf,int **offsets,
    if (notdefpos != -1)
       rbits += base->glyphs[notdefpos]->width;
    else
-      rbits += (fn->fRectHeight / 2) + 1;
-   rw=den * ((rbits + 15) / 16);
+      rbits += (fn->fRectHeight/2)+1;
+   rw=den * ((rbits+15)/16);
 
    if (rowWords != NULL) {
       *rowWords=rw;
-      *offsets=malloc((fn->lastChar - fn->firstChar + 3) * sizeof(int));
-      *widths=malloc((fn->lastChar - fn->firstChar + 3) * sizeof(int));
+      *offsets=malloc((fn->lastChar-fn->firstChar+3)*sizeof(int));
+      *widths=malloc((fn->lastChar-fn->firstChar+3)*sizeof(int));
    }
    image=calloc(bdf->pixelsize * rw, sizeof(uint16_t));
    rbits=0;
    for (i=fn->firstChar; i <= fn->lastChar; ++i) {
       if (offsets != NULL)
-	 (*offsets)[i - fn->firstChar]=rbits;
+	 (*offsets)[i-fn->firstChar]=rbits;
       if ((gid=map->map[i]) != -1 && gid != notdefpos
 	  && base->glyphs[gid] != NULL) {
 	 if (widths != NULL)
-	    (*widths)[i - fn->firstChar]=den * base->glyphs[gid]->width;
+	    (*widths)[i-fn->firstChar]=den * base->glyphs[gid]->width;
 	 PalmAddChar(image, rw, rbits, bdf, bdf->glyphs[gid],
 		     den * base->glyphs[gid]->width);
 	 rbits += den * base->glyphs[gid]->width;
       } else if (widths != NULL)
-	 (*widths)[i - fn->firstChar]=-1;
+	 (*widths)[i-fn->firstChar]=-1;
    }
    if (offsets != NULL)
-      (*offsets)[i - fn->firstChar]=rbits;
+      (*offsets)[i-fn->firstChar]=rbits;
    if (notdefpos != -1) {
       PalmAddChar(image, rw, rbits, bdf, bdf->glyphs[notdefpos],
 		  den * base->glyphs[notdefpos]->width);
       if (widths != NULL)
-	 (*widths)[i - fn->firstChar]=den * base->glyphs[notdefpos]->width;
+	 (*widths)[i-fn->firstChar]=den * base->glyphs[notdefpos]->width;
       rbits += bdf->glyphs[notdefpos]->width;
    } else {
       int wid, down, height;
 
-      wid=(fn->fRectHeight / 2) * (bdf->pixelsize / fn->fRectHeight) - 1;
+      wid=(fn->fRectHeight/2)*(bdf->pixelsize/fn->fRectHeight)-1;
       if (widths != NULL)
-	 (*widths)[i - fn->firstChar]=wid + 1;
-      height=2 * bdf->ascent / 3;
-      if (height < 3)
+	 (*widths)[i-fn->firstChar]=wid+1;
+      height=2*bdf->ascent/3;
+      if (height<3)
 	 height=bdf->ascent;
-      down=bdf->ascent - height;
-      for (j=down; j < down + height; ++j) {
-	 image[j * rw + (rbits >> 4)] |= (0x8000 >> (rbits & 0xf));
-	 image[j * rw + ((rbits + wid - 1) >> 4)] |=
-	    (0x8000 >> ((rbits + wid - 1) & 0xf));
+      down=bdf->ascent-height;
+      for (j=down; j<down+height; ++j) {
+	 image[j * rw+(rbits >> 4)] |= (0x8000 >> (rbits&0xf));
+	 image[j * rw+((rbits+wid-1) >> 4)] |=
+	    (0x8000 >> ((rbits+wid-1)&0xf));
       }
-      for (j=rbits; j < rbits + wid; ++j) {
-	 image[down * rw + (j >> 4)] |= (0x8000 >> (j & 0xf));
-	 image[(down + height - 1) * rw + (j >> 4)] |= (0x8000 >> (j & 0xf));
+      for (j=rbits; j<rbits+wid; ++j) {
+	 image[down * rw+(j >> 4)] |= (0x8000 >> (j&0xf));
+	 image[(down+height-1)*rw+(j >> 4)] |= (0x8000 >> (j&0xf));
       }
-      rbits += wid + 1;
+      rbits += wid+1;
    }
    if (offsets != NULL)
-      (*offsets)[i + 1 - fn->firstChar]=rbits;
-   for (i=0; i < map->enccount; i++)
+      (*offsets)[i+1-fn->firstChar]=rbits;
+   for (i=0; i<map->enccount; i++)
       if ((gid=map->map[i]) != -1 && (bdfc=bdf->glyphs[gid]) != NULL)
 	 BCRestoreAfterOutput(bdfc);
    return (image);
@@ -657,7 +657,7 @@ int WritePalmBitmaps(char *filename, SplineFont *sf, int32_t * sizes,
       temp=getbdfsize(sf, sizes[i]);
       if (temp==NULL || BDFDepth(temp) != 1)
 	 return (false);
-      if (base==NULL || base->pixelsize > temp->pixelsize)
+      if (base==NULL || base->pixelsize>temp->pixelsize)
 	 base=temp;
    }
    memset(densities,0,sizeof(densities));
@@ -671,12 +671,12 @@ int WritePalmBitmaps(char *filename, SplineFont *sf, int32_t * sizes,
                     temp->pixelsize,base->pixelsize);
 	 return (false);
       }
-      densities[den - 1]=temp;
+      densities[den-1]=temp;
    }
 
    dencnt=0;
    for (i=0;i<4;++i) {
-      if (!ValidMetrics(densities[i], base, map, i + 1))
+      if (!ValidMetrics(densities[i], base, map, i+1))
 	 return (false);
       if (densities[i])
 	 ++dencnt;
@@ -694,7 +694,7 @@ int WritePalmBitmaps(char *filename, SplineFont *sf, int32_t * sizes,
    fn.fRectHeight=base->pixelsize;
    fn.ascent=base->ascent;
    fn.descent=base->descent;
-   for (i=0; i < map->enccount && i < 256; ++i) {
+   for (i=0; i<map->enccount && i<256; ++i) {
       gid=map->map[i];
       if (gid != -1 && base->glyphs[gid] != NULL) {
 	 if (strcmp(sf->glyphs[gid]->name, ".notdef") != 0) {
@@ -702,12 +702,12 @@ int WritePalmBitmaps(char *filename, SplineFont *sf, int32_t * sizes,
 	       fn.firstChar=i;
 	    fn.lastChar=i;
 	 }
-	 if (base->glyphs[gid]->width > fn.maxWidth)
+	 if (base->glyphs[gid]->width>fn.maxWidth)
 	    fn.maxWidth=fn.fRectWidth=base->glyphs[gid]->width;
       }
    }
    notdefpos=SFFindNotdef(sf, -2);
-   if (notdefpos > base->glyphcnt || base->glyphs[notdefpos]==NULL)
+   if (notdefpos>base->glyphcnt || base->glyphs[notdefpos]==NULL)
       notdefpos=-1;
 
    file=MakeFewRecordPdb(filename, fontcnt);
@@ -717,15 +717,15 @@ int WritePalmBitmaps(char *filename, SplineFont *sf, int32_t * sizes,
    images[0] =
       BDF2Image(&fn, base, &offsets, &widths, &fn.rowWords, base, map,
 		notdefpos);
-   for (i=1; i < 4; ++i)
+   for (i=1; i<4; ++i)
       images[i] =
 	 BDF2Image(&fn, densities[i], NULL, NULL, NULL, base, map, notdefpos);
 
-   for (f=0; f < 2; ++f)
+   for (f=0; f<2; ++f)
       if ((f==0 && fonttype >= 2) || (f==1 && fonttype != 4)) {
 	 font_start=aftell(file);
 
-	 fn.fontType=f==0 ? 0x9000 : 0x9200;
+	 fn.fontType=f==0?0x9000:0x9200;
 	 aput_int16_be_checked(fn.fontType,file);
 	 aput_int16_be_checked(fn.firstChar,file);
 	 aput_int16_be_checked(fn.lastChar,file);
@@ -742,26 +742,26 @@ int WritePalmBitmaps(char *filename, SplineFont *sf, int32_t * sizes,
 	 aput_int16_be_checked(fn.rowWords,file);
 
 	 if (f==0) {
-	    for (i=0; i < fn.fRectHeight * fn.rowWords; ++i)
+	    for (i=0; i<fn.fRectHeight * fn.rowWords; ++i)
 	       aput_int16_be_checked(images[0][i],file);
 	 } else {
 	    aput_int16_be_checked(1,file);	/* Extended version field */
 	    aput_int16_be_checked(fonttype==0
-		     || fonttype==2 ? dencnt : dencnt - 1,file);
+		     || fonttype==2?dencnt:dencnt-1,file);
 	    density_starts=aftell(file);
-	    for (i=0; i < 4; ++i) {
+	    for (i=0; i<4; ++i) {
 	       if (densities[i] != NULL
 		   && (i != 0 || fonttype==0 || fonttype==2)) {
-		  aput_int16_be_checked((i + 1) * 72,file);
+		  aput_int16_be_checked((i+1)*72,file);
 		  putlong(file, 0);
 	       }
 	    }
 	 }
-	 for (i=fn.firstChar; i <= fn.lastChar + 2; ++i)
-	    aput_int16_be_checked(offsets[i - fn.firstChar],file);
+	 for (i=fn.firstChar; i <= fn.lastChar+2; ++i)
+	    aput_int16_be_checked(offsets[i-fn.firstChar],file);
 	 owpos=aftell(file);
 	 afseek(file, owbase, SEEK_SET);
-	 aput_int16_be_checked((owpos - owbase) / 2,file);
+	 aput_int16_be_checked((owpos-owbase)/2,file);
 	 afseek(file, owpos, SEEK_SET);
 	 for (i=fn.firstChar; i <= fn.lastChar; ++i) {
 	    if ((gid=map->map[i])==-1 || base->glyphs[gid]==NULL) {
@@ -773,19 +773,19 @@ int WritePalmBitmaps(char *filename, SplineFont *sf, int32_t * sizes,
 	    }
 	 }
 	 aputc(0, file);		/* offset/width for notdef */
-	 aputc(widths[i - fn.firstChar], file);
+	 aputc(widths[i-fn.firstChar], file);
 
 	 if (f==1) {
-	    for (i=j=0; i < 4; ++i) {
+	    for (i=j=0; i<4; ++i) {
 	       if (densities[i] != NULL
 		   && (i != 0 || fonttype==0 || fonttype==2)) {
 		  int here=aftell(file);
 
-		  afseek(file, density_starts + j * 6 + 2, SEEK_SET);
-		  putlong(file, here - font_start);
+		  afseek(file, density_starts+j*6+2, SEEK_SET);
+		  putlong(file, here-font_start);
 		  afseek(file, here, SEEK_SET);
 		  for (k=0;
-		       k < (i + 1) * (i + 1) * fn.fRectHeight * fn.rowWords;
+		       k<(i+1)*(i+1)*fn.fRectHeight * fn.rowWords;
 		       ++k)
 		     aput_int16_be_checked(images[i][k],file);
 		  ++j;
@@ -795,7 +795,7 @@ int WritePalmBitmaps(char *filename, SplineFont *sf, int32_t * sizes,
 	 if (f==0 && fontcnt==2) {
 	    int here=aftell(file);
 
-	    afseek(file, font_start - 8, SEEK_SET);
+	    afseek(file, font_start-8, SEEK_SET);
 	    putlong(file, here);
 	    afseek(file, here, SEEK_SET);
 	 }
@@ -803,7 +803,7 @@ int WritePalmBitmaps(char *filename, SplineFont *sf, int32_t * sizes,
    afclose(file);
    free(offsets);
    free(widths);
-   for (i=0; i < 4; ++i)
+   for (i=0; i<4; ++i)
       free(images[i]);
    return (true);
 }

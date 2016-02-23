@@ -1,4 +1,4 @@
-/* $Id: mm.c 4464 2015-11-30 09:57:27Z mskala $ */
+/* $Id: mm.c 4532 2015-12-22 13:18:53Z mskala $ */
 /* Copyright (C) 2003-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -53,17 +53,17 @@ double MMAxisUnmap(MMSet * mm, int axis, double ncv) {
    if (ncv <= axismap->blends[0])
       return (axismap->designs[0]);
 
-   for (j=1; j < axismap->points; ++j) {
+   for (j=1; j<axismap->points; ++j) {
       if (ncv <= axismap->blends[j]) {
 	 double t =
-	    (ncv - axismap->blends[j - 1]) / (axismap->blends[j] -
-					      axismap->blends[j - 1]);
-	 return (axismap->designs[j - 1] +
-		 t * (axismap->designs[j] - axismap->designs[j - 1]));
+	    (ncv-axismap->blends[j-1])/(axismap->blends[j] -
+					      axismap->blends[j-1]);
+	 return (axismap->designs[j-1] +
+		 t * (axismap->designs[j]-axismap->designs[j-1]));
       }
    }
 
-   return (axismap->designs[axismap->points - 1]);
+   return (axismap->designs[axismap->points-1]);
 }
 
 static char *_MMMakeFontname(MMSet *mm,double *normalized,char **fullname) {
@@ -72,8 +72,8 @@ static char *_MMMakeFontname(MMSet *mm,double *normalized,char **fullname) {
    int i, j;
 
    if (mm->apple) {
-      for (i=0; i < mm->named_instance_count; ++i) {
-	 for (j=0; j < mm->axis_count; ++j) {
+      for (i=0; i<mm->named_instance_count; ++i) {
+	 for (j=0; j<mm->axis_count; ++j) {
 	    if ((normalized[j]==-1 &&
 		 RealApprox(mm->named_instances[i].coords[j],
 			    mm->axismaps[j].min)) || (normalized[j]==0
@@ -100,11 +100,11 @@ static char *_MMMakeFontname(MMSet *mm,double *normalized,char **fullname) {
 	 if (styles==NULL)
 	    styles=FindEnglishNameInMacName(mm->named_instances[i].names);
 	 if (styles != NULL) {
-	    ret=malloc(strlen(mm->normal->familyname) + strlen(styles) + 3);
+	    ret=malloc(strlen(mm->normal->familyname)+strlen(styles)+3);
 	    strcpy(ret, mm->normal->familyname);
-	    hyphen=ret + strlen(ret);
+	    hyphen=ret+strlen(ret);
 	    strcpy(hyphen, " ");
-	    strcpy(hyphen + 1, styles);
+	    strcpy(hyphen+1, styles);
 	    free(styles);
 	 }
       }
@@ -112,11 +112,11 @@ static char *_MMMakeFontname(MMSet *mm,double *normalized,char **fullname) {
 
    if (ret==NULL) {
       pt=ret =
-	 malloc(strlen(mm->normal->familyname) + mm->axis_count * 15 + 1);
+	 malloc(strlen(mm->normal->familyname)+mm->axis_count*15+1);
       strcpy(pt, mm->normal->familyname);
       pt += strlen(pt);
       *pt++='_';
-      for (i=0; i < mm->axis_count; ++i) {
+      for (i=0; i<mm->axis_count; ++i) {
 	 if (!mm->apple)
 	    sprintf(pt, " %d%s",
 		    (int) rint(MMAxisUnmap(mm, i, normalized[i])),
@@ -126,7 +126,7 @@ static char *_MMMakeFontname(MMSet *mm,double *normalized,char **fullname) {
 		    MMAxisAbrev(mm->axes[i]));
 	 pt += strlen(pt);
       }
-      if (pt > ret && pt[-1]==' ')
+      if (pt>ret && pt[-1]==' ')
 	 --pt;
       *pt='\0';
    }
@@ -153,27 +153,27 @@ static char *_MMGuessWeight(MMSet *mm,double *normalized,char *def) {
    char *ret;
    double design;
 
-   for (i=0; i < mm->axis_count; ++i) {
+   for (i=0; i<mm->axis_count; ++i) {
       if (strcmp(mm->axes[i], "Weight")==0)
 	 break;
    }
    if (i==mm->axis_count)
       return (def);
    design=MMAxisUnmap(mm, i, normalized[i]);
-   if (design < 50 || design > 1500)	/* Er... Probably not the 0...1000 range I expect */
+   if (design<50 || design>1500)	/* Er... Probably not the 0...1000 range I expect */
       return (def);
    ret=NULL;
-   if (design < 150)
+   if (design<150)
       ret="Thin";
-   else if (design < 350)
+   else if (design<350)
       ret="Light";
-   else if (design < 550)
+   else if (design<550)
       ret="Medium";
-   else if (design < 650)
+   else if (design<650)
       ret="DemiBold";
-   else if (design < 750)
+   else if (design<750)
       ret="Bold";
-   else if (design < 850)
+   else if (design<850)
       ret="Heavy";
    else
       ret="Black";
@@ -201,7 +201,7 @@ char *MMExtractNth(char *pt, int ipos) {
 	 return (NULL);
       for (end=pt; *end != ' ' && *end != ']' && *end != '\0'; ++end);
       if (i==ipos)
-	 return (copyn(pt, end - pt));
+	 return (copyn(pt, end-pt));
       pt=end;
    }
    return (NULL);
@@ -222,7 +222,7 @@ char *MMExtractArrayNth(char *pt, int ipos) {
       while (*pt==' ')
 	 ++pt;
       if (*pt=='[') {
-	 if (i < sizeof(hold) / sizeof(hold[0]))
+	 if (i<sizeof(hold)/sizeof(hold[0]))
 	    hold[i++]=MMExtractNth(pt, ipos);
 	 ++pt;
 	 while (*pt != ']' && *pt != '\0')
@@ -233,22 +233,22 @@ char *MMExtractArrayNth(char *pt, int ipos) {
    }
    if (i==0)
       return (NULL);
-   for (j=len=0; j < i; ++j) {
+   for (j=len=0; j<i; ++j) {
       if (hold[j]==NULL) {
-	 for (j=0; j < i; ++j)
+	 for (j=0; j<i; ++j)
 	    free(hold[j]);
 	 return (NULL);
       }
-      len += strlen(hold[j]) + 1;
+      len += strlen(hold[j])+1;
    }
 
-   pt=ret=malloc(len + 4);
+   pt=ret=malloc(len+4);
    *pt++='[';
-   for (j=0; j < i; ++j) {
+   for (j=0; j<i; ++j) {
       strcpy(pt, hold[j]);
       free(hold[j]);
       pt += strlen(pt);
-      if (j != i - 1)
+      if (j != i-1)
 	 *pt++=' ';
    }
    *pt++=']';
@@ -270,8 +270,8 @@ void MMKern(SplineFont *sf, SplineChar * first, SplineChar * second,
    if (mm==NULL)
       return;
    if (sf==mm->normal || oldkp==NULL) {
-      for (i=-1; i < mm->instance_count; ++i) {
-	 SplineFont *cur=i==-1 ? mm->normal : mm->instances[i];
+      for (i=-1; i<mm->instance_count; ++i) {
+	 SplineFont *cur=i==-1?mm->normal:mm->instances[i];
 	 SplineChar *psc, *ssc;
 
 	 if (cur==sf)		/* Done in caller */
@@ -331,7 +331,7 @@ static char *_MMBlendChar(MMSet *mm,int gid) {
    StemInfo *hs[MmMax], *h, *hlast;
    double width;
 
-   for (i=0; i < mm->instance_count; ++i) {
+   for (i=0; i<mm->instance_count; ++i) {
       if (mm->instances[i]->layers[ly_fore].order2)
 	 return "One of the multiple master instances contains quadratic splines. It must be converted to cubic splines before it can be used in a multiple master";
       if (gid >= mm->instances[i]->glyphcnt)
@@ -368,7 +368,7 @@ static char *_MMBlendChar(MMSet *mm,int gid) {
    diff=false;
    any=false;
    all=true;
-   for (i=0; i < mm->instance_count; ++i) {
+   for (i=0; i<mm->instance_count; ++i) {
       refs[i]=mm->instances[i]->glyphs[gid]->layers[ly_fore].refs;
       if (refs[i] != NULL)
 	 any=true;
@@ -383,10 +383,10 @@ static char *_MMBlendChar(MMSet *mm,int gid) {
       ref->next=NULL;
       memset(ref->transform, 0, sizeof(ref->transform));
       ref->sc=mm->normal->glyphs[refs[0]->sc->orig_pos];
-      for (i=0; i < mm->instance_count; ++i) {
+      for (i=0; i<mm->instance_count; ++i) {
 	 if (ref->sc->orig_pos != refs[i]->sc->orig_pos)
 	    diff=true;
-	 for (j=0; j < 6; ++j)
+	 for (j=0; j<6; ++j)
 	    ref->transform[j] += refs[i]->transform[j] * mm->defweights[i];
       }
       if (reflast==NULL)
@@ -396,7 +396,7 @@ static char *_MMBlendChar(MMSet *mm,int gid) {
       reflast=ref;
       any=false;
       all=true;
-      for (i=0; i < mm->instance_count; ++i) {
+      for (i=0; i<mm->instance_count; ++i) {
 	 refs[i]=refs[i]->next;
 	 if (refs[i] != NULL)
 	    any=true;
@@ -411,18 +411,18 @@ static char *_MMBlendChar(MMSet *mm,int gid) {
 
    /* Blend Width */
    width=0;
-   for (i=0; i < mm->instance_count; ++i)
+   for (i=0; i<mm->instance_count; ++i)
       width += mm->instances[i]->glyphs[gid]->width * mm->defweights[i];
    sc->width=width;
    width=0;
-   for (i=0; i < mm->instance_count; ++i)
+   for (i=0; i<mm->instance_count; ++i)
       width += mm->instances[i]->glyphs[gid]->vwidth * mm->defweights[i];
    sc->vwidth=width;
 
    /* Blend Splines */
    any=false;
    all=true;
-   for (i=0; i < mm->instance_count; ++i) {
+   for (i=0; i<mm->instance_count; ++i) {
       spls[i]=mm->instances[i]->glyphs[gid]->layers[ly_fore].splines;
       if (spls[i] != NULL)
 	 any=true;
@@ -437,7 +437,7 @@ static char *_MMBlendChar(MMSet *mm,int gid) {
       else
 	 spllast->next=spl;
       spllast=spl;
-      for (i=0; i < mm->instance_count; ++i)
+      for (i=0; i<mm->instance_count; ++i)
 	 tos[i]=spls[i]->first;
       all2=true;
       spl->last=NULL;
@@ -452,7 +452,7 @@ static char *_MMBlendChar(MMSet *mm,int gid) {
 	    to->hintmask=chunkalloc(sizeof(HintMask));
 	    memcpy(to->hintmask, tos[0]->hintmask, sizeof(HintMask));
 	 }
-	 for (i=0; i < mm->instance_count; ++i) {
+	 for (i=0; i<mm->instance_count; ++i) {
 	    to->me.x += tos[i]->me.x * mm->defweights[i];
 	    to->me.y += tos[i]->me.y * mm->defweights[i];
 	    to->nextcp.x += tos[i]->nextcp.x * mm->defweights[i];
@@ -467,7 +467,7 @@ static char *_MMBlendChar(MMSet *mm,int gid) {
 	 spl->last=to;
 	 any2=false;
 	 all2=true;
-	 for (i=0; i < mm->instance_count; ++i) {
+	 for (i=0; i<mm->instance_count; ++i) {
 	    if (tos[i]->next==NULL)
 	       tos[i]=NULL;
 	    else
@@ -481,7 +481,7 @@ static char *_MMBlendChar(MMSet *mm,int gid) {
 	    return "A contour in this glyph contains a different number of points in different instances";
 	 anyend=false;
 	 allend=true;
-	 for (i=0; i < mm->instance_count; ++i) {
+	 for (i=0; i<mm->instance_count; ++i) {
 	    if (tos[i]==spls[i]->first)
 	       anyend=true;
 	    else
@@ -497,7 +497,7 @@ static char *_MMBlendChar(MMSet *mm,int gid) {
       }
       any=false;
       all=true;
-      for (i=0; i < mm->instance_count; ++i) {
+      for (i=0; i<mm->instance_count; ++i) {
 	 spls[i]=spls[i]->next;
 	 if (spls[i] != NULL)
 	    any=true;
@@ -509,12 +509,12 @@ static char *_MMBlendChar(MMSet *mm,int gid) {
       return "This glyph contains a different number of contours in different instances";
 
    /* Blend hints */
-   for (j=0; j < 2; ++j) {
+   for (j=0; j<2; ++j) {
       any=false;
       all=true;
-      for (i=0; i < mm->instance_count; ++i) {
+      for (i=0; i<mm->instance_count; ++i) {
 	 hs[i] =
-	    j ? mm->instances[i]->glyphs[gid]->hstem : mm->instances[i]->
+	    j?mm->instances[i]->glyphs[gid]->hstem:mm->instances[i]->
 	    glyphs[gid]->vstem;
 	 if (hs[i] != NULL)
 	    any=true;
@@ -528,7 +528,7 @@ static char *_MMBlendChar(MMSet *mm,int gid) {
 	 h->where=NULL;
 	 h->next=NULL;
 	 h->start=h->width=0;
-	 for (i=0; i < mm->instance_count; ++i) {
+	 for (i=0; i<mm->instance_count; ++i) {
 	    h->start += hs[i]->start * mm->defweights[i];
 	    h->width += hs[i]->width * mm->defweights[i];
 	 }
@@ -541,7 +541,7 @@ static char *_MMBlendChar(MMSet *mm,int gid) {
 	 hlast=h;
 	 any=false;
 	 all=true;
-	 for (i=0; i < mm->instance_count; ++i) {
+	 for (i=0; i<mm->instance_count; ++i) {
 	    hs[i]=hs[i]->next;
 	    if (hs[i] != NULL)
 	       any=true;
@@ -561,7 +561,7 @@ static char *_MMBlendChar(MMSet *mm,int gid) {
    while (kp0 != NULL) {
       int off=kp0->off * mm->defweights[0];
 
-      for (i=1; i < mm->instance_count; ++i) {
+      for (i=1; i<mm->instance_count; ++i) {
 	 for (kptest=mm->instances[i]->glyphs[gid]->kerns; kptest != NULL;
 	      kptest=kptest->next)
 	    if (kptest->sc->orig_pos==kp0->sc->orig_pos)
@@ -620,20 +620,20 @@ static struct psdict *BlendPrivate(struct psdict *private,MMSet *mm) {
    if (i != -1) {
       val=strtod(private->values[i], NULL);
       sum=0;
-      for (j=0; j < mm->instance_count; ++j) {
+      for (j=0; j<mm->instance_count; ++j) {
 	 i=PSDictFindEntry(mm->instances[j]->private, "ForceBold");
 	 if (i != -1
 	     && strcmp(mm->instances[j]->private->values[i], "true")==0)
 	    sum += mm->defweights[j];
       }
-      data=(sum >= val) ? "true" : "false";
+      data=(sum >= val)?"true":"false";
       PSDictChangeEntry(private, "ForceBold", data);
    }
-   for (i=0; i < other->next; ++i) {
+   for (i=0; i<other->next; ++i) {
       if (*other->values[i] != '[' && !isdigit(*other->values[i])
 	  && *other->values[i] != '.')
 	 continue;
-      for (j=0; j < mm->instance_count; ++j) {
+      for (j=0; j<mm->instance_count; ++j) {
 	 k=PSDictFindEntry(mm->instances[j]->private, other->keys[i]);
 	 if (k==-1)
 	    break;
@@ -644,7 +644,7 @@ static struct psdict *BlendPrivate(struct psdict *private,MMSet *mm) {
       if (*other->values[i] != '[') {
 	 /* blend a real number */
 	 sum=0;
-	 for (j=0; j < mm->instance_count; ++j) {
+	 for (j=0; j<mm->instance_count; ++j) {
 	    val=strtod(values[j], &end);
 	    if (end==values[j])
 	       break;
@@ -664,14 +664,14 @@ static struct psdict *BlendPrivate(struct psdict *private,MMSet *mm) {
 	       ++cnt;
 	    }
 	 }
-	 space=pt=malloc((cnt + 2) * 24 + 4);
+	 space=pt=malloc((cnt+2)*24+4);
 	 *pt++='[';
-	 for (j=0; j < mm->instance_count; ++j)
+	 for (j=0; j<mm->instance_count; ++j)
 	    if (*values[j]=='[')
 	       ++values[j];
 	 while (*values[0] != ']') {
 	    sum=0;
-	    for (j=0; j < mm->instance_count; ++j) {
+	    for (j=0; j<mm->instance_count; ++j) {
 	       val=strtod(values[j], &end);
 	       sum += val * mm->defweights[j];
 	       while (*end==' ')
@@ -700,7 +700,7 @@ int MMReblend(FontViewBase * fv, MMSet * mm) {
    RefChar *ref;
 
    olderr=NULL;
-   for (i=0; i < sf->glyphcnt; ++i) {
+   for (i=0; i<sf->glyphcnt; ++i) {
       if (i >= mm->normal->glyphcnt)
 	 break;
       err=MMBlendChar(mm, i);
@@ -726,7 +726,7 @@ int MMReblend(FontViewBase * fv, MMSet * mm) {
    }
 
    sf=mm->normal;
-   for (i=0; i < sf->glyphcnt; ++i)
+   for (i=0; i<sf->glyphcnt; ++i)
       if (sf->glyphs[i] != NULL) {
 	 for (ref=sf->glyphs[i]->layers[ly_fore].refs; ref != NULL;
 	      ref=ref->next) {
@@ -754,21 +754,21 @@ void MMWeightsUnMap(double weights[MmMax], double axiscoords[4], int axis_count)
    if (axis_count==1)
       axiscoords[0]=weights[1];
    else if (axis_count==2) {
-      axiscoords[0]=weights[3] + weights[1];
-      axiscoords[1]=weights[3] + weights[2];
+      axiscoords[0]=weights[3]+weights[1];
+      axiscoords[1]=weights[3]+weights[2];
    } else if (axis_count==3) {
-      axiscoords[0]=weights[7] + weights[5] + weights[3] + weights[1];
-      axiscoords[1]=weights[7] + weights[6] + weights[3] + weights[2];
-      axiscoords[2]=weights[7] + weights[6] + weights[5] + weights[4];
+      axiscoords[0]=weights[7]+weights[5]+weights[3]+weights[1];
+      axiscoords[1]=weights[7]+weights[6]+weights[3]+weights[2];
+      axiscoords[2]=weights[7]+weights[6]+weights[5]+weights[4];
    } else {
-      axiscoords[0]=weights[15] + weights[13] + weights[11] + weights[9] +
-	 weights[7] + weights[5] + weights[3] + weights[1];
-      axiscoords[1]=weights[15] + weights[14] + weights[11] + weights[10] +
-	 weights[7] + weights[6] + weights[3] + weights[2];
-      axiscoords[2]=weights[15] + weights[14] + weights[13] + weights[12] +
-	 weights[7] + weights[6] + weights[5] + weights[4];
-      axiscoords[3]=weights[15] + weights[14] + weights[13] + weights[12] +
-	 weights[11] + weights[10] + weights[9] + weights[8];
+      axiscoords[0]=weights[15]+weights[13]+weights[11]+weights[9] +
+	 weights[7]+weights[5]+weights[3]+weights[1];
+      axiscoords[1]=weights[15]+weights[14]+weights[11]+weights[10] +
+	 weights[7]+weights[6]+weights[3]+weights[2];
+      axiscoords[2]=weights[15]+weights[14]+weights[13]+weights[12] +
+	 weights[7]+weights[6]+weights[5]+weights[4];
+      axiscoords[3]=weights[15]+weights[14]+weights[13]+weights[12] +
+	 weights[11]+weights[10]+weights[9]+weights[8];
    }
 }
 
@@ -801,7 +801,7 @@ SplineFont *_MMNewFont(MMSet * mm, int index, char *familyname,
    if (mm->normal != NULL)
       base=mm->normal;
    else {
-      for (i=0; i < mm->instance_count; ++i)
+      for (i=0; i<mm->instance_count; ++i)
 	 if (mm->instances[i] != NULL) {
 	    base=mm->instances[i];
 	    break;
@@ -819,12 +819,12 @@ SplineFont *_MMNewFont(MMSet * mm, int index, char *familyname,
       sf->descent=base->descent;
       free(sf->origname);
       sf->origname=fastrdup(base->origname);
-      if (index < 0) {
+      if (index<0) {
 	 free(sf->copyright);
 	 sf->copyright=fastrdup(base->copyright);
       }
       /* Make sure we get the encoding exactly right */
-      for (i=0; i < base->glyphcnt; ++i)
+      for (i=0; i<base->glyphcnt; ++i)
 	 if (base->glyphs[i] != NULL)
 	    SFMakeGlyphLike(sf, i, base);
    }
@@ -845,7 +845,7 @@ FontViewBase *MMCreateBlendedFont(MMSet * mm, FontViewBase * fv,
    int i;
    double axispos[4];
 
-   for (i=0; i < mm->instance_count; ++i) {
+   for (i=0; i<mm->instance_count; ++i) {
       oldblends[i]=mm->defweights[i];
       mm->defweights[i]=blends[i];
    }
@@ -868,13 +868,13 @@ FontViewBase *MMCreateBlendedFont(MMSet * mm, FontViewBase * fv,
       MMReblend(fv, mm);
       newsf->mm=NULL;
       mm->normal=hold;
-      for (i=0; i < mm->instance_count; ++i) {
+      for (i=0; i<mm->instance_count; ++i) {
 	 mm->defweights[i]=oldblends[i];
 	 mm->instances[i]->fv=oldfv;
       }
       hold->fv=oldfv;
    } else {
-      for (i=0; i < mm->instance_count; ++i)
+      for (i=0; i<mm->instance_count; ++i)
 	 mm->defweights[i]=blends[i];
       mm->changed=true;
       MMReblend(fv, mm);
@@ -1071,7 +1071,7 @@ int MMValid(MMSet * mm, int complain) {
    if (mm==NULL)
       return (false);
 
-   for (i=0; i < mm->instance_count; ++i)
+   for (i=0; i<mm->instance_count; ++i)
       if (mm->instances[i]->layers[ly_fore].order2 != mm->apple) {
 	 if (complain) {
 	    if (mm->apple)
@@ -1099,7 +1099,7 @@ int MMValid(MMSet * mm, int complain) {
       return (false);
    }
 
-   for (j=mm->apple ? 0 : 1; j < mm->instance_count; ++j) {
+   for (j=mm->apple?0:1; j<mm->instance_count; ++j) {
       if (sf->glyphcnt != mm->instances[j]->glyphcnt) {
 	 if (complain)
             ErrorMsg(2,"The fonts %1$.30s and %2$.30s have a different "
@@ -1140,8 +1140,8 @@ int MMValid(MMSet * mm, int complain) {
       }
    }
 
-   for (i=0; i < sf->glyphcnt; ++i) {
-      for (j=mm->apple ? 0 : 1; j < mm->instance_count; ++j) {
+   for (i=0; i<sf->glyphcnt; ++i) {
+      for (j=mm->apple?0:1; j<mm->instance_count; ++j) {
 	 if (SCWorthOutputting(sf->glyphs[i]) !=
 	     SCWorthOutputting(mm->instances[j]->glyphs[i])) {
 	    if (complain) {
@@ -1166,7 +1166,7 @@ int MMValid(MMSet * mm, int complain) {
 	    }
 	    return (false);
 	 }
-	 for (j=mm->apple ? 0 : 1; j < mm->instance_count; ++j) {
+	 for (j=mm->apple?0:1; j<mm->instance_count; ++j) {
 	    if (mm->apple
 		&& mm->instances[j]->glyphs[i]->layers[ly_fore].refs != NULL
 		&& mm->instances[j]->glyphs[i]->layers[ly_fore].splines !=
@@ -1239,7 +1239,7 @@ int MMValid(MMSet * mm, int complain) {
 	    return (false);
 	 }
 	 if (!mm->apple) {
-	    for (j=1; j < mm->instance_count; ++j) {
+	    for (j=1; j<mm->instance_count; ++j) {
 	       if (!HintsMatch
 		   (sf->glyphs[i]->hstem,
 		    mm->instances[j]->glyphs[i]->hstem)) {
@@ -1261,7 +1261,7 @@ int MMValid(MMSet * mm, int complain) {
 		  return (false);
 	       }
 	    }
-	    for (j=1; j < mm->instance_count; ++j) {
+	    for (j=1; j<mm->instance_count; ++j) {
 	       if (!ContourHintMaskMatch
 		   (sf->glyphs[i], mm->instances[j]->glyphs[i])) {
 		  if (complain) {
@@ -1282,7 +1282,7 @@ int MMValid(MMSet * mm, int complain) {
 	   cvt != NULL && cvt->tag != CHR('c', 'v', 't', ' ');
 	   cvt=cvt->next);
       if (cvt==NULL) {
-	 for (j=0; j < mm->instance_count; ++j) {
+	 for (j=0; j<mm->instance_count; ++j) {
 	    if (mm->instances[j]->ttf_tables != NULL) {
 	       if (complain)
 		  ErrorMsg(2,"The default font does not have a 'cvt ' table, but the instance %.30s does\n",
@@ -1293,7 +1293,7 @@ int MMValid(MMSet * mm, int complain) {
       } else {
 	 /* Not all instances are required to have cvts, but any that do */
 	 /*  must be the same size */
-	 for (j=0; j < mm->instance_count; ++j) {
+	 for (j=0; j<mm->instance_count; ++j) {
 	    if (mm->instances[j]->ttf_tables != NULL &&
 		(mm->instances[j]->ttf_tables->next != NULL ||
 		 mm->instances[j]->ttf_tables->tag != CHR('c', 'v', 't',
