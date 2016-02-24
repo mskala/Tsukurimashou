@@ -1,4 +1,4 @@
-/* $Id: autotrace.c 4667 2016-02-23 14:26:31Z mskala $ */
+/* $Id: autotrace.c 4674 2016-02-24 10:01:02Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -115,25 +115,6 @@ static SplinePointList *localSplinesFromEntities(Entity *ent,Color bgcol) {
    return (head);
 }
 
-/* I think this is total paranoia. but it's annoying to have linker complaints... */
-static int mytempnam(char *buffer) {
-   char *dir;
-   int fd;
-
-   /* char *old; */
-
-   if ((dir=getenv("TMPDIR")) != NULL)
-      strcpy(buffer, dir);
-#   ifndef P_tmpdir
-#      define P_tmpdir	"/tmp"
-#   endif
-   else
-      strcpy(buffer, P_tmpdir);
-   strcat(buffer, "/PfaEdXXXXXX");
-   fd=mkstemp(buffer);
-   return (fd);
-}
-
 static char *mytempdir(void) {
    char buffer[1025];
    char *dir, *eon;
@@ -160,8 +141,6 @@ static char *mytempdir(void) {
    }
 }
 
-/* FIXME this uses native FILE *s because of weirdness with autotrace */
-
 void _SCAutoTrace(SplineChar * sc, int layer, char **args) {
    ImageList *images;
    char *pt;
@@ -170,21 +149,17 @@ void _SCAutoTrace(SplineChar * sc, int layer, char **args) {
    Color bgcol;
    double transform[6];
    int changed=false;
-   char tempname[1025];
    int ac, i;
-   FILE *ps;
-   int pid, status, fd;
+   AFILE *ps,*fd;
+   int pid, status;
 
    if (sc->layers[ly_back].images==NULL)
-      return;
+     return;
    for (images=sc->layers[ly_back].images; images != NULL;
 	images=images->next) {
-/* the linker tells me not to use tempnam(). Which does almost exactly what */
-/*  I want. So we go through a much more complex set of machinations to make */
-/*  it happy. */
       ib =
-	 images->image->list_len ==
-	 0?images->image->u.image:images->image->u.images[0];
+	images->image->list_len ==
+	0?images->image->u.image:images->image->u.images[0];
       if (ib->width==0 || ib->height==0) {
 	 /* pk fonts can have 0 sized bitmaps for space characters */
 	 /*  but autotrace gets all snooty about being given an empty image */
@@ -192,8 +167,11 @@ void _SCAutoTrace(SplineChar * sc, int layer, char **args) {
 	 /*  results anyway */
 	 continue;
       }
-      fd=mytempnam(tempname);
-      GImageWriteBmp(images->image, tempname);
+
+      fd=atmpfile();
+      GImageWrite_Bmp(images->image,fd);
+      afseek(fd,0,SEEK_SET);
+
       if (ib->trans==-1)
 	 bgcol=0xffffff;	/* reasonable guess */
       else if (ib->image_type==it_true)
@@ -206,50 +184,37 @@ void _SCAutoTrace(SplineChar * sc, int layer, char **args) {
       /* We can't use AutoTrace's own "background-color" ignorer because */
       /*  it ignores counters as well as surrounds. So "O" would be a dark */
       /*  oval, etc. */
-      ps=tmpfile();
 
-      potrace(tempname,ps);
+      ps=atmpfile();
+      potrace(fd,ps);
+      afclose(fd);
+      
+      afseek(ps,0,SEEK_SET);
+      new=localSplinesFromEntities(EntityInterpretPS(ps,NULL),bgcol);
+      afclose(ps);
+      
+      transform[0]=images->xscale;
+      transform[3]=images->yscale;
+      transform[1]=transform[2]=0;
+      transform[4]=images->xoff;
+      transform[5]=images->yoff-images->yscale * ib->height;
+      new=SplinePointListTransform(new, transform, tpt_AllPoints);
+      if (sc->layers[layer].order2) {
+	 SplineSet *o2=SplineSetsTTFApprox(new);
+	 
+	 SplinePointListsFree(new);
+	 new=o2;
+      }
+      if (new != NULL) {
+	 sc->parent->onlybitmaps=false;
+	 if (!changed)
+	   SCPreserveLayer(sc, layer, false);
+	 for (last=new; last->next != NULL; last=last->next);
+	 last->next=sc->layers[layer].splines;
+	 sc->layers[layer].splines=new;
+	 changed=true;
+      }
 
-	{
-	   AFILE *new_tmp_file;
-	   int c;
-	   
-	   rewind(ps);
-	   new_tmp_file=atmpfile();
-	   
-	   while ((c=fgetc(ps))>=0) aputc(c,new_tmp_file);
-	   afseek(new_tmp_file,0,SEEK_SET);
-	   
-	   new =
-	     localSplinesFromEntities(EntityInterpretPS(new_tmp_file, NULL), bgcol);
-	   afclose(new_tmp_file);
-	   
-	   transform[0]=images->xscale;
-	   transform[3]=images->yscale;
-	   transform[1]=transform[2]=0;
-	   transform[4]=images->xoff;
-	   transform[5]=images->yoff-images->yscale * ib->height;
-	   new=SplinePointListTransform(new, transform, tpt_AllPoints);
-	   if (sc->layers[layer].order2) {
-	      SplineSet *o2=SplineSetsTTFApprox(new);
-	      
-	      SplinePointListsFree(new);
-	      new=o2;
-	   }
-	   if (new != NULL) {
-	      sc->parent->onlybitmaps=false;
-	      if (!changed)
-		SCPreserveLayer(sc, layer, false);
-	      for (last=new; last->next != NULL; last=last->next);
-	      last->next=sc->layers[layer].splines;
-	      sc->layers[layer].splines=new;
-	      changed=true;
-	   }
-	}
-
-      fclose(ps);
-      close(fd);
-      unlink(tempname);		/* Might not be needed, but probably is */
    }
    if (changed)
       SCCharChangedUpdate(sc, layer, true);

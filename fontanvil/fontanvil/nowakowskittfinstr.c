@@ -1,4 +1,4 @@
-/* $Id: nowakowskittfinstr.c 4532 2015-12-22 13:18:53Z mskala $ */
+/* $Id: nowakowskittfinstr.c 4672 2016-02-24 09:01:30Z mskala $ */
 /* Copyright (C) 2000-2012 by
    George Williams, Michal Nowakowski & Alexey Kryukov */
 
@@ -4149,7 +4149,7 @@ static int ds_cmp(const void *_s1,const void *_s2) {
 }
 
 /* Takes a line defined by two points and returns a vector decribed as a
- * pair of x and y values, such that the value (x2 + y2) is equal to 1.
+ * pair of x and y values, such that the value (x2+y2) is equal to 1.
  * Note that the BasePoint structure is used to store the vector, although
  * it is not a point itself. This is just because that structure has "x"
  * and "y" fields which can be used for our purpose.

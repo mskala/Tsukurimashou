@@ -1,4 +1,4 @@
-/* $Id: afile.h 4524 2015-12-20 19:28:13Z mskala $ */
+/* $Id: afile.h 4677 2016-02-24 12:17:11Z mskala $ */
 /*
  * File abstraction for FontAnvil
  * Copyright (C) 2015  Matthew Skala
@@ -26,6 +26,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
+
+#include "_stdint.h"
 
 #include "fontanvil-config.h"
 

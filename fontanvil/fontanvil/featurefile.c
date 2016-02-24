@@ -1,4 +1,4 @@
-/* $Id: featurefile.c 4532 2015-12-22 13:18:53Z mskala $ */
+/* $Id: featurefile.c 4672 2016-02-24 09:01:30Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2012  Khaled Hosny
  * Copyright (C) 2013, 2014, 2015  Matthew Skala
@@ -1952,7 +1952,7 @@ static void dump_header_languagesystem(AFILE *out,SplineFont *sf) {
 	       uint32_t *langs=SFLangsInScript(sf, isgpos, scripts[s]);
 
 	       for (l=0; langs[l] != 0; ++l) {
-		  for (sf->gsplookups[isgpos];otl!=NULL;otl=otl->next) {
+		  for (otl=sf->gsplookups[isgpos];otl!=NULL;otl=otl->next) {
 		     for (fl=otl->features; fl != NULL; fl=fl->next)
 			if (fl->featuretag==feats[i]) {
 			   for (sl=fl->scripts; sl != NULL; sl=sl->next)

@@ -1,4 +1,4 @@
-/* $Id: splineoverlap.c 4532 2015-12-22 13:18:53Z mskala $ */
+/* $Id: splineoverlap.c 4675 2016-02-24 12:11:55Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -814,8 +814,10 @@ return;
 	    Monotonic *m2=chunkalloc(sizeof(Monotonic));
 	    BasePoint pt, inter;
             BasePoint oldend;
-            if (m->end != NULL) m->end->inter;
-            else {
+
+	    if (m->end != NULL)
+	      oldend=m->end->inter;
+	    else {
               oldend.x=0.0;
               oldend.y=0.0;
             }

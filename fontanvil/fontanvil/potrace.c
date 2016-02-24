@@ -33,6 +33,8 @@
 #include <math.h>
 #include <stdarg.h>
 
+#include "afile.h"
+
 /**********************************************************************/
 
 /* here we define some general list macros. Because they are macros,
@@ -242,13 +244,13 @@
    }							    	\
    do {			                               	    	\
       _hook1=&(list);				    	    	\
-      while ((a=*_hook1) != NULL && (b=a->next1) != NULL ) {  \
+      while ((a=*_hook1)!=NULL && (b=a->next1)!=NULL ) {  \
 	 _elt=b->next1;					\
 	 _list_merge_cond(listtype,a,b,cond,*_hook1);      	\
 	 _hook1=&((*_hook1)->next1);			    	\
 	 *_hook1=_elt;				        \
       }							    	\
-   } while (_hook1 != &(list));                                 \
+   } while (_hook1!=&(list));                                 \
    MACRO_END
 
 /* merge two sorted lists. Store result at &result */
@@ -338,8 +340,8 @@ static inline dpoint_t dpoint(point_t p) {
 static inline dpoint_t interval(double lambda,dpoint_t a,dpoint_t b) {
    dpoint_t res;
    
-   res.x=a.x + lambda * (b.x - a.x);
-   res.y=a.y + lambda * (b.y - a.y);
+   res.x=a.x+lambda*(b.x-a.x);
+   res.y=a.y+lambda*(b.y-a.y);
    return res;
 }
 
@@ -390,8 +392,8 @@ typedef struct trans_s trans_t;
 static inline dpoint_t trans(dpoint_t p,trans_t t) {
    dpoint_t res;
    
-   res.x=t.orig[0] + p.x * t.x[0] + p.y * t.y[0];
-   res.y=t.orig[1] + p.x * t.x[1] + p.y * t.y[1];
+   res.x=t.orig[0]+p.x*t.x[0]+p.y*t.y[0];
+   res.y=t.orig[1]+p.x*t.x[1]+p.y*t.y[1];
    return res;
 }
 
@@ -423,7 +425,7 @@ typedef struct potrace_param_s potrace_param_t;
 typedef unsigned long potrace_word;
 
 /* Internal bitmap format. The n-th scanline starts at scanline(n) =
-   (map + n*dy). Raster data is stored as a sequence of potrace_words
+   (map+n*dy). Raster data is stored as a sequence of potrace_words
    (NOT bytes). The leftmost bit of scanline n is the most significant
    bit of scanline(n)[0]. */
 struct potrace_bitmap_s {
@@ -486,8 +488,8 @@ struct dim_s {
 typedef struct dim_s dim_t;
 
 #define DIM_IN (72)
-#define DIM_CM (72 / 2.54)
-#define DIM_MM (72 / 25.4)
+#define DIM_CM (72/2.54)
+#define DIM_MM (72/25.4)
 #define DIM_PT (1)
 
 #define DEFAULT_DIM DIM_CM
@@ -518,10 +520,6 @@ struct info_s {
    int fillcolor;     /* rgb color code 0xrrggbb: fill color */
    double gamma;      /* gamma value for pgm backend */
    int longcoding;    /* do not optimize for file size? */
-   char *outfile;     /* output filename, if given */
-   char **infiles;    /* array of input filenames */
-   int infilecount;   /* number of input filenames */
-   int some_infiles;  /* do we process a list of input filenames? */
    double blacklevel; /* 0 to 1: black/white cutoff in input file */
    int grouping;      /* 0=flat; 1=connected components; 2=hierarchical */
 };
@@ -605,7 +603,7 @@ typedef potrace_path_t path_t;
 /* private part of the path and curve data structures */
 
 #define SAFE_CALLOC(var,n,typ) \
-  if ((var=(typ *)calloc(n,sizeof(typ))) == NULL) goto calloc_error 
+  if ((var=(typ *)calloc(n,sizeof(typ)))==NULL) goto calloc_error 
 
 /* ---------------------------------------------------------------------- */
 /* allocate and free path objects */
@@ -707,32 +705,32 @@ void privcurve_to_curve(privcurve_t *pc,potrace_curve_t *c) {
    compiler-specific fast implementations */
 
 /* lobit: return the position of the rightmost "1" bit of an int, or
-   32 if none. hibit: return 1 + the position of the leftmost "1" bit
+   32 if none. hibit: return 1+the position of the leftmost "1" bit
    of an int, or 0 if none. Note: these functions work on 32-bit
    integers. */
 
 static inline unsigned int lobit(unsigned int x) {
    unsigned int res=32;
-   while (x & 0xffffff) {
-      x <<= 8;
-      res -= 8;
+   while (x&0xffffff) {
+      x<<=8;
+      res-=8;
    }
    while (x) {
-      x <<= 1;
-      res -= 1;
+      x<<=1;
+      res-=1;
    }
    return res;
 }
 
 static inline unsigned int hibit(unsigned int x) {
    unsigned int res=0;
-   while (x > 0xff) {
-      x >>= 8;
-      res += 8;
+   while (x>0xff) {
+      x>>=8;
+      res+=8;
    }
    while (x) {
-      x >>= 1;
-      res += 1;
+      x>>=1;
+      res+=1;
    }
    return res;
 }
@@ -750,15 +748,15 @@ static inline unsigned int hibit(unsigned int x) {
 /* macros for accessing pixel at index (x,y). U* macros omit the
    bounds check. */
 
-#define bm_scanline(bm,y) ((bm)->map + (ptrdiff_t)(y)*(ptrdiff_t)(bm)->dy)
+#define bm_scanline(bm,y) ((bm)->map+(ptrdiff_t)(y)*(ptrdiff_t)(bm)->dy)
 #define bm_index(bm,x,y) (&bm_scanline(bm,y)[(x)/BM_WORDBITS])
-#define bm_mask(x) (BM_HIBIT >> ((x) & (BM_WORDBITS-1)))
-#define bm_range(x,a) ((int)(x) >= 0 && (int)(x) < (a))
+#define bm_mask(x) (BM_HIBIT>>((x)&(BM_WORDBITS-1)))
+#define bm_range(x,a) ((int)(x) >= 0 && (int)(x)<(a))
 #define bm_safe(bm,x,y) (bm_range(x,(bm)->w) && bm_range(y,(bm)->h))
-#define BM_UGET(bm,x,y) ((*bm_index(bm,x,y) & bm_mask(x)) != 0)
-#define BM_USET(bm,x,y) (*bm_index(bm,x,y) |= bm_mask(x))
-#define BM_UCLR(bm,x,y) (*bm_index(bm,x,y) &= ~bm_mask(x))
-#define BM_UINV(bm,x,y) (*bm_index(bm,x,y) ^= bm_mask(x))
+#define BM_UGET(bm,x,y) ((*bm_index(bm,x,y)&bm_mask(x))!=0)
+#define BM_USET(bm,x,y) (*bm_index(bm,x,y)|=bm_mask(x))
+#define BM_UCLR(bm,x,y) (*bm_index(bm,x,y)&=~bm_mask(x))
+#define BM_UINV(bm,x,y) (*bm_index(bm,x,y)^=bm_mask(x))
 #define BM_UPUT(bm,x,y,b) ((b)?BM_USET(bm,x,y):BM_UCLR(bm,x,y))
 #define BM_GET(bm,x,y) (bm_safe(bm,x,y)?BM_UGET(bm,x,y):0)
 #define BM_SET(bm,x,y) (bm_safe(bm,x,y)?BM_USET(bm,x,y):0)
@@ -778,11 +776,11 @@ static inline void bm_free(potrace_bitmap_t *bm) {
    Assumes w, h >= 0. */
 static inline potrace_bitmap_t *bm_new(int w,int h) {
    potrace_bitmap_t *bm;
-   int dy=w == 0?0:(w - 1) / BM_WORDBITS + 1;
-   ptrdiff_t size=(ptrdiff_t)dy * (ptrdiff_t)h * (ptrdiff_t)BM_WORDSIZE;
+   int dy=w==0?0:(w-1)/BM_WORDBITS+1;
+   ptrdiff_t size=(ptrdiff_t)dy*(ptrdiff_t)h*(ptrdiff_t)BM_WORDSIZE;
 
    /* check for overflow error */
-   if (size < 0 || (h != 0 && dy != 0 && size / h / dy != BM_WORDSIZE)) {
+   if (size<0 || (h!=0 && dy!=0 && size/h/dy!=BM_WORDSIZE)) {
       errno=ENOMEM;
       return NULL;
    }
@@ -806,14 +804,14 @@ static inline potrace_bitmap_t *bm_new(int w,int h) {
 static inline void bm_clear(potrace_bitmap_t *bm,int c) {
   /* Note: if the bitmap was created with bm_new, then it is
      guaranteed that size will fit into the ptrdiff_t type. */
-   ptrdiff_t size=(ptrdiff_t)bm->dy * (ptrdiff_t)bm->h * (ptrdiff_t)BM_WORDSIZE;
+   ptrdiff_t size=(ptrdiff_t)bm->dy*(ptrdiff_t)bm->h*(ptrdiff_t)BM_WORDSIZE;
    memset(bm->map,c?-1:0,size);
 }
 
 /* duplicate the given bitmap. Return NULL on error with errno set. */
 static inline potrace_bitmap_t *bm_dup(const potrace_bitmap_t *bm) {
    potrace_bitmap_t *bm1=bm_new(bm->w,bm->h);
-   ptrdiff_t size=(ptrdiff_t)bm->dy * (ptrdiff_t)bm->h * (ptrdiff_t)BM_WORDSIZE;
+   ptrdiff_t size=(ptrdiff_t)bm->dy*(ptrdiff_t)bm->h*(ptrdiff_t)BM_WORDSIZE;
    if (!bm1) {
       return NULL;
    }
@@ -826,14 +824,14 @@ static inline potrace_bitmap_t *bm_dup(const potrace_bitmap_t *bm) {
 
 /* read next character after whitespace and comments. Return EOF on
    end of file or error. */
-static int fgetc_ws(FILE *f) {
+static int fgetc_ws(AFILE *f) {
    int c;
 
    while (1) {
-      c=fgetc(f);
+      c=agetc(f);
       if (c=='#') {
 	 while (1) {
-	    c=fgetc(f);
+	    c=agetc(f);
 	    if (c=='\n' || c==EOF) {
 	       break;
 	    }
@@ -850,7 +848,7 @@ static int fgetc_ws(FILE *f) {
    bad characters). Do not the read any characters following the
    number (put next character back into the stream) */
 
-static int readnum(FILE *f) {
+static int readnum(AFILE *f) {
    int c;
    int acc;
 
@@ -868,16 +866,16 @@ static int readnum(FILE *f) {
    /* first digit is already in c */
    acc=c-'0';
    while (1) {
-      c=fgetc(f);
+      c=agetc(f);
       if (c==EOF) {
 	 break;
       }
       if (c<'0' || c>'9') {
-	 ungetc(c,f);
+	 aungetc(c,f);
 	 break;
       }
       acc *= 10;
-      acc += c-'0';
+      acc+=c-'0';
    }
    return acc;
 }
@@ -885,7 +883,7 @@ static int readnum(FILE *f) {
 /* similar to readnum, but read only a single 0 or 1, and do not read
    any characters after it. */
 
-static int readbit(FILE *f) {
+static int readbit(AFILE *f) {
    int c;
 
    /* skip whitespace and comments */
@@ -903,207 +901,9 @@ static int readbit(FILE *f) {
 }
 
 /* ---------------------------------------------------------------------- */
-/* read PNM format */
+/* read BMP format */
 
 char *bm_read_error=NULL;
-
-/* read PNM stream after magic number. Return values as for bm_read */
-static int bm_readbody_pnm(FILE *f,double threshold,potrace_bitmap_t **bmp,int magic) {
-   potrace_bitmap_t *bm;
-   int x,y,i,b,b1,sum;
-   int bpr; /* bytes per row (as opposed to 4*bm->c) */
-   int w,h,max;
-   
-   bm=NULL;
-   
-   w=readnum(f);
-   if (w<0) {
-      goto format_error;
-   }
-   
-   h=readnum(f);
-   if (h<0) {
-      goto format_error;
-   }
-   
-   /* allocate bitmap */
-   bm=bm_new(w,h);
-   if (!bm) {
-      return -1;
-   }
-   
-   /* zero it out */
-   bm_clear(bm,0);
-
-   switch (magic) {
-    default: 
-      /* not reached */
-      goto format_error;  
-      
-    case '1':
-      /* read P1 format: PBM ascii */
-      
-      for (y=h-1; y>=0; y--) {
-	 for (x=0; x<w; x++) {
-	    b=readbit(f);
-	    if (b<0) {
-	       goto eof;
-	    }
-	    BM_UPUT(bm,x,y,b);
-	 }
-      }
-      break;
-      
-    case '2':
-      /* read P2 format: PGM ascii */
-      
-      max=readnum(f);
-      if (max<1) {
-	 goto format_error;
-      }
-      
-      for (y=h-1; y>=0; y--) {
-	 for (x=0; x<w; x++) {
-	    b=readnum(f);
-	    if (b<0) {
-	       goto eof;
-	    }
-	    BM_UPUT(bm,x,y,b > threshold * max?0:1);
-	 }
-      }
-      break;
-      
-    case '3':
-      /* read P3 format: PPM ascii */
-      
-      max=readnum(f);
-      if (max<1) {
-	 goto format_error;
-      }
-      
-      for (y=h-1; y>=0; y--) {
-	 for (x=0; x<w; x++) {
-	    sum=0;
-	    for (i=0; i<3; i++) {
-	       b=readnum(f);
-	       if (b<0) {
-		  goto eof;
-	       }
-	       sum += b;
-	    }
-	    BM_UPUT(bm,x,y,sum > 3 * threshold * max?0:1);
-	 }
-      }
-      break;
-      
-    case '4':
-      /* read P4 format: PBM raw */
-      
-      b=fgetc(f);  /* read single white-space character after height */
-      if (b==EOF) {
-	 goto format_error;
-      }
-      
-      bpr=(w+7)/8;
-      
-      for (y=h-1; y>=0; y--) {
-	 for (i=0; i<bpr; i++) {
-	    b=fgetc(f);
-	    if (b==EOF) {
-	       goto eof;
-	    }
-	    *bm_index(bm,i*8,y) |= ((potrace_word)b) << (8*(BM_WORDSIZE-1-(i % BM_WORDSIZE)));
-	 }
-      }
-      break;
-      
-    case '5':
-      /* read P5 format: PGM raw */
-      
-      max=readnum(f);
-      if (max<1) {
-	 goto format_error;
-      }
-      
-      b=fgetc(f);  /* read single white-space character after max */
-      if (b==EOF) {
-	 goto format_error;
-      }
-      
-      for (y=h-1; y>=0; y--) {
-	 for (x=0; x<w; x++) {
-	    b=fgetc(f);
-	    if (b==EOF)
-	      goto eof;
-	    if (max>=256) {
-	       b <<= 8;
-	       b1=fgetc(f);
-	       if (b1==EOF)
-		 goto eof;
-	       b |= b1;
-	    }
-	    BM_UPUT(bm,x,y,b > threshold * max?0:1);
-	 }
-      }
-      break;
-      
-    case '6':
-      /* read P6 format: PPM raw */
-      
-      max=readnum(f);
-      if (max<1) {
-	 goto format_error;
-      }
-      
-      b=fgetc(f);  /* read single white-space character after max */
-      if (b==EOF) {
-	 goto format_error;
-      }
-      
-      for (y=h-1; y>=0; y--) {
-	 for (x=0; x<w; x++) {
-	    sum=0;
-	    for (i=0; i<3; i++) {
-	       b=fgetc(f);
-	       if (b==EOF) {
-		  goto eof;
-	       }
-	       if (max>=256) {
-		  b <<= 8;
-		  b1=fgetc(f);
-		  if (b1==EOF)
-		    goto eof;
-		  b |= b1;
-	       }
-	       sum += b;
-	    }
-	    BM_UPUT(bm,x,y,sum > 3 * threshold * max?0:1);
-	 }
-      }
-      break;
-   }
-   
-   *bmp=bm;
-   return 0;
-   
-eof:
-   *bmp=bm;
-   return 1;
-   
-format_error:
-   bm_free(bm);
-   if (magic == '1' || magic == '4') {
-      bm_read_error="invalid pbm file";
-   } else if (magic == '2' || magic == '5') {
-      bm_read_error="invalid pgm file";
-   } else {
-      bm_read_error="invalid ppm file";
-   }
-   return -2;
-}
-
-/* ---------------------------------------------------------------------- */
-/* read BMP format */
 
 struct bmp_info_s {
    unsigned int FileSize;
@@ -1136,20 +936,20 @@ static int bmp_pos=0;   /* counter from start of BMP data */
 
 /* read n-byte little-endian integer. Return 1 on EOF or error, else
    0. Assume n<=4. */
-static int bmp_readint(FILE *f,int n,unsigned int *p) {
+static int bmp_readint(AFILE *f,int n,unsigned int *p) {
    int i;
    unsigned int sum=0;
    int b;
    
    for (i=0; i<n; i++) {
-      b=fgetc(f);
+      b=agetc(f);
       if (b==EOF) {
 	 return 1;
       }
-      sum += b << (8*i);
+      sum+=b<<(8*i);
    }
-   bmp_count += n;
-   bmp_pos += n;
+   bmp_count+=n;
+   bmp_pos+=n;
    *p=sum;
    return 0;
 }
@@ -1161,27 +961,27 @@ static void bmp_pad_reset(void) {
 
 /* read padding bytes to 4-byte boundary. Return 1 on EOF or error,
    else 0. */
-static int bmp_pad(FILE *f) {
+static int bmp_pad(AFILE *f) {
    int c,i,b;
 
-   c=(-bmp_count) & 3;
+   c=(-bmp_count)&3;
    for (i=0; i<c; i++) {
-      b=fgetc(f);
+      b=agetc(f);
       if (b==EOF) {
 	 return 1;
       }
    }
-   bmp_pos += c;
+   bmp_pos+=c;
    bmp_count=0;
    return 0;
 }
   
 /* forward to the new file position. Return 1 on EOF or error, else 0 */
-static int bmp_forward(FILE *f,int pos) {
+static int bmp_forward(AFILE *f,int pos) {
    int b;
    
-   while (bmp_pos < pos) {
-      b=fgetc(f);
+   while (bmp_pos<pos) {
+      b=agetc(f);
       if (b==EOF) {
 	 return 1;
       }
@@ -1198,16 +998,16 @@ static int bmp_forward(FILE *f,int pos) {
 #define ycorr(y) (bmpinfo.topdown?bmpinfo.h-1-y:y)
 
 /* safe colortable access */
-#define COLTABLE(c) ((c) < bmpinfo.ncolors?coltable[(c)]:0)
+#define COLTABLE(c) ((c)<bmpinfo.ncolors?coltable[(c)]:0)
 
-/* read BMP stream after magic number. Return values as for bm_read.
+/* read BMP stream.  Return values as for bm_read.
    We choose to be as permissive as possible, since there are many
-   programs out there which produce BMP. For instance, ppmtobmp can
+   programs out there which produce BMP.  For instance, ppmtobmp can
    produce codings with anywhere from 1-8 or 24 bits per sample,
-   although most specifications only allow 1,4,8,24,32. We can also
+   although most specifications only allow 1,4,8,24,32.  We can also
    read both the old and new OS/2 BMP formats in addition to the
    Windows BMP format. */
-static int bm_readbody_bmp(FILE *f,double threshold,potrace_bitmap_t **bmp) {
+static int bm_readbody_bmp(AFILE *f,double threshold,potrace_bitmap_t **bmp) {
    bmp_info_t bmpinfo;
    int *coltable;
    unsigned int b,c;
@@ -1225,6 +1025,9 @@ static int bm_readbody_bmp(FILE *f,double threshold,potrace_bitmap_t **bmp) {
    bm=NULL;
    coltable=NULL;
    
+   agetc(f);
+   agetc(f);
+   
    bmp_pos=2;  /* set file position */
    
    /* file header (minus magic number) */
@@ -1234,8 +1037,8 @@ static int bm_readbody_bmp(FILE *f,double threshold,potrace_bitmap_t **bmp) {
    
    /* info header */
    TRY(bmp_readint(f,4,&bmpinfo.InfoSize));
-   if (bmpinfo.InfoSize == 40 || bmpinfo.InfoSize == 64
-       || bmpinfo.InfoSize == 108 || bmpinfo.InfoSize == 124) {
+   if (bmpinfo.InfoSize==40 || bmpinfo.InfoSize==64
+       || bmpinfo.InfoSize==108 || bmpinfo.InfoSize==124) {
       /* Windows or new OS/2 format */
       bmpinfo.ctbits=32; /* sample size in color table */
       TRY(bmp_readint(f,4,&bmpinfo.w));
@@ -1254,19 +1057,19 @@ static int bm_readbody_bmp(FILE *f,double threshold,potrace_bitmap_t **bmp) {
 	 TRY(bmp_readint(f,4,&bmpinfo.BlueMask));
 	 TRY(bmp_readint(f,4,&bmpinfo.AlphaMask));
       }
-      if (bmpinfo.w > 0x7fffffff) {
+      if (bmpinfo.w>0x7fffffff) {
 	 goto format_error;
       }
-      if (bmpinfo.h > 0x7fffffff) {
-	 bmpinfo.h=(-bmpinfo.h) & 0xffffffff;
+      if (bmpinfo.h>0x7fffffff) {
+	 bmpinfo.h=(-bmpinfo.h)&0xffffffff;
 	 bmpinfo.topdown=1;
       } else {
 	 bmpinfo.topdown=0;
       }
-      if (bmpinfo.h > 0x7fffffff) {
+      if (bmpinfo.h>0x7fffffff) {
 	 goto format_error;
       }
-   } else if (bmpinfo.InfoSize == 12) {
+   } else if (bmpinfo.InfoSize==12) {
       /* old OS/2 format */
       bmpinfo.ctbits=24; /* sample size in color table */
       TRY(bmp_readint(f,2,&bmpinfo.w));
@@ -1280,24 +1083,24 @@ static int bm_readbody_bmp(FILE *f,double threshold,potrace_bitmap_t **bmp) {
       goto format_error;
    }
 
-   if (bmpinfo.comp == 3 && bmpinfo.InfoSize < 108)
+   if (bmpinfo.comp==3 && bmpinfo.InfoSize<108)
      /* bitfield feature is only understood with V4 and V5 format */
      goto format_error;
 
    
-   if (bmpinfo.comp > 3 || bmpinfo.bits > 32)
+   if (bmpinfo.comp>3 || bmpinfo.bits>32)
      goto format_error;
    
-   /* forward to color table (e.g., if bmpinfo.InfoSize == 64) */
+   /* forward to color table (e.g., if bmpinfo.InfoSize==64) */
    TRY(bmp_forward(f,14+bmpinfo.InfoSize));
    
-   if (bmpinfo.Planes != 1) {
+   if (bmpinfo.Planes!=1) {
       bm_read_error="cannot handle bmp planes";
       goto format_error;  /* can't handle planes */
    }
    
-   if (bmpinfo.ncolors == 0) {
-      bmpinfo.ncolors=1 << bmpinfo.bits;
+   if (bmpinfo.ncolors==0) {
+      bmpinfo.ncolors=1<<bmpinfo.bits;
    }
    
    /* color table, present only if bmpinfo.bits <= 8. */
@@ -1310,8 +1113,8 @@ static int bm_readbody_bmp(FILE *f,double threshold,potrace_bitmap_t **bmp) {
        the color table entries to bits. */
       for (i=0; i<bmpinfo.ncolors; i++) {
 	 TRY(bmp_readint(f,bmpinfo.ctbits/8,&c));
-	 c=((c>>16) & 0xff) + ((c>>8) & 0xff) + (c & 0xff);
-	 coltable[i]=(c > 3 * threshold * 255?0:1);
+	 c=((c>>16)&0xff)+((c>>8)&0xff)+(c&0xff);
+	 coltable[i]=(c>3*threshold*255?0:1);
 	 if (i<2) {
 	    col1[i]=c;
 	 }
@@ -1319,7 +1122,7 @@ static int bm_readbody_bmp(FILE *f,double threshold,potrace_bitmap_t **bmp) {
    }
    
    /* forward to data */
-   if (bmpinfo.InfoSize != 12) { /* not old OS/2 format */
+   if (bmpinfo.InfoSize!=12) { /* not old OS/2 format */
       TRY(bmp_forward(f,bmpinfo.DataOffset));
    }
    
@@ -1331,14 +1134,14 @@ static int bm_readbody_bmp(FILE *f,double threshold,potrace_bitmap_t **bmp) {
    /* zero it out */
    bm_clear(bm,0);
    
-   switch (bmpinfo.bits + 0x100*bmpinfo.comp) {
+   switch (bmpinfo.bits+0x100*bmpinfo.comp) {
       
     default:
       goto format_error;
       break;
       
     case 0x001:  /* monochrome palette */
-      if (col1[0] < col1[1]) { /* make the darker color black */
+      if (col1[0]<col1[1]) { /* make the darker color black */
 	 mask=0xff;
       } else {
 	 mask=0;
@@ -1349,8 +1152,8 @@ static int bm_readbody_bmp(FILE *f,double threshold,potrace_bitmap_t **bmp) {
 	 bmp_pad_reset();
 	 for (i=0; 8*i<bmpinfo.w; i++) {
 	    TRY_EOF(bmp_readint(f,1,&b));
-	    b ^= mask;
-	    *bm_index(bm,i*8,ycorr(y)) |= ((potrace_word)b) << (8*(BM_WORDSIZE-1-(i % BM_WORDSIZE)));
+	    b^=mask;
+	    *bm_index(bm,i*8,ycorr(y))|=((potrace_word)b)<<(8*(BM_WORDSIZE-1-(i % BM_WORDSIZE)));
 	 }
 	 TRY(bmp_pad(f));
       }
@@ -1368,14 +1171,14 @@ static int bm_readbody_bmp(FILE *f,double threshold,potrace_bitmap_t **bmp) {
 	 bitbuf=0;  /* bit buffer: bits in buffer are high-aligned */
 	 n=0;       /* number of bits currently in bitbuffer */
 	 for (x=0; x<bmpinfo.w; x++) {
-	    if (n < bmpinfo.bits) {
+	    if (n<bmpinfo.bits) {
 	       TRY_EOF(bmp_readint(f,1,&b));
-	       bitbuf |= b << (INTBITS - 8 - n);
-	       n += 8;
+	       bitbuf|=b<<(INTBITS-8-n);
+	       n+=8;
 	    }
-	    b=bitbuf >> (INTBITS - bmpinfo.bits);
-	    bitbuf <<= bmpinfo.bits;
-	    n -= bmpinfo.bits;
+	    b=bitbuf>>(INTBITS-bmpinfo.bits);
+	    bitbuf<<=bmpinfo.bits;
+	    n-=bmpinfo.bits;
 	    BM_UPUT(bm,x,ycorr(y),COLTABLE(b));
 	 }
 	 TRY(bmp_pad(f));
@@ -1395,8 +1198,8 @@ static int bm_readbody_bmp(FILE *f,double threshold,potrace_bitmap_t **bmp) {
 	 bmp_pad_reset();
 	 for (x=0; x<bmpinfo.w; x++) {
 	    TRY_EOF(bmp_readint(f,bmpinfo.bits/8,&c));
-	    c=((c>>16) & 0xff) + ((c>>8) & 0xff) + (c & 0xff);
-	    BM_UPUT(bm,x,ycorr(y),c > 3 * threshold * 255?0:1);
+	    c=((c>>16)&0xff)+((c>>8)&0xff)+(c&0xff);
+	    BM_UPUT(bm,x,ycorr(y),c>3*threshold*255?0:1);
 	 }
 	 TRY(bmp_pad(f));
       }
@@ -1411,8 +1214,8 @@ static int bm_readbody_bmp(FILE *f,double threshold,potrace_bitmap_t **bmp) {
 	 bmp_pad_reset();
 	 for (x=0; x<bmpinfo.w; x++) {
 	    TRY_EOF(bmp_readint(f,bmpinfo.bits/8,&c));
-	    c=((c & bmpinfo.RedMask) >> redshift) + ((c & bmpinfo.GreenMask) >> greenshift) + ((c & bmpinfo.BlueMask) >> blueshift);
-	    BM_UPUT(bm,x,ycorr(y),c > 3 * threshold * 255?0:1);
+	    c=((c&bmpinfo.RedMask)>>redshift)+((c&bmpinfo.GreenMask)>>greenshift)+((c&bmpinfo.BlueMask)>>blueshift);
+	    BM_UPUT(bm,x,ycorr(y),c>3*threshold*255?0:1);
 	 }
 	 TRY(bmp_pad(f));
       }
@@ -1427,8 +1230,8 @@ static int bm_readbody_bmp(FILE *f,double threshold,potrace_bitmap_t **bmp) {
 	 TRY_EOF(bmp_readint(f,1,&c)); /* argument */
 	 if (b>0) {
 	    /* repeat count */
-	    col[0]=COLTABLE((c>>4) & 0xf);
-	    col[1]=COLTABLE(c & 0xf);
+	    col[0]=COLTABLE((c>>4)&0xf);
+	    col[1]=COLTABLE(c&0xf);
 	    for (i=0; i<b && x<bmpinfo.w; i++) {
 	       if (x>=bmpinfo.w) {
 		  x=0;
@@ -1440,19 +1243,19 @@ static int bm_readbody_bmp(FILE *f,double threshold,potrace_bitmap_t **bmp) {
 	       BM_UPUT(bm,x,ycorr(y),col[i&1]);
 	       x++;
 	    }
-	 } else if (c == 0) {
+	 } else if (c==0) {
 	    /* end of line */
 	    y++;
 	    x=0;
-	 } else if (c == 1) {
+	 } else if (c==1) {
 	    /* end of bitmap */
 	    break;
-	 } else if (c == 2) {
+	 } else if (c==2) {
 	    /* "delta": skip pixels in x and y directions */
 	    TRY_EOF(bmp_readint(f,1,&b)); /* x offset */
 	    TRY_EOF(bmp_readint(f,1,&c)); /* y offset */
-	    x += b;
-	    y += c;
+	    x+=b;
+	    y+=c;
 	 } else {
 	    /* verbatim segment */
 	    for (i=0; i<c; i++) {
@@ -1466,10 +1269,10 @@ static int bm_readbody_bmp(FILE *f,double threshold,potrace_bitmap_t **bmp) {
 	       if (y>=bmpinfo.h) {
 		  break;
 	       }
-	       BM_PUT(bm,x,ycorr(y),COLTABLE((b>>(4-4*(i&1))) & 0xf));
+	       BM_PUT(bm,x,ycorr(y),COLTABLE((b>>(4-4*(i&1)))&0xf));
 	       x++;
 	    }
-	    if ((c+1) & 2) {
+	    if ((c+1)&2) {
 	       /* pad to 16-bit boundary */
 	       TRY_EOF(bmp_readint(f,1,&b));
 	    }
@@ -1496,19 +1299,19 @@ static int bm_readbody_bmp(FILE *f,double threshold,potrace_bitmap_t **bmp) {
 	       BM_UPUT(bm,x,ycorr(y),COLTABLE(c));
 	       x++;
 	    }
-	 } else if (c == 0) {
+	 } else if (c==0) {
 	    /* end of line */
 	    y++;
 	    x=0;
-	 } else if (c == 1) {
+	 } else if (c==1) {
 	    /* end of bitmap */
 	    break;
-	 } else if (c == 2) {
+	 } else if (c==2) {
 	    /* "delta": skip pixels in x and y directions */
 	    TRY_EOF(bmp_readint(f,1,&b)); /* x offset */
 	    TRY_EOF(bmp_readint(f,1,&c)); /* y offset */
-	    x += b;
-	    y += c;
+	    x+=b;
+	    y+=c;
 	 } else {
 	    /* verbatim segment */
 	    for (i=0; i<c; i++) {
@@ -1523,7 +1326,7 @@ static int bm_readbody_bmp(FILE *f,double threshold,potrace_bitmap_t **bmp) {
 	       BM_PUT(bm,x,ycorr(y),COLTABLE(b));
 	       x++;
 	    }
-	    if (c & 1) {
+	    if (c&1) {
 	       /* pad input to 16-bit boundary */
 	       TRY_EOF(bmp_readint(f,1,&b));
 	    }
@@ -1561,38 +1364,6 @@ std_error:
    return -1;
 }
 
-/* ---------------------------------------------------------------------- */
-
-/* read a PNM stream: P1-P6 format (see pnm(5)), or a BMP stream, and
-   convert the output to a bitmap. Return bitmap in *bmp. Return 0 on
-   success, -1 on error with errno set, -2 on bad file format (with
-   error message in bm_read_error), and 1 on premature end of file, -3
-   on empty file (including files which contain only whitespace and
-   comments), -4 if wrong magic number. If the return value is >=0,
-   *bmp is valid. */
-
-static int bm_read(FILE *f,double threshold,potrace_bitmap_t **bmp) {
-   int magic[2];
-
-  /* read magic number. We ignore whitespace and comments before the
-     magic, for the benefit of concatenated files in P1-P3 format.
-     Multiple P1-P3 images in a single file are not formally allowed
-     by the PNM standard, but there is no harm in being lenient. */
-
-   magic[0]=fgetc_ws(f);
-   if (magic[0] == EOF) {
-      return -3;
-   } 
-   magic[1]=fgetc(f);
-   if (magic[0] == 'P' && magic[1] >= '1' && magic[1] <= '6') {
-      return bm_readbody_pnm(f,threshold,bmp,magic[1]);
-   }
-   if (magic[0] == 'B' && magic[1] == 'M') {
-      return bm_readbody_bmp(f,threshold,bmp);
-   }
-   return -4;
-}
-
 /**********************************************************************/
 
 /* ---------------------------------------------------------------------- */
@@ -1618,8 +1389,8 @@ static inline int detrand(int x,int y) {
 
   /* 0x04b3e375 and 0x05a8ef93 are chosen to contain every possible
      5-bit sequence */
-   z=((0x04b3e375 * x) ^ y) * 0x05a8ef93;
-   z=t[z & 0xff] ^ t[(z>>8) & 0xff] ^ t[(z>>16) & 0xff] ^ t[(z>>24) & 0xff];
+   z=((0x04b3e375*x)^y)*0x05a8ef93;
+   z=t[z&0xff]^t[(z>>8)&0xff]^t[(z>>16)&0xff]^t[(z>>24)&0xff];
    return z;
 }
 
@@ -1631,10 +1402,10 @@ static void bm_clearexcess(potrace_bitmap_t *bm) {
    potrace_word mask;
    int y;
 
-   if (bm->w % BM_WORDBITS != 0) {
-      mask=BM_ALLBITS << (BM_WORDBITS - (bm->w % BM_WORDBITS));
+   if (bm->w % BM_WORDBITS!=0) {
+      mask=BM_ALLBITS<<(BM_WORDBITS-(bm->w % BM_WORDBITS));
       for (y=0; y<bm->h; y++) {
-	 *bm_index(bm,bm->w,y) &= mask;
+	 *bm_index(bm,bm->w,y)&=mask;
       }
    }
 }
@@ -1647,8 +1418,8 @@ typedef struct bbox_s bbox_t;
 /* clear the bm, assuming the bounding box is set correctly (faster
    than clearing the whole bitmap) */
 static void clear_bm_with_bbox(potrace_bitmap_t *bm,bbox_t *bbox) {
-   int imin=(bbox->x0 / BM_WORDBITS);
-   int imax=((bbox->x1 + BM_WORDBITS-1) / BM_WORDBITS);
+   int imin=(bbox->x0/BM_WORDBITS);
+   int imax=((bbox->x1+BM_WORDBITS-1)/BM_WORDBITS);
    int i,y;
    
    for (y=bbox->y0; y<bbox->y1; y++) {
@@ -1669,10 +1440,10 @@ static int majority(potrace_bitmap_t *bm,int x,int y) {
    for (i=2; i<5; i++) { /* check at "radius" i */
       ct=0;
       for (a=-i+1; a<=i-1; a++) {
-	 ct += BM_GET(bm,x+a,y+i-1)?1:-1;
-	 ct += BM_GET(bm,x+i-1,y+a-1)?1:-1;
-	 ct += BM_GET(bm,x+a-1,y-i)?1:-1;
-	 ct += BM_GET(bm,x-i,y+a)?1:-1;
+	 ct+=BM_GET(bm,x+a,y+i-1)?1:-1;
+	 ct+=BM_GET(bm,x+i-1,y+a-1)?1:-1;
+	 ct+=BM_GET(bm,x+a-1,y-i)?1:-1;
+	 ct+=BM_GET(bm,x-i,y+a)?1:-1;
       }
       if (ct>0) {
 	 return 1;
@@ -1689,23 +1460,23 @@ static int majority(potrace_bitmap_t *bm,int x,int y) {
 /* efficiently invert bits [x,infty) and [xa,infty) in line y. Here xa
    must be a multiple of BM_WORDBITS. */
 static void xor_to_ref(potrace_bitmap_t *bm,int x,int y,int xa) {
-   int xhi=x & -BM_WORDBITS;
-   int xlo=x & (BM_WORDBITS-1);  /*=x % BM_WORDBITS */
+   int xhi=x&-BM_WORDBITS;
+   int xlo=x&(BM_WORDBITS-1);  /*=x % BM_WORDBITS */
    int i;
    
    if (xhi<xa) {
-      for (i=xhi; i < xa; i+=BM_WORDBITS) {
-	 *bm_index(bm,i,y) ^= BM_ALLBITS;
+      for (i=xhi; i<xa; i+=BM_WORDBITS) {
+	 *bm_index(bm,i,y)^=BM_ALLBITS;
       }
    } else {
-      for (i=xa; i < xhi; i+=BM_WORDBITS) {
-	 *bm_index(bm,i,y) ^= BM_ALLBITS;
+      for (i=xa; i<xhi; i+=BM_WORDBITS) {
+	 *bm_index(bm,i,y)^=BM_ALLBITS;
       }
    }
    /* note: the following "if" is needed because x86 treats a<<b as
       a<<(b&31). I spent hours looking for this bug. */
    if (xlo)
-     *bm_index(bm,xhi,y) ^= (BM_ALLBITS << (BM_WORDBITS - xlo));
+     *bm_index(bm,xhi,y)^=(BM_ALLBITS<<(BM_WORDBITS-xlo));
 }
 
 /* a path is represented as an array of points, which are thought to
@@ -1725,12 +1496,12 @@ static void xor_path(potrace_bitmap_t *bm,path_t *p) {
    
    y1=p->priv->pt[p->priv->len-1].y;
    
-   xa=p->priv->pt[0].x & -BM_WORDBITS;
+   xa=p->priv->pt[0].x&-BM_WORDBITS;
    for (k=0; k<p->priv->len; k++) {
       x=p->priv->pt[k].x;
       y=p->priv->pt[k].y;
       
-      if (y != y1) {
+      if (y!=y1) {
 	 /* efficiently invert the rectangle [x,xa] x [y,y1] */
 	 xor_to_ref(bm,x,min(y,y1),xa);
 	 y1=y;
@@ -1753,13 +1524,13 @@ static void setbbox_path(bbox_t *bbox,path_t *p) {
       x=p->priv->pt[k].x;
       y=p->priv->pt[k].y;
 
-      if (x < bbox->x0)
+      if (x<bbox->x0)
 	bbox->x0=x;
-      if (x > bbox->x1)
+      if (x>bbox->x1)
 	bbox->x1=x;
-      if (y < bbox->y0)
+      if (y<bbox->y0)
 	bbox->y0=y;
-      if (y > bbox->y1)
+      if (y>bbox->y1)
 	bbox->y1=y;
    }
 }
@@ -1788,9 +1559,9 @@ static path_t *findpath(potrace_bitmap_t *bm,int x0,int y0,int sign,int turnpoli
    while (1) {
       /* add point to path */
       if (len>=size) {
-	 size += 100;
-	 size=(int)(1.3 * size);
-	 pt1=(point_t *)realloc(pt,size * sizeof(point_t));
+	 size+=100;
+	 size=(int)(1.3*size);
+	 pt1=(point_t *)realloc(pt,size*sizeof(point_t));
 	 if (!pt1) {
 	    goto error;
 	 }
@@ -1801,9 +1572,9 @@ static path_t *findpath(potrace_bitmap_t *bm,int x0,int y0,int sign,int turnpoli
       len++;
       
       /* move to next point */
-      x += dirx;
-      y += diry;
-      area += x*diry;
+      x+=dirx;
+      y+=diry;
+      area+=x*diry;
     
       /* path complete? */
       if (x==x0 && y==y0) {
@@ -1811,16 +1582,16 @@ static path_t *findpath(potrace_bitmap_t *bm,int x0,int y0,int sign,int turnpoli
       }
       
       /* determine next direction */
-      c=BM_GET(bm,x + (dirx+diry-1)/2,y + (diry-dirx-1)/2);
-      d=BM_GET(bm,x + (dirx-diry-1)/2,y + (diry+dirx-1)/2);
+      c=BM_GET(bm,x+(dirx+diry-1)/2,y+(diry-dirx-1)/2);
+      d=BM_GET(bm,x+(dirx-diry-1)/2,y+(diry+dirx-1)/2);
       
       if (c && !d) {               /* ambiguous turn */
-	 if (turnpolicy == POTRACE_TURNPOLICY_RIGHT
-	     || (turnpolicy == POTRACE_TURNPOLICY_BLACK && sign == '+')
-	     || (turnpolicy == POTRACE_TURNPOLICY_WHITE && sign == '-')
-	     || (turnpolicy == POTRACE_TURNPOLICY_RANDOM && detrand(x,y))
-	     || (turnpolicy == POTRACE_TURNPOLICY_MAJORITY && majority(bm,x,y))
-	     || (turnpolicy == POTRACE_TURNPOLICY_MINORITY && !majority(bm,x,y))) {
+	 if (turnpolicy==POTRACE_TURNPOLICY_RIGHT
+	     || (turnpolicy==POTRACE_TURNPOLICY_BLACK && sign=='+')
+	     || (turnpolicy==POTRACE_TURNPOLICY_WHITE && sign=='-')
+	     || (turnpolicy==POTRACE_TURNPOLICY_RANDOM && detrand(x,y))
+	     || (turnpolicy==POTRACE_TURNPOLICY_MAJORITY && majority(bm,x,y))
+	     || (turnpolicy==POTRACE_TURNPOLICY_MINORITY && !majority(bm,x,y))) {
 	    tmp=dirx;              /* right turn */
 	    dirx=diry;
 	    diry=-tmp;
@@ -1998,7 +1769,7 @@ static int findnext(potrace_bitmap_t *bm,int *xp,int *yp) {
   int y;
   int x0;
 
-   x0=(*xp) & ~(BM_WORDBITS-1);
+   x0=(*xp)&~(BM_WORDBITS-1);
    
    for (y=*yp; y>=0; y--) {
       for (x=x0; x<bm->w; x+=BM_WORDBITS) {
@@ -2041,8 +1812,8 @@ static int bm_to_pathlist(const potrace_bitmap_t *bm,path_t **plistp,const potra
 
   /* iterate through components */
    x=0;
-   y=bm1->h - 1;
-   while (findnext(bm1,&x,&y) == 0) { 
+   y=bm1->h-1;
+   while (findnext(bm1,&x,&y)==0) { 
       /* calculate the sign by looking at the original */
       sign=BM_GET(bm,x,y)?'+':'-';
       
@@ -2085,7 +1856,7 @@ error:
 
 /* ---------------------------------------------------------------------- */
 #define SAFE_CALLOC(var,n,typ) \
-   if ((var=(typ *)calloc(n,sizeof(typ))) == NULL) goto calloc_error 
+   if ((var=(typ *)calloc(n,sizeof(typ)))==NULL) goto calloc_error 
 
 /* ---------------------------------------------------------------------- */
 /* auxiliary functions */
@@ -2110,7 +1881,7 @@ static inline double dpara(dpoint_t p0,dpoint_t p1,dpoint_t p2) {
    x2=p2.x-p0.x;
    y2=p2.y-p0.y;
    
-   return x1*y2 - x2*y1;
+   return x1*y2-x2*y1;
 }
 
 /* ddenom/dpara have the property that the square of radius 1 centered
@@ -2118,10 +1889,10 @@ static inline double dpara(dpoint_t p0,dpoint_t p1,dpoint_t p2) {
 static inline double ddenom(dpoint_t p0,dpoint_t p2) {
    point_t r=dorth_infty(p0,p2);
    
-   return r.y*(p2.x-p0.x) - r.x*(p2.y-p0.y);
+   return r.y*(p2.x-p0.x)-r.x*(p2.y-p0.y);
 }
 
-/* return 1 if a <= b < c < a, in a cyclic sense (mod n) */
+/* return 1 if a <= b<c<a, in a cyclic sense (mod n) */
 static inline int cyclic(int a,int b,int c) {
    if (a<=c)
      return (a<=b && b<c);
@@ -2176,8 +1947,8 @@ static void pointslope(privpath_t *pp,int i,int j,dpoint_t *ctr,dpoint_t *dir) {
    lambda2=(a+c+sqrt((a-c)*(a-c)+4*b*b))/2; /* larger e.value */
    
    /* now find e.vector for lambda2 */
-   a -= lambda2;
-   c -= lambda2;
+   a-=lambda2;
+   c-=lambda2;
    
    if (fabs(a) >= fabs(c)) {
       l=sqrt(a*a+b*b);
@@ -2216,49 +1987,49 @@ static inline double quadform(quadform_t Q,dpoint_t w) {
 
    for (i=0;i<3;i++)
      for (j=0;j<3;j++)
-       sum += v[i] * Q[i][j] * v[j];
+       sum+=v[i]*Q[i][j]*v[j];
    return sum;
 }
 
 /* calculate p1 x p2 */
 static inline int xprod(point_t p1,point_t p2) {
-   return p1.x*p2.y - p1.y*p2.x;
+   return p1.x*p2.y-p1.y*p2.x;
 }
 
 /* calculate (p1-p0)x(p3-p2) */
 static inline double cprod(dpoint_t p0,dpoint_t p1,dpoint_t p2,dpoint_t p3) {
    double x1,y1,x2,y2;
 
-   x1=p1.x - p0.x;
-   y1=p1.y - p0.y;
-   x2=p3.x - p2.x;
-   y2=p3.y - p2.y;
+   x1=p1.x-p0.x;
+   y1=p1.y-p0.y;
+   x2=p3.x-p2.x;
+   y2=p3.y-p2.y;
 
-   return x1*y2 - x2*y1;
+   return x1*y2-x2*y1;
 }
 
 /* calculate (p1-p0)*(p2-p0) */
 static inline double iprod3(dpoint_t p0,dpoint_t p1,dpoint_t p2) {
    double x1,y1,x2,y2;
 
-   x1=p1.x - p0.x;
-   y1=p1.y - p0.y;
-   x2=p2.x - p0.x;
-   y2=p2.y - p0.y;
+   x1=p1.x-p0.x;
+   y1=p1.y-p0.y;
+   x2=p2.x-p0.x;
+   y2=p2.y-p0.y;
    
-   return x1*x2 + y1*y2;
+   return x1*x2+y1*y2;
 }
 
 /* calculate (p1-p0)*(p3-p2) */
 static inline double iprod1(dpoint_t p0,dpoint_t p1,dpoint_t p2,dpoint_t p3) {
    double x1,y1,x2,y2;
 
-   x1=p1.x - p0.x;
-   y1=p1.y - p0.y;
-   x2=p3.x - p2.x;
-   y2=p3.y - p2.y;
+   x1=p1.x-p0.x;
+   y1=p1.y-p0.y;
+   x2=p3.x-p2.x;
+   y2=p3.y-p2.y;
    
-   return x1*x2 + y1*y2;
+   return x1*x2+y1*y2;
 }
 
 /* calculate distance between two points */
@@ -2275,8 +2046,8 @@ static inline dpoint_t bezier_pt(double t,dpoint_t p0,dpoint_t p1,dpoint_t p2,dp
      following to 16 multiplications, using common subexpression
      elimination. */
 
-   res.x=s*s*s*p0.x + 3*(s*s*t)*p1.x + 3*(t*t*s)*p2.x + t*t*t*p3.x;
-   res.y=s*s*s*p0.y + 3*(s*s*t)*p1.y + 3*(t*t*s)*p2.y + t*t*t*p3.y;
+   res.x=s*s*s*p0.x+3*(s*s*t)*p1.x+3*(t*t*s)*p2.x+t*t*t*p3.x;
+   res.y=s*s*s*p0.y+3*(s*s*t)*p1.y+3*(t*t*s)*p2.y+t*t*t*p3.y;
    
    return res;
 }
@@ -2285,27 +2056,27 @@ static inline dpoint_t bezier_pt(double t,dpoint_t p0,dpoint_t p1,dpoint_t p2,dp
    (p0,p1,p2,p3) which is tangent to q1-q0. Return -1.0 if there is no
    solution in [0..1]. */
 static double tangent(dpoint_t p0,dpoint_t p1,dpoint_t p2,dpoint_t p3,dpoint_t q0,dpoint_t q1) {
-   double A,B,C;   /* (1-t)^2 A + 2(1-t)t B + t^2 C=0 */
-   double a,b,c;   /* a t^2 + b t + c=0 */
+   double A,B,C;   /* (1-t)^2 A+2(1-t)t B+t^2 C=0 */
+   double a,b,c;   /* a t^2+b t+c=0 */
    double d,s,r1,r2;
 
    A=cprod(p0,p1,q0,q1);
    B=cprod(p1,p2,q0,q1);
    C=cprod(p2,p3,q0,q1);
 
-   a=A - 2*B + C;
-   b=-2*A + 2*B;
+   a=A-2*B+C;
+   b=-2*A+2*B;
    c=A;
   
-   d=b*b - 4*a*c;
+   d=b*b-4*a*c;
 
    if (a==0 || d<0)
      return -1.0;
    
    s=sqrt(d);
    
-   r1=(-b + s) / (2 * a);
-   r2=(-b - s) / (2 * a);
+   r1=(-b+s)/(2*a);
+   r2=(-b-s)/(2*a);
    
    if (r1 >= 0 && r1 <= 1)
      return r1;
@@ -2332,13 +2103,13 @@ static int calc_sums(privpath_t *pp) {
    /* preparatory computation for later fast summing */
    pp->sums[0].x2=pp->sums[0].xy=pp->sums[0].y2=pp->sums[0].x=pp->sums[0].y=0;
    for (i=0; i<n; i++) {
-      x=pp->pt[i].x - pp->x0;
-      y=pp->pt[i].y - pp->y0;
-      pp->sums[i+1].x=pp->sums[i].x + x;
-      pp->sums[i+1].y=pp->sums[i].y + y;
-      pp->sums[i+1].x2=pp->sums[i].x2 + x*x;
-      pp->sums[i+1].xy=pp->sums[i].xy + x*y;
-      pp->sums[i+1].y2=pp->sums[i].y2 + y*y;
+      x=pp->pt[i].x-pp->x0;
+      y=pp->pt[i].y-pp->y0;
+      pp->sums[i+1].x=pp->sums[i].x+x;
+      pp->sums[i+1].y=pp->sums[i].y+y;
+      pp->sums[i+1].x2=pp->sums[i].x2+x*x;
+      pp->sums[i+1].xy=pp->sums[i].xy+x*y;
+      pp->sums[i+1].y2=pp->sums[i].y2+y*y;
    }
    return 0;  
    
@@ -2401,7 +2172,7 @@ static int calc_lon(privpath_t *pp) {
       above.  */
    k=0;
    for (i=n-1; i>=0; i--) {
-      if (pt[i].x != pt[k].x && pt[i].y != pt[k].y) {
+      if (pt[i].x!=pt[k].x && pt[i].y!=pt[k].y) {
 	 k=i+1;  /* necessarily i<n-1 in this case */
       }
       nc[i]=k;
@@ -2438,24 +2209,24 @@ static int calc_lon(privpath_t *pp) {
 	    goto foundk;
 	 }
 	 
-	 cur.x=pt[k].x - pt[i].x;
-	 cur.y=pt[k].y - pt[i].y;
+	 cur.x=pt[k].x-pt[i].x;
+	 cur.y=pt[k].y-pt[i].y;
 	 
 	 /* see if current constraint is violated */
-	 if (xprod(constraint[0],cur) < 0 || xprod(constraint[1],cur) > 0)
+	 if (xprod(constraint[0],cur)<0 || xprod(constraint[1],cur)>0)
 	   goto constraint_viol;
 	 
 	 /* else, update constraint */
 	 if (abs(cur.x) <= 1 && abs(cur.y) <= 1) {
 	    /* no constraint */
 	 } else {
-	    off.x=cur.x + ((cur.y>=0 && (cur.y>0 || cur.x<0))?1:-1);
-	    off.y=cur.y + ((cur.x<=0 && (cur.x<0 || cur.y<0))?1:-1);
+	    off.x=cur.x+((cur.y>=0 && (cur.y>0 || cur.x<0))?1:-1);
+	    off.y=cur.y+((cur.x<=0 && (cur.x<0 || cur.y<0))?1:-1);
 	    if (xprod(constraint[0],off) >= 0) {
 	       constraint[0]=off;
 	    }
-	    off.x=cur.x + ((cur.y<=0 && (cur.y<0 || cur.x<0))?1:-1);
-	    off.y=cur.y + ((cur.x>=0 && (cur.x>0 || cur.y<0))?1:-1);
+	    off.x=cur.x+((cur.y<=0 && (cur.y<0 || cur.x<0))?1:-1);
+	    off.y=cur.y+((cur.x>=0 && (cur.x>0 || cur.y<0))?1:-1);
 	    if (xprod(constraint[1],off) <= 0) {
 	       constraint[1]=off;
 	    }
@@ -2471,8 +2242,8 @@ constraint_viol:
          point along k1..k which satisfied the constraint. */
       dk.x=sign(pt[k].x-pt[k1].x);
       dk.y=sign(pt[k].y-pt[k1].y);
-      cur.x=pt[k1].x - pt[i].x;
-      cur.y=pt[k1].y - pt[i].y;
+      cur.x=pt[k1].x-pt[i].x;
+      cur.y=pt[k1].y-pt[i].y;
       /* find largest integer j such that xprod(constraint[0], cur+j*dk)
          >= 0 and xprod(constraint[1], cur+j*dk) <= 0. Use bilinearity
          of xprod. */
@@ -2537,37 +2308,37 @@ static double penalty3(privpath_t *pp,int i,int j) {
    int r=0; /* rotations from i to j */
    
    if (j>=n) {
-      j -= n;
+      j-=n;
       r=1;
    }
    
    /* critical inner loop: the "if" gives a 4.6 percent speedup */
-   if (r == 0) {
-      x=sums[j+1].x - sums[i].x;
-      y=sums[j+1].y - sums[i].y;
-      x2=sums[j+1].x2 - sums[i].x2;
-      xy=sums[j+1].xy - sums[i].xy;
-      y2=sums[j+1].y2 - sums[i].y2;
-      k=j+1 - i;
+   if (r==0) {
+      x=sums[j+1].x-sums[i].x;
+      y=sums[j+1].y-sums[i].y;
+      x2=sums[j+1].x2-sums[i].x2;
+      xy=sums[j+1].xy-sums[i].xy;
+      y2=sums[j+1].y2-sums[i].y2;
+      k=j+1-i;
    } else {
-      x=sums[j+1].x - sums[i].x + sums[n].x;
-      y=sums[j+1].y - sums[i].y + sums[n].y;
-      x2=sums[j+1].x2 - sums[i].x2 + sums[n].x2;
-      xy=sums[j+1].xy - sums[i].xy + sums[n].xy;
-      y2=sums[j+1].y2 - sums[i].y2 + sums[n].y2;
-      k=j+1 - i + n;
+      x=sums[j+1].x-sums[i].x+sums[n].x;
+      y=sums[j+1].y-sums[i].y+sums[n].y;
+      x2=sums[j+1].x2-sums[i].x2+sums[n].x2;
+      xy=sums[j+1].xy-sums[i].xy+sums[n].xy;
+      y2=sums[j+1].y2-sums[i].y2+sums[n].y2;
+      k=j+1-i+n;
    } 
 
-   px=(pt[i].x + pt[j].x) / 2.0 - pt[0].x;
-   py=(pt[i].y + pt[j].y) / 2.0 - pt[0].y;
-   ey=(pt[j].x - pt[i].x);
-   ex=-(pt[j].y - pt[i].y);
+   px=(pt[i].x+pt[j].x)/2.0-pt[0].x;
+   py=(pt[i].y+pt[j].y)/2.0-pt[0].y;
+   ey=(pt[j].x-pt[i].x);
+   ex=-(pt[j].y-pt[i].y);
    
-   a=((x2 - 2*x*px) / k + px*px);
-   b=((xy - x*py - y*px) / k + px*py);
-   c=((y2 - 2*y*py) / k + py*py);
+   a=((x2-2*x*px)/k+px*px);
+   b=((xy-x*py-y*px)/k+px*py);
+   c=((y2-2*y*py)/k+py*py);
    
-   s=ex*ex*a + 2*ex*ey*b + ey*ey*c;
+   s=ex*ex*a+2*ex*ey*b+ey*ey*c;
    
    return sqrt(s);
 }
@@ -2598,10 +2369,10 @@ static int bestpolygon(privpath_t *pp) {
    /* calculate clipped paths */
    for (i=0; i<n; i++) {
       c=mod(pp->lon[mod(i-1,n)]-1,n);
-      if (c == i) {
+      if (c==i) {
 	 c=mod(i+1,n);
       }
-      if (c < i) {
+      if (c<i) {
 	 clip0[i]=n;
       } else {
 	 clip0[i]=c;
@@ -2643,8 +2414,8 @@ static int bestpolygon(privpath_t *pp) {
       for (i=seg1[j]; i<=seg0[j]; i++) {
 	 best=-1;
 	 for (k=seg0[j-1]; k>=clip1[i]; k--) {
-	    thispen=penalty3(pp,k,i) + pen[k];
-	    if (best < 0 || thispen < best) {
+	    thispen=penalty3(pp,k,i)+pen[k];
+	    if (best<0 || thispen<best) {
 	       prev[i]=k;
 	       best=thispen;
 	    }
@@ -2725,8 +2496,8 @@ static int adjust_vertices(privpath_t *pp) {
       distance of a point (x,y) from the line segment will be
       (x,y,1)Q(x,y,1)^t, where Q=q[i]. */
    for (i=0; i<m; i++) {
-      d=sq(dir[i].x) + sq(dir[i].y);
-      if (d == 0.0) {
+      d=sq(dir[i].x)+sq(dir[i].y);
+      if (d==0.0) {
 	 for (j=0; j<3; j++) {
 	    for (k=0; k<3; k++) {
 	       q[i][j][k]=0;
@@ -2735,10 +2506,10 @@ static int adjust_vertices(privpath_t *pp) {
       } else {
 	 v[0]=dir[i].y;
 	 v[1]=-dir[i].x;
-	 v[2]=- v[1] * ctr[i].y - v[0] * ctr[i].x;
+	 v[2]=- v[1]*ctr[i].y-v[0]*ctr[i].x;
 	 for (l=0; l<3; l++)
 	   for (k=0; k<3; k++)
-	     q[i][l][k]=v[l] * v[k] / d;
+	     q[i][l][k]=v[l]*v[k]/d;
       }
    }
    
@@ -2766,16 +2537,16 @@ static int adjust_vertices(privpath_t *pp) {
       /* add quadratic forms */
       for (l=0; l<3; l++)
 	for (k=0; k<3; k++)
-	  Q[l][k]=q[j][l][k] + q[i][l][k];
+	  Q[l][k]=q[j][l][k]+q[i][l][k];
       
       while(1) {
 	 /* minimize the quadratic form Q on the unit square */
 	 /* find intersection */
 	 
-	 det=Q[0][0]*Q[1][1] - Q[0][1]*Q[1][0];
-	 if (det != 0.0) {
-	    w.x=(-Q[0][2]*Q[1][1] + Q[1][2]*Q[0][1]) / det;
-	    w.y=( Q[0][2]*Q[1][0] - Q[1][2]*Q[0][0]) / det;
+	 det=Q[0][0]*Q[1][1]-Q[0][1]*Q[1][0];
+	 if (det!=0.0) {
+	    w.x=(-Q[0][2]*Q[1][1]+Q[1][2]*Q[0][1])/det;
+	    w.y=( Q[0][2]*Q[1][0]-Q[1][2]*Q[0][0])/det;
 	    break;
 	 }
 
@@ -2791,11 +2562,11 @@ static int adjust_vertices(privpath_t *pp) {
 	    v[0]=1;
 	    v[1]=0;
 	 }
-	 d=sq(v[0]) + sq(v[1]);
-	 v[2]=- v[1] * s.y - v[0] * s.x;
+	 d=sq(v[0])+sq(v[1]);
+	 v[2]=- v[1]*s.y-v[0]*s.x;
 	 for (l=0; l<3; l++) {
 	    for (k=0; k<3; k++) {
-	       Q[l][k] += v[l] * v[k] / d;
+	       Q[l][k]+=v[l]*v[k]/d;
 	    }
 	 }
       }
@@ -2813,28 +2584,28 @@ static int adjust_vertices(privpath_t *pp) {
       xmin=s.x;
       ymin=s.y;
 
-      if (Q[0][0] == 0.0)
+      if (Q[0][0]==0.0)
 	goto fixx;
       for (z=0; z<2; z++) {   /* value of the y-coordinate */
 	 w.y=s.y-0.5+z;
-	 w.x=- (Q[0][1] * w.y + Q[0][2]) / Q[0][0];
+	 w.x=- (Q[0][1]*w.y+Q[0][2])/Q[0][0];
 	 dx=fabs(w.x-s.x);
 	 cand=quadform(Q,w);
-	 if (dx <= .5 && cand < min) {
+	 if (dx <= .5 && cand<min) {
 	    min=cand;
 	    xmin=w.x;
 	    ymin=w.y;
 	 }
       }
   fixx:
-      if (Q[1][1] == 0.0)
+      if (Q[1][1]==0.0)
 	goto corners;
       for (z=0; z<2; z++) {   /* value of the x-coordinate */
 	 w.x=s.x-0.5+z;
-	 w.y=- (Q[1][0] * w.x + Q[1][2]) / Q[1][1];
+	 w.y=- (Q[1][0]*w.x+Q[1][2])/Q[1][1];
 	 dy=fabs(w.y-s.y);
 	 cand=quadform(Q,w);
-	 if (dy <= .5 && cand < min) {
+	 if (dy <= .5 && cand<min) {
 	    min=cand;
 	    xmin=w.x;
 	    ymin=w.y;
@@ -2847,15 +2618,15 @@ corners:
 	   w.x=s.x-0.5+l;
 	   w.y=s.y-0.5+k;
 	   cand=quadform(Q,w);
-	   if (cand < min) {
+	   if (cand<min) {
 	      min=cand;
 	      xmin=w.x;
 	      ymin=w.y;
 	   }
 	}
       
-      pp->curve.vertex[i].x=xmin + x0;
-      pp->curve.vertex[i].y=ymin + y0;
+      pp->curve.vertex[i].x=xmin+x0;
+      pp->curve.vertex[i].y=ymin+y0;
       continue;
    }
    
@@ -2902,11 +2673,11 @@ static void smooth(privcurve_t *curve,double alphamax) {
       p4=interval(1/2.0,curve->vertex[k],curve->vertex[j]);
 
       denom=ddenom(curve->vertex[i],curve->vertex[k]);
-      if (denom != 0.0) {
-	 dd=dpara(curve->vertex[i],curve->vertex[j],curve->vertex[k]) / denom;
+      if (denom!=0.0) {
+	 dd=dpara(curve->vertex[i],curve->vertex[j],curve->vertex[k])/denom;
 	 dd=fabs(dd);
-	 alpha=dd>1?(1 - 1.0/dd):0;
-	 alpha=alpha / 0.75;
+	 alpha=dd>1?(1-1.0/dd):0;
+	 alpha=alpha/0.75;
       } else
 	alpha=4/3.0;
       curve->alpha0[j]=alpha;	 /* remember "original" value of alpha */
@@ -2916,9 +2687,9 @@ static void smooth(privcurve_t *curve,double alphamax) {
 	 curve->c[j][1]=curve->vertex[j];
 	 curve->c[j][2]=p4;
       } else {
-	 if (alpha < 0.55)
+	 if (alpha<0.55)
 	   alpha=0.55;
-	 else if (alpha > 1)
+	 else if (alpha>1)
 	   alpha=1;
 	 p2=interval(.5+.5*alpha,curve->vertex[i],curve->vertex[j]);
 	 p3=interval(.5+.5*alpha,curve->vertex[k],curve->vertex[j]);
@@ -2965,20 +2736,20 @@ static int opti_penalty(privpath_t *pp,int i,int j,opti_t *res,double opttoleran
    i1=mod(i+1,m);
    k1=mod(k+1,m);
    conv=convc[k1];
-   if (conv == 0)
+   if (conv==0)
      return 1;
    d=ddist(pp->curve.vertex[i],pp->curve.vertex[i1]);
    for (k=k1; k!=j; k=k1) {
       k1=mod(k+1,m);
       k2=mod(k+2,m);
-      if (convc[k1] != conv)
+      if (convc[k1]!=conv)
 	 return 1;
       if (sign(cprod(pp->curve.vertex[i],pp->curve.vertex[i1],
-		     pp->curve.vertex[k1],pp->curve.vertex[k2])) != conv)
+		     pp->curve.vertex[k1],pp->curve.vertex[k2]))!=conv)
 	 return 1;
       if (iprod1(pp->curve.vertex[i],pp->curve.vertex[i1],
 		 pp->curve.vertex[k1],pp->curve.vertex[k2])
-	  < d * ddist(pp->curve.vertex[k1],pp->curve.vertex[k2]) * COS179)
+	 <d*ddist(pp->curve.vertex[k1],pp->curve.vertex[k2])*COS179)
 	return 1;
       
       /* the curve we're working in: */
@@ -2988,10 +2759,10 @@ static int opti_penalty(privpath_t *pp,int i,int j,opti_t *res,double opttoleran
       p3=pp->curve.c[mod(j,m)][2];
       
       /* determine its area */
-      area=areac[j] - areac[i];
-      area -= dpara(pp->curve.vertex[0],pp->curve.c[i][2],pp->curve.c[j][2])/2;
+      area=areac[j]-areac[i];
+      area-=dpara(pp->curve.vertex[0],pp->curve.c[i][2],pp->curve.c[j][2])/2;
       if (i>=j)
-	area += areac[m];
+	area+=areac[m];
       
       /* find intersection o of p0p1 and p2p3. Let t,s such that o =
          interval(t,p0,p1)=interval(s,p3,p2). Let A be the area of the
@@ -3003,21 +2774,21 @@ static int opti_penalty(privpath_t *pp,int i,int j,opti_t *res,double opttoleran
       /* A4=dpara(p1,p2,p3); */
       A4=A1+A3-A2;    
       
-      if (A2 == A1) /* this should never happen */
+      if (A2==A1) /* this should never happen */
 	return 1;
       
       t=A3/(A3-A4);
       s=A2/(A2-A1);
-      A=A2 * t / 2.0;
+      A=A2*t/2.0;
   
-      if (A == 0.0) /* this should never happen */
+      if (A==0.0) /* this should never happen */
 	return 1;
       
-      R=area / A;	 /* relative area */
-      alpha=2 - sqrt(4 - R / 0.3);  /* overall alpha for p0-o-p3 curve */
+      R=area/A;	 /* relative area */
+      alpha=2-sqrt(4-R/0.3);  /* overall alpha for p0-o-p3 curve */
       
-      res->c[0]=interval(t * alpha,p0,p1);
-      res->c[1]=interval(s * alpha,p3,p2);
+      res->c[0]=interval(t*alpha,p0,p1);
+      res->c[1]=interval(s*alpha,p3,p2);
       res->alpha=alpha;
       res->t=t;
       res->s=s;
@@ -3036,14 +2807,14 @@ static int opti_penalty(privpath_t *pp,int i,int j,opti_t *res,double opttoleran
 	   return 1;
 	 pt=bezier_pt(t,p0,p1,p2,p3);
 	 d=ddist(pp->curve.vertex[k],pp->curve.vertex[k1]);
-	 if (d == 0.0)  /* this should never happen */
+	 if (d==0.0)  /* this should never happen */
 	   return 1;
-	 d1=dpara(pp->curve.vertex[k],pp->curve.vertex[k1],pt) / d;
-	 if (fabs(d1) > opttolerance)
+	 d1=dpara(pp->curve.vertex[k],pp->curve.vertex[k1],pt)/d;
+	 if (fabs(d1)>opttolerance)
 	   return 1;
-	 if (iprod3(pp->curve.vertex[k],pp->curve.vertex[k1],pt) < 0 || iprod3(pp->curve.vertex[k1],pp->curve.vertex[k],pt) < 0)
+	 if (iprod3(pp->curve.vertex[k],pp->curve.vertex[k1],pt)<0 || iprod3(pp->curve.vertex[k1],pp->curve.vertex[k],pt)<0)
 	   return 1;
-	 res->pen += sq(d1);
+	 res->pen+=sq(d1);
       }
       
       /* check corners */
@@ -3054,23 +2825,25 @@ static int opti_penalty(privpath_t *pp,int i,int j,opti_t *res,double opttoleran
 	   return 1;
 	 pt=bezier_pt(t,p0,p1,p2,p3);
 	 d=ddist(pp->curve.c[k][2],pp->curve.c[k1][2]);
-	 if (d == 0.0)  /* this should never happen */
+	 if (d==0.0)  /* this should never happen */
 	   return 1;
-	 d1=dpara(pp->curve.c[k][2],pp->curve.c[k1][2],pt) / d;
-	 d2=dpara(pp->curve.c[k][2],pp->curve.c[k1][2],pp->curve.vertex[k1]) / d;
-	 d2 *= 0.75 * pp->curve.alpha[k1];
-	 if (d2 < 0) {
+	 d1=dpara(pp->curve.c[k][2],pp->curve.c[k1][2],pt)/d;
+	 d2=dpara(pp->curve.c[k][2],pp->curve.c[k1][2],pp->curve.vertex[k1])/d;
+	 d2 *= 0.75*pp->curve.alpha[k1];
+	 if (d2<0) {
 	    d1=-d1;
 	    d2=-d2;
 	 }
-	 if (d1 < d2 - opttolerance)
+	 if (d1<d2-opttolerance)
 	   return 1;
-	 if (d1 < d2)
-	   res->pen += sq(d1 - d2);
+	 if (d1<d2)
+	   res->pen+=sq(d1-d2);
       }
       
       return 0;
    }
+   
+   return 1;
 }
 
 /* optimize the path p, replacing sequences of Bezier segments by a
@@ -3104,7 +2877,7 @@ static int opticurve(privpath_t *pp,double opttolerance) {
    
    /* pre-calculate convexity: +1=right turn, -1=left turn, 0=corner */
    for (i=0; i<m; i++) {
-      if (pp->curve.tag[i] == POTRACE_CURVETO)
+      if (pp->curve.tag[i]==POTRACE_CURVETO)
 	convc[i]=sign(dpara(pp->curve.vertex[mod(i-1,m)],pp->curve.vertex[i],pp->curve.vertex[mod(i+1,m)]));
       else
 	convc[i]=0;
@@ -3116,10 +2889,10 @@ static int opticurve(privpath_t *pp,double opttolerance) {
    p0=pp->curve.vertex[0];
    for (i=0; i<m; i++) {
       i1=mod(i+1,m);
-      if (pp->curve.tag[i1] == POTRACE_CURVETO) {
+      if (pp->curve.tag[i1]==POTRACE_CURVETO) {
 	 alpha=pp->curve.alpha[i1];
-	 area += 0.3*alpha*(4-alpha)*dpara(pp->curve.c[i][2],pp->curve.vertex[i1],pp->curve.c[i1][2])/2;
-	 area += dpara(p0,pp->curve.c[i][2],pp->curve.c[i1][2])/2;
+	 area+=0.3*alpha*(4-alpha)*dpara(pp->curve.c[i][2],pp->curve.vertex[i1],pp->curve.c[i1][2])/2;
+	 area+=dpara(p0,pp->curve.c[i][2],pp->curve.c[i1][2])/2;
       }
       areac[i+1]=area;
    }
@@ -3141,10 +2914,10 @@ static int opticurve(privpath_t *pp,double opttolerance) {
 	 r=opti_penalty(pp,i,mod(j,m),&o,opttolerance,convc,areac);
 	 if (r)
 	   break;
-	 if (len[j] > len[i]+1 || (len[j] == len[i]+1 && pen[j] > pen[i] + o.pen)) {
+	 if (len[j]>len[i]+1 || (len[j]==len[i]+1 && pen[j]>pen[i]+o.pen)) {
 	    pt[j]=i;
-	    pen[j]=pen[i] + o.pen;
-	    len[j]=len[i] + 1;
+	    pen[j]=pen[i]+o.pen;
+	    len[j]=len[i]+1;
 	    opt[j]=o;
 	 }
       }
@@ -3185,7 +2958,7 @@ static int opticurve(privpath_t *pp,double opttolerance) {
    /* calculate beta parameters */
    for (i=0; i<om; i++) {
       i1=mod(i+1,om);
-      pp->ocurve.beta[i]=s[i] / (s[i] + t[i1]);
+      pp->ocurve.beta[i]=s[i]/(s[i]+t[i1]);
    }
    pp->ocurve.alphacurve=1;
    
@@ -3225,7 +2998,7 @@ int process_path(path_t *plist,const potrace_param_t *param) {
       TRY(calc_lon(p->priv));
       TRY(bestpolygon(p->priv));
       TRY(adjust_vertices(p->priv));
-      if (p->sign == '-') {   /* reverse orientation of negative paths */
+      if (p->sign=='-') {   /* reverse orientation of negative paths */
 	 reverse(&p->priv->curve);
       }
       smooth(&p->priv->curve,param->alphamax);
@@ -3270,7 +3043,7 @@ static potrace_param_t *potrace_param_default(void) {
 /* On success, returns a Potrace state st with st->status ==
    POTRACE_STATUS_OK. On failure, returns NULL if no Potrace state
    could be created (with errno set), or returns an incomplete Potrace
-   state (with st->status == POTRACE_STATUS_INCOMPLETE, and with errno
+   state (with st->status==POTRACE_STATUS_INCOMPLETE, and with errno
    set). Complete or incomplete Potrace state can be freed with
    potrace_state_free(). */
 static potrace_state_t *potrace_trace(const potrace_param_t *param,const potrace_bitmap_t *bm) {
@@ -3354,11 +3127,11 @@ void trans_scale_to_size(trans_t *r,double w,double h) {
    r->scaley *= ysc;
   
    if (w<0) {
-      r->orig[0] -= w;
+      r->orig[0]-=w;
       r->bb[0]=-w;
    }
    if (h<0) {
-      r->orig[1] -= h;
+      r->orig[1]-=h;
       r->bb[1]=-h;
    }
 }
@@ -3381,9 +3154,9 @@ static inline void singleton(interval_t *i,double x) {
 
 /* extend the interval to include the number x */
 static inline void extend(interval_t *i,double x) {
-   if (x < i->min)
+   if (x<i->min)
      i->min=x;
-   else if (x > i->max)
+   else if (x>i->max)
      i->max=x;
 }
 
@@ -3395,7 +3168,7 @@ static inline int in_interval(interval_t *i,double x) {
 /* inner product */
 
 static double iprod(dpoint_t a,dpoint_t b) {
-   return a.x * b.x + a.y * b.y;
+   return a.x*b.x+a.y*b.y;
 }
 
 /* ---------------------------------------------------------------------- */
@@ -3404,7 +3177,7 @@ static double iprod(dpoint_t a,dpoint_t b) {
 /* return a point on a 1-dimensional Bezier segment */
 static inline double bezier(double t,double x0,double x1,double x2,double x3) {
    double s=1-t;
-   return s*s*s*x0 + 3*(s*s*t)*x1 + 3*(t*t*s)*x2 + t*t*t*x3;
+   return s*s*s*x0+3*(s*s*t)*x1+3*(t*t*s)*x2+t*t*t*x3;
 }
 
 /* Extend the interval i to include the minimum and maximum of a
@@ -3428,20 +3201,20 @@ static void bezier_limits(double x0,double x1,double x2,double x3,interval_t *i)
    if (in_interval(i,x1) && in_interval(i,x2))
      return;
 
-   /* solve for extrema. at^2 + bt + c=0 */
-   a=-3*x0 + 9*x1 - 9*x2 + 3*x3;
-   b=6*x0 - 12*x1 + 6*x2;
-   c=-3*x0 + 3*x1;
-   d=b*b - 4*a*c;
-   if (d > 0) {
+   /* solve for extrema. at^2+bt+c=0 */
+   a=-3*x0+9*x1-9*x2+3*x3;
+   b=6*x0-12*x1+6*x2;
+   c=-3*x0+3*x1;
+   d=b*b-4*a*c;
+   if (d>0) {
       r=sqrt(d);
       t=(-b-r)/(2*a);
-      if (t > 0 && t < 1) {
+      if (t>0 && t<1) {
 	 x=bezier(t,x0,x1,x2,x3);
 	 extend(i,x);
       }
       t=(-b+r)/(2*a);
-      if (t > 0 && t < 1) {
+      if (t>0 && t<1) {
 	 x=bezier(t,x0,x1,x2,x3);
 	 extend(i,x);
       }
@@ -3452,7 +3225,7 @@ static void bezier_limits(double x0,double x1,double x2,double x3,interval_t *i)
 /* ---------------------------------------------------------------------- */
 /* Potrace segments, curves, and pathlists */
 
-/* extend the interval i to include the inner product <v | dir> for
+/* extend the interval i to include the inner product <v|dir> for
    all points v on the segment. Assume precondition a in i. */
 static inline void segment_limits(int tag,dpoint_t a,dpoint_t c[3],dpoint_t dir,interval_t *i) {
    switch (tag) {
@@ -3466,7 +3239,7 @@ static inline void segment_limits(int tag,dpoint_t a,dpoint_t c[3],dpoint_t dir,
    }
 }
 
-/* extend the interval i to include <v | dir> for all points v on the
+/* extend the interval i to include <v|dir> for all points v on the
    curve. */
 static void curve_limits(potrace_curve_t *curve,dpoint_t dir,interval_t *i) {
    int k;
@@ -3478,13 +3251,13 @@ static void curve_limits(potrace_curve_t *curve,dpoint_t dir,interval_t *i) {
 }
 
 /* compute the interval i to be the smallest interval including all <v
-   | dir> for points in the pathlist. If the pathlist is empty, return
+  |dir> for points in the pathlist. If the pathlist is empty, return
    the singleton interval [0,0]. */
 static void path_limits(potrace_path_t *path,dpoint_t dir,interval_t *i) {
    potrace_path_t *p;
 
    /* empty image? */
-   if (path == NULL) {
+   if (path==NULL) {
       interval_init(i,0,0);
       return;
    }
@@ -3512,12 +3285,12 @@ void trans_tighten(trans_t *r,potrace_path_t *plist) {
       dir.x=r->x[j];
       dir.y=r->y[j];
       path_limits(plist,dir,&i);
-      if (i.min == i.max) {
+      if (i.min==i.max) {
 	 /* make the extent non-zero to avoid later division by zero errors */
 	 i.max=i.min+0.5;
 	 i.min=i.min-0.5;
       }
-      r->bb[j]=i.max - i.min;
+      r->bb[j]=i.max-i.min;
       r->orig[j]=-i.min;
    }
 }
@@ -3530,7 +3303,7 @@ void trans_tighten(trans_t *r,potrace_path_t *plist) {
    functions in flate.c. */
 
 #define SAFE_CALLOC(var,n,typ) \
-  if ((var=(typ *)calloc(n,sizeof(typ))) == NULL) goto calloc_error 
+  if ((var=(typ *)calloc(n,sizeof(typ)))==NULL) goto calloc_error 
 
 typedef int color_t;
 
@@ -3539,8 +3312,8 @@ typedef int color_t;
 #define green  0x008000
 #define blue   0x0000ff
 
-int dummy_xship(FILE *f,int filter,char *s,int len) {
-   fwrite(s,1,len,f);
+int dummy_xship(AFILE *f,int filter,char *s,int len) {
+   afwrite(s,1,len,f);
    return len;
 }
 
@@ -3553,8 +3326,8 @@ int dummy_xship(FILE *f,int filter,char *s,int len) {
 
 /* print the token to f, but filtered through a compression
    filter in case filter!=0 */
-static int (*xship)(FILE *f,int filter,char *s,int len);
-static FILE *xship_file;
+static int (*xship)(AFILE *f,int filter,char *s,int len);
+static AFILE *xship_file;
 
 /* ship postscript code, filtered */
 static int ship(const char *fmt,...) {
@@ -3587,7 +3360,7 @@ static int shipcom(char *fmt,...) {
 }
 
 /* set all callback functions */
-static void eps_callbacks(FILE *fout) {
+static void eps_callbacks(AFILE *fout) {
    xship=dummy_xship;
    xship_file=fout;
 }
@@ -3647,15 +3420,15 @@ static char *eps_colorstring(const color_t col) {
    double r,g,b;
    static char buf[100];
 
-   r=(col & 0xff0000) >> 16;
-   g=(col & 0x00ff00) >> 8;
-   b=(col & 0x0000ff) >> 0;
+   r=(col&0xff0000)>>16;
+   g=(col&0x00ff00)>>8;
+   b=(col&0x0000ff)>>0;
    
    if (r==0 && g==0 && b==0)
      return "0 setgray";
    else if (r==255 && g==255 && b==255)
      return "1 setgray";
-   else if (r == g && g == b) {
+   else if (r==g && g==b) {
       sprintf(buf,"%.3f setgray",r/255.0);
       return buf;
    } else {
@@ -3667,7 +3440,7 @@ static char *eps_colorstring(const color_t col) {
 static color_t eps_color=-1;
 
 static void eps_setcolor(const color_t col) {
-   if (col == eps_color) {
+   if (col==eps_color) {
       return;
    }
    eps_color=col;
@@ -3728,8 +3501,8 @@ static int eps_path_short(privcurve_t *curve) {
    for (i=0; i<m; i++) {
       i1=mod(i+1,m);
       M=max(10,max(abs(v[i1].x-v[i].x),abs(v[i1].y-v[i].y)));
-      bq[i]=(int)(M * curve->beta[i] + 0.5);
-      if (curve->beta[i] != 0.5)
+      bq[i]=(int)(M*curve->beta[i]+0.5);
+      if (curve->beta[i]!=0.5)
 	q[i1]=interval(bq[i]/M,dpoint(v[i]),dpoint(v[i1]));
       else
 	q[i1]=interval(0.5,dpoint(v[i]),dpoint(v[i1]));
@@ -3740,30 +3513,30 @@ static int eps_path_short(privcurve_t *curve) {
       i1=mod(i+1,m);
       M=max(10,max(max(abs(q[i].x-v[i].x),abs(q[i].y-v[i].y)),
 		      max(abs(v[i].x-q[i1].x),abs(v[i].y-q[i1].y))));
-      if (curve->tag[i] == POTRACE_CURVETO) {
-	 aq[i]=(int)(M * curve->alpha[i] + 0.5);
-	 if (aq[i] > M)
+      if (curve->tag[i]==POTRACE_CURVETO) {
+	 aq[i]=(int)(M*curve->alpha[i]+0.5);
+	 if (aq[i]>M)
 	   aq[i]--;
       }
    }
    
    /* generate output */
    ship("%ld %ld ",v[m-1].x,v[m-1].y);
-   ship("%ld %ld ",v[0].x - v[m-1].x,v[0].y - v[m-1].y);
-   if (curve->beta[m-1] == 0.5)
+   ship("%ld %ld ",v[0].x-v[m-1].x,v[0].y-v[m-1].y);
+   if (curve->beta[m-1]==0.5)
      ship("i\n");
    else
      ship("%ld I\n",bq[m-1]);
    for (i=0; i<m; i++) {
       if (i<m-1) {
-	 ship("%ld %ld ",v[i+1].x - v[i].x,v[i+1].y - v[i].y);
-	 if (curve->beta[i] != 0.5)
+	 ship("%ld %ld ",v[i+1].x-v[i].x,v[i+1].y-v[i].y);
+	 if (curve->beta[i]!=0.5)
 	   ship("%ld ",bq[i]);
       }
-      if (curve->tag[i] == POTRACE_CURVETO)
-	ship(curve->beta[i] == 0.5?"%ld c\n":"%ld C\n",aq[i]);
+      if (curve->tag[i]==POTRACE_CURVETO)
+	ship(curve->beta[i]==0.5?"%ld c\n":"%ld C\n",aq[i]);
       else
-	ship(curve->beta[i] == 0.5?"v\n":"V\n");
+	ship(curve->beta[i]==0.5?"v\n":"V\n");
    }  
    
    free(bq);
@@ -3830,13 +3603,13 @@ static int render0(potrace_path_t *plist) {
       list_forall (p,plist) {
 	 eps_path(p->priv->fcurve);
 	 ship("closepath\n");
-	 if (p->next == NULL || p->next->sign == '+')
+	 if (p->next==NULL || p->next->sign=='+')
 	    ship("fill\n");
       }
    } else {
       list_forall (p,plist) {
 	 eps_path(p->priv->fcurve);
-	 if (p->next == NULL || p->next->sign == '+')
+	 if (p->next==NULL || p->next->sign=='+')
 	   ship("b\n");
 	 else
 	   ship("z\n");
@@ -3849,10 +3622,10 @@ static int render0(potrace_path_t *plist) {
 /* EPS header and footer */
 
 static int eps_init(imginfo_t *imginfo) {
-   double origx=imginfo->trans.orig[0] + imginfo->lmar;
-   double origy=imginfo->trans.orig[1] + imginfo->bmar;
-   double scalex=imginfo->trans.scalex / info.unit;
-   double scaley=imginfo->trans.scaley / info.unit;
+   double origx=imginfo->trans.orig[0]+imginfo->lmar;
+   double origy=imginfo->trans.orig[1]+imginfo->bmar;
+   double scalex=imginfo->trans.scalex/info.unit;
+   double scaley=imginfo->trans.scaley/info.unit;
    char *c0,*c1;
    
    shipcom("%%!PS-Adobe-3.0 EPSF-3.0\n");
@@ -3881,9 +3654,9 @@ static int eps_init(imginfo_t *imginfo) {
       free(c0);
       free(c1);
    }
-   if (origx != 0 || origy != 0)
+   if (origx!=0 || origy!=0)
      ship("%f %f translate\n",origx,origy);
-   if (info.angle != 0)
+   if (info.angle!=0)
      ship("%.2f rotate\n",info.angle);
    ship("%f %f scale\n",scalex,scaley);
    
@@ -3897,7 +3670,7 @@ static int eps_term(void) {
 }
 
 /* public interface for EPS */
-int page_eps(FILE *fout,potrace_path_t *plist,imginfo_t *imginfo) {
+int page_eps(AFILE *fout,potrace_path_t *plist,imginfo_t *imginfo) {
    int r;
    
    eps_callbacks(fout);
@@ -3919,9 +3692,9 @@ int page_eps(FILE *fout,potrace_path_t *plist,imginfo_t *imginfo) {
 
 static inline double double_of_dim(dim_t d,double def) {
    if (d.d)
-     return d.x * d.d;
+     return d.x*d.d;
    else
-     return d.x * def;
+     return d.x*def;
 }
 
 /* determine the dimensions of the output based on command line and
@@ -3939,20 +3712,20 @@ static void calc_dimensions(imginfo_t *imginfo,potrace_path_t *plist) {
       is better than causing overflow errors or "nan" output in
       backends.  Human users don't tend to process images of size 0
       anyway; they might occur in some pipelines. */
-   if (imginfo->pixwidth == 0)
+   if (imginfo->pixwidth==0)
      imginfo->pixwidth=1;
-   if (imginfo->pixheight == 0)
+   if (imginfo->pixheight==0)
      imginfo->pixheight=1;
    
    dim_def=DEFAULT_DIM;
    
    /* apply default dimension to width, height, margins */
-   imginfo->width=info.width_d.x == UNDEF?UNDEF:double_of_dim(info.width_d,dim_def);
-   imginfo->height=info.height_d.x == UNDEF?UNDEF:double_of_dim(info.height_d,dim_def);
-   imginfo->lmar=info.lmar_d.x == UNDEF?UNDEF:double_of_dim(info.lmar_d,dim_def);
-   imginfo->rmar=info.rmar_d.x == UNDEF?UNDEF:double_of_dim(info.rmar_d,dim_def);
-   imginfo->tmar=info.tmar_d.x == UNDEF?UNDEF:double_of_dim(info.tmar_d,dim_def);
-   imginfo->bmar=info.bmar_d.x == UNDEF?UNDEF:double_of_dim(info.bmar_d,dim_def);
+   imginfo->width=info.width_d.x==UNDEF?UNDEF:double_of_dim(info.width_d,dim_def);
+   imginfo->height=info.height_d.x==UNDEF?UNDEF:double_of_dim(info.height_d,dim_def);
+   imginfo->lmar=info.lmar_d.x==UNDEF?UNDEF:double_of_dim(info.lmar_d,dim_def);
+   imginfo->rmar=info.rmar_d.x==UNDEF?UNDEF:double_of_dim(info.rmar_d,dim_def);
+   imginfo->tmar=info.tmar_d.x==UNDEF?UNDEF:double_of_dim(info.tmar_d,dim_def);
+   imginfo->bmar=info.bmar_d.x==UNDEF?UNDEF:double_of_dim(info.bmar_d,dim_def);
 
    /* start with a standard rectangle */
    trans_from_rect(&imginfo->trans,imginfo->pixwidth,imginfo->pixheight);
@@ -3963,38 +3736,38 @@ static void calc_dimensions(imginfo_t *imginfo,potrace_path_t *plist) {
 
    /* sx/rx is just an alternate way to specify width; sy/ry is just an
       alternate way to specify height. */
-   if (imginfo->width == UNDEF && info.rx != UNDEF)
-     imginfo->width=imginfo->trans.bb[0] / info.rx * 72;
-   if (imginfo->height == UNDEF && info.ry != UNDEF)
-     imginfo->height=imginfo->trans.bb[1] / info.ry * 72;
+   if (imginfo->width==UNDEF && info.rx!=UNDEF)
+     imginfo->width=imginfo->trans.bb[0]/info.rx*72;
+   if (imginfo->height==UNDEF && info.ry!=UNDEF)
+     imginfo->height=imginfo->trans.bb[1]/info.ry*72;
    
    /* if one of width/height is specified, use stretch to determine the
       other */
-   if (imginfo->width == UNDEF && imginfo->height != UNDEF)
-     imginfo->width=imginfo->height / imginfo->trans.bb[1] * imginfo->trans.bb[0] / info.stretch;
-   else if (imginfo->width != UNDEF && imginfo->height == UNDEF)
-     imginfo->height=imginfo->width / imginfo->trans.bb[0] * imginfo->trans.bb[1] * info.stretch;
+   if (imginfo->width==UNDEF && imginfo->height!=UNDEF)
+     imginfo->width=imginfo->height/imginfo->trans.bb[1]*imginfo->trans.bb[0]/info.stretch;
+   else if (imginfo->width!=UNDEF && imginfo->height==UNDEF)
+     imginfo->height=imginfo->width/imginfo->trans.bb[0]*imginfo->trans.bb[1]*info.stretch;
    
    /* if width and height are still variable, tenatively use the
       default scaling factor of 72dpi (for dimension-based backends) or
       1 (for pixel-based backends). For fixed-size backends, this will
       be adjusted later to fit the page. */
-   if (imginfo->width == UNDEF && imginfo->height == UNDEF)
+   if (imginfo->width==UNDEF && imginfo->height==UNDEF)
       imginfo->width=imginfo->trans.bb[0];
-      imginfo->height=imginfo->trans.bb[1] * info.stretch;
+      imginfo->height=imginfo->trans.bb[1]*info.stretch;
       default_scaling=1;
 
    /* apply scaling */
    trans_scale_to_size(&imginfo->trans,imginfo->width,imginfo->height);
 
    /* adjust margins */
-   if (imginfo->lmar == UNDEF)
+   if (imginfo->lmar==UNDEF)
      imginfo->lmar=0;
-   if (imginfo->rmar == UNDEF)
+   if (imginfo->rmar==UNDEF)
      imginfo->rmar=0;
-   if (imginfo->bmar == UNDEF)
+   if (imginfo->bmar==UNDEF)
      imginfo->bmar=0;
-   if (imginfo->tmar == UNDEF)
+   if (imginfo->tmar==UNDEF)
      imginfo->tmar=0;
 }
 
@@ -4003,39 +3776,39 @@ static void calc_dimensions(imginfo_t *imginfo,potrace_path_t *plist) {
 /* Process one or more bitmaps from fin, and write the results to fout
    using the page_f function of the appropriate backend. */
 
-static void process_file(const char *infile,const char *outfile,FILE *fin,FILE *fout) { 
-   int r; 
-   potrace_bitmap_t *bm=NULL; 
+static void process_file(AFILE *fin,AFILE *fout) { 
+   int r;
+   potrace_bitmap_t *bm=NULL;
    imginfo_t imginfo;
    int eof_flag=0;  /* to indicate premature eof */
    potrace_state_t *st;
    
    /* read a bitmap */
-   r=bm_read(fin,info.blacklevel,&bm);
+   r=bm_readbody_bmp(fin,info.blacklevel,&bm);
    switch (r) {
     case -1:  /* system error */
-      fprintf(stderr,"%s: %s\n",infile,strerror(errno));
+      fprintf(stderr,"%s\n",strerror(errno));
       exit(2);
     case -2:  /* corrupt file format */
-      fprintf(stderr,"%s: file format error: %s\n",infile,bm_read_error);
+      fprintf(stderr,"file format error: %s\n",bm_read_error);
       exit(2);
     case -3:  /* empty file */
-      fprintf(stderr,"%s: empty file\n",infile);
+      fprintf(stderr,"empty file\n");
       exit(2);
     case -4:  /* wrong magic */
-      fprintf(stderr,"%s: file format not recognized\n",infile);
+      fprintf(stderr,"file format not recognized\n");
       fprintf(stderr,"Possible input file formats are: pnm (pbm, pgm, ppm), bmp.\n");
       exit(2);
     case 1:  /* unexpected end of file */
-      fprintf(stderr,"warning: %s: premature end of file\n",infile);
+      fprintf(stderr,"warning: premature end of file\n");
       eof_flag=1;
       break;
    }
    
    /* process the image */
    st=potrace_trace(info.param,bm);
-   if (!st || st->status != POTRACE_STATUS_OK) {
-      fprintf(stderr,"%s: %s\n",infile,strerror(errno));
+   if (!st || st->status!=POTRACE_STATUS_OK) {
+      fprintf(stderr,"%s\n",strerror(errno));
       exit(2);
    }
 
@@ -4048,7 +3821,7 @@ static void process_file(const char *infile,const char *outfile,FILE *fin,FILE *
    
    r=page_eps(fout,st->plist,&imginfo);
    if (r) {
-      fprintf(stderr,"%s: %s\n",outfile,strerror(errno));
+      fprintf(stderr,"%s\n",strerror(errno));
       exit(2);
    }
    
@@ -4056,86 +3829,10 @@ static void process_file(const char *infile,const char *outfile,FILE *fin,FILE *
 }
 
 /* ---------------------------------------------------------------------- */
-/* auxiliary functions for parameter parsing */
-
-/* parse a dimension of the kind "1.5in", "7cm", etc. Return result in
-   postscript points (=1/72 in). If endptr!=NULL, store pointer to
-   next character in *endptr in the manner of strtod(3). */
-static dim_t parse_dimension(char *s,char **endptr) {
-   char *p;
-   dim_t res;
-
-   res.x=strtod(s,&p);
-   res.d=0;
-   if (p!=s) {
-      if (!strncasecmp(p,"in",2)) {
-	 res.d=DIM_IN;
-	 p += 2;
-      } else if (!strncasecmp(p,"cm",2)) {
-	 res.d=DIM_CM;
-	 p += 2;
-      } else if (!strncasecmp(p,"mm",2)) {
-	 res.d=DIM_MM;
-	 p += 2;
-      } else if (!strncasecmp(p,"pt",2)) {
-	 res.d=DIM_PT;
-	 p += 2;
-      }
-   }
-   if (endptr!=NULL)
-     *endptr=p;
-   return res;
-}
-
-/* parse a pair of dimensions, such as "8.5x11in", "30mmx4cm" */
-static void parse_dimensions(char *s,char **endptr,dim_t *dxp,dim_t *dyp) {
-   char *p,*q;
-   dim_t dx,dy;
-
-   dx=parse_dimension(s,&p);
-   if (p==s)
-     goto fail;
-   if (*p != 'x')
-     goto fail;
-   p++;
-   dy=parse_dimension(p,&q);
-   if (q==p)
-     goto fail;
-   if (dx.d && !dy.d)
-     dy.d=dx.d;
-   else if (!dx.d && dy.d)
-     dx.d=dy.d;
-   *dxp=dx;
-   *dyp=dy;
-   if (endptr != NULL)
-     *endptr=q;
-   return;
-   
-fail:
-   dx.x=dx.d=dy.x=dy.d=0;
-   *dxp=dx;
-   *dyp=dy;
-   if (endptr != NULL)
-     *endptr=s;
-   return;
-}
-
-/* ---------------------------------------------------------------------- */
 /* auxiliary functions for file handling */
 
-/* close a file, but do nothing is filename is NULL or "-" */
-static void my_fclose(FILE *f,char *filename) {
-  if (filename == NULL || strcmp(filename,"-") == 0)
-     return;
-   fclose(f);
-}
-
-#define TRY(x) if (x) goto try_error
-
-void potrace(char *in_filename,FILE *fout) {
-   FILE *fin;
+void potrace(AFILE *fin,AFILE *fout) {
    int i;
-   char *outfile;
 
    /* process options */
    /* defaults */
@@ -4168,38 +3865,9 @@ void potrace(char *in_filename,FILE *fout) {
    info.grouping=1;
    info.fillcolor=0xffffff;
 
-   do {
-      char *p;
-      dim_t dim,dimx,dimy;
+   info.rx=72;
+   info.ry=72;
 
-      parse_dimensions("72",&p,&dimx,&dimy);
-      if (*p == 0 && dimx.d == 0 && dimy.d == 0 && dimx.x != 0.0 && dimy.x != 0.0) {
-	 info.rx=dimx.x;
-	 info.ry=dimy.x;
-	 break;
-      }
-      dim=parse_dimension("72",&p);
-      if (*p == 0 && dim.d == 0 && dim.x != 0.0) {
-	 info.rx=info.ry=dim.x;
-	 break;
-      }
-   } while (0);
-
-   info.infiles=&in_filename;
-   info.infilecount=1;
-   info.some_infiles=1;
-   
-   /* fix some parameters */
-
-   fin=fopen(in_filename,"rb");
-   process_file(in_filename,"outfile",fin,fout);
-   my_fclose(fin,in_filename);
+   process_file(fin,fout);
    potrace_param_free(info.param);
-   return;
-
-   /* not reached */
-   
-try_error:
-   fprintf(stderr,"%s\n",strerror(errno));
-   exit(2);
 }
