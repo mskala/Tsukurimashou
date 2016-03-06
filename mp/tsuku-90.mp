@@ -1,6 +1,6 @@
 %
 % Unicode page 90 (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012, 2013, 2014, 2015  Matthew Skala
+% Copyright (C) 2011, 2012, 2013, 2014, 2015, 2016  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -167,6 +167,12 @@ enddef;
 vardef kanji.grfive.make_up =
   push_pbox_toexpand("kanji.grfive.make_up");
   build_kanji.road_enclose(kanji.grfour.revelation);
+  expand_pbox;
+enddef;
+
+vardef kanji.grfive.occasional =
+  push_pbox_toexpand("kanji.grfive.occasional");
+  build_kanji.road_enclose(kanji.rare.stalk);
   expand_pbox;
 enddef;
 
@@ -358,6 +364,12 @@ endtsuglyph;
 % en/too "distant"
 begintsuglyph("uni9060",96);
   kanji.grtwo.distant;
+  tsu_render;
+endtsuglyph;
+
+% teki/kanau "occasional"
+begintsuglyph("uni9069",105);
+  kanji.grfive.occasional;
   tsu_render;
 endtsuglyph;
 

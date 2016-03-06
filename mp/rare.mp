@@ -1,6 +1,6 @@
 %
 % Rare kanji needed to build others
-% Copyright (C) 2011, 2012, 2013, 2014  Matthew Skala
+% Copyright (C) 2011, 2012, 2013, 2014, 2016  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -56,6 +56,14 @@ vardef kanji.rare.bald =
   build_kanji.level(build_kanji.tb(690,180)
     (kanji.grone.one)
     (kanji.radical.legs));
+  expand_pbox;
+enddef;
+
+vardef kanji.rare.be_flustered =
+  push_pbox_toexpand("kanji.rare.be_flustered");
+  build_kanji.level(build_kanji.tb(360,30)
+    (build_kanji.sscale(shifted (40,0))(kanji.grtwo.public))
+    (kanji.bottomrad.heart));
   expand_pbox;
 enddef;
 
@@ -593,6 +601,15 @@ vardef kanji.rare.sun =
      set_boserif(-3,0,whatever);
      push_stroke((100,780)--(900,780),(1.6,1.6)--(1.6,1.6));
      set_boserif(0,1,9));
+  expand_pbox;
+enddef;
+
+vardef kanji.rare.stalk =
+  push_pbox_toexpand("kanji.rare.stalk");
+  build_kanji.level(build_kanji.tb(570,60)
+    (kanji.toprad.stand_up;
+     pop_stroke)
+    (kanji.bottomrad.stalk));
   expand_pbox;
 enddef;
 

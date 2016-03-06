@@ -1,6 +1,6 @@
 %
 % Enclosure operations for building kanji
-% Copyright (C) 2011, 2012, 2013, 2015  Matthew Skala
+% Copyright (C) 2011, 2012, 2013, 2015, 2016  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -66,6 +66,27 @@ vardef build_kanji.dotcliff_enclose(text contents) =
     (50,-50) transformed t=(230,-50);
     (500,-50) transformed t=(560,-50);
     (500,850) transformed t=(560,630);
+    tsu_xform(t)(contents);
+  endgroup;
+  expand_pbox;
+enddef;
+
+vardef build_kanji.exist_enclose(text contents) =
+  push_pbox_toexpand("build_kanji.exist_enclose");
+  perl_structure:=perl_structure&"'eids.u2FF8.u2E85.1_',";
+  build_kanji.sscale(shifted (0,50))(build_kanji.lean_to((380,260)));
+  begingroup
+    save x,y;
+    numeric x[],y[];
+    save t;
+    transform t;
+    z1=(((180,900)--(180,0)) intersectionpoint get_strokep(0))+(0,-20);
+    x2=x1;
+    y2=-40;
+    push_stroke(z1..z2,(1.6,1.6)--(1.5,1.5));
+    (50,-50) transformed t=(250,-40);
+    (950,-50) transformed t=(910,-40);
+    (950,850) transformed t=(910,640);
     tsu_xform(t)(contents);
   endgroup;
   expand_pbox;

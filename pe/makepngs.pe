@@ -2,7 +2,7 @@
 
 #
 # Make PNG files of glyphs in a font
-# Copyright (C) 2013, 2014  Matthew Skala
+# Copyright (C) 2013, 2014, 2016  Matthew Skala
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -30,9 +30,10 @@
 # mskala.sooke.bc.ca
 #
 
-# keep a small font open throughout so we don't trigger a memory leak
-# see https://github.com/fontforge/fontforge/pull/480
-Open("../sfd/empty.sfd");
+Open("../sfd/flogged.sfd");
+ScaleToEm(920,280);
+Reencode("UnicodeFull");
+SetFontOrder(3);
 
 Open($1);
 Reencode("compacted");
@@ -40,19 +41,19 @@ a=CharCnt();
 b=0;
 while (b<a)
   Print(b);
-  Close();
-  Open($1);
-  Reencode("compacted");
-  c=b+99;
-  if (c>=a)
-    c=a-1;
-  endif
-  Select(b,c);
-  SelectInvert();
+  Select(b);
+  Copy();
+  gn=GlyphInfo("Name");
+  uc=GlyphInfo("Unicode");
+  Open("../sfd/flogged.sfd");
+  Open("../sfd/flogged.sfd");
+  Select(uc);
+  Paste();
+  AutoWidth(200);
+  FontImage(gn+".png",[250,Utf8(uc)]);
+  b=b+1;
   DetachAndRemoveGlyphs();
-  SelectWorthOutputting();
-  foreach
-    FontImage(GlyphInfo("Name")+".png",[250,Utf8(GlyphInfo("Unicode"))]);
-  endloop
-  b=b+100;
+  Open($1);
 endloop
+
+Close();

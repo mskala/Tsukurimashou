@@ -34,6 +34,7 @@ beginfont
 
 % AUTODEPS
 input bkencl.mp;
+input bottomrad.mp;
 input buildkanji.mp;
 input gradeeight.mp;
 input gradefour.mp;
@@ -87,9 +88,15 @@ begintsuglyph("uni5531",49);
   tsu_render;
 endtsuglyph;
 
-% shou/akina
+% shou/akina "commerce"
 begintsuglyph("uni5546",70);
   kanji.grthree.commerce;
+  tsu_render;
+endtsuglyph;
+
+% teki/moto "stalk"
+begintsuglyph("uni5547",71);
+  kanji.rare.stalk;
   tsu_render;
 endtsuglyph;
 

@@ -537,7 +537,7 @@ AH_BOTTOM([#endif])
 AC_SUBST([andt],[])
 AC_SUBST([HOST],["$host"])
 AC_SUBST([MACAPP])
-AC_CONFIG_FILES([Makefile])
+AC_CONFIG_FILES([Makefile doc/fontanvil.1])
 AC_CONFIG_COMMANDS([fix-makefile],
   [if test '!' "x$ICEMAP" = "x" ; then "$PERL" -i -pe \
 's/^(@<:@a-z\-@:>@+:) (\$\(BUILT_SOURCES\))/'\

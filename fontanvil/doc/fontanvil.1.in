@@ -1,0 +1,133 @@
+.TH FONTANVIL 1 "@release_date@" "@PACKAGE_STRING@" "User Commands"
+.SH NAME
+@PACKAGE@ \- script language for font editing
+.
+.SH SYNOPSIS
+.B @PACKAGE@
+.RI [ OPTIONS ]
+.RI [ SCRIPT ]
+.RI [ SCRIPT-ARGS ]
+.
+.SH DESCRIPTION
+FontAnvil is an interpreter for a script language that automates
+editing and conversion of font files, especially in the context of the
+Tsukurimashou Project.
+It descends from a GUI program called FontForge (originally named
+PfaEdit).
+FontForge includes a \(lqnative\(rq scripting language and also an embedded
+Python interpreter, but is primarily focused on interactive GUI use,
+and its huge footprint and wide-ranging dependencies make it unsuitable for
+applications such as font package build infrastructure.
+FontAnvil is a standalone interpreter of the \(lqnative\(rq scripting
+language (here called \(lqPE script\(rq for neutrality) with some bug fixes
+and enhancements beyond FontForge's implementation, suitable for automated
+and command-line environments.
+.PP
+FontAnvil retains general, but not complete, compatibility with FontForge
+and should be able to execute well-written FontForge scripts without
+modification.
+.PP
+If given a script to execute (either by a filename specified on the command
+line, or the
+.B \-c
+option), FontAnvil will execute the commands in the
+script and then terminate.
+Otherwise, it will enter an interactive command-line mode where it
+accepts commands and executes them immediately, with readline support
+if possible, until it encounters an end-of-file, termination command, or
+fatal error.
+.
+.SH OPTIONS
+Long options may be specified with single hyphens as in
+.B \-option
+or with double hyphens as
+.BR \-\^\-option ;
+use of single hyphen is required for single-character options.
+It is against modern Unix conventions to use single hyphen for long options,
+but single hyphen may be preferable here nonetheless, for compatibility with
+FontForge's non-standard option parsers.
+Similarly, FontAnvil will accept use of an equal sign for specifying the
+argument to a long option, but FontForge may not consistently accept it,
+so this usage may be better avoided.
+.TP
+.BI \-c " CMD\fR, \fP " "\-command " CMD
+Execute a literal PE script command from the command line.
+FontAnvil will not look for a script file name on the command line if this
+option is used; all arguments starting with the first non-option argument
+will become arguments passed to the script.
+Note this option may only be used once (the last instance taking precedence
+over any others); unlike the behaviour of such
+interpreters as Perl, a multi-line script cannot be specified with several
+command-line options.
+.TP
+.B "\-d\fR, \fP \-dry"
+Activate a \(lqdry run mode\(rq inherited from the legacy FontForge
+interpreter.
+It appears to be intended for syntax checking.
+It causes
+.IR most ,
+but not
+.IR all ,
+commands in the script to be skipped.
+Use of this option is not recommended, and its effects or
+continued existence in future versions are not guaranteed.
+.TP
+.B "\-h\fR, \fP\-help\fR, \fP-usage"
+Display a help message about command-line usage, and terminate without
+executing a script.
+.TP
+.B "\-l ff\fR, \fP\-lang ff"
+Specify the interpreter language, which for FontAnvil should
+always be
+.BR ff .
+That value is ignored for FontForge compatibility;
+any other value is a fatal error.
+.TP
+.B "\-q\fR, \fP-quiet"
+Reduce the verbosity of error, warning, and informational messages sent to
+standard error.
+This option may be specified more than once to reduce the messages even
+further from the default level.
+.TP
+.B "\-V\fR, \fP-verbose"
+Increase the verbosity of error, warning, and informational messages sent to
+standard error.
+This option may be specified more than once to increase the messages even
+further from the default level.
+.TP
+.B "\-v\fR, \fP-version"
+Display a version and copyright banner, and terminate without executing a
+script.
+.TP
+.B "\-i\fR, \fP-nosplash\fR, \fP-script"
+Options ignored for compatibility.
+For maximum likelihood that a command line will be parsed correctly by
+.I both
+FontAnvil and FontForge, specify
+.B \-script
+as the last option argument and then the script filename as the
+next argument.
+.TP
+.B "\-\^\-"
+Terminate option scanning.
+All subsequent arguments will be processed as \(lqnon-option\(rq
+arguments, either script filenames or arguments passed to the script,
+even if they otherwise resemble option syntax.
+This allows, for instance, execution of a script whose filename
+is literally the string \(lq-script\(rq.
+.
+.SH "EXIT STATUS"
+FIXME the usual nonzero or zero.
+.
+.SH ENVIRONMENT
+FIXME list of env vars.
+.
+.SH FILES
+FIXME file stuff.
+.
+.SH "CONFORMING TO"
+FIXME note existing FontForge versions.
+.
+.SH "SEE ALSO"
+FIXME whatever also we should see.
+.

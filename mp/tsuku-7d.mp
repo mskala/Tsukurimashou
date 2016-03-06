@@ -1,6 +1,6 @@
 %
 % Unicode page 7D (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012, 2013  Matthew Skala
+% Copyright (C) 2011, 2012, 2013, 2016  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -33,6 +33,7 @@
 beginfont
 
 % AUTODEPS
+input bottomrad.mp;
 input buildkanji.mp;
 input gradeeight.mp;
 input gradefour.mp;
@@ -41,6 +42,7 @@ input gradeone.mp;
 input gradesix.mp;
 input gradetwo.mp;
 input radical.mp;
+input rare.mp;
 input rightrad.mp;
 
 do_late_includes;
@@ -171,11 +173,31 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vardef kanji.grfive.sever =
+  push_pbox_toexpand("kanji.grfive.sever");
+  build_kanji.lr(440,0)
+    (build_kanji.lift_skirt(300,60)(kanji.grone.thread))
+    (build_kanji.sscale(xyscaled (1,0.95))(kanji.grtwo.colour));
+  expand_pbox;
+enddef;
+
 vardef kanji.grfive.unified =
   push_pbox_toexpand("kanji.grfive.unified");
   build_kanji.lr(450,30-20*mincho)
     (build_kanji.lift_skirt(300,60)(kanji.grone.thread))
     (kanji.greight.fulfill);
+  expand_pbox;
+enddef;
+
+vardef kanji.grfive.whole =
+  push_pbox_toexpand("kanji.grfive.whole");
+  build_kanji.level(build_kanji.lr(440,30)
+    (build_kanji.lift_skirt(300,70)
+       (kanji.grone.thread;
+        replace_strokep(0)(subpath (0,1.7) of oldp shifted (40,20))))
+    (build_kanji.sscale(xyscaled (1,0.94))
+       (kanji.rare.be_flustered;
+        replace_strokep(-2)(oldp shifted (0,-50)))));
   expand_pbox;
 enddef;
 
@@ -247,9 +269,21 @@ begintsuglyph("uni7D75",117);
   tsu_render;
 endtsuglyph;
 
+% zetsu/tae "sever"
+begintsuglyph("uni7D76",118);
+  kanji.grfive.sever;
+  tsu_render;
+endtsuglyph;
+
 % zoku/tsudzu "continue"
 begintsuglyph("uni7D9A",154);
   kanji.grfour.continue;
+  tsu_render;
+endtsuglyph;
+
+% sou/subete "whole"
+begintsuglyph("uni7DCF",207);
+  kanji.grfive.whole;
   tsu_render;
 endtsuglyph;
 

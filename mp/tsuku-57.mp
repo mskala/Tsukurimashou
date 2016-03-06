@@ -1,6 +1,6 @@
 %
 % Unicode page 57 (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012, 2013  Matthew Skala
+% Copyright (C) 2011, 2012, 2013, 2016  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -89,6 +89,12 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vardef kanji.grfive.exist =
+  push_pbox_toexpand("kanji.grfive.exist");
+  build_kanji.exist_enclose(kanji.grone.earth);
+  expand_pbox;
+enddef;
+
 vardef kanji.grfive.pressure =
   push_pbox_toexpand("kanji.grfive.pressure");
   build_kanji.cliff_enclose(kanji.grone.earth);
@@ -132,6 +138,12 @@ endtsuglyph;
 % atsu/o "pressure"
 begintsuglyph("uni5727",39);
   kanji.grfive.pressure;
+  tsu_render;
+endtsuglyph;
+
+% zai/aru "exist"
+begintsuglyph("uni5728",40);
+  kanji.grfive.exist;
   tsu_render;
 endtsuglyph;
 

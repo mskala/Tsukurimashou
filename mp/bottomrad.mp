@@ -1,6 +1,6 @@
 %
 % Radicals for bottom (often special forms of other radicals)
-% Copyright (C) 2011, 2012, 2013  Matthew Skala
+% Copyright (C) 2011, 2012, 2013, 2016  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -105,5 +105,13 @@ vardef kanji.bottomrad.moon =
     (1.5,1.5)--(1.5,1.5));
   push_stroke((250,270)--(750,270),
     (1.5,1.5)--(1.5,1.5));
+  expand_pbox;
+enddef;
+
+% CHISE calls this CDP-8C6C, it's part of U+5547, needed for U+9069
+vardef kanji.bottomrad.stalk =
+  push_pbox_toexpand("kanji.bottomrad.stalk");
+  kanji.radical.gmm;
+  build_kanji.sscale(xyscaled (0.65,0.82))(kanji.grtwo.old);
   expand_pbox;
 enddef;

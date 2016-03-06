@@ -1,6 +1,6 @@
 %
 % Unicode page 98 (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012, 2013, 2014  Matthew Skala
+% Copyright (C) 2011, 2012, 2013, 2014, 2016  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -177,6 +177,14 @@ vardef kanji.grfive.forehead =
   build_kanji.level(build_kanji.lr(490,10)
     (build_kanji.sscale(shifted (0,20))(kanji.grthree.guest))
     (kanji.grnine.page));
+  expand_pbox;
+enddef;
+
+vardef kanji.grfive.keep =
+  push_pbox_toexpand("kanji.grfive.keep");
+  build_kanji.level(build_kanji.lr(470,70)
+    (kanji.leftrad.eat)
+    (kanji.grfour.director));
   expand_pbox;
 enddef;
 
@@ -758,6 +766,12 @@ endtsuglyph;
 % in/no "drink"
 begintsuglyph("uni98F2",242);
   kanji.grthree.drink;
+  tsu_render;
+endtsuglyph;
+
+% shi/kau "keep"
+begintsuglyph("uni98FC",252);
+  kanji.grfive.keep;
   tsu_render;
 endtsuglyph;
 

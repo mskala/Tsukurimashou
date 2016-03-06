@@ -1,6 +1,6 @@
 %
 % Unicode page 60 (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012, 2013, 2014  Matthew Skala
+% Copyright (C) 2011, 2012, 2013, 2014, 2016  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -104,8 +104,8 @@ enddef;
 
 vardef kanji.grfive.gratitude =
   push_pbox_toexpand("kanji.grfive.gratitude");
-  build_kanji.level(build_kanji.tb(300,20)
-    (kanji.grfive.cause)
+  build_kanji.level(build_kanji.tb(340,0)
+    (build_kanji.sscale(xyscaled (0.82,1))(kanji.grfive.cause))
     (kanji.bottomrad.heart));
   expand_pbox;
 enddef;
@@ -472,6 +472,12 @@ begintsuglyph("uni6053",83);
   build_kanji.level(build_kanji.lr(320,0)
     (kanji.leftrad.heart)
     (kanji.grtwo.west));
+  tsu_render;
+endtsuglyph;
+
+% on/megumi "gratitude"
+begintsuglyph("uni6069",105);
+  kanji.grfive.gratitude;
   tsu_render;
 endtsuglyph;
 

@@ -1,6 +1,6 @@
 %
 % Unicode page 5F (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012, 2013, 2014  Matthew Skala
+% Copyright (C) 2011, 2012, 2013, 2014, 2016  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -671,6 +671,12 @@ begintsuglyph("uni5FE8",232);
   build_kanji.level(build_kanji.lr(320,0)
     (kanji.leftrad.heart)
     (kanji.grtwo.origin));
+  tsu_render;
+endtsuglyph;
+
+% sou/niwaka "be flustered"
+begintsuglyph("uni5FE9",233);
+  kanji.rare.be_flustered;
   tsu_render;
 endtsuglyph;
 

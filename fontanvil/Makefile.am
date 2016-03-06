@@ -233,8 +233,8 @@ BUILT_SOURCES = \
 bin_PROGRAMS = fontanvil/fontanvil
 
 dist_man_MANS = \
-  fontanvil/fontanvil.1 fontanvil/fontimage.1 fontanvil/fontlint.1 \
-  fontanvil/sfddiff.1
+  doc/fontanvil.1 doc/fontimage.1 doc/fontlint.1 \
+  doc/sfddiff.1
 
 noinst_HEADERS = \
   inc/PfEd.h \

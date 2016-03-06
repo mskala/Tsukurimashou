@@ -1,6 +1,6 @@
 %
 % Unicode page 5B (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012, 2013, 2014  Matthew Skala
+% Copyright (C) 2011, 2012, 2013, 2014, 2016  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -33,6 +33,7 @@
 beginfont
 
 % AUTODEPS
+input bkencl.mp;
 input buildkanji.mp;
 input gradeeight.mp;
 input gradefive.mp;
@@ -198,6 +199,14 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vardef kanji.grsix.exist =
+  push_pbox_toexpand("kanji.grsix.exist");
+  build_kanji.exist_enclose(
+    build_kanji.sscale(xyscaled (1,0.92) shifted (0,-50))
+      (kanji.grone.child));
+  expand_pbox;
+enddef;
+
 vardef kanji.grsix.filial_piety =
   push_pbox_toexpand("kanji.grsix.filial_piety");
   kanji.radical.old_man(kanji.grone.child);
@@ -265,6 +274,12 @@ endtsuglyph;
 % ji "character"
 begintsuglyph("uni5B57",87);
   kanji.grone.character;
+  tsu_render;
+endtsuglyph;
+
+% son/nagaraeru "exist"
+begintsuglyph("uni5B58",88);
+  kanji.grsix.exist;
   tsu_render;
 endtsuglyph;
 
