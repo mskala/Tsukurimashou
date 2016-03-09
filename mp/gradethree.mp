@@ -1,6 +1,6 @@
 %
 % Grade Three kanji used on more than one page
-% Copyright (C) 2011, 2012, 2013, 2014  Matthew Skala
+% Copyright (C) 2011, 2012, 2013, 2014, 2016  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -93,6 +93,12 @@ vardef kanji.grthree.blessing =
        (kanji.grthree.sheep);
      obstacktype[find_stroke(-3)]:=otnull;
      replace_strokep(0)((point 0 of oldp)--(500,-50))));
+  expand_pbox;
+enddef;
+
+vardef kanji.grthree.blood =
+  push_pbox_toexpand("kanji.grthree.blood");
+  build_kanji.attach_tick(620)(kanji.grthree.dish);
   expand_pbox;
 enddef;
 
@@ -235,6 +241,16 @@ vardef kanji.grthree.face =
   push_stroke((370,390)--(630,390),(1.5,1.5)--(1.5,1.5));
   push_stroke((370,200)--(630,200),(1.5,1.5)--(1.5,1.5));
   for i=-7 upto 0: set_bosize(i,92); endfor;
+  expand_pbox;
+enddef;
+
+vardef kanji.grthree.facing =
+  push_pbox_toexpand("kanji.grthree.facing");
+  push_stroke((520,810)..tension 1.2..(470,720)..(420,640),
+    (1.7,1.7)--(1.5,1.5)--(1,1));
+  set_boserif(0,0,10);
+  tsu_xform(identity yscaled (640/780))(kanji.radical.gmm);
+  build_kanji.box((350,460),(650,170));
   expand_pbox;
 enddef;
 
@@ -584,6 +600,14 @@ vardef kanji.grthree.truth =
      set_boserif(0,0,10);
      push_stroke((630,680)..tension 1.3..(760,370)..(860,0),
        (1,1)--(1.5,1.5)--(1.8,1.8))));
+  expand_pbox;
+enddef;
+
+vardef kanji.grthree.ward =
+  push_pbox_toexpand("kanji.grthree.ward");
+  kanji.radical.box_on_side;
+  build_kanji.sscale(scaled 0.75 shifted (40,0))
+    (kanji.radical.cut_the_grass);
   expand_pbox;
 enddef;
 

@@ -1,6 +1,6 @@
 %
 % Grade Nine kanji used on more than one page
-% Copyright (C) 2011, 2012, 2013, 2014  Matthew Skala
+% Copyright (C) 2011, 2012, 2013, 2014, 2016  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -359,5 +359,15 @@ vardef kanji.grnine.two_branch_tree =
   push_pbox_toexpand("kanji.grnine.two_branch_tree");
   tsu_xform(identity shifted (0,-50))
     (build_kanji.add_beret(kanji.grone.wood));
+  expand_pbox;
+enddef;
+
+vardef kanji.grnine.undergo =
+  push_pbox_toexpand("kanji.grnine.undergo");
+  build_kanji.level(build_kanji.tb(650,-20)
+    (kanji.radical.kettle_lid)
+    (build_kanji.tb(550,-40)
+      (build_kanji.sscale(xscaled 0.9)(kanji.grone.mouth))
+      (kanji.greight.completion)));
   expand_pbox;
 enddef;

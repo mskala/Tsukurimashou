@@ -2,7 +2,7 @@
 
 #
 # Automatic dependency maintainer for Tsukurimashou
-# Copyright (C) 2011, 2012, 2013  Matthew Skala
+# Copyright (C) 2011, 2012, 2013, 2016  Matthew Skala
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -30,12 +30,20 @@
 # mskala@ansuz.sooke.bc.ca
 #
 
-$#ARGV>=0 || die "Need a directory to scan";
-
-$dir=shift;
-if ($dir eq '-mkpl') {
+if ($#ARGV<0) {
+  if (-d './mp') {
+    $dir='./mp';
+  } else {
+    die "Need a directory to scan";
+  }
+  @allfiles=<./mp/*.mp>;
+} else {
   $dir=shift;
-  $mkpl=1;
+  if ($dir eq '-mkpl') {
+    $dir=shift;
+    $mkpl=1;
+  }
+  @allfiles=@ARGV;
 }
 
 $/=undef;
@@ -73,8 +81,8 @@ foreach $macroa (keys %infile) {
   }
 }
 
-while (@ARGV) {
-  $file=shift;
+while (@allfiles) {
+  $file=shift @allfiles;
 print "% Scanning $file...\n";
   open(MPFILE,$file);
   $content=<MPFILE>;

@@ -187,6 +187,14 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vardef kanji.grsix.busy =
+  push_pbox_toexpand("kanji.grsix.busy");
+  build_kanji.level(build_kanji.lr(340,-30)
+    (kanji.leftrad.heart)
+    (build_kanji.sscale(yscaled 0.98)(kanji.grsix.dead)));
+  expand_pbox;
+enddef;
+
 vardef kanji.grsix.forget =
   push_pbox_toexpand("kanji.grsix.forget");
   build_kanji.level(build_kanji.tb(360,-40)
@@ -571,6 +579,30 @@ begintsuglyph("uni5FC9",201);
 endtsuglyph;
 
 % extra
+begintsuglyph("uni5FCA",202);
+  build_kanji.level(build_kanji.lr(360,10)
+    (kanji.leftrad.heart)
+    (kanji.grthree.thumbtack));
+  tsu_render;
+endtsuglyph;
+
+% kai/tanomu "rely upon"
+begintsuglyph("uni5FCB",203);
+  build_kanji.level(build_kanji.lr(340,-10)
+    (kanji.leftrad.heart)
+    (kanji.grsix.self));
+  tsu_render;
+endtsuglyph;
+
+% extra
+begintsuglyph("uni5FCF",207);
+  build_kanji.level(build_kanji.lr(360,-30)
+    (kanji.leftrad.heart)
+    (build_kanji.sscale(yscaled 0.94)(kanji.grone.one_thousand)));
+  tsu_render;
+endtsuglyph;
+
+% extra
 begintsuglyph("uni5FD0",208);
   build_kanji.level(build_kanji.tb(420,0)
     (kanji.grone.up)
@@ -583,6 +615,14 @@ begintsuglyph("uni5FD1",209);
   build_kanji.level(build_kanji.tb(420,10)
     (kanji.grone.down)
     (kanji.bottomrad.heart));
+  tsu_render;
+endtsuglyph;
+
+% kan/kiwameru "concerned about"
+begintsuglyph("uni5FD3",211);
+  build_kanji.level(build_kanji.lr(350,-30-mincho*30)
+    (kanji.leftrad.heart)
+    (build_kanji.sscale(shifted (0,-20))(kanji.grsix.dry)));
   tsu_render;
 endtsuglyph;
 
@@ -611,6 +651,12 @@ endtsuglyph;
 % bou/wasu "forget"
 begintsuglyph("uni5FD8",216);
   kanji.grsix.forget;
+  tsu_render;
+endtsuglyph;
+
+% bou/isogashii "busy"
+begintsuglyph("uni5FD9",217);
+  kanji.grsix.busy;
   tsu_render;
 endtsuglyph;
 
@@ -659,10 +705,27 @@ begintsuglyph("uni5FE2",226);
 endtsuglyph;
 
 % extra
+begintsuglyph("uni5FE3",227);
+  build_kanji.level(build_kanji.lr(320,0)
+    (kanji.leftrad.heart)
+    (tsu_xform(identity shifted (0,-780) yscaled 0.96 shifted (0,780))
+       (kanji.greight.reach)));
+  tsu_render;
+endtsuglyph;
+
+% extra
 begintsuglyph("uni5FE4",228);
   build_kanji.level(build_kanji.lr(320,0)
     (kanji.leftrad.heart)
     (kanji.grtwo.noon));
+  tsu_render;
+endtsuglyph;
+
+% extra
+begintsuglyph("uni5FE6",230);
+  build_kanji.level(build_kanji.lr(320,0)
+    (kanji.leftrad.heart)
+    (build_kanji.sscale(yscaled 0.94)(kanji.greight.mediate)));
   tsu_render;
 endtsuglyph;
 
@@ -677,6 +740,14 @@ endtsuglyph;
 % sou/niwaka "be flustered"
 begintsuglyph("uni5FE9",233);
   kanji.rare.be_flustered;
+  tsu_render;
+endtsuglyph;
+
+% shou/odoroku "tranquil"
+begintsuglyph("uni5FEA",234);
+  build_kanji.level(build_kanji.lr(370,0)
+    (kanji.leftrad.heart)
+    (build_kanji.sscale(scaled 0.95)(kanji.grtwo.public)));
   tsu_render;
 endtsuglyph;
 
@@ -709,6 +780,16 @@ begintsuglyph("uni5FEF",239);
   build_kanji.level(build_kanji.lr(320,0)
     (kanji.leftrad.heart)
     (kanji.grfour.clan));
+  tsu_render;
+endtsuglyph;
+
+% tai/narau "extravagant"
+begintsuglyph("uni5FF2",242);
+  build_kanji.level(build_kanji.lr(340,80)
+    (kanji.leftrad.heart;
+     replace_strokep(0)(subpath (0,0.9) of oldp);
+     replace_strokeq(0)(subpath (0,0.9) of oldq))
+    (build_kanji.sscale(scaled 0.94)(kanji.grtwo.thick)));
   tsu_render;
 endtsuglyph;
 
@@ -758,9 +839,25 @@ begintsuglyph("uni5FFB",251);
   tsu_render;
 endtsuglyph;
 
+% kou/nageku "weep"
+begintsuglyph("uni5FFC",252);
+  build_kanji.level(build_kanji.lr(320,0)
+    (kanji.leftrad.heart)
+    (build_kanji.sscale(scaled 0.97)(kanji.rare.high_spirits)));
+  tsu_render;
+endtsuglyph;
+
 % kotsu/tachima "suddenly"
 begintsuglyph("uni5FFD",253);
   kanji.grnine.suddenly;
+  tsu_render;
+endtsuglyph;
+
+% extra
+begintsuglyph("uni5FFE",254);
+  build_kanji.level(build_kanji.lr(360,-50)
+    (kanji.leftrad.heart)
+    (build_kanji.sscale(scaled 0.96)(build_kanji.steam_enclose((700,400))())));
   tsu_render;
 endtsuglyph;
 

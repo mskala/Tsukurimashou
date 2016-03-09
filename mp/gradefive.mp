@@ -1,6 +1,6 @@
 %
 % Grade Five kanji used on more than one page
-% Copyright (C) 2011, 2012, 2013, 2014  Matthew Skala
+% Copyright (C) 2011, 2012, 2013, 2014, 2016  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -113,6 +113,12 @@ vardef kanji.grfive.easy =
   build_kanji.tb(480,0)
     (tsu_xform(identity shifted (30,0))(kanji.grone.day))
     (kanji.grnine.must_not);
+  expand_pbox;
+enddef;
+
+vardef kanji.grfive.exist =
+  push_pbox_toexpand("kanji.grfive.exist");
+  build_kanji.exist_enclose(kanji.grone.earth);
   expand_pbox;
 enddef;
 

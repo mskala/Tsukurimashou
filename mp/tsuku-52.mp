@@ -1,6 +1,6 @@
 %
 % Unicode page 52 (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012, 2013, 2014  Matthew Skala
+% Copyright (C) 2011, 2012, 2013, 2014, 2016  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -213,6 +213,17 @@ vardef kanji.grfive.publication =
   push_pbox_toexpand("kanji.grfive.publication");
   build_kanji.level(build_kanji.lr(560,0)
     (kanji.grsix.dry)
+    (kanji.rightrad.sword));
+  expand_pbox;
+enddef;
+
+vardef kanji.grfive.system =
+  push_pbox_toexpand("kanji.grfive.system");
+  build_kanji.level(build_kanji.lr(560,0)
+    (build_kanji.tb(300,40)
+       (kanji.grtwo.cow)
+       (build_kanji.sscale(xscaled 0.92 shifted (0,100))(kanji.radical.gmm));
+     replace_strokep(-2)(point 0 of oldp--(xpart point 1 of oldp,-60)))
     (kanji.rightrad.sword));
   expand_pbox;
 enddef;
@@ -434,6 +445,12 @@ begintsuglyph("uni5235",53);
   build_kanji.level(build_kanji.lr(560,30)
      (tsu_xform(identity yscaled (760/720))(kanji.grone.ear))
      (kanji.rightrad.sword));
+  tsu_render;
+endtsuglyph;
+
+% sei "system" (as in "I like a boy in SEIfuku")
+begintsuglyph("uni5236",54);
+  kanji.grfive.system;
   tsu_render;
 endtsuglyph;
 

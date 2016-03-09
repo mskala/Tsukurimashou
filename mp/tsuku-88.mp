@@ -1,6 +1,6 @@
 %
 % Unicode page 88 (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012, 2013  Matthew Skala
+% Copyright (C) 2011, 2012, 2013, 2016  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -50,14 +50,6 @@ input rightrad.mp;
 input toprad.mp;
 
 do_late_includes;
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-vardef kanji.grthree.blood =
-  push_pbox_toexpand("kanji.grthree.blood");
-  build_kanji.attach_tick(620)(kanji.grthree.dish);
-  expand_pbox;
-enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 

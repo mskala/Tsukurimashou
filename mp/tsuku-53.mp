@@ -1,6 +1,6 @@
 %
 % Unicode page 53 (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012, 2013, 2014  Matthew Skala
+% Copyright (C) 2011, 2012, 2013, 2014, 2016  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -109,14 +109,6 @@ vardef kanji.grthree.number =
   expand_pbox;
 enddef;
 
-vardef kanji.grthree.ward =
-  push_pbox_toexpand("kanji.grthree.ward");
-  kanji.radical.box_on_side;
-  build_kanji.sscale(scaled 0.75 shifted (40,0))
-    (kanji.radical.cut_the_grass);
-  expand_pbox;
-enddef;
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 vardef kanji.grfour.cooperation =
@@ -157,27 +149,6 @@ vardef kanji.grfour.seal =
     (build_kanji.sscale(yscaled 1.1 shifted (0,-110))(kanji.radical.seal));
   replace_strokep(0)(subpath (xpart (oldp intersectiontimes
     ((0,-80)--(1000,-80))),infinity) of oldp);
-  expand_pbox;
-enddef;
-
-vardef kanji.grfour.wrap =
-  push_pbox_toexpand("kanji.grfour.wrap");
-  build_kanji.tb(360,480)
-    (kanji.radical.wrapping)
-    (save savep,selft;
-     path savep;
-     transform selft[];
-     
-     (145,0) transformed selft1=(230,0);
-     (145,1000) transformed selft1=(230,1000);
-     (900,0) transformed selft1=(720,0);
-     (145,0) transformed selft2=(230,0);
-     (145,1000) transformed selft2=(230,1000);
-     (900,0) transformed selft2=(900,0);
-     tsu_xform(selft1)
-       (kanji.grsix.self;
-        savep=get_strokep(0));
-     replace_strokep(0)(savep transformed selft2));
   expand_pbox;
 enddef;
 

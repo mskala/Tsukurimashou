@@ -1,6 +1,6 @@
 %
 % Grade Four kanji used on more than one page
-% Copyright (C) 2011, 2012, 2013, 2014  Matthew Skala
+% Copyright (C) 2011, 2012, 2013, 2014, 2016  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -490,6 +490,29 @@ vardef kanji.grfour.peace =
   expand_pbox;
 enddef;
 
+vardef kanji.grfour.people =
+  push_pbox_toexpand("kanji.grfour.people");
+  push_stroke((800,480)--(800,730)--(250,730)--(250,-10),
+    (1.5,1.5)--(1.6,1.6)--(1.6,1.6)--(1.5,1.5));
+  set_botip(0,1,1);
+  set_botip(0,2,1);
+  set_boserif(0,1,4);
+  set_boserif(0,2,4);
+  push_stroke((250,540)--(800,540),
+    (1.5,1.5)--(1.5,1.5));
+  push_stroke((140,-30)..tension 1.2..(250,-10)..(510,70),
+    (1.7,1.7)--(1.5,1.5)--(1,1));
+  push_stroke((250,320)--(870,326),(1.5,1.5)--(1.6,1.6));
+  set_boserif(0,1,9);
+  push_stroke(interpath(mincho,
+      (500,537){dir 280}..tension 1.1..(760,0)..(850,0)..tension 1.5..
+        (880,75)..(910,150),
+      (500,537)..(660,150)..{right}(910,0){curl 1}..
+        (870,75)..(870,150)),
+    (1.6,1.6)--(1.4,1.4)--(1.4,1.4)--(1.2,1.2)--(0.9,0.9));
+  expand_pbox;
+enddef;
+
 vardef kanji.grfour.perfect =
   push_pbox_toexpand("kanji.grfour.perfect");
   build_kanji.tb(600,110)
@@ -629,5 +652,26 @@ vardef kanji.grfour.warehouse =
     (kanji.radical.tent)
     (build_kanji.sscale(xscaled 0.84)(kanji.radical.moon_flag);
      build_kanji.box((320,210),(810,-10))));
+  expand_pbox;
+enddef;
+
+vardef kanji.grfour.wrap =
+  push_pbox_toexpand("kanji.grfour.wrap");
+  build_kanji.tb(360,480)
+    (kanji.radical.wrapping)
+    (save savep,selft;
+     path savep;
+     transform selft[];
+     
+     (145,0) transformed selft1=(230,0);
+     (145,1000) transformed selft1=(230,1000);
+     (900,0) transformed selft1=(720,0);
+     (145,0) transformed selft2=(230,0);
+     (145,1000) transformed selft2=(230,1000);
+     (900,0) transformed selft2=(900,0);
+     tsu_xform(selft1)
+       (kanji.grsix.self;
+        savep=get_strokep(0));
+     replace_strokep(0)(savep transformed selft2));
   expand_pbox;
 enddef;

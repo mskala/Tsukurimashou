@@ -37,6 +37,7 @@ input bkencl.mp;
 input bottomrad.mp;
 input buildkanji.mp;
 input gradeeight.mp;
+input gradefive.mp;
 input gradefour.mp;
 input gradenine.mp;
 input gradeone.mp;
@@ -88,12 +89,6 @@ vardef kanji.grfour.model =
 enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-vardef kanji.grfive.exist =
-  push_pbox_toexpand("kanji.grfive.exist");
-  build_kanji.exist_enclose(kanji.grone.earth);
-  expand_pbox;
-enddef;
 
 vardef kanji.grfive.pressure =
   push_pbox_toexpand("kanji.grfive.pressure");

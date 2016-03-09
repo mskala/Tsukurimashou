@@ -1,6 +1,6 @@
 %
 % Unicode page 54 (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012, 2013  Matthew Skala
+% Copyright (C) 2011, 2012, 2013, 2016  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -59,16 +59,6 @@ vardef kanji.grthree.decree =
     build_kanji.sscale(xyscaled (0.9,0.55) shifted (0,-200))
       (kanji.rare.smash);
   );
-  expand_pbox;
-enddef;
-
-vardef kanji.grthree.facing =
-  push_pbox_toexpand("kanji.grthree.facing");
-  push_stroke((520,810)..tension 1.2..(470,720)..(420,640),
-    (1.7,1.7)--(1.5,1.5)--(1,1));
-  set_boserif(0,0,10);
-  tsu_xform(identity yscaled (640/780))(kanji.radical.gmm);
-  build_kanji.box((350,460),(650,170));
   expand_pbox;
 enddef;
 
