@@ -1,6 +1,6 @@
 %
 % Unicode page 72 (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012, 2013  Matthew Skala
+% Copyright (C) 2011, 2012, 2013, 2016  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -80,14 +80,6 @@ vardef kanji.grnine.male =
   build_kanji.lr(450,80)
     (kanji.leftrad.cow)
     (kanji.grone.earth);
-  expand_pbox;
-enddef;
-
-vardef kanji.grnine.moo =
-  push_pbox_toexpand("kanji.grnine.moo");
-  build_kanji.tb(510,0)
-    (kanji.radical.mu)
-    (kanji.grtwo.cow);
   expand_pbox;
 enddef;
 

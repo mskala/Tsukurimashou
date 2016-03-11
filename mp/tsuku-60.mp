@@ -130,6 +130,14 @@ vardef kanji.greight.desire =
   expand_pbox;
 enddef;
 
+vardef kanji.greight.dreadful =
+  push_pbox_toexpand("kanji.greight.dreadful");
+  build_kanji.level(build_kanji.lr(320,0)
+    (kanji.leftrad.heart)
+    (build_kanji.sscale(yscaled 0.96)(kanji.grfive.cloth)));
+  expand_pbox;
+enddef;
+
 vardef kanji.greight.enlightenment =
   push_pbox_toexpand("kanji.greight.enlightenment");
   build_kanji.level(build_kanji.lr(360,0)
@@ -137,6 +145,14 @@ vardef kanji.greight.enlightenment =
      replace_strokep(0)(subpath (0,1.4) of oldp);
      replace_strokeq(0)(subpath (0,1.4) of oldq))
     (kanji.grnine.my));
+  expand_pbox;
+enddef;
+
+vardef kanji.greight.fear =
+  push_pbox_toexpand("kanji.greight.fear");
+  build_kanji.level(build_kanji.lr(330,20)
+    (kanji.leftrad.heart)
+    (kanji.grthree.ingredient));
   expand_pbox;
 enddef;
 
@@ -164,6 +180,16 @@ vardef kanji.greight.rapture =
   expand_pbox;
 enddef;
 
+vardef kanji.greight.regret =
+  push_pbox_toexpand("kanji.greight.regret");
+  build_kanji.level(build_kanji.lr(350,50)
+    (kanji.leftrad.heart;
+     replace_strokep(0)(subpath (0,1.2) of oldp);
+     replace_strokeq(0)(subpath (0,1.2) of oldq))
+    (kanji.grthree.once_upon_a_time));
+  expand_pbox;
+enddef;
+
 vardef kanji.greight.repent =
   push_pbox_toexpand("kanji.greight.repent");
   build_kanji.level(build_kanji.lr(320,20)
@@ -184,7 +210,26 @@ vardef kanji.greight.suspicious =
   expand_pbox;
 enddef;
 
+vardef kanji.greight.wretched =
+  push_pbox_toexpand("kanji.greight.wretched");
+  build_kanji.level(build_kanji.lr(320,0)
+    (kanji.leftrad.heart;
+     replace_strokep(0)(subpath (0,1.5) of oldp);
+     replace_strokeq(0)(subpath (0,1.5) of oldq))
+    (build_kanji.sscale(scaled 0.96)(kanji.grfour.participate)));
+  expand_pbox;
+enddef;
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+vardef kanji.grnine.consider =
+  push_pbox_toexpand("kanji.grnine.consider");
+  build_kanji.level(build_kanji.lr(320,-35)
+    (kanji.leftrad.heart)
+    (build_kanji.sscale(scaled 0.93 shifted (0,-20))
+       (kanji.radical.old_bird)));
+  expand_pbox;
+enddef;
 
 vardef kanji.grnine.have_mercy =
   push_pbox_toexpand("kanji.grnine.have_mercy");
@@ -215,6 +260,30 @@ vardef kanji.grnine.serving_our_elders =
   build_kanji.level(build_kanji.lr(320,0)
     (kanji.leftrad.heart)
     (build_kanji.sscale(shifted (0,30))(kanji.grtwo.little_brother)));
+  expand_pbox;
+enddef;
+
+vardef kanji.grnine.senile =
+  push_pbox_toexpand("kanji.grnine.senile");
+  build_kanji.level(build_kanji.lr(320,0)
+    (kanji.leftrad.heart)
+    (kanji.grnine.suddenly));
+  expand_pbox;
+enddef;
+
+vardef kanji.grnine.sincerity =
+  push_pbox_toexpand("kanji.grnine.sincerity");
+  build_kanji.level(build_kanji.lr(320,0)
+    (kanji.leftrad.heart)
+    (kanji.greight.undergo));
+  expand_pbox;
+enddef;
+
+vardef kanji.grnine.wise =
+  push_pbox_toexpand("kanji.grnine.wise");
+  build_kanji.level(build_kanji.lr(320,0)
+    (kanji.leftrad.heart)
+    (kanji.grfour.orders));
   expand_pbox;
 enddef;
 
@@ -308,7 +377,13 @@ begintsuglyph("uni6010",16);
   tsu_render;
 endtsuglyph;
 
-% 怑 <6011>⿰忄<534A>⿱丷<CDP-8BF1>⿻<二>⿱一一丨
+% extra
+begintsuglyph("uni6011",17);
+  build_kanji.level(build_kanji.lr(350,-20*mincho)
+    (kanji.leftrad.heart)
+    (kanji.grtwo.half));
+  tsu_render;
+endtsuglyph;
 
 % do/ika "be offended"
 begintsuglyph("uni6012",18);
@@ -340,7 +415,11 @@ begintsuglyph("uni6015",21);
   tsu_render;
 endtsuglyph;
 
-% 怖 <6016>⿰忄<5E03>⿸𠂇巾
+% fu/kowai "dreadful" greight
+begintsuglyph("uni6016",22);
+  kanji.greight.dreadful;
+  tsu_render;
+endtsuglyph;
 
 % extra
 begintsuglyph("uni6017",23);
@@ -374,8 +453,19 @@ begintsuglyph("uni601A",26);
   tsu_render;
 endtsuglyph;
 
-% 怛 <601B>⿰忄<65E6>⿱日一
-% 怜 <601C>⿰忄<4EE4>⿱<CDP-8AFC>⿵𠆢一<CDP-8A60>⿱𠃌丨
+% datsu/itamu "be dejected"
+begintsuglyph("uni601B",27);
+  build_kanji.level(build_kanji.lr(320,10)
+    (kanji.leftrad.heart)
+    (kanji.greight.daybreak));
+  tsu_render;
+endtsuglyph;
+
+% rei/awaremu "wise" grnine
+begintsuglyph("uni601C",28);
+  kanji.grnine.wise;
+  tsu_render;
+endtsuglyph;
 
 % shi/omo "think"
 begintsuglyph("uni601D",29);
@@ -391,7 +481,13 @@ begintsuglyph("uni601E",30);
   tsu_render;
 endtsuglyph;
 
-% 怟 <601F>⿰忄<6C10>⿱氏一
+% tei/modaeru "no meaning specified"
+begintsuglyph("uni601F",31);
+  build_kanji.level(build_kanji.lr(320,30)
+    (kanji.leftrad.heart)
+    (kanji.rare.cruithne));
+  tsu_render;
+endtsuglyph;
 
 % kai/okota/nama "neglect"
 begintsuglyph("uni6020",32);
@@ -437,7 +533,13 @@ begintsuglyph("uni6025",37);
   tsu_render;
 endtsuglyph;
 
-% 怦 <6026>⿰忄<5E73>⿻干丷
+% hou "be excited"
+begintsuglyph("uni6026",38);
+  build_kanji.level(build_kanji.lr(320,0)
+    (kanji.leftrad.heart)
+    (build_kanji.sscale(shifted (0,-20))(kanji.grthree.level)));
+  tsu_render;
+endtsuglyph;
 
 % sei/saga "gender"
 begintsuglyph("uni6027",39);
@@ -459,7 +561,13 @@ begintsuglyph("uni602A",42);
   tsu_render;
 endtsuglyph;
 
-% 怫 <602B>⿰忄<5F17>⿻弓<CDP-8BF5>⿰丿丨
+% futsu "wrathful"
+begintsuglyph("uni602B",43);
+  build_kanji.level(build_kanji.lr(320,0)
+    (kanji.leftrad.heart)
+    (kanji.rare.dollar));
+  tsu_render;
+endtsuglyph;
 
 % extra
 begintsuglyph("uni602C",44);
@@ -493,7 +601,13 @@ begintsuglyph("uni6031",49);
   tsu_render;
 endtsuglyph;
 
-% 怲 <6032>⿰忄<4E19>⿱一<内>⿻冂人
+% extra
+begintsuglyph("uni6032",50);
+  build_kanji.level(build_kanji.lr(340,-30)
+    (kanji.leftrad.heart)
+    (build_kanji.sscale(scaled 0.98)(kanji.greight.third)));
+  tsu_render;
+endtsuglyph;
 
 % extra
 begintsuglyph("uni6033",51);
@@ -503,7 +617,13 @@ begintsuglyph("uni6033",51);
   tsu_render;
 endtsuglyph;
 
-% 怶 <6036>⿰忄<76AE>
+% extra
+begintsuglyph("uni6036",54);
+  build_kanji.level(build_kanji.lr(320,-10)
+    (kanji.leftrad.heart)
+    (build_kanji.sscale(yscaled 0.98)(kanji.grthree.pelt)));
+  tsu_render;
+endtsuglyph;
 
 % extra
 begintsuglyph("uni6039",57);
@@ -513,7 +633,15 @@ begintsuglyph("uni6039",57);
   tsu_render;
 endtsuglyph;
 
-% 怺 <603A>⿰忄<6C38>
+% koraeru "endure"
+begintsuglyph("uni603A",58);
+  build_kanji.level(build_kanji.lr(320,30)
+    (kanji.leftrad.heart;
+     replace_strokep(0)(subpath (0,1.7) of oldp);
+     replace_strokeq(0)(subpath (0,1.7) of oldq))
+    (build_kanji.sscale(yscaled 1.02)(kanji.grfive.long)));
+  tsu_render;
+endtsuglyph;
 
 % extra
 begintsuglyph("uni603D",61);
@@ -549,7 +677,13 @@ begintsuglyph("uni6043",67);
   tsu_render;
 endtsuglyph;
 
-% 恄 <6044>⿰忄<5409>⿱<士>⿱十一口
+% extra
+begintsuglyph("uni6044",68);
+  build_kanji.level(build_kanji.lr(350,0)
+    (kanji.leftrad.heart)
+    (kanji.greight.good_luck));
+  tsu_render;
+endtsuglyph;
 
 % extra
 begintsuglyph("uni6045",69);
@@ -567,7 +701,13 @@ begintsuglyph("uni6047",71);
   tsu_render;
 endtsuglyph;
 
-% 恈 <6048>⿰忄<725F>⿱厶牛
+% bou/musaborioshimu "no meaning given"
+begintsuglyph("uni6048",72);
+  build_kanji.level(build_kanji.lr(360,-40)
+    (kanji.leftrad.heart)
+    (kanji.grnine.moo));
+  tsu_render;
+endtsuglyph;
 
 % extra
 begintsuglyph("uni6049",73);
@@ -594,8 +734,21 @@ begintsuglyph("uni604B",75);
   tsu_render;
 endtsuglyph;
 
-% 恌 <604C>⿰忄<5146>
-% 恍 <604D>⿰忄<5149>⿳⺌一<儿>⿰丿乚
+% chou/usui "frivolous"
+begintsuglyph("uni604C",76);
+  build_kanji.level(build_kanji.lr(320,0)
+    (kanji.leftrad.heart)
+    (kanji.grfour.portent));
+  tsu_render;
+endtsuglyph;
+
+% kou/tobokeru "dotage"
+begintsuglyph("uni604D",77);
+  build_kanji.level(build_kanji.lr(320,0)
+    (kanji.leftrad.heart)
+    (kanji.grtwo.shine));
+  tsu_render;
+endtsuglyph;
 
 % extra
 begintsuglyph("uni604E",78);
@@ -886,7 +1039,21 @@ begintsuglyph("uni60AA",170);
   tsu_render;
 endtsuglyph;
 
-% 悰 <60B0>⿰忄<5B97>⿱宀示
+% sou/tanoshimu "enjoy"
+begintsuglyph("uni60B0",176);
+  build_kanji.level(build_kanji.lr(360,-20)
+    (kanji.leftrad.heart)
+    (kanji.grsix.religion));
+  tsu_render;
+endtsuglyph;
+
+% hi/inayamu "to be desirous of speaking"
+begintsuglyph("uni60B1",177);
+  build_kanji.level(build_kanji.lr(320,0)
+    (kanji.leftrad.heart)
+    (build_kanji.sscale(scaled 0.96)(kanji.grfive.mistake)));
+  tsu_render;
+endtsuglyph;
 
 % hi/kana "sad"
 begintsuglyph("uni60B2",178);
@@ -894,14 +1061,68 @@ begintsuglyph("uni60B2",178);
   tsu_render;
 endtsuglyph;
 
-% 悱 <60B1>⿰忄<975E>
-% 悴 <60B4>⿰忄<5352>⿱<𠅃>⿱<亠>⿱丨一<从>⿰人人十
-% 悵 <60B5>⿰忄<9577>⿳<CDP-884A>%一<CDP-8CC6>⿰𠄌⿺乀丿
-% 悸 <60B8>⿰忄<5B63>⿱<禾>⿱丿木子
-% 悺 <60BA>⿰忄<5B98>⿱宀㠯
-% 悻 <60BB>⿰忄<5E78>⿱<土>⿱十一<𢆉>⿱丷干
-% 悾 <60BE>⿰忄<7A7A>⿱<穴>⿱宀八工
-% 惀 <60C0>⿰忄<4F96>⿱<CDP-8AFC>⿵𠆢一<𠕁>⿵冂<卄>⿻⿰丨丨一
+% sui/sagare "penis"
+begintsuglyph("uni60B4",180);
+  build_kanji.level(build_kanji.lr(320,0)
+    (kanji.leftrad.heart)
+    (kanji.grfour.graduate));
+  tsu_render;
+endtsuglyph;
+
+% chou/itamu "be sad"
+begintsuglyph("uni60B5",181);
+  build_kanji.level(build_kanji.lr(340,30)
+    (kanji.leftrad.heart)
+    (build_kanji.sscale(yscaled 0.98)(kanji.grtwo.long)));
+  tsu_render;
+endtsuglyph;
+
+% ki "shudder"
+begintsuglyph("uni60B8",184);
+  build_kanji.level(build_kanji.lr(320,0)
+    (kanji.leftrad.heart)
+    (kanji.grfour.season));
+  tsu_render;
+endtsuglyph;
+
+% extra
+begintsuglyph("uni60BA",186);
+  build_kanji.level(build_kanji.lr(320,0)
+    (kanji.leftrad.heart)
+    (build_kanji.sscale(yscaled 0.97 shifted (0,20))
+       (kanji.grfour.bureaucracy)));
+  tsu_render;
+endtsuglyph;
+
+% kei/motoru "vexation"
+begintsuglyph("uni60BB",187);
+  build_kanji.level(build_kanji.lr(320,0)
+    (kanji.leftrad.heart;
+     replace_strokep(0)(subpath (0,0.9) of oldp);
+     replace_strokeq(0)(subpath (0,0.9) of oldq))
+    (kanji.grthree.blessing));
+  tsu_render;
+endtsuglyph;
+
+% kou "guileless"
+begintsuglyph("uni60BE",190);
+  build_kanji.level(build_kanji.lr(330,10)
+    (kanji.leftrad.heart;
+     replace_strokep(0)(subpath (0,1.8) of oldp);
+     replace_strokeq(0)(subpath (0,1.8) of oldq))
+    (build_kanji.sscale(yscaled 1.03 shifted (0,-40))(kanji.grone.sky)));
+  tsu_render;
+endtsuglyph;
+
+% extra
+begintsuglyph("uni60C0",192);
+  build_kanji.level(build_kanji.lr(320,0)
+    (kanji.leftrad.heart;
+     replace_strokep(0)(subpath (0,1.6) of oldp);
+     replace_strokeq(0)(subpath (0,1.6) of oldq))
+    (kanji.rare.be_methodical));
+  tsu_render;
+endtsuglyph;
 
 % jou/nasa "feelings"
 begintsuglyph("uni60C5",197);
@@ -909,22 +1130,121 @@ begintsuglyph("uni60C5",197);
   tsu_render;
 endtsuglyph;
 
-% 惆 <60C6>⿰忄<5468>⿵⺆<𠮷>⿱<土>⿱十一口
-% 惇 <60C7>⿰忄<4EAB>⿳<亠>⿱丨一口子
-% 惈 <60C8>⿰忄<679C>⿻日木
-% 惊 <60CA>⿰忄<4EAC>⿳<亠>⿱丨一口小
-% 惍 <60CD>⿰忄<91D1>
-% 惏 <60CF>⿰忄<6797>⿰木木
-% 惔 <60D4>⿰忄<708E>⿱<火>⿱八人<火>⿱八人
-% 惕 <60D5>⿰忄<6613>⿱日<勿>⿹勹<CDP-89A6>⿰丿丿
-% 惗 <60D7>⿰忄<5FF5>⿱<今>⿱<CDP-8AFC>⿵𠆢一<CDP-8BA2>%心
-% 惚 <60DA>⿰忄<5FFD>⿱<勿>⿹勹<CDP-89A6>⿰丿丿心
-% 惜 <60DC>⿰忄<6614>⿱<龷>⿱<卄>⿻⿰丨丨一一日
-% 惟 <60DF>⿰忄<96B9>
-% 惦 <60E6>⿰忄<5E97>⿸广<占>⿱⺊口
-% 惧 <60E7>⿰忄<5177>⿳目一八
-% 惨 <60E8>⿰忄<53C2>⿱厶⿱<大>⿻一人彡
-% 惲 <60F2>⿰忄<8ECD>⿱冖車
+% chuu/uramu "be disappointed"
+begintsuglyph("uni60C6",198);
+  build_kanji.level(build_kanji.lr(320,0)
+    (kanji.leftrad.heart)
+    (kanji.grfour.circuit));
+  tsu_render;
+endtsuglyph;
+
+% shun/atsui "sincerity"
+begintsuglyph("uni60C7",199);
+  kanji.grnine.sincerity;
+  tsu_render;
+endtsuglyph;
+
+% ka/isamashii "resolute"
+begintsuglyph("uni60C8",200);
+  build_kanji.level(build_kanji.lr(320,10)
+    (kanji.leftrad.heart)
+    (kanji.grfour.fruit));
+  tsu_render;
+endtsuglyph;
+
+% ryou/kanashimu "startle"
+begintsuglyph("uni60CA",202);
+  build_kanji.level(build_kanji.lr(320,0)
+    (kanji.leftrad.heart)
+    (kanji.grtwo.capital));
+  tsu_render;
+endtsuglyph;
+
+% extra
+begintsuglyph("uni60CD",205);
+  build_kanji.level(build_kanji.lr(320,0)
+    (kanji.leftrad.heart)
+    (build_kanji.sscale(shifted (0,30*(1-mincho)))(kanji.grone.gold)));
+  tsu_render;
+endtsuglyph;
+
+% ran/musaboru "avaricious"
+begintsuglyph("uni60CF",207);
+  build_kanji.level(build_kanji.lr(340,-20)
+    (kanji.leftrad.heart)
+    (build_kanji.sscale(yscaled 1.03)(kanji.grone.grove)));
+  tsu_render;
+endtsuglyph;
+
+% tan/ureeru "cheerful"
+begintsuglyph("uni60D4",212);
+  build_kanji.level(build_kanji.lr(320,10)
+    (kanji.leftrad.heart)
+    (build_kanji.sscale(yscaled 0.96)(kanji.greight.inflammation)));
+  tsu_render;
+endtsuglyph;
+
+% teki/tsutsushimu "be cautious"
+begintsuglyph("uni60D5",213);
+  build_kanji.level(build_kanji.lr(320,40)
+    (kanji.leftrad.heart)
+    (build_kanji.sscale(yscaled 0.94 shifted (0,-30))(kanji.grfive.easy)));
+  tsu_render;
+endtsuglyph;
+
+% extra
+begintsuglyph("uni60D7",215);
+  build_kanji.level(build_kanji.lr(310,20-40*mincho)
+    (kanji.leftrad.heart)
+    (kanji.grfour.care));
+  tsu_render;
+endtsuglyph;
+
+% hotsu/bokeru "senile"
+begintsuglyph("uni60DA",218);
+  kanji.grnine.senile;
+  tsu_render;
+endtsuglyph;
+
+% seki/oshii "regret"
+begintsuglyph("uni60DC",220);
+  kanji.greight.regret;
+  tsu_render;
+endtsuglyph;
+
+% i/omonmeru "consider"
+begintsuglyph("uni60DF",223);
+  kanji.grnine.consider;
+  tsu_render;
+endtsuglyph;
+
+% extra
+begintsuglyph("uni60E6",230);
+  build_kanji.level(build_kanji.lr(320,0)
+    (kanji.leftrad.heart)
+    (kanji.grtwo.shop));
+  tsu_render;
+endtsuglyph;
+
+% ku/osoreru "fear"
+begintsuglyph("uni60E7",231);
+  kanji.greight.fear;
+  tsu_render;
+endtsuglyph;
+
+% sen/mijime "wretched"
+begintsuglyph("uni60E8",232);
+  kanji.greight.wretched;
+  tsu_render;
+endtsuglyph;
+
+% un/atsui "devise"
+begintsuglyph("uni60F2",242);
+  build_kanji.level(build_kanji.lr(320,0)
+    (kanji.leftrad.heart)
+    (build_kanji.sscale(shifted (0,10))(kanji.grfour.army)));
+  tsu_render;
+endtsuglyph;
 
 % sou/omo "concept"
 begintsuglyph("uni60F3",243);

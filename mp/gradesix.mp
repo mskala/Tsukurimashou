@@ -135,18 +135,26 @@ vardef kanji.grsix.noes =
   expand_pbox;
 enddef;
 
+vardef kanji.grsix.prolong =
+  push_pbox_toexpand("kanji.grsix.prolong");
+  build_kanji.long_stride_enclose(false)
+    (build_kanji.add_beret(kanji.grtwo.cease));
+  expand_pbox;
+enddef;
+
+vardef kanji.grsix.religion =
+  push_pbox_toexpand("kanji.grsix.religion");
+  build_kanji.tb(600,100)
+    (kanji.radical.silly_hat)
+    (build_kanji.sscale(xscaled 0.94)(kanji.grfive.showing));
+  expand_pbox;
+enddef;
+
 vardef kanji.grsix.respect =
   push_pbox_toexpand("kanji.grsix.respect");
   build_kanji.lr(540,20)
     (kanji.rare.in_the_least)
     (kanji.radical.folding_chair);
-  expand_pbox;
-enddef;
-
-vardef kanji.grsix.prolong =
-  push_pbox_toexpand("kanji.grsix.prolong");
-  build_kanji.long_stride_enclose(false)
-    (build_kanji.add_beret(kanji.grtwo.cease));
   expand_pbox;
 enddef;
 

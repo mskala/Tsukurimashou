@@ -265,14 +265,6 @@ vardef kanji.grnine.slacken =
   expand_pbox;
 enddef;
 
-vardef kanji.grnine.suddenly =
-  push_pbox_toexpand("kanji.grnine.suddenly");
-  build_kanji.level(build_kanji.tb(360,80)
-    (kanji.grnine.must_not)
-    (kanji.bottomrad.heart));
-  expand_pbox;
-enddef;
-
 vardef kanji.grnine.wide =
   push_pbox_toexpand("kanji.grnine.wide");
   build_kanji.level(build_kanji.lr(450,0)

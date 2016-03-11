@@ -1,6 +1,6 @@
 %
 % Unicode page 5E (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012, 2013, 2014  Matthew Skala
+% Copyright (C) 2011, 2012, 2013, 2014, 2016  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -86,12 +86,6 @@ vardef kanji.grtwo.return =
           (build_kanji.tb(450,200)
              (kanji.radical.conservative_hat)
              (kanji.greight.towel)))));
-  expand_pbox;
-enddef;
-
-vardef kanji.grtwo.shop =
-  push_pbox_toexpand("kanji.grtwo.shop");
-  build_kanji.dotcliff_enclose(kanji.greight.divination);
   expand_pbox;
 enddef;
 

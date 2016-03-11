@@ -164,19 +164,6 @@ vardef kanji.grfour.injury =
   expand_pbox;
 enddef;
 
-vardef kanji.grfour.season =
-  push_pbox_toexpand("kanji.grfour.season");
-  build_kanji.tb(340,100)
-    (kanji.grnine.two_branch_tree;
-     replace_strokep(-4)(subpath (0,0.78) of oldp))
-    (path charsvp;
-     build_kanji.sscale(xscaled 0.75)
-       (kanji.grone.child;
-        charsvp:=get_strokep(0));
-     replace_strokep(0)(charsvp));
-  expand_pbox;
-enddef;
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 vardef kanji.grfive.draw_near =
@@ -210,14 +197,6 @@ enddef;
 vardef kanji.grsix.filial_piety =
   push_pbox_toexpand("kanji.grsix.filial_piety");
   kanji.radical.old_man(kanji.grone.child);
-  expand_pbox;
-enddef;
-
-vardef kanji.grsix.religion =
-  push_pbox_toexpand("kanji.grsix.religion");
-  build_kanji.tb(600,100)
-    (kanji.radical.silly_hat)
-    (build_kanji.sscale(xscaled 0.94)(kanji.grfive.showing));
   expand_pbox;
 enddef;
 

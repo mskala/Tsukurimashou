@@ -480,6 +480,16 @@ vardef kanji.grfour.orders =
   expand_pbox;
 enddef;
 
+vardef kanji.grfour.participate =
+  push_pbox_toexpand("kanji.grfour.participate");
+  build_kanji.level(build_kanji.tcb(600,10)(320,120)
+    (build_kanji.sscale(xscaled 0.8)(kanji.radical.mu))
+    (build_kanji.spread_legs(140)(kanji.grone.big))
+    (build_kanji.sscale(rotated 24 shifted (-60,0))
+       (kanji.rightrad.short_hair)));
+  expand_pbox;
+enddef;
+
 vardef kanji.grfour.peace =
   push_pbox_toexpand("kanji.grfour.peace");
   build_kanji.dotcliff_enclose(build_kanji.tb(520,0)
@@ -577,6 +587,19 @@ vardef kanji.grfour.scenery =
   build_kanji.level(build_kanji.tb(560,30)
     (kanji.grone.day)
     (kanji.grtwo.capital));
+  expand_pbox;
+enddef;
+
+vardef kanji.grfour.season =
+  push_pbox_toexpand("kanji.grfour.season");
+  build_kanji.tb(340,100)
+    (kanji.grnine.two_branch_tree;
+     replace_strokep(-4)(subpath (0,0.78) of oldp))
+    (path charsvp;
+     build_kanji.sscale(xscaled 0.75)
+       (kanji.grone.child;
+        charsvp:=get_strokep(0));
+     replace_strokep(0)(charsvp));
   expand_pbox;
 enddef;
 

@@ -1,6 +1,6 @@
 %
 % Unicode page 51 (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012, 2013, 2014  Matthew Skala
+% Copyright (C) 2011, 2012, 2013, 2014, 2016  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -58,19 +58,6 @@ vardef kanji.grone.yen =
     (1.6,1.6)--(1.6,1.6));
   push_stroke((point 2.5 of get_strokep(-1))--(point 0.5 of get_strokep(0)),
     (1.6,1.6)--(1.6,1.6));
-  expand_pbox;
-enddef;
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-vardef kanji.grtwo.shine =
-  push_pbox_toexpand("kanji.grtwo.shine");
-  build_kanji.level(build_kanji.tb(440,55)
-    (kanji.toprad.sparkle_three;
-     push_stroke((80,-20)--(920,-20),(1.6,1.6)--(1.6,1.6));
-     set_boserif(0,1,9);
-    )
-    (kanji.radical.legs));
   expand_pbox;
 enddef;
 

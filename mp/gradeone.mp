@@ -1,6 +1,6 @@
 %
 % Grade One kanji used on more than one page
-% Copyright (C) 2011, 2012, 2013  Matthew Skala
+% Copyright (C) 2011, 2012, 2013, 2016  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -691,6 +691,14 @@ vardef kanji.grone.six =
   build_kanji.level(build_kanji.tb(600,-50)
     (kanji.radical.kettle_lid)
     (kanji.radical.eight));
+  expand_pbox;
+enddef;
+
+vardef kanji.grone.sky =
+  push_pbox_toexpand("kanji.grone.sky");
+  build_kanji.level(build_kanji.tb(500,70)
+    (kanji.toprad.cave)
+    (kanji.grtwo.craft));
   expand_pbox;
 enddef;
 

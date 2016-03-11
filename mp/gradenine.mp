@@ -190,6 +190,14 @@ vardef kanji.grnine.ladle =
   expand_pbox;
 enddef;
 
+vardef kanji.grnine.moo =
+  push_pbox_toexpand("kanji.grnine.moo");
+  build_kanji.tb(510,0)
+    (kanji.radical.mu)
+    (kanji.grtwo.cow);
+  expand_pbox;
+enddef;
+
 vardef kanji.grnine.mountain_high =
   push_pbox_toexpand("kanji.grnine.mountain_high");
   build_kanji.level(build_kanji.tb(360,30)
@@ -289,6 +297,14 @@ vardef kanji.grnine.square_jewel =
   build_kanji.tb(440,10)
     (kanji.grone.earth)
     (kanji.grone.earth);
+  expand_pbox;
+enddef;
+
+vardef kanji.grnine.suddenly =
+  push_pbox_toexpand("kanji.grnine.suddenly");
+  build_kanji.level(build_kanji.tb(360,80)
+    (kanji.grnine.must_not)
+    (kanji.bottomrad.heart));
   expand_pbox;
 enddef;
 
