@@ -1,6 +1,6 @@
 %
 % Unicode page 82 (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012, 2013  Matthew Skala
+% Copyright (C) 2011, 2012, 2013, 2016  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -88,14 +88,6 @@ vardef kanji.grfour.art =
   build_kanji.tb(540,50)
     (kanji.toprad.grass)
     (kanji.grnine.declaim);
-  expand_pbox;
-enddef;
-
-vardef kanji.grfour.english =
-  push_pbox_toexpand("kanji.grfour.english");
-  build_kanji.tb(630,80)
-    (kanji.toprad.grass)
-    (kanji.grthree.centre);
   expand_pbox;
 enddef;
 

@@ -347,6 +347,14 @@ vardef kanji.grone.gold =
   expand_pbox;
 enddef;
 
+vardef kanji.grone.grass =
+  push_pbox_toexpand("kanji.grone.grass");
+  build_kanji.tb(600,10)
+    (kanji.toprad.grass)
+    (kanji.grone.early);
+  expand_pbox;
+enddef;
+
 vardef kanji.grone.grove =
   push_pbox_toexpand("kanji.grone.grove");
   build_kanji.lr(480,0)

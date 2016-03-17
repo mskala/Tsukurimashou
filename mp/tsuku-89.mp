@@ -1,6 +1,6 @@
 %
 % Unicode page 89 (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012, 2013  Matthew Skala
+% Copyright (C) 2011, 2012, 2013, 2016  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -91,18 +91,6 @@ vardef kanji.grfour.remember =
     (build_kanji.tb(580,110)
        (kanji.radical.conservative_hat)
        (build_kanji.sscale(xscaled 0.93)(kanji.grone.see)));
-  expand_pbox;
-enddef;
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-vardef kanji.grfive.solve =
-  push_pbox_toexpand("kanji.grfive.solve");
-  build_kanji.lr(520,50)
-    (kanji.grtwo.corner)
-    (build_kanji.level(build_kanji.tb(480,70-40*mincho)
-       (kanji.grtwo.sword)
-       (kanji.grtwo.cow)));
   expand_pbox;
 enddef;
 

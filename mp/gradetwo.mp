@@ -55,6 +55,14 @@ vardef kanji.grtwo.arrow =
   expand_pbox;
 enddef;
 
+vardef kanji.grtwo.autumn =
+  push_pbox_toexpand("kanji.grtwo.autumn");
+  build_kanji.lr(450,120)
+    (kanji.leftrad.two_branch_tree)
+    (kanji.grone.fire);
+  expand_pbox;
+enddef;
+
 vardef kanji.grtwo.big_brother =
   push_pbox_toexpand("kanji.grtwo.big_brother");
   build_kanji.level(build_kanji.tb(440,110)
@@ -973,6 +981,24 @@ vardef kanji.grtwo.walk =
     (kanji.grtwo.cease)
     (kanji.grtwo.little));
   expand_pbox;
+enddef;
+
+vardef kanji.grtwo.weak =
+  push_pbox_toexpand("kanji.grtwo.weak");
+  build_kanji.lr(450,0)
+    (kanji.grtwo_helper.weak)
+    (kanji.grtwo_helper.weak);
+  expand_pbox;
+enddef;
+
+vardef kanji.grtwo_helper.weak =
+  kanji.grtwo.bow;
+  push_stroke((330,230)..tension 1.2..(450,190)..(490,160),
+    (1.2,1.2)--(1.4,1.4)--(1.8,1.8));
+  set_bosize(0,80);
+  push_stroke((600,130)..tension 1.2..(380,80)..(250,60),
+    (1.3,1.3)--(1.6,1.6)--(1.9,1.9));
+  set_bosize(0,80);
 enddef;
 
 vardef kanji.grtwo.west =

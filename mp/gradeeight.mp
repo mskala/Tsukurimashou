@@ -115,6 +115,15 @@ vardef kanji.greight.daybreak =
   expand_pbox;
 enddef;
 
+vardef kanji.greight.decapitate =
+  push_pbox_toexpand("kanji.greight.decapitate");
+  build_kanji.lr(480,20)
+    (build_kanji.sscale(yscaled 0.94 shifted (0,30))
+       (kanji.grone.wheel))
+    (kanji.greight.axe);
+  expand_pbox;
+enddef;
+
 vardef kanji.greight.demolish =
   push_pbox_toexpand("kanji.greight.demolish");
   build_kanji.tb(650,0)
@@ -542,6 +551,14 @@ vardef kanji.greight.towel =
   push_stroke((500,790)--(500,-60),
     (1.6,1.6)--(1.5,1.5));
   set_boserif(0,0,10);
+  expand_pbox;
+enddef;
+
+vardef kanji.greight.tribute =
+  push_pbox_toexpand("kanji.greight.tribute");
+  build_kanji.level(build_kanji.tb(540,-20)
+    (kanji.grtwo.craft)
+    (kanji.grone.shell));
   expand_pbox;
 enddef;
 

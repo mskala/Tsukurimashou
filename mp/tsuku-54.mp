@@ -62,14 +62,6 @@ vardef kanji.grthree.decree =
   expand_pbox;
 enddef;
 
-vardef kanji.grthree.member =
-  push_pbox_toexpand("kanji.grthree.member");
-  build_kanji.level(build_kanji.tb(620,0)
-    (build_kanji.sscale(xscaled 0.67)(kanji.grone.mouth))
-    (kanji.grone.shell));
-  expand_pbox;
-enddef;
-
 vardef kanji.grthree.taste =
   push_pbox_toexpand("kanji.grthree.taste");
   build_kanji.lr(380,-30)

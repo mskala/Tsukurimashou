@@ -1,6 +1,6 @@
 %
 % Unicode page 65 (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012, 2013  Matthew Skala
+% Copyright (C) 2011, 2012, 2013, 2016  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -208,15 +208,6 @@ vardef kanji.greight.attack =
   build_kanji.level(build_kanji.lr(420,80)
     (build_kanji.lift_skirt(400,250)(kanji.grtwo.craft))
     (kanji.radical.folding_chair));
-  expand_pbox;
-enddef;
-
-vardef kanji.greight.decapitate =
-  push_pbox_toexpand("kanji.greight.decapitate");
-  build_kanji.lr(480,20)
-    (build_kanji.sscale(yscaled 0.94 shifted (0,30))
-       (kanji.grone.wheel))
-    (kanji.greight.axe);
   expand_pbox;
 enddef;
 

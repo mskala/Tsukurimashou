@@ -1,6 +1,6 @@
 %
 % Unicode page 8C (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012, 2013, 2014  Matthew Skala
+% Copyright (C) 2011, 2012, 2013, 2014, 2016  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -145,16 +145,6 @@ vardef kanji.grfive.poor =
   expand_pbox;
 enddef;
 
-vardef kanji.grfive.quality =
-  push_pbox_toexpand("kanji.grfive.quality");
-  build_kanji.level(build_kanji.tb(540,0)
-    (build_kanji.lr(480,70)
-       (kanji.greight.axe)
-       (kanji.greight.axe))
-    (kanji.grone.shell));
-  expand_pbox;
-enddef;
-
 vardef kanji.grfive.trade =
   push_pbox_toexpand("kanji.grfive.trade");
   build_kanji.level(build_kanji.tb(540,0)
@@ -199,14 +189,6 @@ vardef kanji.greight.subscribe =
   build_kanji.level(build_kanji.lr(410,20)
     (build_kanji.lift_skirt(220,60)(kanji.grone.shell))
     (kanji.rare.inner_palace));
-  expand_pbox;
-enddef;
-
-vardef kanji.greight.tribute =
-  push_pbox_toexpand("kanji.greight.tribute");
-  build_kanji.level(build_kanji.tb(540,-20)
-    (kanji.grtwo.craft)
-    (kanji.grone.shell));
   expand_pbox;
 enddef;
 

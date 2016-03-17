@@ -164,12 +164,6 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-vardef kanji.grfive.make_up =
-  push_pbox_toexpand("kanji.grfive.make_up");
-  build_kanji.road_enclose(kanji.grfour.revelation);
-  expand_pbox;
-enddef;
-
 vardef kanji.grfive.occasional =
   push_pbox_toexpand("kanji.grfive.occasional");
   build_kanji.road_enclose(kanji.rare.stalk);

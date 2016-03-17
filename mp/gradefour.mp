@@ -192,6 +192,19 @@ vardef kanji.grfour.clothes =
   expand_pbox;
 enddef;
 
+vardef kanji.grfour.courage =
+  push_pbox_toexpand("kanji.grfour.courage");
+  build_kanji.level(build_kanji.tb(640,80)
+    (push_stroke((220,740)--(750,740)..tension 1.2..(620,380)..(490,140),
+       (1.6,1.6)--(1.6,1.6)--(1.4,1.4)--(1.1,1.1));
+     set_botip(0,1,0);
+     set_boserif(0,1,4);
+     push_stroke((340,410)..tension 1.2..(490,140)..(520,20),
+       (1.1,1.1)--(1.5,1.5)--(1.8,1.8)))
+    (kanji.grone.man));
+  expand_pbox;
+enddef;
+
 vardef kanji.grfour.director =
   push_pbox_toexpand("kanji.grfour.director");
   build_kanji.sscale(shifted (-20,0) xscaled 1.1)
@@ -242,6 +255,14 @@ vardef kanji.grfour.elephant =
      replace_strokep(-6)((point 1.5 of get_strokep(-8))
          --(point 0.5 of get_strokep(-7)));
      replace_strokeq(-6)((1.5,1.5)--(1.4,1.4))));
+  expand_pbox;
+enddef;
+
+vardef kanji.grfour.english =
+  push_pbox_toexpand("kanji.grfour.english");
+  build_kanji.tb(630,80)
+    (kanji.toprad.grass)
+    (kanji.grthree.centre);
   expand_pbox;
 enddef;
 
@@ -352,6 +373,15 @@ vardef kanji.grfour.grandchild =
   expand_pbox;
 enddef;
 
+vardef kanji.grfour.hall =
+  push_pbox_toexpand("kanji.grfour.hall");
+  build_kanji.level(build_kanji.tb(260,100)
+    (kanji.toprad.ridiculous_hat)
+    (kanji.grone.earth;
+     set_boserif(-2,0,whatever)));
+  expand_pbox;
+enddef;
+
 vardef kanji.grfour.hard =
   push_pbox_toexpand("kanji.grfour.hard");
   kanji.radical.box;
@@ -458,6 +488,23 @@ vardef kanji.grfour.nothing =
        (1.5,1.5)--(1.5,1.5));
      set_boserif(0,1,9))
     (kanji.bottomrad.four_ticks));
+  expand_pbox;
+enddef;
+
+vardef kanji.grfour.nurture =
+  push_pbox_toexpand("kanji.grfour.nurture");
+  build_kanji.tb(460,230)
+    (kanji.toprad.sheep)
+    (kanji.grtwo.eat);
+  replace_strokeq(-8)(subpath (xpart (get_strokep(-8) intersectiontimes
+    get_strokep(-12)),infinity) of oldq);
+  replace_strokep(-8)(subpath (xpart (oldp intersectiontimes
+    get_strokep(-12)),infinity) of oldp);
+  set_boserif(-8,0,whatever);
+  replace_strokeq(-7)(subpath (xpart (get_strokep(-7) intersectiontimes
+    get_strokep(-12)),infinity) of oldq);
+  replace_strokep(-7)(subpath (xpart (oldp intersectiontimes
+    get_strokep(-12)),infinity) of oldp);
   expand_pbox;
 enddef;
 

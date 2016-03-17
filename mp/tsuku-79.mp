@@ -1,6 +1,6 @@
 %
 % Unicode page 79 (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012, 2013, 2014  Matthew Skala
+% Copyright (C) 2011, 2012, 2013, 2014, 2016  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -51,14 +51,6 @@ input toprad.mp;
 do_late_includes;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-vardef kanji.grtwo.autumn =
-  push_pbox_toexpand("kanji.grtwo.autumn");
-  build_kanji.lr(450,120)
-    (kanji.leftrad.two_branch_tree)
-    (kanji.grone.fire);
-  expand_pbox;
-enddef;
 
 vardef kanji.grtwo.company =
   push_pbox_toexpand("kanji.grtwo.company");

@@ -124,19 +124,6 @@ vardef kanji.grfour.auxilliary =
   expand_pbox;
 enddef;
 
-vardef kanji.grfour.courage =
-  push_pbox_toexpand("kanji.grfour.courage");
-  build_kanji.level(build_kanji.tb(640,80)
-    (push_stroke((220,740)--(750,740)..tension 1.2..(620,380)..(490,140),
-       (1.6,1.6)--(1.6,1.6)--(1.4,1.4)--(1.1,1.1));
-     set_botip(0,1,0);
-     set_boserif(0,1,4);
-     push_stroke((340,410)..tension 1.2..(490,140)..(520,20),
-       (1.1,1.1)--(1.5,1.5)--(1.8,1.8)))
-    (kanji.grone.man));
-  expand_pbox;
-enddef;
-
 vardef kanji.grfour.distinction =
   push_pbox_toexpand("kanji.grfour.distinction");
   build_kanji.level(build_kanji.lr(560,0)

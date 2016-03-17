@@ -1,6 +1,6 @@
 %
 % Unicode page 83 (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012, 2013  Matthew Skala
+% Copyright (C) 2011, 2012, 2013, 2016  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -46,16 +46,6 @@ input rare.mp;
 input toprad.mp;
 
 do_late_includes;
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-vardef kanji.grone.grass =
-  push_pbox_toexpand("kanji.grone.grass");
-  build_kanji.tb(600,10)
-    (kanji.toprad.grass)
-    (kanji.grone.early);
-  expand_pbox;
-enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 

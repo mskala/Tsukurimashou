@@ -80,24 +80,6 @@ vardef kanji.grtwo.form =
   expand_pbox;
 enddef;
 
-vardef kanji.grtwo.weak =
-  push_pbox_toexpand("kanji.grtwo.weak");
-  build_kanji.lr(450,0)
-    (tsu_curve_kanji.grtwo_helper.weak)
-    (tsu_curve_kanji.grtwo_helper.weak);
-  expand_pbox;
-enddef;
-
-vardef tsu_curve_kanji.grtwo_helper.weak =
-  kanji.grtwo.bow;
-  push_stroke((330,230)..tension 1.2..(450,190)..(490,160),
-    (1.2,1.2)--(1.4,1.4)--(1.8,1.8));
-  set_bosize(0,80);
-  push_stroke((600,130)..tension 1.2..(380,80)..(250,60),
-    (1.3,1.3)--(1.6,1.6)--(1.9,1.9));
-  set_bosize(0,80);
-enddef;
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 vardef kanji.grthree.duty =

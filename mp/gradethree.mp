@@ -144,6 +144,14 @@ vardef kanji.grthree.chapter =
   expand_pbox;
 enddef;
 
+vardef kanji.grthree.child =
+  push_pbox_toexpand("kanji.grthree.child");
+  build_kanji.level(build_kanji.tb(480,-30)
+    (kanji.toprad.stand_up)
+    (kanji.grtwo.neighbourhood ));
+  expand_pbox;
+enddef;
+
 vardef kanji.grthree.climb =
   push_pbox_toexpand("kanji.grthree.climb");
   kanji.radical.dotted_tent;
@@ -426,6 +434,14 @@ vardef kanji.grthree.melody =
   set_boserif(0,0,10);
   push_stroke((140,320)--(860,320),
     (1.6,1.6)--(1.6,1.6));
+  expand_pbox;
+enddef;
+
+vardef kanji.grthree.member =
+  push_pbox_toexpand("kanji.grthree.member");
+  build_kanji.level(build_kanji.tb(620,0)
+    (build_kanji.sscale(xscaled 0.67)(kanji.grone.mouth))
+    (kanji.grone.shell));
   expand_pbox;
 enddef;
 

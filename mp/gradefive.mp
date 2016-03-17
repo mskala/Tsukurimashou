@@ -164,6 +164,12 @@ vardef kanji.grfive.long =
   expand_pbox;
 enddef;
 
+vardef kanji.grfive.make_up =
+  push_pbox_toexpand("kanji.grfive.make_up");
+  build_kanji.road_enclose(kanji.grfour.revelation);
+  expand_pbox;
+enddef;
+
 vardef kanji.grfive.mistake =
   push_pbox_toexpand("kanji.grfive.mistake");
   push_stroke((380,810)--(370,240){dir 266}..tension 1.2..(300,70)..(80,-50),
@@ -192,6 +198,18 @@ vardef kanji.grfive.old_times =
   expand_pbox;
 enddef;
 
+vardef kanji.grfive.outrage =
+  push_pbox_toexpand("kanji.grfive.outrage");
+  build_kanji.level(build_kanji.tb(540,30)
+    (kanji.grone.day)
+    (build_kanji.tb(380,120)
+       (kanji.grfour.together)
+       (build_kanji.sscale(xscaled 0.86)(kanji.radical.alt_water);
+        replace_strokep(-3)(oldp shifted (70,90));
+        replace_strokep(0)(oldp shifted (-50,90)))));
+  expand_pbox;
+enddef;
+
 vardef kanji.grfive.passable =
   push_pbox_toexpand("kanji.grfive.passable");
   push_stroke((80,720)--(920,720),
@@ -216,6 +234,16 @@ vardef kanji.grfive.protect =
   build_kanji.lr(300,30)
     (kanji.leftrad.person)
     (kanji.rare.befuddled);
+  expand_pbox;
+enddef;
+
+vardef kanji.grfive.quality =
+  push_pbox_toexpand("kanji.grfive.quality");
+  build_kanji.level(build_kanji.tb(540,0)
+    (build_kanji.lr(480,70)
+       (kanji.greight.axe)
+       (kanji.greight.axe))
+    (kanji.grone.shell));
   expand_pbox;
 enddef;
 
@@ -249,6 +277,16 @@ vardef kanji.grfive.showing =
     (build_kanji.sscale(yscaled 0.9)(kanji.grone.two))
     (kanji.grone.small));
   set_boserif(-1,0,whatever);
+  expand_pbox;
+enddef;
+
+vardef kanji.grfive.solve =
+  push_pbox_toexpand("kanji.grfive.solve");
+  build_kanji.lr(520,50)
+    (kanji.grtwo.corner)
+    (build_kanji.level(build_kanji.tb(480,70-40*mincho)
+       (kanji.grtwo.sword)
+       (kanji.grtwo.cow)));
   expand_pbox;
 enddef;
 

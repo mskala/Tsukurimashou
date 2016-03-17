@@ -54,14 +54,6 @@ do_late_includes;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-vardef kanji.grthree.child =
-  push_pbox_toexpand("kanji.grthree.child");
-  build_kanji.level(build_kanji.tb(480,-30)
-    (kanji.toprad.stand_up)
-    (kanji.grtwo.neighbourhood ));
-  expand_pbox;
-enddef;
-
 vardef kanji.grthree.research =
   push_pbox_toexpand("kanji.grthree.research");
   build_kanji.level(build_kanji.tb(500,70)
