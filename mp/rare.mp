@@ -160,6 +160,36 @@ vardef kanji.rare.clod_of_earth =
   expand_pbox;
 enddef;
 
+vardef kanji.rare.crooked_mouth =
+  push_pbox_toexpand("kanji.rare.crooked_mouth");
+  build_kanji.level(
+    build_kanji.tb(520,0)()
+      (build_kanji.sscale(scaled 0.96)(build_kanji.box((350,550),(650,250));
+       kanji.radical.gmm));
+    begingroup
+      save gmm_path,top_path;
+      path gmm_path,top_path;
+      gmm_path:=get_strokep(0);
+      top_path:=(point 2.25 of gmm_path)--
+        (xpart point 2.25 of gmm_path,810)--
+        (xpart point 2.75 of gmm_path,810)--
+        (point 2.75 of gmm_path);
+      push_stroke(top_path,(1.4,1.4)--(1.6,1.6)--(1.6,1.6)--(1.4,1.4));
+      set_botip(0,1,1);
+      set_botip(0,2,1);
+      set_boserif(0,1,4);
+      set_boserif(0,2,4);
+      push_stroke(
+        (xpart point 1.45 of top_path,ypart point 0 of top_path)--
+          (xpart point 1.45 of top_path,ypart point 0.55 of top_path)--
+          (point 2.45 of top_path),
+        (1.4,1.4)--(1.5,1.5)--(1.5,1.5));
+      set_botip(0,1,1);
+    endgroup;
+  );
+  expand_pbox;
+enddef;
+
 % dictionary says "name of an ancient tribe"; needed for grfour.low
 vardef kanji.rare.cruithne =
   push_pbox_toexpand("kanji.rare.cruithne");

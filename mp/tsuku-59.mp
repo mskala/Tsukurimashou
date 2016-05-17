@@ -1,6 +1,6 @@
 %
 % Unicode page 59 (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012, 2013  Matthew Skala
+% Copyright (C) 2011, 2012, 2013, 2016  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -134,6 +134,19 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vardef kanji.grfive.dream =
+  push_pbox_toexpand("kanji.grfive.dream");
+  build_kanji.tb(360,90)
+    (build_kanji.level(build_kanji.tcb(560,-60)(310,55)
+       (kanji.toprad.grass)
+       (kanji.toprad.eye)
+       (kanji.radical.conservative_hat)))
+    (build_kanji.sscale(xscaled 0.94)(kanji.grone.evening));
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 vardef kanji.greight.compromise =
   push_pbox_toexpand("kanji.greight.compromise");
   build_kanji.level(build_kanji.tb(480,30)
@@ -183,6 +196,12 @@ endtsuglyph;
 % ya/yoru "evening"
 begintsuglyph("uni591C",28);
   kanji.grtwo.evening;
+  tsu_render;
+endtsuglyph;
+
+% mu/yume "dream"
+begintsuglyph("uni5922",34);
+  kanji.grfive.dream;
   tsu_render;
 endtsuglyph;
 

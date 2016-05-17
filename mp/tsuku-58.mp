@@ -84,6 +84,14 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vardef kanji.grfive.boundary =
+  push_pbox_toexpand("kanji.grfive.boundary");
+  build_kanji.level(build_kanji.lr(370,10)
+    (build_kanji.sscale(shifted (0,-20))(kanji.leftrad.earth))
+    (kanji.rare.finally));
+  expand_pbox;
+enddef;
+
 vardef kanji.grfive.report =
   push_pbox_toexpand("kanji.grfive.report");
   build_kanji.level(build_kanji.lr(520,0)
@@ -126,6 +134,12 @@ endtsuglyph;
 % en/shio "salt"
 begintsuglyph("uni5869",105);
   kanji.grfour.salt;
+  tsu_render;
+endtsuglyph;
+
+% kyou/sakai "boundary"
+begintsuglyph("uni5883",131);
+  kanji.grfive.boundary;
   tsu_render;
 endtsuglyph;
 
