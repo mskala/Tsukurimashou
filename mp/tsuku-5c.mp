@@ -1,6 +1,6 @@
 %
 % Unicode page 5C (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012, 2013  Matthew Skala
+% Copyright (C) 2011, 2012, 2013, 2016  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -101,6 +101,14 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vardef kanji.grfive.guide =
+  push_pbox_toexpand("kanji.grfive.guide");
+  build_kanji.level(build_kanji.tb(300,40)
+    (kanji.grtwo.street)
+    (kanji.grsix.inch));
+  expand_pbox;
+enddef;
+
 vardef kanji.grfive.reside =
   push_pbox_toexpand("kanji.grfive.reside");
   build_kanji.level(
@@ -196,6 +204,12 @@ enddef;
 % not in dictionaries by itself, but appears as right of "professional"
 begintsuglyph("uni5C03",3);
   kanji.rightrad.professional;
+  tsu_render;
+endtsuglyph;
+
+% dou/michi "guide"
+begintsuglyph("uni5C0E",14);
+  kanji.grfive.guide;
   tsu_render;
 endtsuglyph;
 

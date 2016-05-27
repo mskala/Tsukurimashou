@@ -33,6 +33,7 @@
 beginfont
 
 % AUTODEPS
+input bkencl.mp;
 input bottomrad.mp;
 input buildkanji.mp;
 input gradeeight.mp;
@@ -272,6 +273,12 @@ endtsuglyph;
 % sho/ka "writing"
 begintsuglyph("uni66F8",248);
   kanji.grtwo.writing;
+  tsu_render;
+endtsuglyph;
+
+% sou/katsu "great" (as in great-grandparent)
+begintsuglyph("uni66FD",253);
+  kanji.greight.great;
   tsu_render;
 endtsuglyph;
 

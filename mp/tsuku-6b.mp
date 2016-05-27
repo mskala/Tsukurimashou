@@ -204,12 +204,7 @@ endtsuglyph;
 
 % further variation
 begintsuglyph("uni6BCC",204);
-  kanji.radical.mother_stroked;
-  replace_strokep(-3)(subpath (0,xpart (oldp intersectiontimes
-    ((500,0)--(1000,0)))) of oldp);
-  replace_strokeq(-3)(subpath (0,length get_strokep(-3)) of oldq);
-  replace_strokep(-1)((183,100)--(655,100));
-  set_boserif(-1,1,whatever);
+  kanji.rare.penetrate;
   tsu_render;
 endtsuglyph;
 

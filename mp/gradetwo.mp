@@ -918,6 +918,12 @@ vardef kanji.grtwo.straight =
   expand_pbox;
 enddef;
 
+vardef kanji.grtwo.street =
+  push_pbox_toexpand("kanji.grtwo.street");
+  build_kanji.road_enclose(kanji.grtwo.neck);
+  expand_pbox;
+enddef;
+
 vardef kanji.grtwo.strong =
   push_pbox_toexpand("kanji.grtwo.strong");
   build_kanji.level(build_kanji.lr(410,0)

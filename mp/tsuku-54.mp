@@ -166,6 +166,12 @@ begintsuglyph("uni544A",74);
   tsu_render;
 endtsuglyph;
 
+% tei "exhibit"
+begintsuglyph("uni544E",78);
+  kanji.greight.exhibit;
+  tsu_render;
+endtsuglyph;
+
 % ton/no "drink" (rare form used as part of other things)
 begintsuglyph("uni5451",81);
   kanji.rare.drink;
@@ -217,7 +223,7 @@ begintsuglyph("uni54B8",184);
 endtsuglyph;
 
 % needed for "pass"
-begintsuglyph("uni54BC",186);
+begintsuglyph("uni54BC",188);
   kanji.rare.crooked_mouth;
   tsu_render;
 endtsuglyph;

@@ -78,6 +78,14 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vardef kanji.grfive.get_used_to =
+  push_pbox_toexpand("kanji.grfive.get_used_to");
+  build_kanji.level(build_kanji.lr(320,30)
+    (kanji.leftrad.heart)
+    (kanji.greight.sushi_counter));
+  expand_pbox;
+enddef;
+
 vardef kanji.grfive.manner =
   push_pbox_toexpand("kanji.grfive.manner");
   build_kanji.level(build_kanji.tb(230,0)
@@ -362,6 +370,12 @@ begintsuglyph("uni615F",95);
   build_kanji.level(build_kanji.lr(320,0)
     (kanji.leftrad.heart)
     (kanji.grthree.motion));
+  tsu_render;
+endtsuglyph;
+
+% kan/nareru "get used to"
+begintsuglyph("uni6163",99);
+  kanji.grfive.get_used_to;
   tsu_render;
 endtsuglyph;
 

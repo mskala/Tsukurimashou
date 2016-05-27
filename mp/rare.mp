@@ -565,6 +565,17 @@ vardef kanji.rare.outspokenly =
   expand_pbox;
 enddef;
 
+vardef kanji.rare.penetrate =
+  push_pbox_toexpand("kanji.rare.penetrate");
+  kanji.radical.mother_stroked;
+  replace_strokep(-3)(subpath (0,xpart (oldp intersectiontimes
+    ((500,0)--(1000,0)))) of oldp);
+  replace_strokeq(-3)(subpath (0,length get_strokep(-3)) of oldq);
+  replace_strokep(-1)((183,100)--(655,100));
+  set_boserif(-1,1,whatever);
+  expand_pbox;
+enddef;
+
 vardef kanji.rare.punish =
   push_pbox_toexpand("kanji.rare.punish");
   build_kanji.level(build_kanji.lr(420,0)

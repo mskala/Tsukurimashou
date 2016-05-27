@@ -92,6 +92,14 @@ vardef kanji.grfive.boundary =
   expand_pbox;
 enddef;
 
+vardef kanji.grfive.increase =
+  push_pbox_toexpand("kanji.grfive.increase");
+  build_kanji.level(build_kanji.lr(370,40)
+    (kanji.leftrad.earth)
+    (kanji.greight.great));
+  expand_pbox;
+enddef;
+
 vardef kanji.grfive.report =
   push_pbox_toexpand("kanji.grfive.report");
   build_kanji.level(build_kanji.lr(520,0)
@@ -140,6 +148,12 @@ endtsuglyph;
 % kyou/sakai "boundary"
 begintsuglyph("uni5883",131);
   kanji.grfive.boundary;
+  tsu_render;
+endtsuglyph;
+
+% zou/masu "increase"
+begintsuglyph("uni5897",151);
+  kanji.grfive.increase;
   tsu_render;
 endtsuglyph;
 

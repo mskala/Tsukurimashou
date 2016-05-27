@@ -164,6 +164,22 @@ vardef kanji.grfive.long =
   expand_pbox;
 enddef;
 
+vardef kanji.grfive.long_time =
+  push_pbox_toexpand("kanji.grfive.long_time");
+  push_stroke((420,830)..tension 1.2..(270,570)..(120,460),
+    (1.7,1.7)--(1.4,1.4)--(1,1));
+  set_boserif(0,0,10);
+  push_stroke((get_strokep(0) intersectionpoint ((0,690)--(1000,690)))--
+      (690,690)..tension 1.2..(430,280)..(70,-10),
+    (1.5,1.5)--(1.6,1.6)--(1.4,1.4)--(1.1,1.1));
+  set_boserif(0,1,4);
+  set_botip(0,1,0);
+  push_stroke((point 1.60 of get_strokep(0))..tension 1.2..
+      (710,160)..(900,0),
+    (0.92,0.92)--(1.3,1.3)--(1.8,1.8));
+  expand_pbox;
+enddef;
+
 vardef kanji.grfive.make_up =
   push_pbox_toexpand("kanji.grfive.make_up");
   build_kanji.road_enclose(kanji.grfour.revelation);

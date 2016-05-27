@@ -61,12 +61,6 @@ vardef kanji.grtwo.distant =
   expand_pbox;
 enddef;
 
-vardef kanji.grtwo.street =
-  push_pbox_toexpand("kanji.grtwo.street");
-  build_kanji.road_enclose(kanji.grtwo.neck);
-  expand_pbox;
-enddef;
-
 vardef kanji.grtwo.traffic =
   push_pbox_toexpand("kanji.grtwo.traffic");
   build_kanji.road_enclose(kanji.rare.walled_road);
@@ -167,6 +161,14 @@ enddef;
 vardef kanji.grfive.occasional =
   push_pbox_toexpand("kanji.grfive.occasional");
   build_kanji.road_enclose(kanji.rare.stalk);
+  expand_pbox;
+enddef;
+
+vardef kanji.grfive.pass =
+  push_pbox_toexpand("kanji.grfive.pass");
+  build_kanji.road_enclose(build_kanji.sscale
+    (xyscaled (1.07,0.95))
+    (kanji.rare.crooked_mouth));
   expand_pbox;
 enddef;
 
@@ -334,6 +336,12 @@ endtsuglyph;
 % sin/susu "proceed"
 begintsuglyph("uni904B",75);
   kanji.grthree.fortune;
+  tsu_render;
+endtsuglyph;
+
+% ka/sugiru "pass"
+begintsuglyph("uni904E",78);
+  kanji.grfive.pass;
   tsu_render;
 endtsuglyph;
 

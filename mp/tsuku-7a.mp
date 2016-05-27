@@ -90,6 +90,14 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vardef kanji.grfive.extent =
+  push_pbox_toexpand("kanji.grfive.extent");
+  build_kanji.lr(420,10)
+    (kanji.leftrad.two_branch_tree)
+    (kanji.greight.exhibit);
+  expand_pbox;
+enddef;
+
 vardef kanji.grfive.tax =
   push_pbox_toexpand("kanji.grfive.tax");
   build_kanji.lr(420,10)
@@ -181,6 +189,12 @@ begintsuglyph("uni7A0A",10);
   build_kanji.lr(400,20)
     (kanji.leftrad.two_branch_tree)
     (build_kanji.sscale(shifted (0,20))(kanji.grtwo.little_brother));
+  tsu_render;
+endtsuglyph;
+
+% tei/hodo "extent"
+begintsuglyph("uni7A0B",11);
+  kanji.grfive.extent;
   tsu_render;
 endtsuglyph;
 

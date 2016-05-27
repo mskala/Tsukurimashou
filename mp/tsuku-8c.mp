@@ -284,6 +284,12 @@ begintsuglyph("uni8CAA",170);
   tsu_render;
 endtsuglyph;
 
+% kan/nuku "counter for pieces of sushi" (or an obsolete unit of weight)
+begintsuglyph("uni8CAB",171);
+  kanji.greight.sushi_counter;
+  tsu_render;
+endtsuglyph;
+
 % seki/se "blame"
 begintsuglyph("uni8CAC",172);
   kanji.grfive.blame;

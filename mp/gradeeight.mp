@@ -184,6 +184,14 @@ vardef kanji.greight.everybody =
   expand_pbox;
 enddef;
 
+vardef kanji.greight.exhibit =
+  push_pbox_toexpand("kanji.greight.exhibit");
+  build_kanji.level(build_kanji.tb(440,0)
+    (kanji.grone.mouth)
+    (kanji.grone.king));
+  expand_pbox;
+enddef;
+
 vardef kanji.greight.fulfill =
   push_pbox_toexpand("kanji.greight.fulfill");
   build_kanji.level(build_kanji.tb(650,70)
@@ -242,6 +250,16 @@ vardef kanji.greight.good_luck =
   build_kanji.level(build_kanji.tb(440,-50)
     (kanji.grfour.gentleman)
     (kanji.grone.mouth));
+  expand_pbox;
+enddef;
+
+vardef kanji.greight.great =
+  push_pbox_toexpand("kanji.greight.great");
+  build_kanji.tb(280,-30)
+    (build_kanji.tb(540,130)
+       (build_kanji.sscale(xscaled 0.75)(kanji.toprad.sparkle_two))
+       (kanji.grone.paddy))
+    (build_kanji.sscale(xscaled 0.88)(kanji.grone.day));
   expand_pbox;
 enddef;
 
@@ -516,6 +534,15 @@ vardef kanji.greight.substitute =
        (kanji.leftrad.husband)
        (kanji.grfour.husband))
     (kanji.grone.day);
+  expand_pbox;
+enddef;
+
+vardef kanji.greight.sushi_counter =
+  push_pbox_toexpand("kanji.greight.sushi_counter");
+  build_kanji.tb(520,-20)
+    (build_kanji.sscale(xscaled 0.96 shifted (30,0) slanted -0.06)
+       (kanji.rare.penetrate))
+    (kanji.grone.shell);
   expand_pbox;
 enddef;
 
