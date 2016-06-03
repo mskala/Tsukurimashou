@@ -147,16 +147,6 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-vardef kanji.greight.compromise =
-  push_pbox_toexpand("kanji.greight.compromise");
-  build_kanji.level(build_kanji.tb(480,30)
-    (kanji.toprad.paw)
-    (kanji.grone.woman));
-  expand_pbox;
-enddef;
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 % chi/shuu "winter radical"
 begintsuglyph("uni5902",2);
   kanji.radical.winter;

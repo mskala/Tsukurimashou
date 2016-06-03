@@ -72,15 +72,6 @@ vardef kanji.grthree.beach =
   expand_pbox;
 enddef;
 
-vardef kanji.grthree.bureau =
-  push_pbox_toexpand("kanji.grthree.bureau");
-  build_kanji.level(
-    kanji.radical.narrow_flag;
-    build_kanji.sscale(xyscaled (1.15,0.83) shifted (-30,-110))
-      (kanji.grfive.phrase;set_bosize(-3,0)));
-  expand_pbox;
-enddef;
-
 vardef kanji.grthree.house =
   push_pbox_toexpand("kanji.grthree.house");
   build_kanji.level(
@@ -146,28 +137,6 @@ vardef kanji.greight.buttocks =
     kanji.radical.flag;
     build_kanji.sscale(xyscaled (0.77,0.52) shifted (80,-170))
       (kanji.grone.nine));
-  expand_pbox;
-enddef;
-
-vardef kanji.greight.hill =
-  push_pbox_toexpand("kanji.greight.hill");
-  kanji.radical.gmm;
-  build_kanji.sscale(xyscaled (0.6,0.7))
-    (build_kanji.level(build_kanji.tb(480,110)
-       (kanji.toprad.sparkle_two)
-       (kanji.grone.mountain;
-        set_boserif(0,0,whatever);
-        push_stroke((120,780)--(880,780),(1.6,1.6)--(1.6,1.6));
-        set_boserif(0,1,9))));
-  expand_pbox;
-enddef;
-
-vardef kanji.greight.tail =
-  push_pbox_toexpand("kanji.greight.tail");
-  build_kanji.level(
-    kanji.radical.narrow_flag;
-    build_kanji.sscale(xyscaled (0.79,0.63) shifted (40,-130))
-      (kanji.grtwo.hair));
   expand_pbox;
 enddef;
 

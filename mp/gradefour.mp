@@ -659,6 +659,14 @@ vardef kanji.grfour.single =
   expand_pbox;
 enddef;
 
+vardef kanji.grfour.soldier =
+  push_pbox_toexpand("kanji.grfour.soldier");
+  build_kanji.level(build_kanji.tb(200,0)
+    (kanji.greight.knoll)
+    (kanji.radical.eight));
+  expand_pbox;
+enddef;
+
 vardef kanji.grfour.stomach =
   push_pbox_toexpand("kanji.grfour.stomach");
   build_kanji.level(build_kanji.tb(420,0)

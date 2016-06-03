@@ -1,6 +1,6 @@
 %
 % Unicode page 91 (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012, 2013  Matthew Skala
+% Copyright (C) 2011, 2012, 2013, 2016  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -100,20 +100,6 @@ vardef kanji.greight.shochu =
   build_kanji.lr(520,10)
     (kanji.grnine.bird_sign)
     (kanji.grsix.inch);
-  expand_pbox;
-enddef;
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-vardef kanji.grnine.bird_sign =
-  push_pbox_toexpand("kanji.grnine.bird_sign");
-  build_kanji.thickness(0.93)(
-    push_stroke((120,770)--(880,770),(1.6,1.6)--(1.6,1.6));
-    set_boserif(0,1,9);
-    build_kanji.sscale(xyscaled (0.7,0.6) shifted (0,145))
-      (kanji.radical.legs);
-    build_kanji.box((180,560),(820,0));
-    push_stroke((180,180)--(820,180),(1.5,1.5)--(1.5,1.5)));
   expand_pbox;
 enddef;
 

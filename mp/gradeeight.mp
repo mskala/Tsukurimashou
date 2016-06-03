@@ -97,6 +97,14 @@ vardef kanji.greight.completion =
   expand_pbox;
 enddef;
 
+vardef kanji.greight.compromise =
+  push_pbox_toexpand("kanji.greight.compromise");
+  build_kanji.level(build_kanji.tb(480,30)
+    (kanji.toprad.paw)
+    (kanji.grone.woman));
+  expand_pbox;
+enddef;
+
 vardef kanji.greight.court =
   push_pbox_toexpand("kanji.greight.court");
   build_kanji.long_stride_enclose(false)
@@ -280,6 +288,19 @@ vardef kanji.greight.head_of_household =
        (build_kanji.tb(450,90)
           (build_kanji.sscale(yscaled 1.1)(kanji.radical.conservative_hat))
           (build_kanji.sscale(xscaled 0.75)(kanji.grthree.thumbtack)))));
+  expand_pbox;
+enddef;
+
+vardef kanji.greight.hill =
+  push_pbox_toexpand("kanji.greight.hill");
+  kanji.radical.gmm;
+  build_kanji.sscale(xyscaled (0.6,0.7))
+    (build_kanji.level(build_kanji.tb(480,110)
+       (kanji.toprad.sparkle_two)
+       (kanji.grone.mountain;
+        set_boserif(0,0,whatever);
+        push_stroke((120,780)--(880,780),(1.6,1.6)--(1.6,1.6));
+        set_boserif(0,1,9))));
   expand_pbox;
 enddef;
 
@@ -527,6 +548,14 @@ vardef kanji.greight.strange =
   expand_pbox;
 enddef;
 
+vardef kanji.greight.strike =
+  push_pbox_toexpand("kanji.greight.strike");
+  build_kanji.lr(300,20)
+    (kanji.leftrad.person)
+    (kanji.radical.tasselled_spear);
+  expand_pbox;
+enddef;
+
 vardef kanji.greight.substitute =
   push_pbox_toexpand("kanji.greight.substitute");
   build_kanji.tb(360,-10)
@@ -550,6 +579,15 @@ vardef kanji.greight.sweet =
   push_pbox_toexpand("kanji.greight.sweet");
   kanji.grnine.twenty;
   push_stroke((320,222)--(680,222),(1.5,1.5)--(1.5,1.5));
+  expand_pbox;
+enddef;
+
+vardef kanji.greight.tail =
+  push_pbox_toexpand("kanji.greight.tail");
+  build_kanji.level(
+    kanji.radical.narrow_flag;
+    build_kanji.sscale(xyscaled (0.79,0.63) shifted (40,-130))
+      (kanji.grtwo.hair));
   expand_pbox;
 enddef;
 

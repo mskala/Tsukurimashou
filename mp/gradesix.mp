@@ -106,6 +106,14 @@ vardef kanji.grsix.emperor =
   expand_pbox;
 enddef;
 
+vardef kanji.grsix.exist =
+  push_pbox_toexpand("kanji.grsix.exist");
+  build_kanji.exist_enclose(
+    build_kanji.sscale(xyscaled (1,0.92) shifted (0,-50))
+      (kanji.grone.child));
+  expand_pbox;
+enddef;
+
 vardef kanji.grsix.fountain =
   push_pbox_toexpand("kanji.grsix.fountain");
   build_kanji.level(build_kanji.tb(380,54)

@@ -424,7 +424,7 @@ endtsuglyph;
 % extra
 begintsuglyph("uni9816",22);
   build_kanji.level(build_kanji.lr(460,30)
-    (build_kanji.sscale(shifted (0,40))(kanji.grtwo.half))
+    (build_kanji.sscale(shifted (0,40))(kanji.rightrad.half))
     (kanji.grnine.page));
   tsu_render;
 endtsuglyph;

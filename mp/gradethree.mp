@@ -115,6 +115,15 @@ vardef kanji.grthree.both =
   expand_pbox;
 enddef;
 
+vardef kanji.grthree.bureau =
+  push_pbox_toexpand("kanji.grthree.bureau");
+  build_kanji.level(
+    kanji.radical.narrow_flag;
+    build_kanji.sscale(xyscaled (1.15,0.83) shifted (-30,-110))
+      (kanji.grfive.phrase;set_bosize(-3,0)));
+  expand_pbox;
+enddef;
+
 vardef kanji.grthree.centre =
   push_pbox_toexpand("kanji.grthree.centre");
   kanji.grfour.husband;
@@ -159,6 +168,14 @@ vardef kanji.grthree.climb =
     (kanji.grthree.bean);
   obstacktype[find_whatever(otstroke,-5)]:=otnull;
   replace_strokep(0)(oldp shifted (-500,0) xscaled 1.2 shifted (500,0));
+  expand_pbox;
+enddef;
+
+vardef kanji.grthree.clothing =
+  push_pbox_toexpand("kanji.grthree.clothing");
+  build_kanji.level(build_kanji.lr(480,20)
+    (kanji.grone.moon)
+    (kanji.rightrad.clothing));
   expand_pbox;
 enddef;
 
@@ -470,6 +487,19 @@ vardef kanji.grthree.nose =
   expand_pbox;
 enddef;
 
+vardef kanji.grthree.number =
+  push_pbox_toexpand("kanji.grthree.number");
+  build_kanji.level(build_kanji.tb(500,40)
+    (build_kanji.sscale(scaled 0.8)(kanji.grone.mouth))
+    (kanji.greight.give;
+     pop_stroke;
+     replace_strokep(-2)((100,710)--(900,710));
+     replace_strokep(-1)(subpath (xpart (oldp intersectiontimes
+       get_strokep(-2)),infinity) of oldp));
+     set_boserif(-1,0,whatever));
+  expand_pbox;
+enddef;
+
 vardef kanji.grthree.once_upon_a_time =
   push_pbox_toexpand("kanji.grthree.once_upon_a_time");
   build_kanji.level(build_kanji.tb(420,-100)
@@ -509,6 +539,31 @@ vardef kanji.grthree.person =
   kanji.radical.old_man(
     build_kanji.sscale(xyscaled (0.8,1.05) shifted (30*mincho,0))
       (kanji.grone.day));
+  expand_pbox;
+enddef;
+
+vardef kanji.grthree.province =
+  push_pbox_toexpand("kanji.grthree.province");
+  tsu_xform(identity shifted (50,0))(kanji.grone.river);
+  push_stroke((120,520)..(110,380)..(70,290),
+    (1,1)--(1.5,1.5)--(1.8,1.8));
+  set_bosize(0,82);
+  push_stroke((350,530)..(400,400)..(410,290),
+    (1,1)--(1.4,1.4)--(1.8,1.8));
+  set_bosize(0,82);
+  push_stroke((620,530)..(700,390)..(710,290),
+    (1,1)--(1.5,1.5)--(1.8,1.8));
+  set_bosize(0,82);
+  expand_pbox;
+enddef;
+
+vardef kanji.grthree.raise =
+  push_pbox_toexpand("kanji.grthree.raise");
+  build_kanji.level(build_kanji.tb(480,-50)
+    (push_stroke((500,810)--(500,560),(1.6,1.6)--(1.5,1.5));
+     set_boserif(0,0,10);
+     tsu_xform(identity yscaled (560/780))(kanji.radical.mu_bar))
+    (kanji.bottomrad.moon));
   expand_pbox;
 enddef;
 

@@ -1,6 +1,6 @@
 %
 % Unicode page 5D (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012, 2013  Matthew Skala
+% Copyright (C) 2011, 2012, 2013, 2016  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -46,23 +46,6 @@ input rare.mp;
 input toprad.mp;
 
 do_late_includes;
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-vardef kanji.grthree.province =
-  push_pbox_toexpand("kanji.grthree.province");
-  tsu_xform(identity shifted (50,0))(kanji.grone.river);
-  push_stroke((120,520)..(110,380)..(70,290),
-    (1,1)--(1.5,1.5)--(1.8,1.8));
-  set_bosize(0,82);
-  push_stroke((350,530)..(400,400)..(410,290),
-    (1,1)--(1.4,1.4)--(1.8,1.8));
-  set_bosize(0,82);
-  push_stroke((620,530)..(700,390)..(710,290),
-    (1,1)--(1.5,1.5)--(1.8,1.8));
-  set_bosize(0,82);
-  expand_pbox;
-enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 

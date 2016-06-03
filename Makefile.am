@@ -2,7 +2,7 @@
 
 #
 # Makefile for Tsukurimashou
-# Copyright (C) 2011, 2012, 2013, 2014, 2015  Matthew Skala
+# Copyright (C) 2011, 2012, 2013, 2014, 2015, 2016  Matthew Skala
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -178,7 +178,13 @@ KANJIDIC2=@with_kanjidic2@
 if COND_BOOKPROOFS
   MAYBE_BOOKPROOFS=$(foreach \
     rn,I II III IV V VI VII VIII IX X XI XII XIII XIV XV, \
-    doc/book$(rn).pdf doc/cover$(rn).pdf)
+    doc/book$(rn).pdf doc/cover$(rn).pdf doc/spine$(rn).pdf doc/shelf.pdf)
+  SPINE_PDFS=$(foreach \
+    rn,I II III IV V VI VII VIII IX X XI XII XIII XIV XV, \
+    doc/spine$(rn).pdf)
+  SPINE_PDFS=$(foreach \
+    rn,I II III IV V VI VII VIII IX X XI XII XIII XIV XV, \
+    doc/spine$(rn).pdf)
   PROOF_ND_PASS=4
 else
   PROOF_ND_PASS=3
@@ -218,7 +224,7 @@ endif
 EXTRA_DIST:=COPYING.GPL3 \
   README.en README.jp \
   doc/bkstyle.tex doc/demo.tex doc/jamotest.tex doc/proofs.tex \
-  doc/usermanual.tex \
+  doc/shelf.tex doc/usermanual.tex \
   $(wildcard $(mvp)/fsc/*.fsc) \
   mitsuba/mitsuba.cls \
   t1asm/README t1asm/t1asm.1 \
@@ -1122,6 +1128,15 @@ doc/cover%.tex: tools/make-cover doc/book%.log
 	$(TSU_V_PERL)
 	$(AM_V_at)'$(PERL)' -CSD $(mvp)/tools/make-cover \
 	  doc/book$*.log > $@
+
+doc/spine%.tex: tools/make-cover doc/book%.log
+	$(TSU_V_PERL)
+	$(AM_V_at)'$(PERL)' -CSD $(mvp)/tools/make-cover spine \
+	  doc/book$*.log > $@
+
+doc/shelf.xdv: $(SPINE_PDFS)
+
+doc/shelf.pdf: doc/shelf.xdv
 
 EIDSPRFS=$(foreach page,$(KANJIPAGES),\
   $(if $(wildcard $(mvp)/mp/tsuku-$(page).mp),\

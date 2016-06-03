@@ -1,6 +1,6 @@
 %
 % Unicode page 4F (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012, 2013, 2014  Matthew Skala
+% Copyright (C) 2011, 2012, 2013, 2014, 2016  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -298,14 +298,6 @@ vardef kanji.greight.skill =
   build_kanji.lr(300,20)
     (kanji.leftrad.person)
     (kanji.grfive.support);
-  expand_pbox;
-enddef;
-
-vardef kanji.greight.strike =
-  push_pbox_toexpand("kanji.greight.strike");
-  build_kanji.lr(300,20)
-    (kanji.leftrad.person)
-    (kanji.radical.tasselled_spear);
   expand_pbox;
 enddef;
 

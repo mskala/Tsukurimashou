@@ -218,12 +218,6 @@ vardef kanji.grnine.hermitage =
   expand_pbox;
 enddef;
 
-vardef kanji.grnine.manor =
-  push_pbox_toexpand("kanji.grnine.manor");
-  build_kanji.dotcliff_enclose(kanji.grone.earth);
-  expand_pbox;
-enddef;
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 vardef kanji.leftrad.sword =

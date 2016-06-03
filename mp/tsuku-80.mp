@@ -51,38 +51,9 @@ do_late_includes;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-vardef kanji.grtwo.consider =
-  push_pbox_toexpand("kanji.grtwo.consider");
-  kanji.radical.old_man(
-    build_kanji.sscale(xyscaled (0.8,1.5) shifted (60,220))
-      (push_stroke((250,500)..tension 1.2..(550,520)..(780,550+30*mincho),
-         (1.5,1.5)--(1.5,1.5)--(1.9,1.9));
-       push_stroke((255,535-15*mincho)..tension 1.2..(220,350)..(170,240),
-         (1.7,1.7)--(1.6,1.6)--(1.6,1.6));
-       set_boserif(0,0,10);
-       push_stroke((get_strokep(0) intersectionpoint ((0,300)--(1000,300)))--
-           (820,300)..tension 1.7..(780,150)..(650,-10)..{curl 0.1}(450,0),
-         (1.6,1.6)--(1.6,1.6)--(1.5,1.5)--(1.7,1.7)--(1.8,1.8));
-       set_botip(0,1,1);
-       set_boserif(0,1,4)));
-  expand_pbox;
-enddef;
-
 vardef kanji.grtwo.hear =
   push_pbox_toexpand("kanji.grtwo.hear");
   build_kanji.gate_enclose(kanji.grone.ear);
-  expand_pbox;
-enddef;
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-vardef kanji.grthree.raise =
-  push_pbox_toexpand("kanji.grthree.raise");
-  build_kanji.level(build_kanji.tb(480,-50)
-    (push_stroke((500,810)--(500,560),(1.6,1.6)--(1.5,1.5));
-     set_boserif(0,0,10);
-     tsu_xform(identity yscaled (560/780))(kanji.radical.mu_bar))
-    (kanji.bottomrad.moon));
   expand_pbox;
 enddef;
 

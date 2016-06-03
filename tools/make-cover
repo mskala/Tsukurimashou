@@ -2,7 +2,7 @@
 
 #
 # Make a cover for Tsukurimashou book proofs
-# Copyright (C) 2014, 2015  Matthew Skala
+# Copyright (C) 2014, 2015, 2016  Matthew Skala
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -32,6 +32,13 @@
 
 use utf8;
 
+if ($ARGV[0] eq 'spine') {
+  shift @ARGV;
+  $spine=1;
+} else {
+  $spine=0;
+}
+
 while (<>) {
   if (/THIS IS PART ([IVX]+)\./) {
     $partrom=$1;
@@ -44,8 +51,40 @@ while (<>) {
   }
 }
 
+$_=$partrom;
+$partarab=0;
+if (/^(.*)IX(.*)$/) {
+  $partarab+=9;
+  $_=$1.$2;
+}
+if (/^(.*)IV(.*)$/) {
+  $partarab+=4;
+  $_=$1.$2;
+}
+while (/^(.*)X(.*)$/) {
+  $partarab+=10;
+  $_=$1.$2;
+}
+while (/^(.*)V(.*)$/) {
+  $partarab+=5;
+  $_=$1.$2;
+}
+while (/^(.*)I(.*)$/) {
+  $partarab+=1;
+  $_=$1.$2;
+}
+
+$partscram=(3**($partarab+5))%17;
+
 $spinewidth=int(($npages+3)/4)*4*0.0018871;
-$paperwidth=17.25+$spinewidth;
+$paperwidth=($spine?0:17.25)+$spinewidth;
+$paperheight=$spine?11:11.25;
+
+if ($partname=~/Blackletter/) {
+  $topband='black';
+} else {
+  $topband='blue!50!black';
+}
 
 print <<EOF;
 \\documentclass{article}
@@ -53,7 +92,7 @@ print <<EOF;
 % GENERATED FILE, edit tools/make-cover instead
 
 \\usepackage{fontspec}
-\\usepackage[papersize={${paperwidth}in,11.25in}]{geometry}
+\\usepackage[papersize={${paperwidth}in,${paperheight}in}]{geometry}
 \\usepackage{tikz}
 \\usepackage{xcolor}
 
@@ -61,21 +100,22 @@ print <<EOF;
 
 \\input{version.tex}
 
-\\colorlet{topband}{blue!50!black}
+\\colorlet{topband}{$topband}
 \\colorlet{midband}{yellow!20!red!10!white}
 EOF
 
-$bbgtop='3.125';
+$bbgtop=3.125;
 if ($partname=~/Blackletter/) {
+  $bbgtop=3.5;
   print <<'EOF';
 \colorlet{bottombg}{black}
-\colorlet{tartanbg}{magenta!80!red!20!white}
+\colorlet{tartanbg}{magenta!80!red!20!black}
 \colorlet{tartanone}{magenta!30!black}
-\colorlet{tartanfive}{magenta!80!red}
-\colorlet{tartanten}{magenta!40!white}
+\colorlet{tartanfive}{black}
+\colorlet{tartanten}{magenta!80!red}
 EOF
 } elsif ($partname=~/Kazoemashou/) {
-  $bbgtop='0.375';
+  $bbgtop=0.375;
   print <<'EOF';
 \colorlet{bottombg}{red}
 \colorlet{tartanbg}{cyan!40!black}
@@ -84,6 +124,7 @@ EOF
 \colorlet{tartanten}{cyan!30!magenta}
 EOF
 } elsif ($partname=~/Mandeubsida/) {
+  $bbgtop=1.5;
   print <<'EOF';
 \colorlet{bottombg}{green!20!black}
 \colorlet{tartanbg}{green!30!black}
@@ -92,7 +133,7 @@ EOF
 \colorlet{tartanten}{green!30!red}
 EOF
 } elsif ($partname=~/TsuIta/) {
-  $bbgtop='1.125';
+  $bbgtop=1.125;
   print <<'EOF';
 \colorlet{bottombg}{white}
 \colorlet{tartanbg}{white!90!cyan!80!black}
@@ -101,14 +142,18 @@ EOF
 \colorlet{tartanten}{blue!30!red}
 EOF
 } else {
+  $bbgtop-=(0.065*$partscram);
   print <<'EOF';
-\colorlet{bottombg}{white!20!black}
-\colorlet{tartanbg}{black}
+\colorlet{bottombg}{white!30!black}
+\colorlet{tartanbg}{blue!60!black}
 \colorlet{tartanone}{white}
 \colorlet{tartanfive}{blue!60!white}
 \colorlet{tartanten}{blue!30!red}
 EOF
 }
+
+$bbgtop-=0.125 if $spine;
+$bbgtop=sprintf('%.3f',$bbgtop);
 
 print <<EOF;
 \\setmainfont[Mapping=tex-text,Path={../otf/}]{TsukurimashouKakuPS}
@@ -117,6 +162,19 @@ print <<EOF;
 \\pagestyle{empty}
 
 \\begin{tikzpicture}[remember picture,overlay,scale=2.54]
+EOF
+
+if ($spine) {
+  print <<EOF;
+  \\node (spineref)
+    at (\$(current page.north west)+($spinewidth/2,0)\$) {};
+  \\node (tartanref)
+    at (\$(current page.south west)+(0,3.375)\$) {};
+  \\fill[color=topband] (\$(current page.north west)+(0,-1.250)\$)
+    rectangle (\$(current page.north east)+(0,-1.875)\$);
+EOF
+} else {
+  print <<EOF;
   \\node (backref)
     at (\$(current page.south west)+(0.125,0.125)\$) {};
   \\node (spineref)
@@ -125,9 +183,12 @@ print <<EOF;
     at (\$(current page.south west)+($spinewidth+8.625,0.125)\$) {};
   \\node (tartanref)
     at (\$(current page.south west)+(0,3.5)\$) {};
-
   \\fill[color=topband] (\$(current page.north west)+(0,-1.375)\$)
     rectangle (\$(current page.north east)+(0,-2)\$);
+EOF
+}
+
+print <<EOF;
   \\fill[color=midband] (tartanref)
     rectangle (\$(current page.south east)+(0,$bbgtop)\$);
   \\fill[color=bottombg] (current page.south west)
@@ -138,7 +199,10 @@ print <<EOF;
     {\\huge $partrom};
   \\node[anchor=west,rotate=-90] at (\$(spineref)+(0,-2.75)\$)
     {\\huge $partname};
-  
+EOF
+
+if (!$spine) {
+  print <<EOF;
   \\node at (\$(frontref)+(2.125,10.375)\$)
   {\\huge\\begin{minipage}{4.5in}\\centering
      {\\Huge 作りましょう~\\TsukurimashouVWide}\\\\
@@ -164,6 +228,7 @@ print <<EOF;
      {\\Huge $partname}
    \\end{minipage}};
 EOF
+}
 
 %newone=(
   'I'=>'tartanfive!40!tartanone',
@@ -231,33 +296,38 @@ while ($_ ne '') {
 $sett="tartanbg 0.2/$sett/tartanbg 0.2";
 $swidth+=0.4;
 
-$xcoord=0.125;
-$oldx=0;
-$oldcol='tartanbg';
-$spineflag=0;
-while ($xcoord<$paperwidth-0.125) {
-  foreach $_ (split('/',$sett)) {
-    ($col,$wid)=split(' ',$_);
-    $newx=$xcoord+($wid*1.7/$swidth);
-    $newx=$paperwidth if $newx>$paperwidth;
-    if ($oldcol eq $col) {
-    } else {
-      print "\\fill[color=$oldcol] (\$(tartanref)+($oldx,0)\$) "
-           ."rectangle (\$(tartanref)+($xcoord,1.7)\$);\n"
-        unless $xcoord<=0;
-      $oldx=$xcoord;
-      $oldcol=$col;
+if ($spine) {
+  print "\\fill[color=tartanbg] (tartanref) "
+       ."rectangle (\$(tartanref)+($paperwidth,1.7)\$);\n";
+} else {
+  $xcoord=0.125;
+  $oldx=0;
+  $oldcol='tartanbg';
+  $spineflag=0;
+  while ($xcoord<$paperwidth-0.125) {
+    foreach $_ (split('/',$sett)) {
+      ($col,$wid)=split(' ',$_);
+      $newx=$xcoord+($wid*1.7/$swidth);
+      $newx=$paperwidth if $newx>$paperwidth;
+      if ($oldcol eq $col) {
+      } else {
+        print "\\fill[color=$oldcol] (\$(tartanref)+($oldx,0)\$) "
+             ."rectangle (\$(tartanref)+($xcoord,1.7)\$);\n"
+          unless $xcoord<=0;
+        $oldx=$xcoord;
+        $oldcol=$col;
+      }
+      $xcoord=$newx;
+      last if $xcoord>=$paperwidth-0.125;
     }
-    $xcoord=$newx;
-    last if $xcoord>=$paperwidth-0.125;
+    if (($xcoord>=8.623) && !$spineflag) {
+      $xcoord=8.625+$spinewidth;
+      $spineflag=1;
+    }
   }
-  if (($xcoord>=8.623) && !$spineflag) {
-    $xcoord=8.625+$spinewidth;
-    $spineflag=1;
-  }
+  print "\\fill[color=$col] (\$(tartanref)+($oldx,0)\$) "
+       ."rectangle (\$(tartanref)+($paperwidth,1.7)\$);\n";
 }
-print "\\fill[color=$col] (\$(tartanref)+($oldx,0)\$) "
-     ."rectangle (\$(tartanref)+($paperwidth,1.7)\$);\n";
 
 $ycoord=0;
 $oldy=0;

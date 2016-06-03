@@ -185,6 +185,23 @@ vardef kanji.grtwo.come =
   expand_pbox;
 enddef;
 
+vardef kanji.grtwo.consider =
+  push_pbox_toexpand("kanji.grtwo.consider");
+  kanji.radical.old_man(
+    build_kanji.sscale(xyscaled (0.8,1.5) shifted (60,220))
+      (push_stroke((250,500)..tension 1.2..(550,520)..(780,550+30*mincho),
+         (1.5,1.5)--(1.5,1.5)--(1.9,1.9));
+       push_stroke((255,535-15*mincho)..tension 1.2..(220,350)..(170,240),
+         (1.7,1.7)--(1.6,1.6)--(1.6,1.6));
+       set_boserif(0,0,10);
+       push_stroke((get_strokep(0) intersectionpoint ((0,300)--(1000,300)))--
+           (820,300)..tension 1.7..(780,150)..(650,-10)..{curl 0.1}(450,0),
+         (1.6,1.6)--(1.6,1.6)--(1.5,1.5)--(1.7,1.7)--(1.8,1.8));
+       set_botip(0,1,1);
+       set_boserif(0,1,4)));
+  expand_pbox;
+enddef;
+
 vardef kanji.grtwo.corner =
   push_pbox_toexpand("kanji.grtwo.corner");
   build_kanji.attach_fishhook(0.8)(
@@ -225,6 +242,15 @@ vardef kanji.grtwo.direction =
     push_stroke((500,790)..(500,620),(1.6,1.6)--(1.5,1.5));
     set_boserif(0,0,10);
   );
+  expand_pbox;
+enddef;
+
+vardef kanji.grtwo.door =
+  push_pbox_toexpand("kanji.grtwo.door");
+  tsu_xform(identity yscaled (600/730))(kanji.radical.flag);
+  push_stroke((120,760)--(880,760),(1.6,1.6));
+  set_boserif(0,1,9);
+  set_bosize(0,95);
   expand_pbox;
 enddef;
 
@@ -465,6 +491,14 @@ vardef kanji.grtwo.high =
     (build_kanji.sscale(xscaled 0.75)(kanji.grone.mouth))
     (kanji.radical.gmm;
      build_kanji.box((350,550),(650,250))));
+  expand_pbox;
+enddef;
+
+vardef kanji.grtwo.hit =
+  push_pbox_toexpand("kanji.grtwo.hit");
+  build_kanji.level(build_kanji.tb(450,50)
+    (kanji.toprad.sparkle_three)
+    (kanji.radical.pigs_head));
   expand_pbox;
 enddef;
 

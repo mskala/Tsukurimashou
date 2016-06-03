@@ -96,19 +96,6 @@ vardef kanji.grthree.doctor =
   expand_pbox;
 enddef;
 
-vardef kanji.grthree.number =
-  push_pbox_toexpand("kanji.grthree.number");
-  build_kanji.level(build_kanji.tb(500,40)
-    (build_kanji.sscale(scaled 0.8)(kanji.grone.mouth))
-    (kanji.greight.give;
-     pop_stroke;
-     replace_strokep(-2)((100,710)--(900,710));
-     replace_strokep(-1)(subpath (xpart (oldp intersectiontimes
-       get_strokep(-2)),infinity) of oldp));
-     set_boserif(-1,0,whatever));
-  expand_pbox;
-enddef;
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 vardef kanji.grfour.cooperation =

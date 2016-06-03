@@ -93,6 +93,14 @@ vardef kanji.rightrad.genius =
   expand_pbox;
 enddef;
 
+vardef kanji.rightrad.half =
+  push_pbox_toexpand("kanji.rightrad.half");
+  kanji.grtwo.half;
+  replace_strokep(-3)(oldp shifted (-500,0));
+  replace_strokep(-4)(oldp shifted (460,0));
+  expand_pbox;
+enddef;
+
 vardef kanji.rightrad.professional =
   push_pbox_toexpand("kanji.rightrad.professional");
   build_kanji.tb(300,0)

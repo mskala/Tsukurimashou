@@ -170,7 +170,7 @@ for ($i=0x4E;$i<=0x9F;$i++) {
 }
 for ($i=0;$i<$nkvols;$i++) {
   $partbefore{1000+$volmin[$i]}=
-    sprintf('U+%04X to U+%04X',$volmin[$i],$volmax[$i]);
+    sprintf('U+%04X to U+%04X',$volmin[$i]*256,$volmax[$i]*256+255);
 }
 
 # assign priorities to the source files

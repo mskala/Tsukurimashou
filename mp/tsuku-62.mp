@@ -1,6 +1,6 @@
 %
 % Unicode page 62 (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012, 2013  Matthew Skala
+% Copyright (C) 2011, 2012, 2013, 2016  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -50,15 +50,6 @@ input toprad.mp;
 do_late_includes;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-vardef kanji.grtwo.door =
-  push_pbox_toexpand("kanji.grtwo.door");
-  tsu_xform(identity yscaled (600/730))(kanji.radical.flag);
-  push_stroke((120,760)--(880,760),(1.6,1.6));
-  set_boserif(0,1,9);
-  set_bosize(0,95);
-  expand_pbox;
-enddef;
 
 vardef kanji.grtwo.genius =
   push_pbox_toexpand("kanji.grtwo.genius");

@@ -72,6 +72,18 @@ vardef kanji.grnine.barbarian =
   expand_pbox;
 enddef;
 
+vardef kanji.grnine.bird_sign =
+  push_pbox_toexpand("kanji.grnine.bird_sign");
+  build_kanji.thickness(0.93)(
+    push_stroke((120,770)--(880,770),(1.6,1.6)--(1.6,1.6));
+    set_boserif(0,1,9);
+    build_kanji.sscale(xyscaled (0.7,0.6) shifted (0,145))
+      (kanji.radical.legs);
+    build_kanji.box((180,560),(820,0));
+    push_stroke((180,180)--(820,180),(1.5,1.5)--(1.5,1.5)));
+  expand_pbox;
+enddef;
+
 vardef kanji.grnine.boast =
   push_pbox_toexpand("kanji.grnine.boast");
   build_kanji.tb(340,0)
@@ -187,6 +199,12 @@ vardef kanji.grnine.ladle =
   kanji.radical.wrapping;
   push_stroke((340,400)..tension 1.2..(430,340)..(490,230),
     (1.1,1.1)--(1.4,1.4)--(1.8,1.8));
+  expand_pbox;
+enddef;
+
+vardef kanji.grnine.manor =
+  push_pbox_toexpand("kanji.grnine.manor");
+  build_kanji.dotcliff_enclose(kanji.grone.earth);
   expand_pbox;
 enddef;
 

@@ -54,14 +54,6 @@ do_late_includes;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-vardef kanji.grtwo.hit =
-  push_pbox_toexpand("kanji.grtwo.hit");
-  build_kanji.level(build_kanji.tb(450,50)
-    (kanji.toprad.sparkle_three)
-    (kanji.radical.pigs_head));
-  expand_pbox;
-enddef;
-
 vardef kanji.grtwo.behind =
   push_pbox_toexpand("kanji.grtwo.behind");
   build_kanji.level(build_kanji.lr(310,0)

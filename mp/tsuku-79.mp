@@ -46,6 +46,7 @@ input gradetwo.mp;
 input leftrad.mp;
 input radical.mp;
 input rare.mp;
+input rightrad.mp;
 input toprad.mp;
 
 do_late_includes;
@@ -415,7 +416,7 @@ endtsuglyph;
 begintsuglyph("uni79DA",218);
   build_kanji.lr(460,60)
     (kanji.leftrad.two_branch_tree)
-    (kanji.grtwo.half);
+    (kanji.rightrad.half);
   tsu_render;
 endtsuglyph;
 

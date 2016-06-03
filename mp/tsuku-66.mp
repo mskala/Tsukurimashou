@@ -33,7 +33,6 @@
 beginfont
 
 % AUTODEPS
-input bkencl.mp;
 input bottomrad.mp;
 input buildkanji.mp;
 input gradeeight.mp;

@@ -186,14 +186,6 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-vardef kanji.grsix.exist =
-  push_pbox_toexpand("kanji.grsix.exist");
-  build_kanji.exist_enclose(
-    build_kanji.sscale(xyscaled (1,0.92) shifted (0,-50))
-      (kanji.grone.child));
-  expand_pbox;
-enddef;
-
 vardef kanji.grsix.filial_piety =
   push_pbox_toexpand("kanji.grsix.filial_piety");
   kanji.radical.old_man(kanji.grone.child);
