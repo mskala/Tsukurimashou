@@ -50,14 +50,6 @@ do_late_includes;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-vardef kanji.grtwo.cloud =
-  push_pbox_toexpand("kanji.grtwo.cloud");
-  build_kanji.tb(300,50)
-    (kanji.toprad.rain)
-    (kanji.grnine.declaim);
-  expand_pbox;
-enddef;
-
 vardef kanji.grtwo.electricity =
   push_pbox_toexpand("kanji.grtwo.electricity");
   build_kanji.tb(370,30)
@@ -66,14 +58,6 @@ vardef kanji.grtwo.electricity =
        (kanji.grone.day);
      push_stroke((point 1.5 of get_strokep(-2)),(1.6,1.6));
      build_kanji.add_ltail(0));
-  expand_pbox;
-enddef;
-
-vardef kanji.grtwo.snow =
-  push_pbox_toexpand("kanji.grtwo.snow");
-  build_kanji.tb(280,0)
-    (kanji.toprad.rain)
-    (kanji.radical.pigs_head);
   expand_pbox;
 enddef;
 

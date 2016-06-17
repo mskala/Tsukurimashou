@@ -74,23 +74,6 @@ vardef kanji.grfour.illuminate =
   expand_pbox;
 enddef;
 
-vardef kanji.grfour.that_case =
-  path mytp,mytq;
-  push_pbox_toexpand("kanji.grfour.that_case");
-  build_kanji.tb(190,-30)
-    (build_kanji.level(build_kanji.lr(520,130)
-       (kanji.grone.evening;
-        mytp=get_strokep(0);
-        mytq=get_strokeq(0);
-        push_stroke(mytp shifted (-point 0.6 of mytp)
-          scaled 0.65 shifted ((-90,-120)+point 0.6 of mytp),mytq);
-        replace_strokep(-1)(oldp shifted (-point 0.6 of oldp)
-          scaled 0.60 shifted ((40,50)+point 0.6 of oldp)))
-        (kanji.grone.dog)))
-    (kanji.bottomrad.four_ticks);
-  expand_pbox;
-enddef;
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 vardef kanji.grnine.prosperous =

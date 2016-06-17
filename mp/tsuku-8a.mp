@@ -1,6 +1,6 @@
 %
 % Unicode page 8A (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012, 2013  Matthew Skala
+% Copyright (C) 2011, 2012, 2013, 2016  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -238,14 +238,6 @@ vardef kanji.grsix.translate =
   build_kanji.level(build_kanji.lr(450,-10)
     (kanji.grtwo.word)
     (kanji.grsix.blowjob));
-  expand_pbox;
-enddef;
-
-vardef kanji.grsix.various =
-  push_pbox_toexpand("kanji.grsix.various");
-  build_kanji.level(build_kanji.lr(450,0)
-    (kanji.grtwo.word)
-    (kanji.grthree.person));
   expand_pbox;
 enddef;
 

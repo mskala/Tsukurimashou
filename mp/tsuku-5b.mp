@@ -70,18 +70,6 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-vardef kanji.grtwo.chamber =
-  push_pbox_toexpand("kanji.grtwo.chamber");
-  build_kanji.tb(600,150)
-    (kanji.radical.silly_hat)
-    (build_kanji.level(build_kanji.tb(420,100)
-       (build_kanji.sscale(scaled 0.7)(kanji.radical.mu_bar))
-       (kanji.grone.earth)));
-  expand_pbox;
-enddef;
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 vardef kanji.grthree.counterpart =
   push_pbox_toexpand("kanji.grthree.counterpart");
   build_kanji.lr(420,0)
@@ -105,14 +93,6 @@ vardef kanji.grthree.cold =
        (1.2,1.2)--(1.5,1.5)--(1.8,1.8));
      push_stroke((300,130)..tension 1.2..(580,40)..(690,-10),
        (1.2,1.2)--(1.5,1.5)--(1.8,1.8))));
-  expand_pbox;
-enddef;
-
-vardef kanji.grthree.inn =
-  push_pbox_toexpand("kanji.grthree.protect");
-  build_kanji.tb(600,110)
-    (kanji.radical.silly_hat)
-    (kanji.rare.centurion);
   expand_pbox;
 enddef;
 
@@ -146,14 +126,6 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-vardef kanji.grfour.guess =
-  push_pbox_toexpand("kanji.grfour.guess");
-  build_kanji.tb(600,70)
-    (kanji.radical.silly_hat)
-    (kanji.grthree.festival);
-  expand_pbox;
-enddef;
-
 vardef kanji.grfour.injury =
   push_pbox_toexpand("kanji.grfour.injury");
   build_kanji.level(build_kanji.tb(640,200)
@@ -165,14 +137,6 @@ vardef kanji.grfour.injury =
 enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-vardef kanji.grfive.draw_near =
-  push_pbox_toexpand("kanji.grfive.draw_near");
-  build_kanji.tb(600,180)
-    (kanji.radical.silly_hat)
-    (build_kanji.sscale(xscaled (1-0.15*mincho))(kanji.greight.strange));
-  expand_pbox;
-enddef;
 
 vardef kanji.grfive.wealth =
   push_pbox_toexpand("kanji.grfive.wealth");

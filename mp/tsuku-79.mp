@@ -83,14 +83,6 @@ vardef kanji.grthree.ceremony =
   expand_pbox;
 enddef;
 
-vardef kanji.grthree.deity =
-  push_pbox_toexpand("kanji.grthree.deity");
-  build_kanji.lr(450,40)
-    (kanji.leftrad.showing)
-    (kanji.grthree.have_honour);
-  expand_pbox;
-enddef;
-
 vardef kanji.grthree.good_luck =
   push_pbox_toexpand("kanji.grthree.deity");
   build_kanji.lr(450,20)

@@ -143,14 +143,6 @@ vardef kanji.grfive.branch =
   expand_pbox;
 enddef;
 
-vardef kanji.grfive.inspection =
-  push_pbox_toexpand("kanji.grfive.inspection");
-  build_kanji.level(build_kanji.tb(420,60)
-    (kanji.grone.wood)
-    (kanji.greight.furthermore));
-  expand_pbox;
-enddef;
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 vardef kanji.grsix.sheet =

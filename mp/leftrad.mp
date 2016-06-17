@@ -1,6 +1,6 @@
 %
 % Radicals for left side (often special forms of other radicals)
-% Copyright (C) 2011, 2012, 2013  Matthew Skala
+% Copyright (C) 2011, 2012, 2013, 2016  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -40,6 +40,14 @@ vardef kanji.leftrad.alt_person =
   push_stroke(
     (point 0.8 of get_strokep(0))..tension 1.2..(640,340)..(860,40),
     (1.2,1.2)--(1.4,1.4)--(1.6,1.6));
+  expand_pbox;
+enddef;
+
+vardef kanji.leftrad.arrow =
+  push_pbox_toexpand("kanji.leftrad.arrow");
+  kanji.grtwo.arrow;
+  replace_strokep(0)((point 1.6 of get_strokep(-1))..(690,200)..(850,80));
+  replace_strokeq(0)((0.9,0.9)--(1.5,1.5)--(1.8,1.8));
   expand_pbox;
 enddef;
 

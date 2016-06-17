@@ -51,16 +51,6 @@ do_late_includes;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-vardef kanji.grone.flower =
-  push_pbox_toexpand("kanji.grone.flower");
-  build_kanji.tb(600,0)
-    (kanji.toprad.grass)
-    (kanji.grthree.change);
-  expand_pbox;
-enddef;
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 vardef kanji.grtwo.boat =
   push_pbox_toexpand("kanji.grtwo.boat");
   build_kanji.lr(520,0)
@@ -68,16 +58,6 @@ vardef kanji.grtwo.boat =
     (build_kanji.level(build_kanji.tb(410,0)
        (kanji.radical.eight)
        (kanji.grone.mouth)));
-  expand_pbox;
-enddef;
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-vardef kanji.grthree.suffering =
-  push_pbox_toexpand("kanji.grthree.suffering");
-  build_kanji.tb(630,60)
-    (kanji.toprad.grass)
-    (kanji.grtwo.old);
   expand_pbox;
 enddef;
 

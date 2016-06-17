@@ -1,6 +1,6 @@
 %
 % Unicode page 95 (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012, 2013  Matthew Skala
+% Copyright (C) 2011, 2012, 2013, 2016  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -77,12 +77,6 @@ enddef;
 vardef kanji.grnine.brandish =
   push_pbox_toexpand("kanji.grnine.brandish");
   build_kanji.gate_enclose(kanji.grone.person);
-  expand_pbox;
-enddef;
-
-vardef kanji.grnine.leap_year =
-  push_pbox_toexpand("kanji.grnine.leap_year");
-  build_kanji.gate_enclose(kanji.grone.king);
   expand_pbox;
 enddef;
 

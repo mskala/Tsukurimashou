@@ -74,19 +74,6 @@ vardef kanji.grtwo.north =
   expand_pbox;
 enddef;
 
-vardef kanji.grtwo.south =
-  push_pbox_toexpand("kanji.grtwo.south");
-  build_kanji.tb(540,60)
-    (kanji.grone.ten)
-    (kanji.radical.gmm;
-     build_kanji.sscale(xyscaled (0.54,0.45))(kanji.grone.two);
-     build_kanji.sscale(xyscaled (0.4,0.32) shifted (0,230))
-       (kanji.toprad.sparkle_two);
-     push_stroke((500,492)--(500,-20),(1.6,1.6)--(1.5,1.5));
-     );
-  expand_pbox;
-enddef;
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 vardef kanji.grthree.doctor =

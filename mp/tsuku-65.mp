@@ -148,16 +148,6 @@ vardef kanji.grfour.flag =
   expand_pbox;
 enddef;
 
-vardef kanji.grfour.loose =
-  push_pbox_toexpand("kanji.grfour.loose");
-  build_kanji.level(build_kanji.lr(520,20)
-    (build_kanji.tb(500,-50)
-       (kanji.toprad.once_upon_a_time)
-       (kanji.bottomrad.moon))
-    (kanji.radical.folding_chair));
-  expand_pbox;
-enddef;
-
 vardef kanji.grfour.rescue =
   push_pbox_toexpand("kanji.grfour.rescue");
   build_kanji.level(build_kanji.lr(480,0)

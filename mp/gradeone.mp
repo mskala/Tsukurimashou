@@ -288,6 +288,14 @@ vardef kanji.grone.five =
   expand_pbox;
 enddef;
 
+vardef kanji.grone.flower =
+  push_pbox_toexpand("kanji.grone.flower");
+  build_kanji.tb(600,0)
+    (kanji.toprad.grass)
+    (kanji.grthree.change);
+  expand_pbox;
+enddef;
+
 vardef kanji.grone_helper.foot =
   push_pbox_toexpand("kanji.grone_helper.foot");
   push_stroke((270,330)..tension 1.3..(190,100)..(60,-50),

@@ -91,13 +91,6 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-vardef kanji.grthree.courtyard =
-  push_pbox_toexpand("kanji.grthree.courtyard");
-  build_kanji.dotcliff_enclose(
-    build_kanji.sscale(yscaled 0.97 shifted (0,-30))(kanji.greight.court));
-  expand_pbox;
-enddef;
-
 vardef kanji.grthree.degree =
   push_pbox_toexpand("kanji.grthree.degree");
   build_kanji.dotcliff_enclose(build_kanji.level(
@@ -148,12 +141,6 @@ vardef kanji.grfour.seat =
   build_kanji.dotcliff_enclose(build_kanji.tb(420,0)
       (kanji.grnine.twenty)
       (kanji.greight.towel));
-  expand_pbox;
-enddef;
-
-vardef kanji.grfour.urban_prefecture =
-  push_pbox_toexpand("kanji.grfour.urban_prefecture");
-  build_kanji.dotcliff_enclose(kanji.grfour.attach);
   expand_pbox;
 enddef;
 

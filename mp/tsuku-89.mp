@@ -49,26 +49,6 @@ do_late_includes;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-vardef kanji.grtwo.parent =
-  push_pbox_toexpand("kanji.grtwo.parent");
-  build_kanji.level(build_kanji.lr(460,50)
-    (build_kanji.tb(470,20)
-      (kanji.toprad.stand_up)
-      (kanji.leftrad.wood))
-    (kanji.grone.see));
-  expand_pbox;
-enddef;
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-vardef kanji.grfour.essential =
-  push_pbox_toexpand("kanji.grfour.essential");
-  build_kanji.tb(480,-30)
-    (kanji.toprad.ticket)
-    (kanji.grone.woman);
-  expand_pbox;
-enddef;
-
 vardef kanji.grfour.outlook =
   push_pbox_toexpand("kanji.grfour.outlook");
   build_kanji.level(build_kanji.lr(460,50)

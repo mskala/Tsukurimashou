@@ -71,28 +71,6 @@ vardef kanji.grtwo.fairweather =
   expand_pbox;
 enddef;
 
-vardef kanji.grtwo.spring =
-  push_pbox_toexpand("kanji.grtwo.spring");
-  build_kanji.tb(320,90)
-    (kanji.grone.person;
-     build_kanji.sscale(xyscaled (1,0.5) shifted (0,30))
-       (kanji.grone.three);
-     replace_strokep(-3)
-       (subpath (xpart (oldp intersectiontimes get_strokep(-1)),infinity)
-        of oldp))
-    (build_kanji.sscale(xscaled 0.8 shifted (10,0))
-      (kanji.grone.day));
-  expand_pbox;
-enddef;
-
-vardef kanji.grtwo.time =
-  push_pbox_toexpand("kanji.grtwo.time");
-  build_kanji.lr(330,0)
-    (kanji.leftrad.day)
-    (kanji.grtwo.temple);
-  expand_pbox;
-enddef;
-
 vardef kanji.grtwo.day_of_week =
   push_pbox_toexpand("kanji.grtwo.day_of_week");
   build_kanji.level(build_kanji.lr(330,0)

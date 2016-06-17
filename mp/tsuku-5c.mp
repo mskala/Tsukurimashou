@@ -72,24 +72,6 @@ vardef kanji.grthree.beach =
   expand_pbox;
 enddef;
 
-vardef kanji.grthree.house =
-  push_pbox_toexpand("kanji.grthree.house");
-  build_kanji.level(
-    kanji.radical.narrow_flag;
-    build_kanji.sscale(xyscaled (0.79,0.54) shifted (40,-150))
-      (kanji.grsix.climax));
-  expand_pbox;
-enddef;
-
-vardef kanji.grthree.island =
-  push_pbox_toexpand("kanji.grthree.island");
-  kanji.grtwo.bird;
-  pop_stroke;pop_stroke;pop_stroke;pop_stroke;
-  build_kanji.sscale(xyscaled (0.6,0.25) shifted (-200,-325))
-    (kanji.grone.mountain);
-  expand_pbox;
-enddef;
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 vardef kanji.grfive.guide =
@@ -97,15 +79,6 @@ vardef kanji.grfive.guide =
   build_kanji.level(build_kanji.tb(300,40)
     (kanji.grtwo.street)
     (kanji.grsix.inch));
-  expand_pbox;
-enddef;
-
-vardef kanji.grfive.reside =
-  push_pbox_toexpand("kanji.grfive.reside");
-  build_kanji.level(
-    kanji.radical.narrow_flag;
-    build_kanji.sscale(xyscaled (0.77,0.72) shifted (30,-100))
-      (kanji.grtwo.old));
   expand_pbox;
 enddef;
 
@@ -150,15 +123,6 @@ vardef kanji.greight.urine =
 enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-vardef kanji.grnine.chad =
-  push_pbox_toexpand("kanji.grnine.chad");
-  build_kanji.level(
-    kanji.radical.narrow_flag;
-    build_kanji.sscale(xyscaled (0.85,0.63) shifted (60,-130))
-      (kanji.greight.resemblance));
-  expand_pbox;
-enddef;
 
 vardef kanji.grnine.pointed =
   push_pbox_toexpand("kanji.grnine.pointed");

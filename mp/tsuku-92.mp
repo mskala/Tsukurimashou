@@ -1,6 +1,6 @@
 %
 % Unicode page 92 (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012, 2013  Matthew Skala
+% Copyright (C) 2011, 2012, 2013, 2016  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -37,6 +37,7 @@ input bkencl.mp;
 input buildkanji.mp;
 input gradefour.mp;
 input gradeone.mp;
+input gradethree.mp;
 input gradetwo.mp;
 input leftrad.mp;
 input radical.mp;
@@ -50,14 +51,6 @@ vardef kanji.grthree.iron =
   build_kanji.level(build_kanji.lr(480,20)
     (kanji.leftrad.gold)
     (kanji.grfour.disappear));
-  expand_pbox;
-enddef;
-
-vardef kanji.grthree.silver =
-  push_pbox_toexpand("kanji.grthree.silver");
-  build_kanji.level(build_kanji.lr(480,90-20*mincho)
-    (kanji.leftrad.gold)
-    (kanji.radical.northeast));
   expand_pbox;
 enddef;
 

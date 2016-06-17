@@ -53,19 +53,6 @@ do_late_includes;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-vardef kanji.grtwo.before =
-  tsu_xform(identity yscaled (780/720))
-  (build_kanji.level(build_kanji.tb(570,0)
-    (build_kanji.sscale(xscaled 0.6)(kanji.toprad.sparkle_two);
-     push_stroke((70,120)--(930,120),(1.6,1.6)--(1.6,1.6));
-     set_boserif(0,0,whatever);
-     set_boserif(0,1,9);
-     )
-    (build_kanji.lr(560,30)
-       (kanji.bottomrad.moon)
-       (kanji.rightrad.sword))));
-enddef;
-
 vardef kanji.grtwo.cut =
   build_kanji.level(build_kanji.lr(450,80)
     (kanji.leftrad.seven)
@@ -93,24 +80,6 @@ vardef kanji.grthree.help =
           (subpath (1,length oldp-1) of oldp)--
           (point infinity of oldp shifted (0,-80)))))
     (kanji.grone.power));
-  expand_pbox;
-enddef;
-
-vardef kanji.grthree.victory =
-  push_pbox_toexpand("kanji.grthree.victory");
-  build_kanji.level(build_kanji.lr(380,30*(1-mincho))
-    (kanji.grone.moon)
-    (build_kanji.tb(320,100)
-       (build_kanji.sscale(yscaled 0.4 shifted (0,230))
-          (kanji.toprad.sparkle_two);
-        kanji.grone.person;
-        build_kanji.sscale(xyscaled (1,0.37) shifted (0,-40))
-          (kanji.grone.two);
-        replace_strokep(-2)
-          (subpath (xpart (oldp intersectiontimes get_strokep(-1)),infinity)
-           of oldp))
-    (build_kanji.sscale(xscaled 0.8 shifted (20,0))
-      (kanji.grone.power))));
   expand_pbox;
 enddef;
 

@@ -192,6 +192,14 @@ vardef kanji.grfour.clothes =
   expand_pbox;
 enddef;
 
+vardef kanji.grfour.convenience =
+  push_pbox_toexpand("kanji.grfour.convenience");
+  build_kanji.lr(300,10)
+    (kanji.leftrad.person)
+    (kanji.greight.night_watch);
+  expand_pbox;
+enddef;
+
 vardef kanji.grfour.courage =
   push_pbox_toexpand("kanji.grfour.courage");
   build_kanji.level(build_kanji.tb(640,80)
@@ -202,6 +210,18 @@ vardef kanji.grfour.courage =
      push_stroke((340,410)..tension 1.2..(490,140)..(520,20),
        (1.1,1.1)--(1.5,1.5)--(1.8,1.8)))
     (kanji.grone.man));
+  expand_pbox;
+enddef;
+
+vardef kanji.grfour.difference =
+  push_pbox_toexpand("kanji.grfour.difference");
+  build_kanji.level(
+    build_kanji.tb(250,100)
+      (build_kanji.sscale(xscaled 1.08)(kanji.toprad.sheep))
+      (build_kanji.sscale(xscaled 0.83 shifted (80,0))(kanji.grtwo.craft));
+    push_stroke(
+      (point 0.30 of get_strokep(-6))..tension 1.2..(270,210)..(80,20),
+      (1.6,1.6)--(1.4,1.4)--(0.9,0.9)));
   expand_pbox;
 enddef;
 
@@ -266,6 +286,14 @@ vardef kanji.grfour.english =
   expand_pbox;
 enddef;
 
+vardef kanji.grfour.essential =
+  push_pbox_toexpand("kanji.grfour.essential");
+  build_kanji.tb(480,-30)
+    (kanji.toprad.ticket)
+    (kanji.grone.woman);
+  expand_pbox;
+enddef;
+
 vardef kanji.grfour.every =
   push_pbox_toexpand("kanji.grfour.every");
   build_kanji.level(build_kanji.tb(300,80)
@@ -296,6 +324,42 @@ vardef kanji.grfour.fancy =
   build_kanji.lr(420,20)
     (kanji.leftrad.woman)
     (kanji.grone.child);
+  expand_pbox;
+enddef;
+
+vardef kanji.grfour_helper.fly =
+  push_pbox_toexpand("kanji.grfour_helper.fly");
+  push_stroke((120,760)--interpath(mincho,
+      (660,760){dir -87}..{dir -72}(770,-20)..(860,-10)..tension 1.5..
+        (890,100)..(910,200),
+      (630,760){dir -82}..(740,100)..{right}(910,-40){curl 1}..
+        (890,60)..(890,160)),
+    (1.6,1.6)--(1.6,1.6)--(1.4,1.4)--(1.4,1.4)--(1.2,1.2)--(0.9,0.9));
+  set_botip(0,1,1);
+  set_boserif(0,1,4);
+  push_stroke((point 1.33 of get_strokep(0))
+      ..tension 1.2..(770,450)..(840,360),
+    (1.2,1.2)--(1.6,1.6)--(1.8,1.8));
+  set_bosize(0,90);
+  push_stroke((810,670)..tension 1.2..(770,590)..(720,480),
+    (1.6,1.6)--(1.4,1.4)--(1,1));
+  set_bosize(0,90);
+  set_boserif(0,0,10);
+  expand_pbox;
+enddef;
+
+vardef kanji.grfour.fly =
+  push_pbox_toexpand("kanji.grfour.fly");
+  build_kanji.tb(440,50)
+    (build_kanji.sscale(xscaled 0.9)(kanji.grfour_helper.fly))
+    (kanji.grfour_helper.fly);
+  push_stroke((480,680)--(480,-70),(1.6,1.6)--(1.5,1.5));
+  set_boserif(0,0,10);
+  set_bosize(0,90);
+  push_stroke((120,610)..(270,640)..tension 1.1..(370,680),
+    (1.1,1.1)--(1.6,1.6)--(2.0,2.0));
+  push_stroke((270,630){down}..(190,130)..(90,-70),
+    (1.6,1.6)--(1.3,1.3)--(1,1));
   expand_pbox;
 enddef;
 
@@ -373,6 +437,14 @@ vardef kanji.grfour.grandchild =
   expand_pbox;
 enddef;
 
+vardef kanji.grfour.guess =
+  push_pbox_toexpand("kanji.grfour.guess");
+  build_kanji.tb(600,70)
+    (kanji.radical.silly_hat)
+    (kanji.grthree.festival);
+  expand_pbox;
+enddef;
+
 vardef kanji.grfour.hall =
   push_pbox_toexpand("kanji.grfour.hall");
   build_kanji.level(build_kanji.tb(260,100)
@@ -427,9 +499,29 @@ vardef kanji.grfour.inevitable =
   expand_pbox;
 enddef;
 
+vardef kanji.grfour.kill =
+  push_pbox_toexpand("kanji.grfour.kill");
+  build_kanji.level(build_kanji.lr(360,0)
+    (build_kanji.sscale(shifted (0,-40))(build_kanji.tb(600,-20)
+       (kanji.radical.cut_the_grass)
+       (kanji.leftrad.wood)))
+    (kanji.radical.windy_again));
+  expand_pbox;
+enddef;
+
 vardef kanji.grfour.lineage =
   push_pbox_toexpand("kanji.grfour.lineage");
   build_kanji.add_beret(kanji.grone.thread);
+  expand_pbox;
+enddef;
+
+vardef kanji.grfour.loose =
+  push_pbox_toexpand("kanji.grfour.loose");
+  build_kanji.level(build_kanji.lr(520,20)
+    (build_kanji.tb(500,-50)
+       (kanji.toprad.once_upon_a_time)
+       (kanji.bottomrad.moon))
+    (kanji.radical.folding_chair));
   expand_pbox;
 enddef;
 
@@ -586,6 +678,14 @@ vardef kanji.grfour.pleasure =
   expand_pbox;
 enddef;
 
+vardef kanji.grfour.plural =
+  push_pbox_toexpand("kanji.grfour.plural");
+  build_kanji.road_enclose(build_kanji.tb(560,0)
+    (kanji.grone.earth)
+    (kanji.grthree.sheep));
+  expand_pbox;
+enddef;
+
 vardef kanji.grfour.portent =
   push_pbox_toexpand("kanji.grfour.portent");
   build_kanji.spread_legs(-110)(kanji.radical.legs);
@@ -629,6 +729,19 @@ vardef kanji.grfour.revelation =
   expand_pbox;
 enddef;
 
+vardef kanji.grfour.rule =
+  push_pbox_toexpand("kanji.grfour.rule");
+  build_kanji.level(build_kanji.tb(180,0)
+   (build_kanji.sscale(xscaled 0.84)
+      (kanji.grthree.melody;
+       replace_strokep(-4)((140,30)--(140,600)--(860,600)--(860,30)));
+    pop_hook;
+    replace_strokep(-3)((80,30)--(920,30));
+    set_boserif(-3,1,9))
+   (kanji.radical.eight));
+  expand_pbox;
+enddef;
+
 vardef kanji.grfour.scenery =
   push_pbox_toexpand("kanji.grfour.scenery");
   build_kanji.level(build_kanji.tb(560,30)
@@ -647,6 +760,14 @@ vardef kanji.grfour.season =
        (kanji.grone.child;
         charsvp:=get_strokep(0));
      replace_strokep(0)(charsvp));
+  expand_pbox;
+enddef;
+
+vardef kanji.grfour.section =
+  push_pbox_toexpand("kanji.grfour.section");
+  build_kanji.level(build_kanji.tb(480,190)
+    (kanji.toprad.bamboo)
+    (kanji.greight.instant));
   expand_pbox;
 enddef;
 
@@ -675,6 +796,23 @@ vardef kanji.grfour.stomach =
   expand_pbox;
 enddef;
 
+vardef kanji.grfour.that_case =
+  path mytp,mytq;
+  push_pbox_toexpand("kanji.grfour.that_case");
+  build_kanji.tb(190,-30)
+    (build_kanji.level(build_kanji.lr(520,130)
+       (kanji.grone.evening;
+        mytp=get_strokep(0);
+        mytq=get_strokeq(0);
+        push_stroke(mytp shifted (-point 0.6 of mytp)
+          scaled 0.65 shifted ((-90,-120)+point 0.6 of mytp),mytq);
+        replace_strokep(-1)(oldp shifted (-point 0.6 of oldp)
+          scaled 0.60 shifted ((40,50)+point 0.6 of oldp)))
+        (kanji.grone.dog)))
+    (kanji.bottomrad.four_ticks);
+  expand_pbox;
+enddef;
+
 vardef kanji.grfour.ticket =
   push_pbox_toexpand("kanji.grfour.ticket");
   build_kanji.tb(480,-30)
@@ -696,6 +834,12 @@ vardef kanji.grfour.together =
   build_kanji.level(build_kanji.tb(290,46)
     (kanji.toprad.once_upon_a_time)
     (tsu_xform(identity shifted (20,0))(kanji.radical.eight)));
+  expand_pbox;
+enddef;
+
+vardef kanji.grfour.urban_prefecture =
+  push_pbox_toexpand("kanji.grfour.urban_prefecture");
+  build_kanji.dotcliff_enclose(kanji.grfour.attach);
   expand_pbox;
 enddef;
 

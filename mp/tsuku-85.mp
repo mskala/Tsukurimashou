@@ -34,8 +34,10 @@ beginfont
 
 % AUTODEPS
 input buildkanji.mp;
+input gradenine.mp;
 input gradeone.mp;
 input gradetwo.mp;
+input leftrad.mp;
 input toprad.mp;
 
 do_late_includes;

@@ -1,6 +1,6 @@
 %
 % Unicode page 8F (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012, 2013, 2014  Matthew Skala
+% Copyright (C) 2011, 2012, 2013, 2014, 2016  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -57,12 +57,6 @@ vardef kanji.grtwo.near =
 enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-vardef kanji.grthree.pursue =
-  push_pbox_toexpand("kanji.grthree.pursue");
-  build_kanji.road_enclose(kanji.rare.mound);
-  expand_pbox;
-enddef;
 
 vardef kanji.grthree.return =
   push_pbox_toexpand("kanji.grthree.return");

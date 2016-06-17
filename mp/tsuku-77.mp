@@ -1,6 +1,6 @@
 %
 % Unicode page 77 (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012, 2013, 2014  Matthew Skala
+% Copyright (C) 2011, 2012, 2013, 2014, 2016  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -38,20 +38,11 @@ input gradefour.mp;
 input gradeone.mp;
 input gradethree.mp;
 input gradetwo.mp;
+input leftrad.mp;
 input radical.mp;
 input toprad.mp;
 
 do_late_includes;
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-vardef kanji.grtwo.know =
-  push_pbox_toexpand("kanji.grtwo.know");
-  build_kanji.level(build_kanji.lr(550,-20)
-    (kanji.leftrad.arrow)
-    (kanji.grone.mouth));
-  expand_pbox;
-enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -112,14 +103,6 @@ vardef kanji.grfive.eyeball =
 enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-vardef kanji.leftrad.arrow =
-  push_pbox_toexpand("kanji.leftrad.arrow");
-  kanji.grtwo.arrow;
-  replace_strokep(0)((point 1.6 of get_strokep(-1))..(690,200)..(850,80));
-  replace_strokeq(0)((0.9,0.9)--(1.5,1.5)--(1.8,1.8));
-  expand_pbox;
-enddef;
 
 vardef kanji.leftrad.eye =
   push_pbox_toexpand("kanji.leftrad.eye");

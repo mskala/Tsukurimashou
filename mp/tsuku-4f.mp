@@ -105,14 +105,6 @@ vardef kanji.grfour.believe =
   expand_pbox;
 enddef;
 
-vardef kanji.grfour.convenience =
-  push_pbox_toexpand("kanji.grfour.convenience");
-  build_kanji.lr(300,10)
-    (kanji.leftrad.person)
-    (kanji.greight.night_watch);
-  expand_pbox;
-enddef;
-
 vardef kanji.grfour.example =
   push_pbox_toexpand("kanji.grfour.example");
   build_kanji.lr(300,20)

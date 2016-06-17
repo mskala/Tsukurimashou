@@ -96,14 +96,6 @@ vardef kanji.grtwo.other =
   expand_pbox;
 enddef;
 
-vardef kanji.grtwo.summer =
-  push_pbox_toexpand("kanji.grtwo.summer");
-  build_kanji.level(build_kanji.tb(350,0)
-    (kanji.toprad.summer)
-    (kanji.radical.winter));
-  expand_pbox;
-enddef;
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 vardef kanji.grthree.begin =

@@ -1,6 +1,6 @@
 %
 % Unicode page 7B (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012, 2013, 2014  Matthew Skala
+% Copyright (C) 2011, 2012, 2013, 2014, 2016  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -124,14 +124,6 @@ vardef kanji.grfour.pipe =
   build_kanji.level(build_kanji.tb(490,210)
     (kanji.toprad.bamboo)
     (kanji.grfour.bureaucracy));
-  expand_pbox;
-enddef;
-
-vardef kanji.grfour.section =
-  push_pbox_toexpand("kanji.grfour.section");
-  build_kanji.level(build_kanji.tb(480,190)
-    (kanji.toprad.bamboo)
-    (kanji.greight.instant));
   expand_pbox;
 enddef;
 

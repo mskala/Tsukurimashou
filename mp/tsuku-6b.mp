@@ -1,6 +1,6 @@
 %
 % Unicode page 6B (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012, 2013, 2014  Matthew Skala
+% Copyright (C) 2011, 2012, 2013, 2014, 2016  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -78,16 +78,6 @@ enddef;
 vardef kanji.grfour.history =
   push_pbox_toexpand("kanji.grfour.history");
   build_kanji.cliff_enclose(kanji.rare.history_inside);
-  expand_pbox;
-enddef;
-
-vardef kanji.grfour.kill =
-  push_pbox_toexpand("kanji.grfour.kill");
-  build_kanji.level(build_kanji.lr(360,0)
-    (build_kanji.sscale(shifted (0,-40))(build_kanji.tb(600,-20)
-       (kanji.radical.cut_the_grass)
-       (kanji.leftrad.wood)))
-    (kanji.radical.windy_again));
   expand_pbox;
 enddef;
 

@@ -63,6 +63,19 @@ vardef kanji.grtwo.autumn =
   expand_pbox;
 enddef;
 
+vardef kanji.grtwo.before =
+  tsu_xform(identity yscaled (780/720))
+  (build_kanji.level(build_kanji.tb(570,0)
+    (build_kanji.sscale(xscaled 0.6)(kanji.toprad.sparkle_two);
+     push_stroke((70,120)--(930,120),(1.6,1.6)--(1.6,1.6));
+     set_boserif(0,0,whatever);
+     set_boserif(0,1,9);
+     )
+    (build_kanji.lr(560,30)
+       (kanji.bottomrad.moon)
+       (kanji.rightrad.sword))));
+enddef;
+
 vardef kanji.grtwo.big_brother =
   push_pbox_toexpand("kanji.grtwo.big_brother");
   build_kanji.level(build_kanji.tb(440,110)
@@ -148,11 +161,29 @@ vardef kanji.grtwo.cease =
   expand_pbox;
 enddef;
 
+vardef kanji.grtwo.chamber =
+  push_pbox_toexpand("kanji.grtwo.chamber");
+  build_kanji.tb(600,150)
+    (kanji.radical.silly_hat)
+    (build_kanji.level(build_kanji.tb(420,100)
+       (build_kanji.sscale(scaled 0.7)(kanji.radical.mu_bar))
+       (kanji.grone.earth)));
+  expand_pbox;
+enddef;
+
 vardef kanji.grtwo.circle =
   push_pbox_toexpand("kanji.grtwo.circle");
   kanji.grone.nine;
   push_stroke((170,360)..(340,310)..(480,170),
     (1,1)--(1.4,1.4)--(1.7,1.7));
+  expand_pbox;
+enddef;
+
+vardef kanji.grtwo.cloud =
+  push_pbox_toexpand("kanji.grtwo.cloud");
+  build_kanji.tb(300,50)
+    (kanji.toprad.rain)
+    (kanji.grnine.declaim);
   expand_pbox;
 enddef;
 
@@ -207,6 +238,13 @@ vardef kanji.grtwo.corner =
   build_kanji.attach_fishhook(0.8)(
     build_kanji.sscale(xscaled 0.84)(kanji.grtwo.job);
     replace_strokep(-2)((500,760)--(500,290)));
+  expand_pbox;
+enddef;
+
+vardef kanji.grtwo.country =
+  push_pbox_toexpand("kanji.grtwo.country");
+  kanji.radical.box;
+  build_kanji.sscale(scaled 0.75)(kanji.grone.ball);
   expand_pbox;
 enddef;
 
@@ -587,6 +625,14 @@ vardef kanji.grtwo.join =
   expand_pbox;
 enddef;
 
+vardef kanji.grtwo.know =
+  push_pbox_toexpand("kanji.grtwo.know");
+  build_kanji.level(build_kanji.lr(550,-20)
+    (kanji.leftrad.arrow)
+    (kanji.grone.mouth));
+  expand_pbox;
+enddef;
+
 vardef kanji.grtwo.light =
   push_pbox_toexpand("kanji.grtwo.light");
   build_kanji.level(build_kanji.lr(460,0)
@@ -837,6 +883,16 @@ vardef kanji.grtwo.origin =
   expand_pbox;
 enddef;
 
+vardef kanji.grtwo.parent =
+  push_pbox_toexpand("kanji.grtwo.parent");
+  build_kanji.level(build_kanji.lr(460,50)
+    (build_kanji.tb(470,20)
+      (kanji.toprad.stand_up)
+      (kanji.leftrad.wood))
+    (kanji.grone.see));
+  expand_pbox;
+enddef;
+
 vardef kanji.grtwo.pedestal =
   push_pbox_toexpand("kanji.grtwo.pedestal");
   build_kanji.sscale(xscaled 0.83)(
@@ -930,6 +986,41 @@ vardef kanji.grtwo.shop =
   expand_pbox;
 enddef;
 
+vardef kanji.grtwo.snow =
+  push_pbox_toexpand("kanji.grtwo.snow");
+  build_kanji.tb(280,0)
+    (kanji.toprad.rain)
+    (kanji.radical.pigs_head);
+  expand_pbox;
+enddef;
+
+vardef kanji.grtwo.south =
+  push_pbox_toexpand("kanji.grtwo.south");
+  build_kanji.tb(540,60)
+    (kanji.grone.ten)
+    (kanji.radical.gmm;
+     build_kanji.sscale(xyscaled (0.54,0.45))(kanji.grone.two);
+     build_kanji.sscale(xyscaled (0.4,0.32) shifted (0,230))
+       (kanji.toprad.sparkle_two);
+     push_stroke((500,492)--(500,-20),(1.6,1.6)--(1.5,1.5));
+     );
+  expand_pbox;
+enddef;
+
+vardef kanji.grtwo.spring =
+  push_pbox_toexpand("kanji.grtwo.spring");
+  build_kanji.tb(320,90)
+    (kanji.grone.person;
+     build_kanji.sscale(xyscaled (1,0.5) shifted (0,30))
+       (kanji.grone.three);
+     replace_strokep(-3)
+       (subpath (xpart (oldp intersectiontimes get_strokep(-1)),infinity)
+        of oldp))
+    (build_kanji.sscale(xscaled 0.8 shifted (10,0))
+      (kanji.grone.day));
+  expand_pbox;
+enddef;
+
 vardef kanji.grtwo.star =
   push_pbox_toexpand("kanji.grtwo.star");
   build_kanji.sscale(xscaled 1.07)(build_kanji.tb(420,0)
@@ -968,6 +1059,14 @@ vardef kanji.grtwo.strong =
   expand_pbox;
 enddef;
 
+vardef kanji.grtwo.summer =
+  push_pbox_toexpand("kanji.grtwo.summer");
+  build_kanji.level(build_kanji.tb(350,0)
+    (kanji.toprad.summer)
+    (kanji.radical.winter));
+  expand_pbox;
+enddef;
+
 vardef kanji.grtwo.sword =
   push_pbox_toexpand("kanji.grtwo.sword");
   push_stroke((450,710)..(400,400)..(290,120)..(100,-20),
@@ -1002,6 +1101,20 @@ vardef kanji.grtwo.think =
   build_kanji.level(build_kanji.tb(390,120)
     (kanji.grone.paddy)
     (kanji.bottomrad.heart));
+  expand_pbox;
+enddef;
+
+vardef kanji.grtwo.time =
+  push_pbox_toexpand("kanji.grtwo.time");
+  build_kanji.lr(330,0)
+    (kanji.leftrad.day)
+    (kanji.grtwo.temple);
+  expand_pbox;
+enddef;
+
+vardef kanji.grtwo.traffic =
+  push_pbox_toexpand("kanji.grtwo.traffic");
+  build_kanji.road_enclose(kanji.rare.walled_road);
   expand_pbox;
 enddef;
 

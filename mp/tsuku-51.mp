@@ -97,19 +97,6 @@ vardef kanji.grfour.hundred_million =
   expand_pbox;
 enddef;
 
-vardef kanji.grfour.rule =
-  push_pbox_toexpand("kanji.grfour.rule");
-  build_kanji.level(build_kanji.tb(180,0)
-   (build_kanji.sscale(xscaled 0.84)
-      (kanji.grthree.melody;
-       replace_strokep(-4)((140,30)--(140,600)--(860,600)--(860,30)));
-    pop_hook;
-    replace_strokep(-3)((80,30)--(920,30));
-    set_boserif(-3,1,9))
-   (kanji.radical.eight));
-  expand_pbox;
-enddef;
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 vardef kanji.grsix.gentle =

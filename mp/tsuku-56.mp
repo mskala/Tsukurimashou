@@ -46,13 +46,6 @@ do_late_includes;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-vardef kanji.grtwo.country =
-  push_pbox_toexpand("kanji.grtwo.country");
-  kanji.radical.box;
-  build_kanji.sscale(scaled 0.75)(kanji.grone.ball);
-  expand_pbox;
-enddef;
-
 vardef kanji.grtwo.map =
   push_pbox_toexpand("kanji.grtwo.map");
   kanji.radical.box;

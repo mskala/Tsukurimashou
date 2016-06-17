@@ -67,16 +67,6 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-vardef kanji.grnine.moe =
-  push_pbox_toexpand("kanji.grnine.moe");
-  build_kanji.tb(600,0)
-    (kanji.toprad.grass)
-    (kanji.grtwo.light);
-  expand_pbox;
-enddef;
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 % moe (untranslatable)
 begintsuglyph("uni840C",12);
   kanji.grnine.moe;

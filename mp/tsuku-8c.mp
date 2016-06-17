@@ -145,16 +145,6 @@ vardef kanji.grfive.poor =
   expand_pbox;
 enddef;
 
-vardef kanji.grfive.trade =
-  push_pbox_toexpand("kanji.grfive.trade");
-  build_kanji.level(build_kanji.tb(540,0)
-    (build_kanji.lr(480,40)
-     (kanji.toprad.detain)
-     (kanji.grtwo.sword))
-    (kanji.grone.shell));
-  expand_pbox;
-enddef;
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 vardef kanji.grsix.wage =
@@ -166,15 +156,6 @@ vardef kanji.grsix.wage =
 enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-vardef kanji.greight.chastity =
-  push_pbox_toexpand("kanji.greight.chastity");
-  build_kanji.level(build_kanji.tb(580,50)
-    (kanji.grone.ten;
-     replace_strokep(0)(subpath (0.5,0.8) of oldp shifted (5,40)))
-    (kanji.grone.shell));
-  expand_pbox;
-enddef;
 
 vardef kanji.greight.covet =
   push_pbox_toexpand("kanji.greight.covet");

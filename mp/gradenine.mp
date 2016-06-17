@@ -109,6 +109,15 @@ vardef kanji.grnine.boy =
   expand_pbox;
 enddef;
 
+vardef kanji.grnine.chad =
+  push_pbox_toexpand("kanji.grnine.chad");
+  build_kanji.level(
+    kanji.radical.narrow_flag;
+    build_kanji.sscale(xyscaled (0.85,0.63) shifted (60,-130))
+      (kanji.greight.resemblance));
+  expand_pbox;
+enddef;
+
 vardef kanji.grnine.declaim =
   push_pbox_toexpand("kanji.grnine.declaim");
   build_kanji.level(build_kanji.tb(480,0)
@@ -153,6 +162,14 @@ vardef kanji.grnine.dragon_sign =
        push_stroke((820,540)..tension 1.2..(720,460)..
            (point 0.69 of get_strokep(0)),
          (1.7,1.7)--(1.4,1.4)--(1.2,1.2)))));
+  expand_pbox;
+enddef;
+
+vardef kanji.grnine.extremely =
+  push_pbox_toexpand("kanji.grnine.extremely");
+  build_kanji.level(build_kanji.lr(440,30)
+    (build_kanji.sscale(shifted (0,40))(kanji.grthree.pelt))
+    (kanji.grnine.page));
   expand_pbox;
 enddef;
 
@@ -202,9 +219,23 @@ vardef kanji.grnine.ladle =
   expand_pbox;
 enddef;
 
+vardef kanji.grnine.leap_year =
+  push_pbox_toexpand("kanji.grnine.leap_year");
+  build_kanji.gate_enclose(kanji.grone.king);
+  expand_pbox;
+enddef;
+
 vardef kanji.grnine.manor =
   push_pbox_toexpand("kanji.grnine.manor");
   build_kanji.dotcliff_enclose(kanji.grone.earth);
+  expand_pbox;
+enddef;
+
+vardef kanji.grnine.moe =
+  push_pbox_toexpand("kanji.grnine.moe");
+  build_kanji.tb(600,0)
+    (kanji.toprad.grass)
+    (kanji.grtwo.light);
   expand_pbox;
 enddef;
 

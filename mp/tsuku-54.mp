@@ -51,17 +51,6 @@ do_late_includes;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-vardef kanji.grthree.decree =
-  push_pbox_toexpand("kanji.grthree.decree");
-  build_kanji.level(
-    build_kanji.sscale(xyscaled (1,0.8) shifted (0,110))
-      (kanji.radical.tent);
-    build_kanji.sscale(xyscaled (0.9,0.55) shifted (0,-200))
-      (kanji.rare.smash);
-  );
-  expand_pbox;
-enddef;
-
 vardef kanji.grthree.taste =
   push_pbox_toexpand("kanji.grthree.taste");
   build_kanji.lr(380,-30)

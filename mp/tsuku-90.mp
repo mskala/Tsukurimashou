@@ -61,12 +61,6 @@ vardef kanji.grtwo.distant =
   expand_pbox;
 enddef;
 
-vardef kanji.grtwo.traffic =
-  push_pbox_toexpand("kanji.grtwo.traffic");
-  build_kanji.road_enclose(kanji.rare.walled_road);
-  expand_pbox;
-enddef;
-
 vardef kanji.grtwo.week =
   push_pbox_toexpand("kanji.grtwo.week");
   build_kanji.road_enclose(kanji.grfour.circuit);
@@ -148,27 +142,11 @@ vardef kanji.grfour.county =
   expand_pbox;
 enddef;
 
-vardef kanji.grfour.plural =
-  push_pbox_toexpand("kanji.grfour.plural");
-  build_kanji.road_enclose(build_kanji.tb(560,0)
-    (kanji.grone.earth)
-    (kanji.grthree.sheep));
-  expand_pbox;
-enddef;
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 vardef kanji.grfive.occasional =
   push_pbox_toexpand("kanji.grfive.occasional");
   build_kanji.road_enclose(kanji.rare.stalk);
-  expand_pbox;
-enddef;
-
-vardef kanji.grfive.pass =
-  push_pbox_toexpand("kanji.grfive.pass");
-  build_kanji.road_enclose(build_kanji.sscale
-    (xyscaled (1.07,0.95))
-    (kanji.rare.crooked_mouth));
   expand_pbox;
 enddef;
 

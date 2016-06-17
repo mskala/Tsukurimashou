@@ -108,6 +108,14 @@ vardef kanji.grfive.detain =
   expand_pbox;
 enddef;
 
+vardef kanji.grfive.draw_near =
+  push_pbox_toexpand("kanji.grfive.draw_near");
+  build_kanji.tb(600,180)
+    (kanji.radical.silly_hat)
+    (build_kanji.sscale(xscaled (1-0.15*mincho))(kanji.greight.strange));
+  expand_pbox;
+enddef;
+
 vardef kanji.grfive.easy =
   push_pbox_toexpand("kanji.grfive.easy");
   build_kanji.tb(480,0)
@@ -140,6 +148,14 @@ enddef;
 vardef kanji.grfive.hesitate =
   push_pbox_toexpand("kanji.grfive.hesitate");
   build_kanji.road_enclose(kanji.grtwo.rice);
+  expand_pbox;
+enddef;
+
+vardef kanji.grfive.inspection =
+  push_pbox_toexpand("kanji.grfive.inspection");
+  build_kanji.level(build_kanji.tb(420,60)
+    (kanji.grone.wood)
+    (kanji.greight.furthermore));
   expand_pbox;
 enddef;
 
@@ -226,6 +242,14 @@ vardef kanji.grfive.outrage =
   expand_pbox;
 enddef;
 
+vardef kanji.grfive.pass =
+  push_pbox_toexpand("kanji.grfive.pass");
+  build_kanji.road_enclose(build_kanji.sscale
+    (xyscaled (1.07,0.95))
+    (kanji.rare.crooked_mouth));
+  expand_pbox;
+enddef;
+
 vardef kanji.grfive.passable =
   push_pbox_toexpand("kanji.grfive.passable");
   push_stroke((80,720)--(920,720),
@@ -260,6 +284,15 @@ vardef kanji.grfive.quality =
        (kanji.greight.axe)
        (kanji.greight.axe))
     (kanji.grone.shell));
+  expand_pbox;
+enddef;
+
+vardef kanji.grfive.reside =
+  push_pbox_toexpand("kanji.grfive.reside");
+  build_kanji.level(
+    kanji.radical.narrow_flag;
+    build_kanji.sscale(xyscaled (0.77,0.72) shifted (30,-100))
+      (kanji.grtwo.old));
   expand_pbox;
 enddef;
 
@@ -344,5 +377,15 @@ enddef;
 vardef kanji.grfive.tongue =
   push_pbox_toexpand("kanji.grfive.tongue");
   build_kanji.add_beret(kanji.grtwo.old);
+  expand_pbox;
+enddef;
+
+vardef kanji.grfive.trade =
+  push_pbox_toexpand("kanji.grfive.trade");
+  build_kanji.level(build_kanji.tb(540,0)
+    (build_kanji.lr(480,40)
+     (kanji.toprad.detain)
+     (kanji.grtwo.sword))
+    (kanji.grone.shell));
   expand_pbox;
 enddef;

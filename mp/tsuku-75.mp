@@ -1,6 +1,6 @@
 %
 % Unicode page 75 (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012, 2013, 2014  Matthew Skala
+% Copyright (C) 2011, 2012, 2013, 2014, 2016  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -90,14 +90,6 @@ vardef kanji.grthree.ill =
   push_pbox_toexpand("kanji.grthree.ill");
   build_kanji.sickness_enclose(tsu_xform(identity yscaled 0.88)
     (kanji.greight.third));
-  expand_pbox;
-enddef;
-
-vardef kanji.grthree.realm =
-  push_pbox_toexpand("kanji.grthree.realm");
-  build_kanji.level(build_kanji.tb(460,80)
-    (kanji.grone.paddy)
-    (kanji.greight.mediate));
   expand_pbox;
 enddef;
 

@@ -1,6 +1,6 @@
 %
 % Radicals that are not common kanji in themselves
-% Copyright (C) 2011, 2012, 2013  Matthew Skala
+% Copyright (C) 2011, 2012, 2013, 2016  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -624,6 +624,20 @@ vardef kanji.radical.thread_common =
   set_boserif(0,0,10);
   push_stroke((700,460)..tension 1.3..(800,360)..(880,250),
     (1,1)--(1.5,1.5)--(1.8,1.8));
+  expand_pbox;
+enddef;
+
+vardef kanji.radical.three_tailed_sheep =
+  push_pbox_toexpand("kanji.radical.three_tailed_sheep");
+  kanji.grthree.sheep;
+  push_stroke(
+    (510,615){down}..(500,260)..(370,70)..{curl 0.5}(50,-60),
+    (1.6,1.6)--(1.4,1.4)--(1.1,1.1));
+  push_stroke(((get_strokep(0) intersectionpoint get_strokep(-4))+(50,0))..
+      (650,80)..(900,-50),
+    (1.1,1.1)--(1.4,1.4)--(1.7,1.7));
+  replace_strokep(-1)(subpath
+    (xpart (oldp intersectiontimes get_strokep(-5)),infinity) of oldp);
   expand_pbox;
 enddef;
 

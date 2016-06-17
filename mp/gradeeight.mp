@@ -90,6 +90,15 @@ vardef kanji.greight.call =
   expand_pbox;
 enddef;
 
+vardef kanji.greight.chastity =
+  push_pbox_toexpand("kanji.greight.chastity");
+  build_kanji.level(build_kanji.tb(580,50)
+    (kanji.grone.ten;
+     replace_strokep(0)(subpath (0.5,0.8) of oldp shifted (5,40)))
+    (kanji.grone.shell));
+  expand_pbox;
+enddef;
+
 vardef kanji.greight.completion =
   push_pbox_toexpand("kanji.greight.completion");
   kanji.grone.child;

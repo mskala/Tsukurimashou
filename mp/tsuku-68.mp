@@ -130,6 +130,54 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vardef kanji.greight.coffin =
+  push_pbox_toexpand("kanji.greight.coffin");
+  build_kanji.lr(400,0)
+    (kanji.leftrad.wood)
+    (kanji.grfour.bureaucracy);
+  expand_pbox;
+enddef;
+
+vardef kanji.greight.girder =
+  push_pbox_toexpand("kanji.greight.girder");
+  build_kanji.lr(380,0)
+    (kanji.leftrad.wood)
+    (kanji.grtwo.go);
+  expand_pbox;
+enddef;
+
+vardef kanji.greight.go_game =
+  push_pbox_toexpand("kanji.greight.go_game");
+  build_kanji.lr(400,0)
+    (kanji.leftrad.wood)
+    (kanji.grnine.that);
+  expand_pbox;
+enddef;
+
+vardef kanji.greight.infarction =
+  push_pbox_toexpand("kanji.greight.infarction");
+  build_kanji.lr(440,20)
+    (kanji.leftrad.wood)
+    (kanji.greight.night_watch);
+  expand_pbox;
+enddef;
+
+vardef kanji.greight.peach =
+  push_pbox_toexpand("kanji.greight.peach");
+  build_kanji.lr(360,0)
+    (kanji.leftrad.wood)
+    (kanji.grfour.portent);
+  expand_pbox;
+enddef;
+
+vardef kanji.greight.ridgepole =
+  push_pbox_toexpand("kanji.greight.ridgepole");
+  build_kanji.lr(440,20)
+    (kanji.leftrad.wood)
+    (kanji.grtwo.east);
+  expand_pbox;
+enddef;
+
 vardef kanji.greight.stopper =
   push_pbox_toexpand("kanji.greight.stopper");
   build_kanji.level(build_kanji.lr(400,20)
@@ -140,11 +188,83 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vardef kanji.grnine.bellflower =
+  push_pbox_toexpand("kanji.grnine.bellflower");
+  build_kanji.lr(440,20)
+    (kanji.leftrad.wood)
+    (kanji.greight.good_luck);
+  expand_pbox;
+enddef;
+
+vardef kanji.grnine.bucket =
+  push_pbox_toexpand("kanji.grnine.bucket");
+  build_kanji.lr(420,10)
+    (kanji.leftrad.wood)
+    (kanji.rare.walled_road);
+  expand_pbox;
+enddef;
+
+vardef kanji.grnine.catalpa =
+  push_pbox_toexpand("kanji.grnine.catalpa");
+  build_kanji.lr(400,-20)
+    (kanji.leftrad.wood)
+    (kanji.greight.acrid);
+  expand_pbox;
+enddef;
+
+vardef kanji.grnine.chinese_parasol_tree =
+  push_pbox_toexpand("kanji.grnine.chinese_parasol_tree");
+  build_kanji.lr(440,20)
+    (kanji.leftrad.wood)
+    (kanji.grnine.my);
+  expand_pbox;
+enddef;
+
+vardef kanji.grnine.cypress =
+  push_pbox_toexpand("kanji.grnine.cypress");
+  build_kanji.lr(420,20)
+    (kanji.leftrad.wood)
+    (kanji.grtwo.meet);
+  expand_pbox;
+enddef;
+
+vardef kanji.grnine.judas_tree =
+  push_pbox_toexpand("kanji.grnine.judas_tree");
+  build_kanji.lr(440,20)
+    (kanji.leftrad.wood)
+    (kanji.grnine.square_jewel);
+  expand_pbox;
+enddef;
+
+vardef kanji.grnine.ladder =
+  push_pbox_toexpand("kanji.grnine.ladder");
+  build_kanji.lr(440,0)
+    (kanji.leftrad.wood)
+    (kanji.grtwo.little_brother);
+  expand_pbox;
+enddef;
+
 vardef kanji.grnine.nest =
   push_pbox_toexpand("kanji.grnine.nest");
   build_kanji.lr(420,-10)
     (kanji.leftrad.wood)
     (kanji.grtwo.west);
+  expand_pbox;
+enddef;
+
+vardef kanji.grnine.rudder =
+  push_pbox_toexpand("kanji.grnine.rudder");
+  build_kanji.lr(410,0)
+    (kanji.leftrad.wood)
+    (build_kanji.sscale(yscaled 1.04)(kanji.greight.tail));
+  expand_pbox;
+enddef;
+
+vardef kanji.grnine.twig =
+  push_pbox_toexpand("kanji.grnine.twig");
+  build_kanji.lr(440,20)
+    (kanji.leftrad.wood)
+    (kanji.greight.resemblance);
   expand_pbox;
 enddef;
 
@@ -425,35 +545,25 @@ begintsuglyph("uni683F",63);
   tsu_render;
 endtsuglyph;
 
-% 【桁】⿰木<行>⿰彳<亍>⿱一<丁>⿱一亅
-% extra?
+% kou/keta "girder"
 begintsuglyph("uni6841",65);
-  build_kanji.lr(380,0)
-    (kanji.leftrad.wood)
-    (kanji.grtwo.go);
+  kanji.greight.girder;
   tsu_render;
 endtsuglyph;
 
-% 【桂】⿰木<圭>⿱<土>⿱十一<土>⿱十一
-% extra?
+% kei/katsura "Japanese Judas-tree"
 begintsuglyph("uni6842",66);
-  build_kanji.lr(440,20)
-    (kanji.leftrad.wood)
-    (kanji.grnine.square_jewel);
+  kanji.grnine.judas_tree;
   tsu_render;
 endtsuglyph;
 
-% 【桃】⿰木兆
-% extra?
+% tou/momo "peach"
 begintsuglyph("uni6843",67);
-  build_kanji.lr(360,0)
-    (kanji.leftrad.wood)
-    (kanji.grfour.portent);
+  kanji.greight.peach;
   tsu_render;
 endtsuglyph;
 
-% 【桄】⿰木<光>⿳⺌一<儿>⿰丿乚
-% extra?
+% kou/yokogi "coir-palm"
 begintsuglyph("uni6844",68);
   build_kanji.lr(400,20)
     (kanji.leftrad.wood)
@@ -461,8 +571,7 @@ begintsuglyph("uni6844",68);
   tsu_render;
 endtsuglyph;
 
-% 【框】⿰木<匡>⿷匚<王>⿱一<土>⿱十一
-% extra?
+% kyou/kamachi "framework"
 begintsuglyph("uni6846",70);
   build_kanji.lr(420,0)
     (kanji.leftrad.wood)
@@ -476,8 +585,7 @@ begintsuglyph("uni6848",72);
   tsu_render;
 endtsuglyph;
 
-% 【桉】⿰木<安>⿱宀女
-% extra?
+% extra
 begintsuglyph("uni6849",73);
   build_kanji.lr(390,0)
     (kanji.leftrad.wood)
@@ -485,8 +593,7 @@ begintsuglyph("uni6849",73);
   tsu_render;
 endtsuglyph;
 
-% 【桎】⿰木<至>⿱<𠫔>⿱一厶<土>⿱十一
-% extra?
+% shitsu/ashikase "fetters"
 begintsuglyph("uni684E",78);
   build_kanji.lr(440,20)
     (kanji.leftrad.wood)
@@ -494,8 +601,7 @@ begintsuglyph("uni684E",78);
   tsu_render;
 endtsuglyph;
 
-% 【桐】⿰木<同>⿵<𠔼>⿵冂一口
-% extra?
+% extra
 begintsuglyph("uni6850",80);
   build_kanji.lr(400,20)
     (kanji.leftrad.wood)
@@ -503,17 +609,13 @@ begintsuglyph("uni6850",80);
   tsu_render;
 endtsuglyph;
 
-% 【桔】⿰木<吉>⿱<士>⿱十一口
-% extra?
+% kitsu/ki "used in the name of a bellflower"
 begintsuglyph("uni6854",84);
-  build_kanji.lr(440,20)
-    (kanji.leftrad.wood)
-    (kanji.greight.good_luck);
+  kanji.grnine.bellflower;
   tsu_render;
 endtsuglyph;
 
-% 【桖】⿰木<血>⿱丿皿
-% extra?
+% extra
 begintsuglyph("uni6856",86);
   build_kanji.lr(380,20)
     (kanji.leftrad.wood)
@@ -521,8 +623,7 @@ begintsuglyph("uni6856",86);
   tsu_render;
 endtsuglyph;
 
-% 【桘】⿰木<𠂤>⿱丿㠯
-% extra?
+% tsui/tsuchi phonetic only
 begintsuglyph("uni6858",88);
   build_kanji.lr(440,0)
     (kanji.leftrad.wood)
@@ -530,8 +631,7 @@ begintsuglyph("uni6858",88);
   tsu_render;
 endtsuglyph;
 
-% 【桙】⿰木<牟>⿱厶牛
-% extra?
+% u/hoko "halberd"
 begintsuglyph("uni6859",89);
   build_kanji.lr(440,20)
     (kanji.leftrad.wood)
@@ -539,8 +639,7 @@ begintsuglyph("uni6859",89);
   tsu_render;
 endtsuglyph;
 
-% 【档】⿰木<当>⿱⺌彐
-% extra?
+% tou "bookshelf"
 begintsuglyph("uni6863",99);
   build_kanji.level(build_kanji.lr(400,20)
     (kanji.leftrad.wood)
@@ -548,17 +647,13 @@ begintsuglyph("uni6863",99);
   tsu_render;
 endtsuglyph;
 
-% 【桧】⿰木<会>⿱𠆢<云>⿱<二>⿱一一厶
-% extra?
+% kai/hinoki "cypress"
 begintsuglyph("uni6867",103);
-  build_kanji.lr(420,20)
-    (kanji.leftrad.wood)
-    (kanji.grtwo.meet);
+  kanji.grnine.cypress;
   tsu_render;
 endtsuglyph;
 
-% 【桩】⿰木<庄>⿸广<土>⿱十一
-% extra?
+% extra
 begintsuglyph("uni6869",105);
   build_kanji.lr(400,20)
     (kanji.leftrad.wood)
@@ -566,8 +661,7 @@ begintsuglyph("uni6869",105);
   tsu_render;
 endtsuglyph;
 
-% 【桭】⿰木<辰>⿸厂⿱<二>⿱一一<CDP-8CC6>⿰𠄌⿺乀丿
-% extra?
+% extra
 begintsuglyph("uni686D",109);
   build_kanji.lr(390,20)
     (kanji.leftrad.wood)
@@ -575,8 +669,7 @@ begintsuglyph("uni686D",109);
   tsu_render;
 endtsuglyph;
 
-% 【桮】⿰木<否>⿱<不>⿱一<CDP-8665>;口
-% extra?
+% hai/sakazuki "drinking cup"
 begintsuglyph("uni686E",110);
   build_kanji.lr(440,20)
     (kanji.leftrad.wood)
@@ -584,8 +677,7 @@ begintsuglyph("uni686E",110);
   tsu_render;
 endtsuglyph;
 
-% 【桴】⿰木<孚>⿱<爫>⿱丿⿲丿丶丶子
-% extra?
+% fu/bachi "drumstick"
 begintsuglyph("uni6874",116);
   build_kanji.level(build_kanji.lr(420,20)
     (kanji.leftrad.wood)
@@ -595,8 +687,7 @@ begintsuglyph("uni6874",116);
   tsu_render;
 endtsuglyph;
 
-% 【桵】⿰木<妥>⿱<爫>⿱丿⿲丿丶丶女
-% extra?
+% zui/tara (phonetic only)
 begintsuglyph("uni6875",117);
   build_kanji.lr(400,20)
     (kanji.leftrad.wood)
@@ -604,17 +695,13 @@ begintsuglyph("uni6875",117);
   tsu_render;
 endtsuglyph;
 
-% 【桶】⿰木<甬>⿱龴<用>⿵冂<CDP-8BF1>⿻<二>⿱一一丨
-% extra?
+% you/oke "bucket"
 begintsuglyph("uni6876",118);
-  build_kanji.lr(420,10)
-    (kanji.leftrad.wood)
-    (kanji.rare.walled_road);
+  kanji.grnine.bucket;
   tsu_render;
 endtsuglyph;
 
-% 【桷】⿰木角
-% extra?
+% kaku/taruki "crabapple"
 begintsuglyph("uni6877",119);
   build_kanji.lr(400,20)
     (kanji.leftrad.wood)
@@ -622,8 +709,7 @@ begintsuglyph("uni6877",119);
   tsu_render;
 endtsuglyph;
 
-% 【桸】⿰木<希>⿱㐅<布>⿸𠂇巾
-% extra?
+% extra
 begintsuglyph("uni6878",120);
   build_kanji.lr(420,20)
     (kanji.leftrad.wood)
@@ -631,8 +717,7 @@ begintsuglyph("uni6878",120);
   tsu_render;
 endtsuglyph;
 
-% 【桹】⿰木<良>⿱丨艮
-% extra?
+% rou "palm"
 begintsuglyph("uni6879",121);
   build_kanji.lr(400,60)
     (kanji.leftrad.wood)
@@ -640,8 +725,7 @@ begintsuglyph("uni6879",121);
   tsu_render;
 endtsuglyph;
 
-% 【桾】⿰木<君>⿸<尹>⿻<CDP-8BAB>⿻<CDP-8C78>;一丿口
-% extra?
+% kun "type of fruit tree"
 begintsuglyph("uni687E",126);
   build_kanji.lr(400,-10)
     (kanji.leftrad.wood)
@@ -649,8 +733,7 @@ begintsuglyph("uni687E",126);
   tsu_render;
 endtsuglyph;
 
-% 【梀】⿰木束
-% extra?
+% extra
 begintsuglyph("uni6880",128);
   build_kanji.lr(440,20)
     (kanji.leftrad.wood)
@@ -658,8 +741,7 @@ begintsuglyph("uni6880",128);
   tsu_render;
 endtsuglyph;
 
-% 【梂】⿰木<求>⿺<CDP-85DC>⿻一<氺>⿻亅<CDP-89AE>⿱丷八丶
-% extra?
+% kyuu/nominosaki "evergreen cone"
 begintsuglyph("uni6882",130);
   build_kanji.lr(400,0)
     (kanji.leftrad.wood)
@@ -667,8 +749,7 @@ begintsuglyph("uni6882",130);
   tsu_render;
 endtsuglyph;
 
-% 【梃】⿰木<廷>⿺廴壬
-% extra?
+% chou/teko "lever"
 begintsuglyph("uni6883",131);
   build_kanji.lr(360,20)
     (kanji.leftrad.wood)
@@ -676,8 +757,7 @@ begintsuglyph("uni6883",131);
   tsu_render;
 endtsuglyph;
 
-% 【梄】⿰木酉
-% extra?
+% you/yaku "to lay in stores of firewood"
 begintsuglyph("uni6884",132);
   build_kanji.lr(400,10)
     (kanji.leftrad.wood)
@@ -691,8 +771,7 @@ begintsuglyph("uni6885",133);
   tsu_render;
 endtsuglyph;
 
-% 【梈】⿰木<亨>⿳<亠>⿱丨一口<了>⿱乛亅
-% extra?
+% hou/kidetsukutsutaooyumi (phonetic only)
 begintsuglyph("uni6888",136);
   build_kanji.lr(440,20)
     (kanji.leftrad.wood)
@@ -700,8 +779,7 @@ begintsuglyph("uni6888",136);
   tsu_render;
 endtsuglyph;
 
-% 【梌】⿰木<余>⿱<CDP-8AFC>⿵𠆢一朩
-% extra?
+% extra
 begintsuglyph("uni688C",140);
   build_kanji.lr(420,20)
     (kanji.leftrad.wood)
@@ -709,8 +787,7 @@ begintsuglyph("uni688C",140);
   tsu_render;
 endtsuglyph;
 
-% 【梏】⿰木<告>⿱𠂒口
-% extra?
+% koku/tekase "manacles"
 begintsuglyph("uni688F",143);
   build_kanji.lr(440,20)
     (kanji.leftrad.wood)
@@ -718,17 +795,13 @@ begintsuglyph("uni688F",143);
   tsu_render;
 endtsuglyph;
 
-% 【梓】⿰木<辛>⿱<立>⿱<CDP-8BAE>⿱<亠>⿱丨一丷一十
-% extra?
+% shi/azusa "catalpa"
 begintsuglyph("uni6893",147);
-  build_kanji.lr(400,-20)
-    (kanji.leftrad.wood)
-    (kanji.greight.acrid);
+  kanji.grnine.catalpa;
   tsu_render;
 endtsuglyph;
 
-% 【梖】⿰木<貝>⿱目八
-% extra?
+% hai "palm tree"
 begintsuglyph("uni6896",150);
   build_kanji.lr(440,20)
     (kanji.leftrad.wood)
@@ -736,17 +809,13 @@ begintsuglyph("uni6896",150);
   tsu_render;
 endtsuglyph;
 
-% 【梗】⿰木<更>⿱一<CDP-89E7>⿻日<乂>⿻丿乀
-% extra?
+% kou/fusagu "infarction"
 begintsuglyph("uni6897",151);
-  build_kanji.lr(440,20)
-    (kanji.leftrad.wood)
-    (kanji.greight.night_watch);
+  kanji.greight.infarction;
   tsu_render;
 endtsuglyph;
 
-% 【梘】⿰木<見>⿱目<儿>⿰丿乚
-% extra?
+% ken/sen "bamboo tube"
 begintsuglyph("uni6898",152);
   build_kanji.lr(440,40)
     (kanji.leftrad.wood)
@@ -754,8 +823,7 @@ begintsuglyph("uni6898",152);
   tsu_render;
 endtsuglyph;
 
-% 【梚】⿰木<免>⿳⺈<𫩏>⿴囗丨<儿>⿰丿乚
-% extra?
+% ban (phonetic only)
 begintsuglyph("uni689A",154);
   build_kanji.lr(420,20)
     (kanji.leftrad.wood)
@@ -763,8 +831,7 @@ begintsuglyph("uni689A",154);
   tsu_render;
 endtsuglyph;
 
-% 【梠】⿰木<呂>⿳口丿口
-% extra?
+% ro/hisashi "a kind of quince"
 begintsuglyph("uni68A0",160);
   build_kanji.lr(440,20)
     (kanji.leftrad.wood)
@@ -772,8 +839,7 @@ begintsuglyph("uni68A0",160);
   tsu_render;
 endtsuglyph;
 
-% 【梡】⿰木<完>⿱宀<元>⿱一<兀>⿱一<儿>⿰丿乚
-% extra?
+% kan/manaita "tray for carrying sacrificial meat"
 begintsuglyph("uni68A1",161);
   build_kanji.lr(410,0)
     (kanji.leftrad.wood)
@@ -781,26 +847,19 @@ begintsuglyph("uni68A1",161);
   tsu_render;
 endtsuglyph;
 
-% 【梢】⿰木<肖>⿱⺌月
-% extra?
+% shou/kozue "twig"
 begintsuglyph("uni68A2",162);
-  build_kanji.lr(440,20)
-    (kanji.leftrad.wood)
-    (kanji.greight.resemblance);
+  kanji.grnine.twig;
   tsu_render;
 endtsuglyph;
 
-% 【梧】⿰木<吾>⿱<五>⿱一𫝀口
-% extra?
+% go/aogiri "Chinese parasol tree"
 begintsuglyph("uni68A7",167);
-  build_kanji.lr(440,20)
-    (kanji.leftrad.wood)
-    (kanji.grnine.my);
+  kanji.grnine.chinese_parasol_tree;
   tsu_render;
 endtsuglyph;
 
-% 【梩】⿰木<里>⿱<CDP-8BD9>⿻甲一一
-% extra?
+% ri/suki "hod"
 begintsuglyph("uni68A9",169);
   build_kanji.lr(440,10)
     (kanji.leftrad.wood)
@@ -808,8 +867,7 @@ begintsuglyph("uni68A9",169);
   tsu_render;
 endtsuglyph;
 
-% 【梪】⿰木豆
-% extra?
+% hou/takatsuki (phonetic only)
 begintsuglyph("uni68AA",170);
   build_kanji.lr(440,20)
     (kanji.leftrad.wood)
@@ -817,8 +875,7 @@ begintsuglyph("uni68AA",170);
   tsu_render;
 endtsuglyph;
 
-% 【梮】⿰木<局>⿸尸⿹𠃌口
-% extra?
+% kiku/zen "snowshoe"
 begintsuglyph("uni68AE",174);
   build_kanji.lr(440,20)
     (kanji.leftrad.wood)
@@ -826,12 +883,9 @@ begintsuglyph("uni68AE",174);
   tsu_render;
 endtsuglyph;
 
-% 【梯】⿰木<弟>⿱丷<𢎨>⿹<弔>⿻弓丨丿
-% extra?
+% tei/hashigo "ladder"
 begintsuglyph("uni68AF",175);
-  build_kanji.lr(440,0)
-    (kanji.leftrad.wood)
-    (kanji.grtwo.little_brother);
+  kanji.grnine.ladder;
   tsu_render;
 endtsuglyph;
 
@@ -841,8 +895,7 @@ begintsuglyph("uni68B0",176);
   tsu_render;
 endtsuglyph;
 
-% 【梱】⿰木<困>⿴囗木
-% extra?
+% kon/kouru "pack up"
 begintsuglyph("uni68B1",177);
   build_kanji.lr(400,-20)
     (kanji.leftrad.wood)
@@ -850,8 +903,7 @@ begintsuglyph("uni68B1",177);
   tsu_render;
 endtsuglyph;
 
-% 【梳】⿰木<㐬>⿱<𠫓>⿱<亠>⿱丨一厶<𫶧>⿴<儿>⿰丿乚丨
-% extra?
+% so/toku "comb hair"
 begintsuglyph("uni68B3",179);
   build_kanji.lr(440,20)
     (kanji.leftrad.wood)
@@ -859,8 +911,7 @@ begintsuglyph("uni68B3",179);
   tsu_render;
 endtsuglyph;
 
-% 【梴】⿰木<延>⿺廴<CDP-8D62>⿱丿止
-% extra?
+% extra
 begintsuglyph("uni68B4",180);
   build_kanji.lr(360,20)
     (kanji.leftrad.wood)
@@ -868,17 +919,13 @@ begintsuglyph("uni68B4",180);
   tsu_render;
 endtsuglyph;
 
-% 【梶】⿰木<尾>⿸尸毛
-% extra?
+% bi/kaji "rudder"
 begintsuglyph("uni68B6",182);
-  build_kanji.lr(410,0)
-    (kanji.leftrad.wood)
-    (build_kanji.sscale(yscaled 1.04)(kanji.greight.tail));
+  kanji.grnine.rudder;
   tsu_render;
 endtsuglyph;
 
-% 【梸】⿰木<利>⿰<禾>⿱丿木刂
-% extra?
+% extra
 begintsuglyph("uni68B8",184);
   build_kanji.lr(380,20)
     (kanji.leftrad.wood)
@@ -886,8 +933,7 @@ begintsuglyph("uni68B8",184);
   tsu_render;
 endtsuglyph;
 
-% 【梹】⿰木<兵>⿱丘八
-% extra?
+% hin "areca nut"
 begintsuglyph("uni68B9",185);
   build_kanji.lr(440,20)
     (kanji.leftrad.wood)
@@ -895,8 +941,7 @@ begintsuglyph("uni68B9",185);
   tsu_render;
 endtsuglyph;
 
-% 【梽】⿰木<志>⿱<士>⿱十一心
-% extra?
+% extra
 begintsuglyph("uni68BD",189);
   build_kanji.lr(440,20)
     (kanji.leftrad.wood)
@@ -904,8 +949,7 @@ begintsuglyph("uni68BD",189);
   tsu_render;
 endtsuglyph;
 
-% 【梾】⿰木来
-% extra?
+% extra
 begintsuglyph("uni68BE",190);
   build_kanji.lr(440,20)
     (kanji.leftrad.wood)
@@ -913,8 +957,7 @@ begintsuglyph("uni68BE",190);
   tsu_render;
 endtsuglyph;
 
-% 【棁】⿰木<兑>⿱丷<兄>⿱口<儿>⿰丿乚
-% extra?
+% extra
 begintsuglyph("uni68C1",193);
   build_kanji.lr(440,20)
     (kanji.leftrad.wood)
@@ -922,8 +965,7 @@ begintsuglyph("uni68C1",193);
   tsu_render;
 endtsuglyph;
 
-% 【棆】⿰木<侖>⿱<CDP-8AFC>⿵𠆢一<𠕁>⿵冂<卄>⿻⿰丨丨一
-% extra?
+% rin "camphor tree"
 begintsuglyph("uni68C6",198);
   build_kanji.lr(420,20)
     (kanji.leftrad.wood)
@@ -931,8 +973,7 @@ begintsuglyph("uni68C6",198);
   tsu_render;
 endtsuglyph;
 
-% 【棇】⿰木<忩>⿱<公>⿱八厶心
-% extra?
+% extra
 begintsuglyph("uni68C7",199);
   build_kanji.lr(420,20)
     (kanji.leftrad.wood)
@@ -940,17 +981,13 @@ begintsuglyph("uni68C7",199);
   tsu_render;
 endtsuglyph;
 
-% 【棋】⿰木<其>⿱<CDP-8B72>⿱<CDP-88C8>;一八
-% extra?
+% ki/go "go (board game)"
 begintsuglyph("uni68CB",203);
-  build_kanji.lr(400,0)
-    (kanji.leftrad.wood)
-    (kanji.grnine.that);
+  kanji.greight.go_game;
   tsu_render;
 endtsuglyph;
 
-% 【棌】⿰木<采>⿱<爫>⿱丿⿲丿丶丶木
-% extra?
+% sai/kunugi (phonetic only)
 begintsuglyph("uni68CC",204);
   build_kanji.level(build_kanji.lr(420,20)
     (kanji.leftrad.wood)
@@ -958,8 +995,7 @@ begintsuglyph("uni68CC",204);
   tsu_render;
 endtsuglyph;
 
-% 【棑】⿰木非
-% extra?
+% hai/ikada "raft"
 begintsuglyph("uni68D1",209);
   build_kanji.lr(390,0)
     (kanji.leftrad.wood)
@@ -967,8 +1003,7 @@ begintsuglyph("uni68D1",209);
   tsu_render;
 endtsuglyph;
 
-% 【棕】⿰木<宗>⿱宀示
-% extra?
+% shu "hemp palm"
 begintsuglyph("uni68D5",213);
   build_kanji.lr(400,-10)
     (kanji.leftrad.wood)
@@ -976,8 +1011,7 @@ begintsuglyph("uni68D5",213);
   tsu_render;
 endtsuglyph;
 
-% 【棖】⿰木<長>⿳<CDP-884A>;一<CDP-8CC6>⿰𠄌⿺乀丿
-% extra?
+% tou/hashira "door jamb"
 begintsuglyph("uni68D6",214);
   build_kanji.lr(400,20)
     (kanji.leftrad.wood)
@@ -985,8 +1019,7 @@ begintsuglyph("uni68D6",214);
   tsu_render;
 endtsuglyph;
 
-% 【棛】⿰木<育>⿱<𠫓>⿱<亠>⿱丨一厶月
-% extra?
+% extra
 begintsuglyph("uni68DB",219);
   build_kanji.lr(440,20)
     (kanji.leftrad.wood)
@@ -994,8 +1027,7 @@ begintsuglyph("uni68DB",219);
   tsu_render;
 endtsuglyph;
 
-% 【棝】⿰木<固>⿴囗<古>⿱十口
-% extra?
+% ko/nezumiotoshi (phonetic only)
 begintsuglyph("uni68DD",221);
   build_kanji.lr(400,-20)
     (kanji.leftrad.wood)
@@ -1003,17 +1035,13 @@ begintsuglyph("uni68DD",221);
   tsu_render;
 endtsuglyph;
 
-% 【棟】⿰木東
-% extra?
+% tou/mune "ridgepole"
 begintsuglyph("uni68DF",223);
-  build_kanji.lr(440,20)
-    (kanji.leftrad.wood)
-    (kanji.grtwo.east);
+  kanji.greight.ridgepole;
   tsu_render;
 endtsuglyph;
 
-% 【棡】⿰木<岡>⿵冂<CDP-8CC7>⿱<䒑>⿱丷一山
-% extra?
+% kou "mast crossbeam"
 begintsuglyph("uni68E1",225);
   build_kanji.lr(380,10)
     (kanji.leftrad.wood)
@@ -1021,8 +1049,7 @@ begintsuglyph("uni68E1",225);
   tsu_render;
 endtsuglyph;
 
-% 【棤】⿰木<昔>⿱<龷>⿱<卄>⿻⿰丨丨一一日
-% extra?
+% extra
 begintsuglyph("uni68E4",228);
   build_kanji.lr(440,20)
     (kanji.leftrad.wood)
@@ -1030,8 +1057,7 @@ begintsuglyph("uni68E4",228);
   tsu_render;
 endtsuglyph;
 
-% 【棪】⿰木<炎>⿱<火>⿱八人<火>⿱八人
-% extra?
+% en "tree"
 begintsuglyph("uni68EA",234);
   build_kanji.lr(440,20)
     (kanji.leftrad.wood)
@@ -1039,8 +1065,7 @@ begintsuglyph("uni68EA",234);
   tsu_render;
 endtsuglyph;
 
-% 【棭】⿰木<夜>⿱<亠>⿱丨一⿰亻<CDP-89F3>⿴夂丶
-% extra?
+% eki/nemunoki (phonetic only)
 begintsuglyph("uni68ED",237);
   build_kanji.lr(380,0)
     (kanji.leftrad.wood)
@@ -1054,8 +1079,7 @@ begintsuglyph("uni68EE",238);
   tsu_render;
 endtsuglyph;
 
-% 【棯】⿰木<念>⿱<今>⿱<CDP-8AFC>⿵𠆢一<CDP-8BA2>;心
-% extra?
+% nen "type of fruit tree"
 begintsuglyph("uni68EF",239);
   build_kanji.lr(440,20)
     (kanji.leftrad.wood)
@@ -1063,8 +1087,7 @@ begintsuglyph("uni68EF",239);
   tsu_render;
 endtsuglyph;
 
-% 【棴】⿰木<服>⿰月<𠬝>⿸卩又
-% extra?
+% extra
 begintsuglyph("uni68F4",244);
   build_kanji.lr(370,20)
     (kanji.leftrad.wood)
@@ -1072,8 +1095,7 @@ begintsuglyph("uni68F4",244);
   tsu_render;
 endtsuglyph;
 
-% 【棵】⿰木<果>⿻日木
-% extra?
+% kan/kigire "numerary adjunct for trees"
 begintsuglyph("uni68F5",245);
   build_kanji.lr(440,20)
     (kanji.leftrad.wood)
@@ -1081,8 +1103,7 @@ begintsuglyph("uni68F5",245);
   tsu_render;
 endtsuglyph;
 
-% 【棷】⿰木<取>⿸耳又
-% extra?
+% extra
 begintsuglyph("uni68F7",247);
   build_kanji.lr(400,0)
     (kanji.leftrad.wood)
@@ -1090,12 +1111,9 @@ begintsuglyph("uni68F7",247);
   tsu_render;
 endtsuglyph;
 
-% 【棺】⿰木<官>⿱宀㠯
-% extra?
+% kan "coffin"
 begintsuglyph("uni68FA",250);
-  build_kanji.lr(400,0)
-    (kanji.leftrad.wood)
-    (kanji.grfour.bureaucracy);
+  kanji.greight.coffin;
   tsu_render;
 endtsuglyph;
 
