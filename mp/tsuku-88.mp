@@ -79,17 +79,6 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-vardef build_kanji.go_enclose(expr w,o)(text inside) =
-  push_pbox_toexpand("build_kanji.go_enclose");
-  build_kanji.lcr(480-w/2-20,o)(480+w/2+20,o)
-    (build_kanji.harmonic(240,0.86,50)(kanji.leftrad.person))
-    (inside)
-    (build_kanji.harmonic(240,0.86,50)(kanji.grthree.thumbtack));
-  expand_pbox;
-enddef;
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 % ketsu/chi "blood"
 begintsuglyph("uni8840",64);
   kanji.grthree.blood;
