@@ -773,6 +773,7 @@ pfb/%.pfb: pfbtmp/%.pfb pfb/.dirstamp sum/.dirstamp pe/rmo.pe tools/livecode
 	  $(FONTANVIL) -lang=ff -script \
 	    $(mvp)/pe/rmo.pe pfbtmp/$*.pfb pfb/$*.pfb \
 	    $(TSU_V_REDIR) ; \
+	  rm -f pfb/$*.pfbtmp.sfd ; \
 	fi
 
 pfbtmp: $(ALLPSFONTS)

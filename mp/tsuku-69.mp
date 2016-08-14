@@ -224,6 +224,14 @@ vardef kanji.grnine.willow =
   expand_pbox;
 enddef;
 
+vardef kanji.grnine.yew_plum_pine =
+  push_pbox_toexpand("kanji.grnine.yew_plum_pine");
+  build_kanji.lr(420,0)
+    (kanji.leftrad.wood)
+    (kanji.grthree.truth);
+  expand_pbox;
+enddef;
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % extra:  kaku "outer box for a coffin"
@@ -767,7 +775,7 @@ endtsuglyph;
 
 % extra
 begintsuglyph("uni69B3",179);
-  build_kanji.lr(370,-10)
+  build_kanji.lr(340+30*mincho,20-30*mincho)
     (kanji.leftrad.wood)
     (build_kanji.sscale(yscaled 1.04 shifted (0,30))
        (kanji.grthree.courtyard));
@@ -834,11 +842,10 @@ begintsuglyph("uni69CE",206);
   tsu_render;
 endtsuglyph;
 
-% 【槓】⿰木<貢>⿱工<貝>⿱目八
-% extra?
+% extra:  kou/teko "level" (or a specific thing in Mah Jong)
 begintsuglyph("uni69D3",211);
-  build_kanji.lr(440,20)
-    (kanji.leftrad.wood)
+  build_kanji.lr(420,0)
+    (build_kanji.sscale(shifted (0,-20))(kanji.leftrad.wood))
     (kanji.greight.tribute);
   tsu_render;
 endtsuglyph;
@@ -849,64 +856,55 @@ begintsuglyph("uni69D8",216);
   tsu_render;
 endtsuglyph;
 
-% 【槙】⿰木<真>⿱十<具>⿳目一八
-% extra?
+% ten/maki "yew plum pine"
 begintsuglyph("uni69D9",217);
-  build_kanji.lr(440,20)
-    (kanji.leftrad.wood)
-    (kanji.grthree.truth);
+  kanji.grnine.yew_plum_pine;
   tsu_render;
 endtsuglyph;
 
-% 【槝】⿰木<島>⿹<CDP-8CBB>;山
-% extra?
+% extra:  kashi
 begintsuglyph("uni69DD",221);
-  build_kanji.lr(440,20)
+  build_kanji.lr(400,0)
     (kanji.leftrad.wood)
     (kanji.grthree.island);
   tsu_render;
 endtsuglyph;
 
-% 【槢】⿰木<習>⿱<羽>⿰<习>⿹𠃌冫<习>⿹𠃌冫白
-% extra?
+% extra:  shuu/kusabi "hard wood"
 begintsuglyph("uni69E2",226);
-  build_kanji.lr(440,20)
+  build_kanji.lr(420,20)
     (kanji.leftrad.wood)
     (kanji.grthree.learn);
   tsu_render;
 endtsuglyph;
 
-% 【槣】⿰木<寄>⿱宀<奇>⿱<大>⿻一人<可>⿹<丁>⿱一亅口
-% extra?
+% extra
 begintsuglyph("uni69E3",227);
-  build_kanji.lr(440,20)
+  build_kanji.lr(420,0)
     (kanji.leftrad.wood)
     (kanji.grfive.draw_near);
   tsu_render;
 endtsuglyph;
 
-% 【槤】⿰木<連>⿺辶車
-% extra?
+% extra
 begintsuglyph("uni69E4",228);
-  build_kanji.lr(440,20)
+  build_kanji.lr(360,20)
     (kanji.leftrad.wood)
     (kanji.grfour.bring);
   tsu_render;
 endtsuglyph;
 
-% 【槸】⿰木<埶>⿰<坴>⿱<圥>⿱<土>⿱十一<儿>⿰丿乚<土>⿱十一<丸>⿻九丶
-% extra?
+% extra
 begintsuglyph("uni69F8",248);
-  build_kanji.lr(440,20)
+  build_kanji.level(build_kanji.lr(290,0)
     (kanji.leftrad.wood)
-    (kanji.rare.art);
+    (kanji.rare.art));
   tsu_render;
 endtsuglyph;
 
-% 【槺】⿰木<康>⿸广隶
-% extra?
+% extra
 begintsuglyph("uni69FA",250);
-  build_kanji.lr(440,20)
+  build_kanji.lr(360,20)
     (kanji.leftrad.wood)
     (kanji.grfour.peace);
   tsu_render;
