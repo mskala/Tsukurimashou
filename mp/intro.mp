@@ -1,6 +1,6 @@
 %
 % General shared code for Tsukurimashou
-% Copyright (C) 2011, 2012, 2013, 2015  Matthew Skala
+% Copyright (C) 2011, 2012, 2013, 2015, 2016  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -500,13 +500,13 @@ def tsu_render_segment(expr i,p,q,b) =
   is_cycle=(abs((point infinity of p)-(point 0 of p))<1);
   pen_stroke(for ell=0 step 1 until length(p):
       if sharp_corners and known obstacknaa.botip[i][ltime[ell]]:
-        tip(obstacknaa.botip[i][ltime[ell]])(ell)
+        tip(mytip[ell],obstacknaa.botip[i][ltime[ell]])(ell)
       else:
         tsu_brush_opt(mytip[ell])(ell)
       fi
     endfor if is_cycle:
       if sharp_corners and known obstacknaa.botip[i][ltime[length(p)]]:
-        tip(obstacknaa.botip[i][ltime[length(p)]])((length(p)+1))
+        tip(mytip[ell],obstacknaa.botip[i][ltime[length(p)]])((length(p)+1))
       else:
         tsu_brush_opt(mytip[length(p)])((length(p)+1))
       fi

@@ -182,9 +182,6 @@ if COND_BOOKPROOFS
   SPINE_PDFS=$(foreach \
     rn,I II III IV V VI VII VIII IX X XI XII XIII XIV XV, \
     doc/spine$(rn).pdf)
-  SPINE_PDFS=$(foreach \
-    rn,I II III IV V VI VII VIII IX X XI XII XIII XIV XV, \
-    doc/spine$(rn).pdf)
   PROOF_ND_PASS=4
 else
   PROOF_ND_PASS=3

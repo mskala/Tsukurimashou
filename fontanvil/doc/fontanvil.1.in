@@ -9,7 +9,7 @@
 .RI [ SCRIPT-ARGS ]
 .
 .SH DESCRIPTION
-FontAnvil is an interpreter for a script language that automates
+FontAnvil is a script language interpreter that automates
 editing and conversion of font files, especially in the context of the
 Tsukurimashou Project.
 It descends from a GUI program called FontForge (originally named
