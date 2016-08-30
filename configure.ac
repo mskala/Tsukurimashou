@@ -199,7 +199,7 @@ AM_EXTRA_RECURSIVE_TARGETS([download])
 AC_CONFIG_SRCDIR([hamlog/hamlog])
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_MACRO_DIR([m4])
-AC_REVISION([$Id: configure.ac 5080 2016-08-29 11:49:54Z mskala $])
+AC_REVISION([$Id: configure.ac 5084 2016-08-30 06:13:42Z mskala $])
 AC_COPYRIGHT([Copyright (C) 2011, 2012, 2013, 2014 Matthew Skala])
 AC_SUBST([release_date],["August 17, 2014"])
 AM_SILENT_RULES
@@ -260,7 +260,7 @@ AC_MSG_CHECKING([GNU Make version])
 AS_IF([test "x$PERL" = "x" || test "x$MAKE" = "x"],[],
   [missing_gmake_version=no
 gmake_version=dnl
-`"$MAKE" --version | perl -ne 'print $1 if /^GNU Make.*(\d+(\.\d+)+)/'`
+`"$MAKE" --version | perl -ne 'print $1 if /^GNU Make.*?(\d+(\.\d+)+)/'`
    AS_VERSION_COMPARE([$gmake_version],[3.82],
      [missing_gmake_version=yes])])
 AC_MSG_RESULT([$gmake_version])
