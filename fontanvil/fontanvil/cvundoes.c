@@ -1,4 +1,4 @@
-/* $Id: cvundoes.c 5125 2016-09-18 06:58:30Z mskala $ */
+/* $Id: cvundoes.c 5127 2016-09-18 10:21:52Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -227,10 +227,8 @@ void UndoesFree(Undoes * undo) {
 	   /* Nothing else to free */ ;
 	   break;
 	case ut_state:
-	case ut_tstate:
 	case ut_statehint:
 	case ut_statename:
-	case ut_hints:
 	case ut_anchors:
 	case ut_statelookup:
 	   SplinePointListsFree(undo->u.state.splines);
@@ -329,10 +327,6 @@ static void CopyBufferFree(void) {
    BDFRefChar *brhead, *brnext;
 
    switch (copybuffer.undotype) {
-     case ut_hints:
-	UHintListFree(copybuffer.u.state.hints);
-	free(copybuffer.u.state.instrs);
-	break;
      case ut_state:
      case ut_statehint:
      case ut_anchors:
@@ -347,9 +341,6 @@ static void CopyBufferFree(void) {
 	PatternFree(copybuffer.u.state.fill_brush.pattern);
 	GradientFree(copybuffer.u.state.stroke_pen.brush.gradient);
 	PatternFree(copybuffer.u.state.stroke_pen.brush.pattern);
-	break;
-     case ut_bitmapsel:
-	BDFFloatFree(copybuffer.u.bmpstate.selection);
 	break;
      case ut_bitmap:
 	for (brhead=copybuffer.u.bmpstate.refs; brhead != NULL;
@@ -387,7 +378,7 @@ RefChar *CopyContainsRef(SplineFont *sf) {
    if (cur->undotype==ut_composit)
       cur=cur->u.composit.state;
    if (cur==NULL
-       || (cur->undotype != ut_state && cur->undotype != ut_tstate
+       || (cur->undotype != ut_state
 	   && cur->undotype != ut_statehint && cur->undotype != ut_statename))
       return (NULL);
    if (cur->u.state.splines != NULL || cur->u.state.refs==NULL ||
@@ -1520,16 +1511,6 @@ static void _PasteToBC(BDFChar *bc,int pixelsize,int depth,
    switch (paster->undotype) {
      case ut_noop:
 	break;
-     case ut_bitmapsel:
-	BCFlattenFloat(bc);
-	if (clearfirst)
-	   memset(bc->bitmap, '\0',
-		  bc->bytes_per_line * (bc->ymax-bc->ymin+1));
-	bc->selection =
-	   BDFFloatConvert(paster->u.bmpstate.selection, depth,
-			   paster->u.bmpstate.depth);
-	BCCharChangedUpdate(bc);
-	break;
      case ut_bitmap:
 	BCFlattenFloat(bc);
 	if (clearfirst) {
@@ -1689,6 +1670,50 @@ void FVCopy(FontViewBase * fv, enum fvcopy_type fullcopy) {
    copybuffer.copied_from=fv->sf;
 }
 
+void FVCopyWidth(FontViewBase *fv,enum undotype ut) {
+    Undoes *head=NULL, *last=NULL, *cur;
+    int i, any=false, gid;
+    SplineChar *sc;
+    DBounds bb;
+
+    CopyBufferFreeGrab();
+
+    for ( i=0; i<fv->map->enccount; ++i ) if ( fv->selected[i] ) {
+	any = true;
+	cur = chunkalloc(sizeof(Undoes));
+	cur->undotype = ut;
+	if ( (gid=fv->map->map[i])!=-1 && (sc=fv->sf->glyphs[gid])!=NULL ) {
+	    switch ( ut ) {
+	      case ut_width:
+		cur->u.width = sc->width;
+	      break;
+	      case ut_vwidth:
+		cur->u.width = sc->vwidth;
+	      break;
+	      case ut_lbearing:
+		SplineCharFindBounds(sc,&bb);
+		cur->u.lbearing = bb.minx;
+	      break;
+	      case ut_rbearing:
+		SplineCharFindBounds(sc,&bb);
+		cur->u.rbearing = sc->width-bb.maxx;
+	      break;
+	      default:	      
+	      break;
+	    }
+	} else
+	    cur->undotype = ut_noop;
+	if ( head==NULL )
+	    head = cur;
+	else
+	    last->next = cur;
+	last = cur;
+    }
+    copybuffer.undotype = ut_multiple;
+    copybuffer.u.multiple.mult = head;
+    copybuffer.copied_from = fv->sf;
+}
+
 static BDFFont *BitmapCreateCheck(FontViewBase *fv,int *yestoall,int first,
 				  int pixelsize, int depth) {
    int yes=0;
@@ -1831,7 +1856,6 @@ void PasteIntoFV(FontViewBase *fv,int pasteinto,double trans[6]) {
 			   fv, pasteinto, trans, &mc, &refstate,
 			   &already_complained);
 		 break;
-	      case ut_bitmapsel:
 	      case ut_bitmap:
 		 if (onlycopydisplayed && fv->active_bitmap != NULL)
 		    _PasteToBC(BDFMakeChar(fv->active_bitmap, fv->map, i),

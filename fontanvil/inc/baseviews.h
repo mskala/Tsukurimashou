@@ -1,4 +1,4 @@
-/* $Id: baseviews.h 4501 2015-12-16 13:47:38Z mskala $ */
+/* $Id: baseviews.h 5127 2016-09-18 10:21:52Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -312,6 +312,8 @@ extern void FVCopyAnchors(FontViewBase * fv);
 enum fvcopy_type { ct_fullcopy, ct_reference, ct_lookups, ct_unlinkrefs };
 
 extern void FVCopy(FontViewBase * fv, enum fvcopy_type copytype);
+
+extern void FVCopyWidth(FontViewBase * fv, enum undotype copytype);
 
 extern void PasteIntoFV(FontViewBase * fv, int pasteinto, double trans[6]);
 

@@ -1,4 +1,4 @@
-/* $Id: glyphcomp.c 4532 2015-12-22 13:18:53Z mskala $ */
+/* $Id: glyphcomp.c 5126 2016-09-18 08:44:55Z mskala $ */
 /* Copyright (C) 2006-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -945,7 +945,6 @@ int CompareGlyphs(Context * c, double pt_err, double spline_err,
 		    return (-1);
 	      }
 	      break;
-	   case ut_bitmapsel:
 	   case ut_bitmap:
 	      if (pixel_off_frac >= 0) {
 		 ret |=

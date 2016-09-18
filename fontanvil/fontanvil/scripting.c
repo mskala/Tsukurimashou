@@ -1,4 +1,4 @@
-/* $Id: scripting.c 4532 2015-12-22 13:18:53Z mskala $ */
+/* $Id: scripting.c 5127 2016-09-18 10:21:52Z mskala $ */
 /* Copyright (C) 2002-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -2978,11 +2978,11 @@ static void bCopyGlyphFeatures(Context *c) {
 }
 
 static void bCopyLBearing(Context *c) {
-   FVCopy(c->curfv, ut_lbearing);
+   FVCopyWidth(c->curfv, ut_lbearing);
 }
 
 static void bCopyRBearing(Context *c) {
-   FVCopy(c->curfv, ut_rbearing);
+   FVCopyWidth(c->curfv, ut_rbearing);
 }
 
 static void bCopyReference(Context *c) {
@@ -2996,11 +2996,11 @@ static void bCopyUnlinked(Context *c) {
 static void bCopyVWidth(Context *c) {
    if (c->curfv != NULL && !c->curfv->sf->hasvmetrics)
       ScriptError(c, "Vertical metrics not enabled in this font");
-   FVCopy(c->curfv, ut_vwidth);
+   FVCopyWidth(c->curfv, ut_vwidth);
 }
 
 static void bCopyWidth(Context *c) {
-   FVCopy(c->curfv, ut_width);
+   FVCopyWidth(c->curfv, ut_width);
 }
 
 static void bCorrectDirection(Context *c) {

@@ -36,7 +36,8 @@ while (<*/*.[ch]>) {
   %static_defined=();
   open(SRC,$fn);
   while (<SRC>) {
-    if (/\s*static\b[^(=]*(\*|\s)([A-Za-z_][A-Za-z_0-9]*)\s*[(,;=]/) {
+    if (/\s*static\b[^(=]*(\*|\s)([A-Za-z_][A-Za-z_0-9]*)\s*[(,;=]/
+     && ($2 ne 'int')) {
       $static_defined{$2}=1;
       $global_static_defined{$2}=1;
     }

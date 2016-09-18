@@ -1,4 +1,4 @@
-/* $Id: splinefont.h 5125 2016-09-18 06:58:30Z mskala $ */
+/* $Id: splinefont.h 5126 2016-09-18 08:44:55Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -863,11 +863,11 @@ typedef struct bdfchar {
    struct bdfcharlist *dependents;
 } BDFChar;
 
-enum undotype { ut_none=0, ut_state, ut_tstate, ut_statehint, ut_statename,
+enum undotype { ut_none=0, ut_state, ut_statehint, ut_statename,
    ut_statelookup,
    ut_anchors,
-   ut_width, ut_vwidth, ut_lbearing, ut_rbearing, ut_possub,
-   ut_hints, ut_bitmap, ut_bitmapsel, ut_composit, ut_multiple, ut_layers,
+   ut_width, ut_vwidth, ut_lbearing, ut_rbearing,
+   ut_bitmap, ut_composit, ut_multiple, ut_layers,
    ut_noop
 };
 

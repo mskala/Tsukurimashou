@@ -1,4 +1,4 @@
-/* $Id: splineutil.c 4532 2015-12-22 13:18:53Z mskala $ */
+/* $Id: splineutil.c 5126 2016-09-18 08:44:55Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -5204,12 +5204,12 @@ static void SCRemoveAnchorClass(SplineChar *sc,AnchorClass *an) {
       return;
    sc->anchor=AnchorPointsRemoveName(sc->anchor, an);
    for (test=sc->layers[ly_fore].undoes; test != NULL; test=test->next)
-      if (test->undotype==ut_state || test->undotype==ut_tstate ||
+      if (test->undotype==ut_state ||
 	  test->undotype==ut_statehint || test->undotype==ut_statename)
 	 test->u.state.anchor =
 	    AnchorPointsRemoveName(test->u.state.anchor, an);
    for (test=sc->layers[ly_fore].redoes; test != NULL; test=test->next)
-      if (test->undotype==ut_state || test->undotype==ut_tstate ||
+      if (test->undotype==ut_state ||
 	  test->undotype==ut_statehint || test->undotype==ut_statename)
 	 test->u.state.anchor =
 	    AnchorPointsRemoveName(test->u.state.anchor, an);
