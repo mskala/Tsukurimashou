@@ -1,4 +1,4 @@
-/* $Id: savefont.c 4532 2015-12-22 13:18:53Z mskala $ */
+/* $Id: savefont.c 5125 2016-09-18 06:58:30Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -954,49 +954,6 @@ int _DoSave(SplineFont *sf, char *newname, int32_t * sizes, int res,
    return (err);
 }
 
-void PrepareUnlinkRmOvrlp(SplineFont *sf, char *filename, int layer) {
-   int gid;
-   SplineChar *sc;
-   RefChar *ref, *refnext;
-   extern int maxundoes;
-   int old_maxundoes=maxundoes;
-
-   if (maxundoes==0)
-      maxundoes=1;		/* Force undoes */
-
-   for (gid=0; gid<sf->glyphcnt; ++gid)
-      if ((sc=sf->glyphs[gid]) != NULL && sc->unlink_rm_ovrlp_save_undo) {
-	 if (autohint_before_generate && sc != NULL &&
-	     sc->changedsincelasthinted && !sc->manualhints) {
-	    SplineCharAutoHint(sc, layer, NULL);	/* Do this now, else we get an unwanted undo on the stack from hinting */
-	 }
-	 SCPreserveLayer(sc, layer, false);
-	 for (ref=sc->layers[layer].refs; ref != NULL; ref=refnext) {
-	    refnext=ref->next;
-	    SCRefToSplines(sc, ref, layer);
-	 }
-	 SCRoundToCluster(sc, layer, false, .03, .12);
-	 sc->layers[layer].splines =
-	    SplineSetRemoveOverlap(sc, sc->layers[layer].splines,
-				   over_remove);
-	 if (!sc->manualhints)
-	    sc->changedsincelasthinted=false;
-      }
-   maxundoes=old_maxundoes;
-}
-
-void RestoreUnlinkRmOvrlp(SplineFont *sf, char *filename, int layer) {
-   int gid;
-   SplineChar *sc;
-
-   for (gid=0; gid<sf->glyphcnt; ++gid)
-      if ((sc=sf->glyphs[gid]) != NULL && sc->unlink_rm_ovrlp_save_undo) {
-	 SCDoUndo(sc, layer);
-	 if (!sc->manualhints)
-	    sc->changedsincelasthinted=false;
-      }
-}
-
 static int32_t *AllBitmapSizes(SplineFont *sf) {
    int32_t *sizes=NULL;
    BDFFont *bdf;
@@ -1284,13 +1241,11 @@ int GenerateScript(SplineFont *sf, char *filename, char *bitmaptype,
    former=NULL;
    if (sfs != NULL) {
       for (sfl=sfs; sfl != NULL; sfl=sfl->next) {
-	 PrepareUnlinkRmOvrlp(sfl->sf, filename, layer);
 	 if (rename_to != NULL)
 	    sfl->former_names =
 	       SFTemporaryRenameGlyphsToNamelist(sfl->sf, rename_to);
       }
    } else {
-      PrepareUnlinkRmOvrlp(sf, filename, layer);
       if (rename_to != NULL)
 	 former=SFTemporaryRenameGlyphsToNamelist(sf, rename_to);
    }
@@ -1312,12 +1267,10 @@ int GenerateScript(SplineFont *sf, char *filename, char *bitmaptype,
 
    if (sfs != NULL) {
       for (sfl=sfs; sfl != NULL; sfl=sfl->next) {
-	 RestoreUnlinkRmOvrlp(sfl->sf, filename, layer);
 	 if (rename_to != NULL)
 	    SFTemporaryRestoreGlyphNames(sfl->sf, sfl->former_names);
       }
    } else {
-      RestoreUnlinkRmOvrlp(sf, filename, layer);
       if (rename_to != NULL)
 	 SFTemporaryRestoreGlyphNames(sf, former);
    }

@@ -1,4 +1,4 @@
-/* $Id: splinefont.h 4658 2016-02-23 08:05:52Z mskala $ */
+/* $Id: splinefont.h 5125 2016-09-18 06:58:30Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -1506,7 +1506,6 @@ typedef struct splinechar {
    unsigned int instructions_out_of_date:1;
    unsigned int complained_about_ptnums:1;
    unsigned int vs_open:1;
-   unsigned int unlink_rm_ovrlp_save_undo:1;
    unsigned int inspiro:1;
    unsigned int lig_caret_cnt_fixed:1;
    unsigned int suspendMetricsViewEventPropagation:1;	/* rect tool might do this while drawing */
@@ -3622,8 +3621,6 @@ extern void SFAddEncodingSlot(SplineFont *sf, int gid);
 
 extern void SFAddGlyphAndEncode(SplineFont *sf, SplineChar *sc,
 				EncMap *basemap, int baseenc);
-
-extern void SCDoUndo(SplineChar *sc, int layer);
 
 extern void SCClearBackground(SplineChar *sc);
 

@@ -1,4 +1,4 @@
-/* $Id: scvalid.c 4532 2015-12-22 13:18:53Z mskala $ */
+/* $Id: scvalid.c 5125 2016-09-18 06:58:30Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -447,9 +447,6 @@ int SCValidate(SplineChar * sc, int layer, int force) {
       sc->layers[layer].validation_state |= vs_missinganchor;
 
    sc->layers[layer].validation_state |= vs_known;
-   if (sc->unlink_rm_ovrlp_save_undo)
-      return (sc->layers[layer].
-	      validation_state&~(vs_known|vs_selfintersects));
 
    return (sc->layers[layer].validation_state&~vs_known);
 }
@@ -474,10 +471,7 @@ int SFValidate(SplineFont *sf, int layer, int force) {
 	    } else if (SCValidateAnchors(sc) != NULL)
 	       sc->layers[layer].validation_state |= vs_missinganchor;
 
-	    if (sc->unlink_rm_ovrlp_save_undo)
-	       any |= sc->layers[layer].validation_state&~vs_selfintersects;
-	    else
-	       any |= sc->layers[layer].validation_state;
+	    any |= sc->layers[layer].validation_state;
 	 }
       ++k;
    } while (k<sf->subfontcnt);

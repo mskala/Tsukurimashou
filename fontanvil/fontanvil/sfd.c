@@ -1,4 +1,4 @@
-/* $Id: sfd.c 4532 2015-12-22 13:18:53Z mskala $ */
+/* $Id: sfd.c 5125 2016-09-18 06:58:30Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2015  Matthew Skala
  *
@@ -1137,8 +1137,6 @@ static void SFDDumpChar(AFILE *sfd,SplineChar *sc,EncMap *map,
       afprintf(sfd, "VWidth: %d\n", sc->vwidth);
    if (sc->glyph_class != 0)
       afprintf(sfd, "GlyphClass: %d\n", sc->glyph_class);
-   if (sc->unlink_rm_ovrlp_save_undo)
-      afprintf(sfd, "UnlinkRmOvrlpSave: %d\n", sc->unlink_rm_ovrlp_save_undo);
    if (sc->inspiro)
       afprintf(sfd, "InSpiro: %d\n", sc->inspiro);
    if (sc->lig_caret_cnt_fixed)
@@ -4084,7 +4082,7 @@ static SplineChar *SFDGetChar(AFILE *sfd,SplineFont *sf,
 	 sc->glyph_class=temp;
       } else if (strmatch(tok, "UnlinkRmOvrlpSave:")==0) {
 	 getint(sfd, &temp);
-	 sc->unlink_rm_ovrlp_save_undo=temp;
+	 /* ignore this value for compatibility */
       } else if (strmatch(tok, "InSpiro:")==0) {
 	 getint(sfd, &temp);
 	 sc->inspiro=temp;
