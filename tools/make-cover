@@ -2,7 +2,7 @@
 
 #
 # Make a cover for Tsukurimashou book proofs
-# Copyright (C) 2014, 2015, 2016  Matthew Skala
+# Copyright (C) 2014, 2015, 2016, 2017  Matthew Skala
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -80,12 +80,6 @@ $spinewidth=int(($npages+3)/4)*4*0.0018871;
 $paperwidth=($spine?0:17.25)+$spinewidth;
 $paperheight=$spine?11:11.25;
 
-if ($partname=~/Blackletter/) {
-  $topband='black';
-} else {
-  $topband='blue!50!black';
-}
-
 print <<EOF;
 \\documentclass{article}
 
@@ -100,14 +94,14 @@ print <<EOF;
 
 \\input{version.tex}
 
-\\colorlet{topband}{$topband}
-\\colorlet{midband}{yellow!20!red!10!white}
 EOF
 
 $bbgtop=3.125;
 if ($partname=~/Blackletter/) {
   $bbgtop=3.5;
   print <<'EOF';
+\colorlet{topband}{black}
+\colorlet{midband}{yellow!20!red!10!white}
 \colorlet{bottombg}{black}
 \colorlet{tartanbg}{magenta!80!red!20!black}
 \colorlet{tartanone}{magenta!30!black}
@@ -117,6 +111,8 @@ EOF
 } elsif ($partname=~/Kazoemashou/) {
   $bbgtop=0.375;
   print <<'EOF';
+\colorlet{topband}{blue!50!black}
+\colorlet{midband}{yellow!17!red!10!white!85!black}
 \colorlet{bottombg}{red}
 \colorlet{tartanbg}{cyan!40!black}
 \colorlet{tartanone}{white!80!blue}
@@ -126,6 +122,8 @@ EOF
 } elsif ($partname=~/Mandeubsida/) {
   $bbgtop=1.5;
   print <<'EOF';
+\colorlet{topband}{green!20!black}
+\colorlet{midband}{yellow!20!red!10!white}
 \colorlet{bottombg}{green!20!black}
 \colorlet{tartanbg}{green!30!black}
 \colorlet{tartanone}{white!80!yellow}
@@ -135,6 +133,8 @@ EOF
 } elsif ($partname=~/TsuIta/) {
   $bbgtop=1.125;
   print <<'EOF';
+\colorlet{topband}{blue!50!black}
+\colorlet{midband}{yellow!20!red!10!white}
 \colorlet{bottombg}{white}
 \colorlet{tartanbg}{white!90!cyan!80!black}
 \colorlet{tartanone}{black}
@@ -144,6 +144,8 @@ EOF
 } else {
   $bbgtop-=(0.065*$partscram);
   print <<'EOF';
+\colorlet{topband}{blue!50!black}
+\colorlet{midband}{yellow!20!red!10!white}
 \colorlet{bottombg}{white!30!black}
 \colorlet{tartanbg}{blue!60!black}
 \colorlet{tartanone}{white}

@@ -1,6 +1,6 @@
 %
 % Unicode page 6F (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012  Matthew Skala
+% Copyright (C) 2011, 2012, 2017  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -36,9 +36,13 @@ beginfont
 input bottomrad.mp;
 input buildkanji.mp;
 input gradefour.mp;
+input gradenine.mp;
 input gradeone.mp;
+input gradesix.mp;
+input gradethree.mp;
 input gradetwo.mp;
 input leftrad.mp;
+input radical.mp;
 input toprad.mp;
 
 do_late_includes;
@@ -50,6 +54,34 @@ vardef kanji.grfour.go_fish =
   build_kanji.lr(270,-10)
     (kanji.leftrad.water)
     (kanji.grtwo.fish);
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+vardef kanji.grfive.performance =
+  push_pbox_toexpand("kanji.grfive.performance");
+  build_kanji.lr(320,-30)
+    (kanji.leftrad.water)
+    (kanji.grnine.tiger_sign);
+  expand_pbox;
+enddef;
+
+% can't easily refactor this because it uses (only in the Japanese form)
+% a strange left-side variant of U+4E30 with the bottom clipped off
+vardef kanji.grfive.undefiled =
+  push_pbox_toexpand("kanji.grfive.undefiled");
+  build_kanji.lr(280,-20)
+    (kanji.leftrad.water)
+    (build_kanji.tb(380,0)
+       (build_kanji.lr(480,30)
+          (build_kanji.level(build_kanji.lift_skirt(370,150+30*mincho)
+             (tsu_xform(identity yscaled 0.74)(kanji.grone.three);
+              push_stroke((500,780)--(500,0),
+                (1.6,1.6)--(1.5,1.5));
+              set_boserif(0,0,10))))
+          (kanji.grtwo.sword))
+       (kanji.grone.thread));
   expand_pbox;
 enddef;
 
@@ -71,6 +103,12 @@ begintsuglyph("uni6F01",1);
   tsu_render;
 endtsuglyph;
 
+% en "performance"
+begintsuglyph("uni6F14",20);
+  kanji.grfive.performance;
+  tsu_render;
+endtsuglyph;
+
 % kan "Chinese"
 begintsuglyph("uni6F22",34);
   build_kanji.level(build_kanji.lr(360,10)
@@ -83,6 +121,12 @@ begintsuglyph("uni6F22",34);
         replace_strokep(-1)((500,800)--oldp);
         replace_strokeq(-1)((1.6,1.6)--oldq);
         set_boserif(-1,0,whatever))));
+  tsu_render;
+endtsuglyph;
+
+% ketsu/isagiyo "undefiled" (clean, pure)
+begintsuglyph("uni6F54",84);
+  kanji.grfive.undefiled;
   tsu_render;
 endtsuglyph;
 

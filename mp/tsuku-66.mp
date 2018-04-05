@@ -1,6 +1,6 @@
 %
 % Unicode page 66 (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012, 2013, 2014, 2016  Matthew Skala
+% Copyright (C) 2011, 2012, 2013, 2014, 2016, 2017  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -126,6 +126,12 @@ vardef kanji.grfour.yesterday =
 enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% kon "insect"
+begintsuglyph("uni6606",6);
+  kanji.greight.insect;
+  tsu_render;
+endtsuglyph;
 
 % shou/sakan "prosperity"
 begintsuglyph("uni660C",12);

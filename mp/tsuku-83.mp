@@ -1,6 +1,6 @@
 %
 % Unicode page 83 (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012, 2013, 2016  Matthew Skala
+% Copyright (C) 2011, 2012, 2013, 2016, 2017  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -157,6 +157,12 @@ endtsuglyph;
 % ka/ni "baggage"
 begintsuglyph("uni8377",119);
   kanji.grthree.baggage;
+  tsu_render;
+endtsuglyph;
+
+% baku/kure "must not" but that is taken; also used in the name of this nut
+begintsuglyph("uni83AB",171);
+  kanji.grnine.malva_nut;
   tsu_render;
 endtsuglyph;
 

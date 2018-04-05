@@ -1,6 +1,6 @@
 %
 % Unicode page 76 (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012, 2013  Matthew Skala
+% Copyright (C) 2011, 2012, 2013, 2017  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -45,6 +45,7 @@ input gradethree.mp;
 input gradetwo.mp;
 input leftrad.mp;
 input radical.mp;
+input toprad.mp;
 
 do_late_includes;
 
@@ -68,6 +69,20 @@ vardef kanji.grfour.target =
     (build_kanji.sscale(yscaled 0.85 shifted (0,30))
        (kanji.grone.white))
     (kanji.grnine.ladle));
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+vardef kanji.grfive.gain =
+  push_pbox_toexpand("kanji.grfive.gain");
+  build_kanji.tb(320,100)
+    (build_kanji.tb(440,70)
+       (build_kanji.sscale(xscaled 0.6)(kanji.toprad.sparkle_two);
+        push_stroke((70,120)--(930,120),(1.6,1.6)--(1.6,1.6));
+        set_boserif(0,1,9))
+       (kanji.radical.eight))
+    (build_kanji.sscale(xscaled 0.9)(kanji.grthree.dish));
   expand_pbox;
 enddef;
 
@@ -146,6 +161,12 @@ endtsuglyph;
 % hai/sakazuki "sake cup"
 begintsuglyph("uni76C3",195);
   kanji.grten.sake_cup;
+  tsu_render;
+endtsuglyph;
+
+% eki/ma "gain"
+begintsuglyph("uni76CA",202);
+  kanji.grfive.gain;
   tsu_render;
 endtsuglyph;
 

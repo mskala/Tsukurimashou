@@ -31,6 +31,8 @@ space:=$(empty) $(empty)
 comma:=,
 percent=%
 
+$(error This Makefile must be edited by Perl code in config.status before use)
+
 SHELL=$(if $(wildcard @KLEKNEV@),@KLEKNEV@,$(if \
   $(wildcard /bin/bash),/bin/bash,/bin/sh))
 
@@ -149,13 +151,13 @@ BUILT_SOURCES=Makefile
 
 STANDALONE_QVFG:=fntbase.mp
 EXTRA_DIST:= \
-  $(if $(filter $(distdir),$(top_distdir)),$(STANDALONE_QVFG)) \
+  $(if $(filter no,@parasite@),$(STANDALONE_QVFG) ) \
   $(wildcard $(mvp)/*.mp) \
   ocr.tex ocra.fea ocrb.fea
 
 STANDALONE_FPEVCGF:=fontlint.pe mp2pf
 dist_noinst_SCRIPTS:= \
-  $(if $(filter $(distdir),$(top_distdir)),$(STANDALONE_FPEVCGF)) \
+  $(if $(filter no,@parasite@),$(STANDALONE_FPEVCGF)) \
   ocra-no.pe ocra-yes.pe ocrb-no.pe ocrb-yes.pe ocrbnames.pe rmo.pe
 
 dist_pdf_DATA = $(MAYBE_DOCS)
@@ -176,8 +178,15 @@ MOSTLYCLEANFILES = \
   *.afm *.otf *.pfb *.rmo *.ttf \
   ocr.aux ocr.log ocr.out ocr.pdf
 
+CLEANFILES = \
+  $(if $(filter yes,@parasite@),$(STANDALONE_QVFG) $(STANDALONE_FPEVCGF))
+
 DISTCLEANFILES = \
   aminclude.am ffaetest.pe
+
+distcleancheck_listfiles = \
+  find . -type f -exec sh -c 'test -f $(srcdir)/$$1 || echo $$1' \
+    sh '{}' ';'
 
 ############################################################################
 
@@ -193,7 +202,8 @@ DISTCLEANFILES = \
 	(cd $*.tmp ; $(expect_start)'$(MPOST)' $*.mp$(expect_end) ) ; \
 	if '$(GREP)' -q '^! ' $*.tmp/$*.log ; then exit 1 ; fi ; \
 	$(TSU_V_NAPERL) \
-	'$(PERL)' -CSD $(mvp)/mp2pf $*.tmp/$* $(TSU_V_REDIR) ; \
+	'$(PERL)' -CSD $(if $(filter no,@parasite@),$(mvp)/)mp2pf \
+	  $*.tmp/$* $(TSU_V_REDIR) ; \
 	(cd $*.tmp ; '$(realpath @T1ASM@)' -b $*.p $*.pfb ) ; \
 	if test -r $*.tmp/$*.pfb \
 	  && '$(GREP)' -q 'output files\? written' $*.tmp/$*.log; then \
@@ -322,7 +332,7 @@ ocr.pdf: OCRA.otf OCRB.otf ocr.tex
 # TESTING
 
 TESTS = $(dist_otf_DATA) $(dist_ttf_DATA) $(dist_type1_DATA)
-LOG_COMPILER = '$(FONTANVIL)' -lang=ff -script fontlint.pe
+LOG_COMPILER = '$(FONTANVIL)' -lang=ff -script $(mvp)/fontlint.pe
 
 ############################################################################
 
@@ -369,6 +379,9 @@ m4/tsu_bad_paths.m4: ../m4/tsu_bad_paths.m4
 	$(TSU_V_CP) cp $< $@
 
 m4/tsu_colourise.m4: ../m4/tsu_colourise.m4
+	$(TSU_V_CP) cp $< $@
+
+m4/tsu_fix_makefile.m4: ../m4/tsu_fix_makefile.m4
 	$(TSU_V_CP) cp $< $@
 
 mp2pf: ../tools/mp2pf

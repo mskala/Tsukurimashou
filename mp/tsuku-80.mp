@@ -1,6 +1,6 @@
 %
 % Unicode page 80 (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012, 2013  Matthew Skala
+% Copyright (C) 2011, 2012, 2013, 2016, 2017  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -43,6 +43,7 @@ input gradenine.mp;
 input gradeone.mp;
 input gradethree.mp;
 input gradetwo.mp;
+input leftrad.mp;
 input radical.mp;
 input rare.mp;
 input toprad.mp;
@@ -54,6 +55,48 @@ do_late_includes;
 vardef kanji.grtwo.hear =
   push_pbox_toexpand("kanji.grtwo.hear");
   build_kanji.gate_enclose(kanji.grone.ear);
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+vardef kanji.grfive.employment_post =
+  push_pbox_toexpand("kanji.grfive.employment_post");
+  build_kanji.lr(400,-20*mincho)
+    (kanji.grone.ear)
+    (kanji.rare.potters_clay);
+  expand_pbox;
+enddef;
+
+vardef kanji.grfive.manure =
+  push_pbox_toexpand("kanji.grfive.manure");
+  build_kanji.lr(430,-30)
+    (kanji.grone.moon)
+    (kanji.grnine.tomoe);
+  expand_pbox;
+enddef;
+
+vardef kanji.grfive.plow =
+  push_pbox_toexpand("kanji.grfive.plow");
+  build_kanji.lr(420,0)
+    (kanji.leftrad.three_branch_tree)
+    (build_kanji.sscale(yscaled 1.05 shifted (0,70))(kanji.greight.well));
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+vardef kanji.leftrad.three_branch_tree =
+  push_pbox_toexpand("kanji.leftrad.three_branch_tree");
+  build_kanji.level(build_kanji.sscale(yscaled 1.10)(
+    tsu_xform(identity yscaled 0.7)(kanji.leftrad.wood);
+    replace_strokep(-3)((500,780)--(500,0));
+    push_stroke(subpath (0.1,0.9) of get_strokep(-2) shifted (0,130),
+      get_strokeq(-2));
+    set_boserif(0,1,9);
+    push_stroke(get_strokep(-3) shifted (0,250),get_strokeq(-3));
+    set_boserif(0,1,9);
+  ));
   expand_pbox;
 enddef;
 
@@ -83,6 +126,12 @@ begintsuglyph("uni8005",5);
   tsu_render;
 endtsuglyph;
 
+% kou/tagaya "plow"
+begintsuglyph("uni8015",21);
+  kanji.grfive.plow;
+  tsu_render;
+endtsuglyph;
+
 % ken/mi "ear"
 begintsuglyph("uni8033",51);
   kanji.grone.ear;
@@ -92,6 +141,12 @@ endtsuglyph;
 % bun/ki "hear"
 begintsuglyph("uni805E",94);
   kanji.grtwo.hear;
+  tsu_render;
+endtsuglyph;
+
+% shoku "post" as in employment
+begintsuglyph("uni8077",119);
+  kanji.grfive.employment_post;
   tsu_render;
 endtsuglyph;
 
@@ -110,6 +165,12 @@ endtsuglyph;
 % shou/ayaka "resemblance"
 begintsuglyph("uni8096",150);
   kanji.greight.resemblance;
+  tsu_render;
+endtsuglyph;
+
+% hi/koe "manure" or "fertilizer"
+begintsuglyph("uni80A5",165);
+  kanji.grfive.manure;
   tsu_render;
 endtsuglyph;
 

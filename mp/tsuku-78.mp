@@ -1,6 +1,6 @@
 %
 % Unicode page 78 (Kanji) for Tsukurimashou
-% Copyright (C) 2012  Matthew Skala
+% Copyright (C) 2012, 2017  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -33,8 +33,11 @@
 beginfont
 
 % AUTODEPS
+input bkencl.mp;
 input buildkanji.mp;
+input gradeeight.mp;
 input gradeone.mp;
+input gradethree.mp;
 input radical.mp;
 
 do_late_includes;
@@ -51,9 +54,39 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vardef kanji.grfive.certainly =
+  push_pbox_toexpand("kanji.grfive.certainly");
+  build_kanji.level(build_kanji.lr(420,-20)
+    (build_kanji.sscale(yscaled 0.9 shifted (0,40))(kanji.grone.stone))
+    (kanji.radical.yatwbmw));
+  expand_pbox;
+enddef;
+
+vardef kanji.grfive.tear_out =
+  push_pbox_toexpand("kanji.grfive.tear_out");
+  build_kanji.level(build_kanji.lr(420,-20)
+    (build_kanji.sscale(yscaled 0.9 shifted (0,40))(kanji.grone.stone))
+    (kanji.grthree.pelt));
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 % ken/to "sharpen"
 begintsuglyph("uni7814",20);
   kanji.grthree.sharpen;
+  tsu_render;
+endtsuglyph;
+
+% ha/yabu "tear out"
+begintsuglyph("uni7834",52);
+  kanji.grfive.tear_out;
+  tsu_render;
+endtsuglyph;
+
+% kaku/tashika "certainly"
+begintsuglyph("uni78BA",186);
+  kanji.grfive.certainly;
   tsu_render;
 endtsuglyph;
 

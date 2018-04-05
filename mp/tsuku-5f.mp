@@ -1,6 +1,6 @@
 %
 % Unicode page 5F (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012, 2013, 2014, 2016  Matthew Skala
+% Copyright (C) 2011, 2012, 2013, 2014, 2016, 2017  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -151,11 +151,43 @@ vardef kanji.grfive.pleasure =
   expand_pbox;
 enddef;
 
+vardef kanji.grfive.restore =
+  push_pbox_toexpand("kanji.grfive.restore");
+  build_kanji.lr(310,-20-10*mincho)
+    (build_kanji.harmonic(240,0.86,0)(kanji.leftrad.person))
+    (build_kanji.level(build_kanji.tb(340,0)
+       (tsu_xform(identity yscaled (480/750))
+          (kanji.grone.day);
+        push_stroke((280,810)..tension 1.2..(160,570)..(50,460),
+          (1.7,1.7)--(1.5,1.5)--(1.2,1.2));
+        set_boserif(0,0,10);
+        set_bosize(0,90);
+        push_stroke((get_strokep(0) intersectionpoint ((0,700)--(1000,700)))--
+             (880,700),
+          (1.5,1.5)--(1.6,1.6));
+        set_boserif(0,1,9);
+        set_bosize(0,90))
+       (kanji.radical.winter)));
+  expand_pbox;
+enddef;
+
 vardef kanji.grfive.stretch =
   push_pbox_toexpand("kanji.grfive.stretch");
   build_kanji.lr(380,-40)
     (build_kanji.sscale(yscaled 1.06 shifted (0,10))(kanji.grtwo.bow))
     (kanji.grtwo.long);
+  expand_pbox;
+enddef;
+
+vardef kanji.grfive.virtue =
+  push_pbox_toexpand("kanji.grfive.virtue");
+  build_kanji.lr(330,-100)
+    (build_kanji.harmonic(240,0.86,0)(kanji.leftrad.person))
+    (build_kanji.level(build_kanji.tb(340,70)
+       (build_kanji.tb(440,30)
+          (kanji.grone.ten)
+          (kanji.toprad.eye))
+       (kanji.bottomrad.heart)));
   expand_pbox;
 enddef;
 
@@ -499,6 +531,18 @@ begintsuglyph("uni5FA8",168);
   build_kanji.level(build_kanji.lr(310,0)
     (build_kanji.harmonic(240,0.86,0)(kanji.leftrad.person))
     (kanji.grsix.emperor));
+  tsu_render;
+endtsuglyph;
+
+% fuku/mata "restore"
+begintsuglyph("uni5FA9",169);
+  kanji.grfive.restore;
+  tsu_render;
+endtsuglyph;
+
+% toku/atsu "virtue" ("Toku" of "Tokugawa")
+begintsuglyph("uni5FB3",179);
+  kanji.grfive.virtue;
   tsu_render;
 endtsuglyph;
 

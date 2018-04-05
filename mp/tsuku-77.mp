@@ -1,6 +1,6 @@
 %
 % Unicode page 77 (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012, 2013, 2014, 2016  Matthew Skala
+% Copyright (C) 2011, 2012, 2013, 2014, 2016, 2017  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -34,6 +34,7 @@ beginfont
 
 % AUTODEPS
 input buildkanji.mp;
+input gradeeight.mp;
 input gradefour.mp;
 input gradeone.mp;
 input gradethree.mp;
@@ -149,6 +150,12 @@ begintsuglyph("uni77D7",215);
     (build_kanji.thickness(0.7)(kanji.grtwo.straight))
     (build_kanji.thickness(0.8)(kanji.grtwo.straight))
     (build_kanji.thickness(0.8)(kanji.grtwo.straight));
+  tsu_render;
+endtsuglyph;
+
+% mu/hoko "Chinese spear"
+begintsuglyph("uni77DB",219);
+  kanji.greight.chinese_spear;
   tsu_render;
 endtsuglyph;
 

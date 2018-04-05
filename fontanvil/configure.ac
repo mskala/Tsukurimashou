@@ -2,7 +2,7 @@
 
 #
 # Configuration source for FontAnvil
-# Copyright (C) 2014, 2015  Matthew Skala
+# Copyright (C) 2014, 2015, 2016, 2017  Matthew Skala
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -141,6 +141,12 @@ AC_CANONICAL_HOST
 AC_REVISION([$Id: configure.ac 2831 2014-03-02 07:18:54Z mskala $])
 AC_COPYRIGHT([Copyright (C) 2014, 2015 Matthew Skala])
 AC_SUBST([release_date],["December 8, 2015"])
+# this must be early so it will happen before depfiles
+TSU_FIX_MAKEFILE([],
+  [if test '!' "x$ICEMAP" = "x" ; then "$PERL" -i -pe \
+'s/^(@<:@a-z\-@:>@+:) (\$\(BUILT_SOURCES\))/'\
+'\1\n\t@\$(MAKE) -q \2 || \$(MAKE) \$(AM_MAKEFLAGS) \2/;' Makefile ; fi],
+  [ICEMAP=$ICEMAP])
 AM_SILENT_RULES
 AC_USE_SYSTEM_EXTENSIONS
 #
@@ -205,6 +211,9 @@ AS_IF([test "x$PDFLATEX" = "x"],
 AC_ARG_VAR([PERL],[Perl])
 AS_IF([test "x$PERL" = "x"],
   [AC_PATH_PROG([PERL],[perl])])
+AC_ARG_VAR([UNICODE_URL],[Unicode data root])
+AS_IF([test "x$UNICODE_URL" = "x"],
+  [UNICODE_URL=http://unicode.org/Public/])
 AC_PATH_PROG([UNZIP],[unzip],[unzip])
 #
 AC_ARG_VAR([VALGRIND],[Valgrind])
@@ -231,22 +240,6 @@ gmake_version=dnl
 AC_MSG_RESULT([$gmake_version])
 #
 PKG_PROG_PKG_CONFIG
-#
-############################################################################
-#
-# Check for parasite build
-#
-AC_MSG_CHECKING([whether we are building as a parasite])
-AM_CONDITIONAL([COND_PARASITE],
-  [grep Tsukurimashou ../Makefile > /dev/null 2> /dev/null])
-AM_COND_IF([COND_PARASITE],
-  [AC_MSG_RESULT([yes])
-   AS_IF([test "x$ICEMAP" = "x"],
-     [AC_MSG_WARN([Depending on locally-built Icemap])
-      ICEMAP=$PWD/../icemap/icemap])],
-  [AC_MSG_RESULT([no])])
-AS_IF([test "x$ICEMAP" = "x"],[ICEMAP=no])
-AM_CONDITIONAL([COND_ICEMAP],[test '!' "x$ICEMAP" = "xno"])
 #
 ############################################################################
 #
@@ -495,8 +488,8 @@ AC_SUBST([eightrenc])
 AC_ARG_ENABLE([colour-build],
   [AS_HELP_STRING([--disable-colour-build],
     [turn off ANSI colour in build scripts])],
-    [],
-    [enable_colour_build=yes])
+  [],
+  [enable_colour_build=yes])
 AC_ARG_ENABLE([color-build],[dnl],[],[enable_color_build=yes])
 #
 AC_ARG_ENABLE([debug],
@@ -506,11 +499,23 @@ AC_ARG_ENABLE([debug],
 AS_IF([test "x$enable_debug" = xyes],
   [CFLAGS="$CFLAGS -g -O0" ; CPPFLAGS="$CPPFLAGS -g -O0"])
 #
+AC_ARG_ENABLE([download],
+  [AS_HELP_STRING([--enable-download=[yes|no]],
+    [automatically download Unicode data from UNICODE_URL [no]])],
+  [],
+  [enable_download=no])
+#
+AC_ARG_ENABLE([parasite],
+  [AS_HELP_STRING([--enable-parasite=[yes|no|auto]],
+    [build as a parasite [auto]])],
+  [],
+  [enable_parasite=auto])
+#
 AC_ARG_WITH([valgrind],
   [AS_HELP_STRING([--with-valgrind],
     [use Valgrind for tests if available])],
-    [],
-    [with_valgrind=no])
+  [],
+  [with_valgrind=no])
 #
 # Process user options
 #
@@ -521,11 +526,35 @@ AS_IF([test "x$enable_color_build" = "xyes"],
   [],[tsu_colour=no])
 AM_CONDITIONAL([COND_COLOUR],[test '!' "$tsu_colour" = no])
 #
+AM_CONDITIONAL([COND_DOWNLOAD],[test '!' "$enable_download" = no])
+#
 AS_IF([test "x$enable_silent_rules" = "x"],
   [enable_silent_rules=yes
    AM_DEFAULT_VERBOSITY=0])
 #
 AM_CONDITIONAL([COND_VALGRIND],[test '!' "$with_valgrind" = no])
+#
+############################################################################
+#
+# Check for parasite build
+#
+AC_MSG_CHECKING([whether we are building as a parasite])
+AS_IF([test "x$enable_parasite" = "xauto"],
+  [AS_IF([grep Tsukurimashou ../Makefile > /dev/null 2> /dev/null],
+    [enable_parasite=yes],
+    [enable_parasite=no])])
+AC_MSG_RESULT([$enable_parasite])
+AM_CONDITIONAL([COND_PARASITE],[test "x$enable_parasite" = "xyes"])
+AM_COND_IF([COND_PARASITE],
+  [AC_MSG_RESULT([yes])
+   AS_IF([test "x$ICEMAP" = "x"],
+     [AC_MSG_WARN([Depending on locally-built Icemap])
+      ICEMAP=$PWD/../icemap/icemap])
+   parasite=yes],
+  [parasite=no])
+AC_SUBST([parasite])
+AS_IF([test "x$ICEMAP" = "x"],[ICEMAP=no])
+AM_CONDITIONAL([COND_ICEMAP],[test '!' "x$ICEMAP" = "xno"])
 #
 ############################################################################
 #
@@ -538,17 +567,6 @@ AC_SUBST([andt],[])
 AC_SUBST([HOST],["$host"])
 AC_SUBST([MACAPP])
 AC_CONFIG_FILES([Makefile doc/fontanvil.1])
-AC_CONFIG_COMMANDS([fix-makefile],
-  [if test '!' "x$ICEMAP" = "x" ; then "$PERL" -i -pe \
-'s/^(@<:@a-z\-@:>@+:) (\$\(BUILT_SOURCES\))/'\
-'\1\n\t@\$(MAKE) -q \2 || \$(MAKE) \$(AM_MAKEFLAGS) \2/;' Makefile ; fi ; \
-"$PERL" -i -pe \
-'s#\t-\@?(test -z.* || )?rm -(r?)f (.*)#'\
-'\t\$(TSU_V_RM) '"'"'\3'"'"' \$(TSU_V_CHOPPER)\n'\
-'\t-\$(A''M_V_at)\1rm -\2f \3#;' \
-   Makefile],
-  [PERL=$PERL
-   ICEMAP=$ICEMAP])
 TSU_BAD_PATHS
 AC_OUTPUT
 #
@@ -699,3 +717,6 @@ AS_IF([test "x$has_bad_paths" = "xyes"],
    AS_ECHO(["is quite likely to fail.  It would be better to eliminate all illegal"])
    AS_ECHO(["characters from pathnames before continuing."])
    ])
+AS_IF([test "x$parasite" = "xyes"],
+  [TSU_COLOURISE([Parasite build enabled.],[6])
+   AS_ECHO([])])

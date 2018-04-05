@@ -1,5 +1,8 @@
 #!/bin/sh
 
+scripthome=`realpath $0`
+scripthome=`dirname $scripthome`
+
 mkdir rmtmp$$
 cd rmtmp$$
 
@@ -31,7 +34,8 @@ err=0
 ../icemap -C map.c -H map.h rm.im || err=$?
 if test $err = 0
 then
-  gcc -g -O0 -I. -DSTRINGVAL -o inttest ../inttest.c map.c || err=$?
+  gcc -g -O0 -I. -DSTRINGVAL -o inttest $scripthome/../inttest.c map.c \
+    || err=$?
 fi
 if test $err = 0 ; then ./inttest 0 5 > results.dat || err=$? ; fi
 

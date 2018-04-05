@@ -1,6 +1,6 @@
 %
 % Unicode page 89 (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012, 2013, 2016  Matthew Skala
+% Copyright (C) 2011, 2012, 2013, 2016, 2017  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -65,7 +65,7 @@ vardef kanji.grfour.outlook =
 enddef;
 
 vardef kanji.grfour.remember =
-  push_pbox_toexpand("kanji.grtwo.remember");
+  push_pbox_toexpand("kanji.grfour.remember");
   build_kanji.tb(740,100)
     (kanji.toprad.alt_sparkle_three)
     (build_kanji.tb(580,110)
@@ -75,6 +75,39 @@ vardef kanji.grfour.remember =
 enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+vardef kanji.grfive.double =
+  push_pbox_toexpand("kanji.five.double");
+  build_kanji.lr(360,0)
+    (kanji.leftrad.clothes)
+    (build_kanji.tb(360,-30)
+       (push_stroke((300,810)..tension 1.2..(220,600)..(110,480),
+          (1.6,1.6)--(1.4,1.4)--(1,1));
+        set_boserif(0,0,10);
+        push_stroke((100,680)--(780,680),(1.6,1.6)--(1.6,1.6));
+        set_boserif(0,1,9);
+        replace_strokep(0)(subpath
+          (0.01+xpart (oldp intersectiontimes get_strokep(-1)),1) of oldp);
+        build_kanji.sscale(scaled 0.75 shifted (0,-120))(kanji.grone.day))
+       (kanji.radical.winter));
+  expand_pbox;
+enddef;
+
+vardef kanji.grfive.standard =
+  push_pbox_toexpand("kanji.five.standard");
+  build_kanji.lr(440,0)
+    (kanji.leftrad.husband)
+    (kanji.grone.see);
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% fuku "double"
+begintsuglyph("uni8907",7);
+  kanji.grfive.double;
+  tsu_render;
+endtsuglyph;
 
 % extra: kon/fundoshi "loincloth"
 begintsuglyph("uni890C",12);
@@ -147,6 +180,12 @@ endtsuglyph;
 % ken/mi "see"
 begintsuglyph("uni898B",139);
   kanji.grone.see;
+  tsu_render;
+endtsuglyph;
+
+% ki "standard"
+begintsuglyph("uni898F",143);
+  kanji.grfive.standard;
   tsu_render;
 endtsuglyph;
 

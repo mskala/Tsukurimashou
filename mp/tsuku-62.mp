@@ -1,6 +1,6 @@
 %
 % Unicode page 62 (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012, 2013, 2016  Matthew Skala
+% Copyright (C) 2011, 2012, 2013, 2016, 2017  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -45,6 +45,7 @@ input gradethree.mp;
 input gradetwo.mp;
 input leftrad.mp;
 input radical.mp;
+input rare.mp;
 input toprad.mp;
 
 do_late_includes;
@@ -114,6 +115,36 @@ vardef kanji.grfive.beckon =
   build_kanji.level(build_kanji.lr(420,-10)
     (kanji.leftrad.hand)
     (kanji.greight.call));
+  expand_pbox;
+enddef;
+
+% (106,534)  (386,530)  (48,98)
+
+vardef kanji.grfive.be_told =
+  push_pbox_toexpand("kanji.grfive.be_told");
+  push_stroke((100,530)--(310,530)..(220,290)..(60,100),
+    (1.6,1.6)--(1.6,1.6)--(1.3,1.3)--(0.85,0.85));
+  set_boserif(0,1,4);
+  set_botip(0,1,0);
+  push_stroke(
+    (680,550)..tension 1.2..(750,380)..(900,120),
+    (1.2,1.2)--(1.4,1.4)--(1.6,1.6));
+  push_stroke((880,570)..(840,490)..(point 0.9 of get_strokep(0)),
+    (1.6,1.6)--(1.4,1.4)--(1,1));
+  set_boserif(0,0,10);
+  push_stroke((190,780)--(740,780)..(610,610)..(500,540),
+    (1.5,1.5)--(1.6,1.6)--(1.4,1.4)--(1,1));
+  set_boserif(0,1,4);
+  set_botip(0,1,0);
+  push_stroke((510,570),(1.6,1.6));
+  build_kanji.add_jtail(0);
+  set_boserif(0,0,10);
+  push_stroke((400,420)--(630-20*mincho,420),(1.5,1.5)--(1.5,1.5));
+  set_boserif(0,1,9);
+  push_stroke((340,280)--(670-20*mincho,280),(1.5,1.5)--(1.5,1.5));
+  set_boserif(0,1,9);
+  push_stroke((250,120)--(760-20*mincho,120),(1.5,1.5)--(1.5,1.5));
+  set_boserif(0,1,9);
   expand_pbox;
 enddef;
 
@@ -192,6 +223,12 @@ begintsuglyph("uni6212",18);
   tsu_render;
 endtsuglyph;
 
+% shoku "sword", "potter's clay", or "to gather"
+begintsuglyph("uni6220",32);
+  kanji.rare.potters_clay;
+  tsu_render;
+endtsuglyph;
+
 % sen/ikusa "battle"
 begintsuglyph("uni6226",38);
   kanji.grfour.battle;
@@ -207,6 +244,12 @@ endtsuglyph;
 % sho/tokoro "place"
 begintsuglyph("uni6240",64);
   kanji.grthree.place;
+  tsu_render;
+endtsuglyph;
+
+% hen/hiratai "flat"
+begintsuglyph("uni6241",65);
+  kanji.rare.flat;
   tsu_render;
 endtsuglyph;
 
@@ -237,6 +280,12 @@ endtsuglyph;
 % hi "criticize"
 begintsuglyph("uni6279",121);
   kanji.grsix.criticize;
+  tsu_render;
+endtsuglyph;
+
+% shou/uke "be told"
+begintsuglyph("uni627F",127);
+  kanji.grfive.be_told;
   tsu_render;
 endtsuglyph;
 

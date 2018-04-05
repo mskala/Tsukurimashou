@@ -2,7 +2,7 @@
 
 #
 # Kleknev log file analyser
-# Copyright (C) 2013, 2015  Matthew Skala
+# Copyright (C) 2013, 2015, 2017  Matthew Skala
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -32,17 +32,17 @@ sub categorize {
   $category[1]=$1 if $workingdir=~m!/([^/]+)$!;
 
   if ($process_argv[0] eq '/bin/sh') {
-    if ($process_argv[2]=~m!MT1.*mpost +([a-z]+)-!s) {
+    if ($process_argv[2]=~m!MT1.*mpost['"]?\s+([a-z]+)-!s) {
       $category[0]='mt1';
       $savecat=$1;
       $category[2]=$savecat if $category[1]=~/^tsuku/;
-    } elsif ($process_argv[2]=~m!RMO.*rmo.pe !s) {
+    } elsif ($process_argv[2]=~m!RMO.*rmo.pe\s!s) {
       $category[0]='rmo';
-    } elsif ($process_argv[2]=~m!TEX.*latex !s) {
+    } elsif ($process_argv[2]=~m!TEX.*latex['"]?\s!s) {
       $category[0]='latex';
-    } elsif ($process_argv[2]=~m!fontforge.*assemble-font.pe +([a-z]+)-!s) {
+    } elsif ($process_argv[2]=~m!font(forge|anvil).*assemble-font.pe\s+([a-z]+)-!s) {
       $category[0]='assembly';
-      $category[3]=$1;
+      $category[3]=$2;
     } elsif ($process_argv[2]=~m!^([a-zA-Z0-9\-_\./]*)/([^ /]+) !) {
       $category[0]=$2;
     }

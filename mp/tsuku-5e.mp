@@ -1,6 +1,6 @@
 %
 % Unicode page 5E (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012, 2013, 2014, 2016  Matthew Skala
+% Copyright (C) 2011, 2012, 2013, 2014, 2016, 2017  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -161,6 +161,26 @@ vardef kanji.grfive.preface =
   expand_pbox;
 enddef;
 
+vardef kanji.grfive.teacher =
+  push_pbox_toexpand("kanji.grfive.teacher");
+  build_kanji.lr(400,-30)
+    (kanji.rare.mound)
+    (kanji.rare.go_around);
+  expand_pbox;
+enddef;
+
+vardef kanji.grfive.trunk =
+  push_pbox_toexpand("kanji.grfive.trunk");
+  build_kanji.lr(460,-30)
+    (kanji.leftrad.morning)
+    (build_kanji.tb(400,320)
+       (kanji.radical.tent;
+        pop_stroke)
+       (build_kanji.sscale(yscaled 1.08)(kanji.grsix.dry);
+        replace_strokep(-2)(subpath (0.16,0.84) of oldp)));
+  expand_pbox;
+enddef;
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 vardef kanji.grsix.government_office =
@@ -219,6 +239,26 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vardef kanji.rare.go_around =
+  push_pbox_toexpand("kanji.rare.go_around");
+  build_kanji.level(build_kanji.tb(680,160)
+    (kanji.grone.one)
+    (kanji.greight.towel));
+  replace_strokep(0)
+    ((xpart point 0 of oldp,ypart point 0.5 of get_strokep(-2))--
+     (point 1 of oldp));
+  set_boserif(0,0,whatever);
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% shi/ichi "market"
+begintsuglyph("uni5E00",0);
+  kanji.rare.go_around;
+  tsu_render;
+endtsuglyph;
+
 % shi/ichi "market"
 begintsuglyph("uni5E02",2);
   kanji.grtwo.market;
@@ -240,6 +280,18 @@ endtsuglyph;
 % sou/houki "broom" as in houkiboshi "comet"
 begintsuglyph("uni5E1A",26);
   kanji.rare.broom;
+  tsu_render;
+endtsuglyph;
+
+% haku/kinu best used in "fukusa" which is a tea-ceremony wiping towel
+begintsuglyph("uni5E1B",27);
+  kanji.rare.ceremonial_tea_towel;
+  tsu_render;
+endtsuglyph;
+
+% shi/ikusa "teacher"
+begintsuglyph("uni5E2B",43);
+  kanji.grfive.teacher;
   tsu_render;
 endtsuglyph;
 
@@ -300,6 +352,12 @@ endtsuglyph;
 % kou/saiwa "blessing"
 begintsuglyph("uni5E78",120);
   kanji.grthree.blessing;
+  tsu_render;
+endtsuglyph;
+
+% kan/miki "trunk"
+begintsuglyph("uni5E79",121);
+  kanji.grfive.trunk;
   tsu_render;
 endtsuglyph;
 

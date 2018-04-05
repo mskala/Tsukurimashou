@@ -1,6 +1,6 @@
-/* $Id: splinesave.c 4532 2015-12-22 13:18:53Z mskala $ */
+/* $Id: splinesave.c 5989 2018-04-05 17:42:29Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
- * Copyright (C) 2015  Matthew Skala
+ * Copyright (C) 2015, 2018  Matthew Skala
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -718,41 +718,41 @@ static int FindOrBuildHintSubr(struct hintdb *hdb,uint8_t mask[12],int round) {
    struct mhlist *mh;
    GrowBuf gb;
 
-   for (mh=hdb->sublist; mh != NULL; mh=mh->next) {
-      if (memcmp(mask, mh->mask, sizeof(mask))==0)
-	 return (mh->subr);
+   for (mh=hdb->sublist;mh!=NULL;mh=mh->next) {
+      if (memcmp(mask,mh->mask,sizeof(uint8_t)*12)==0)
+	return (mh->subr);
    }
    SubrsCheck(hdb->subrs);
 
-   memset(&gb, 0, sizeof(gb));
+   memset(&gb,0,sizeof(gb));
    if (!hdb->scs[0]->hconflicts)
-      CvtPsHints(&gb, hdb->scs, hdb->instance_count, true, round, hdb->iscjk,
-		 NULL);
+     CvtPsHints(&gb,hdb->scs,hdb->instance_count,true,round,hdb->iscjk,
+		NULL);
    else
-      CvtPsMasked(&gb, hdb->scs, hdb->instance_count, true, round, mask);
+     CvtPsMasked(&gb,hdb->scs,hdb->instance_count,true,round,mask);
    if (!hdb->scs[0]->vconflicts)
-      CvtPsHints(&gb, hdb->scs, hdb->instance_count, false, round, hdb->iscjk,
-		 NULL);
+     CvtPsHints(&gb,hdb->scs,hdb->instance_count,false,round,hdb->iscjk,
+		NULL);
    else
-      CvtPsMasked(&gb, hdb->scs, hdb->instance_count, false, round, mask);
-   if (gb.pt+1 >= gb.end)
-      GrowBuffer(&gb);
+     CvtPsMasked(&gb,hdb->scs,hdb->instance_count,false,round,mask);
+   if (gb.pt+1>=gb.end)
+     GrowBuffer(&gb);
    *gb.pt++=11;		/* return */
 
    /* Replace an old subroutine */
-   if (mh != NULL) {
+   if (mh!=NULL) {
       free(hdb->subrs->values[mh->subr]);
-      hdb->subrs->values[mh->subr] =
-	 (uint8_t *) copyn((char *) gb.base, gb.pt-gb.base);
+      hdb->subrs->values[mh->subr]=
+	(uint8_t *)copyn((char *)gb.base,gb.pt-gb.base);
       hdb->subrs->lens[mh->subr]=gb.pt-gb.base;
-      memcpy(mh->mask, mask, sizeof(mh->mask));
+      memcpy(mh->mask,mask,sizeof(mh->mask));
    } else {
-      hdb->subrs->values[hdb->subrs->next] =
-	 (uint8_t *) copyn((char *) gb.base, gb.pt-gb.base);
+      hdb->subrs->values[hdb->subrs->next]=
+	(uint8_t *)copyn((char *)gb.base,gb.pt-gb.base);
       hdb->subrs->lens[hdb->subrs->next]=gb.pt-gb.base;
 
-      mh=calloc(1, sizeof(struct mhlist));
-      memcpy(mh->mask, mask, sizeof(mh->mask));
+      mh=calloc(1,sizeof(struct mhlist));
+      memcpy(mh->mask,mask,sizeof(mh->mask));
       mh->subr=hdb->subrs->next++;
       mh->next=hdb->sublist;
       hdb->sublist=mh;

@@ -1,6 +1,6 @@
 %
 % Unicode page 75 (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012, 2013, 2014, 2016  Matthew Skala
+% Copyright (C) 2011, 2012, 2013, 2014, 2016, 2017  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -34,6 +34,7 @@ beginfont
 
 % AUTODEPS
 input bkencl.mp;
+input bottomrad.mp;
 input buildkanji.mp;
 input gradeeight.mp;
 input gradefive.mp;
@@ -101,6 +102,16 @@ vardef kanji.grfour.give_birth =
     (kanji.toprad.stand_up;pop_stroke)
     (build_kanji.cliff_enclose(build_kanji.sscale(shifted (-40,0))
        (kanji.grone.life))));
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+vardef kanji.grfive.abbreviation =
+  push_pbox_toexpand("kanji.grfive.abbreviation");
+  build_kanji.level(build_kanji.lr(460,20)
+    (build_kanji.sscale(yscaled 0.85 shifted (0,70))(kanji.grone.paddy))
+    (kanji.grfour.every));
   expand_pbox;
 enddef;
 
@@ -220,6 +231,12 @@ endtsuglyph;
 % ryuu/to "detain"
 begintsuglyph("uni7559",89);
   kanji.grfive.detain;
+  tsu_render;
+endtsuglyph;
+
+% ryaku/hobo "abbreviation"
+begintsuglyph("uni7565",101);
+  kanji.grfive.abbreviation;
   tsu_render;
 endtsuglyph;
 

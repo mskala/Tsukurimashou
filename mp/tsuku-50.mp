@@ -1,6 +1,6 @@
 %
 % Unicode page 50 (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012, 2013, 2014  Matthew Skala
+% Copyright (C) 2011, 2012, 2013, 2014, 2017  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -34,6 +34,7 @@ beginfont
 
 % AUTODEPS
 input bkencl.mp;
+input bottomrad.mp;
 input buildkanji.mp;
 input gradeeight.mp;
 input gradefive.mp;
@@ -143,6 +144,16 @@ vardef kanji.grfive.portrait =
   expand_pbox;
 enddef;
 
+vardef kanji.grfive.provision =
+  push_pbox_toexpand("kanji.grfive.provision");
+  build_kanji.lr(340,-40)
+    (kanji.leftrad.person)
+    (build_kanji.tb(620,0)
+      (kanji.toprad.grass)
+      (build_kanji.cliff_enclose(kanji.bottomrad.job)));
+  expand_pbox;
+enddef;
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 vardef kanji.greight.manservant =
@@ -208,6 +219,12 @@ endtsuglyph;
 % soku/kawa "side"
 begintsuglyph("uni5074",116);
   kanji.grfour.side;
+  tsu_render;
+endtsuglyph;
+
+% bi/sana "provision"
+begintsuglyph("uni5099",153);
+  kanji.grfive.provision;
   tsu_render;
 endtsuglyph;
 

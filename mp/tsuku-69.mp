@@ -1,6 +1,6 @@
 %
 % Unicode page 69 (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012, 2013, 2014, 2016  Matthew Skala
+% Copyright (C) 2011, 2012, 2013, 2014, 2016, 2017  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -89,6 +89,20 @@ vardef kanji.grfour.extreme =
 enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+vardef kanji.grfive.examination =
+  push_pbox_toexpand("kanji.grfive.examination");
+  build_kanji.level(build_kanji.lr(380,30)
+    (kanji.leftrad.wood)
+    (build_kanji.tb(380,420)
+       (kanji.radical.tent)
+       (kanji.grfour.husband;
+        set_bosize(-3,0);
+        set_bosize(-2,0);
+        set_boserif(-1,0,whatever);
+        build_kanji.box((220,610),(780,360)))));
+  expand_pbox;
+enddef;
 
 vardef kanji.grfive.posture =
   push_pbox_toexpand("kanji.grfive.posture");
@@ -333,6 +347,12 @@ endtsuglyph;
 % kaba "autumn foliage"
 begintsuglyph("uni691B",27);
   kanji.grnine.autumn_foliage;
+  tsu_render;
+endtsuglyph;
+
+% ken/shira "examination"
+begintsuglyph("uni691C",28);
+  kanji.grfive.examination;
   tsu_render;
 endtsuglyph;
 

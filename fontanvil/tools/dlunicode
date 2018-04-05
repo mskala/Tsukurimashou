@@ -2,29 +2,29 @@
 
 mkdir -p dat
 for fn in Blocks.txt Unihan.zip ; do \
-  wget -N -nd -P dat http://unicode.org/Public/UCD/latest/ucd/$fn ; \
+  wget -N -nd -P dat $1UCD/latest/ucd/$fn ; \
 done
 
 cd dat ; unzip -o Unihan.zip ; cd ..
 
 wget -N -nd -P dat \
-  http://unicode.org/Public/UNIDATA/UnicodeData.txt
+  $1UNIDATA/UnicodeData.txt
 
 wget -N -nd -P dat \
-  http://unicode.org/Public/MAPPINGS/OBSOLETE/EASTASIA/JIS/JIS0201.TXT
+  $1MAPPINGS/OBSOLETE/EASTASIA/JIS/JIS0201.TXT
 wget -N -nd -P dat \
-  http://unicode.org/Public/MAPPINGS/OBSOLETE/EASTASIA/JIS/JIS0208.TXT
+  $1MAPPINGS/OBSOLETE/EASTASIA/JIS/JIS0208.TXT
 wget -N -nd -P dat \
-  http://unicode.org/Public/MAPPINGS/OBSOLETE/EASTASIA/KSC/KSC5601.TXT
+  $1MAPPINGS/OBSOLETE/EASTASIA/KSC/KSC5601.TXT
 wget -N -nd -P dat \
-  http://unicode.org/Public/MAPPINGS/OBSOLETE/EASTASIA/KSC/JOHAB.TXT
+  $1MAPPINGS/OBSOLETE/EASTASIA/KSC/JOHAB.TXT
 
 mkdir -p dat/apple
 wget -N -nd -P dat/apple -r -l1 -np \
-  http://www.unicode.org/Public/MAPPINGS/VENDORS/APPLE/
+  $1MAPPINGS/VENDORS/APPLE/
 rm -f dat/apple/index* dat/apple/robots*
 
 mkdir -p dat/adobe
 wget -N -nd -P dat/adobe -r -l1 -np \
-  http://www.unicode.org/Public/MAPPINGS/VENDORS/ADOBE/
+  $1MAPPINGS/VENDORS/ADOBE/
 rm -f dat/adobe/index* dat/adobe/robots*

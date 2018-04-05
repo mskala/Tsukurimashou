@@ -1,6 +1,6 @@
 %
 % Radicals for left side (often special forms of other radicals)
-% Copyright (C) 2011, 2012, 2013, 2016  Matthew Skala
+% Copyright (C) 2011, 2012, 2013, 2016, 2017  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -252,6 +252,18 @@ vardef kanji.leftrad.long_hair =
     replace_strokep(-3)((300,320)--(300,770)--(800,770));
     build_kanji.sscale(xyscaled (0.9,0.38) shifted (0,-240))
       (kanji.radical.mu));
+  expand_pbox;
+enddef;
+
+vardef kanji.leftrad.morning =
+  push_pbox_toexpand("kanji.leftrad.morning");
+  build_kanji.tb(280,40)
+    (build_kanji.tb(460,50)
+       (kanji.grone.ten)
+       (kanji.grone.day))
+    (build_kanji.sscale(xscaled 1.1)
+       (kanji.grone.ten;
+        set_boserif(-1,0,whatever)));
   expand_pbox;
 enddef;
 

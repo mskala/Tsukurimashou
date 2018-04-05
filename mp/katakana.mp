@@ -1,6 +1,6 @@
 %
 % Katakana for Tsukurimashou
-% Copyright (C) 2011, 2012, 2013  Matthew Skala
+% Copyright (C) 2011, 2012, 2013, 2017  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -223,7 +223,6 @@ vardef kata.shi =
   kata.no_stroke((870,480),(210,30));
 
   replace_strokeq(0)((0.9,0.9)--(1.1,1.1)--(1.4,1.4)--(2.2,2.2));
-  set_boserif(0,4,5);
   expand_pbox;
 enddef;
 
@@ -803,7 +802,6 @@ vardef kata.n =
 
   kata.no_stroke((870,480),(210,30));
   replace_strokeq(0)((0.9,0.9)--(1.1,1.1)--(1.4,1.4)--(2.2,2.2));
-  set_boserif(0,4,5);
   expand_pbox;
 enddef;
 

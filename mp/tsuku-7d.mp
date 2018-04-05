@@ -1,6 +1,6 @@
 %
 % Unicode page 7D (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012, 2013, 2016  Matthew Skala
+% Copyright (C) 2011, 2012, 2013, 2016, 2017  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -44,6 +44,7 @@ input gradetwo.mp;
 input radical.mp;
 input rare.mp;
 input rightrad.mp;
+input toprad.mp;
 
 do_late_includes;
 
@@ -173,11 +174,44 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vardef kanji.grfive.cotton =
+  push_pbox_toexpand("kanji.grfive.cotton");
+  build_kanji.lr(450,0)
+    (build_kanji.lift_skirt(300,60)(kanji.grone.thread))
+    (kanji.rare.ceremonial_tea_towel);
+  expand_pbox;
+enddef;
+
+vardef kanji.grfive.knit =
+  push_pbox_toexpand("kanji.grfive.knit");
+  build_kanji.lr(320,-10)
+    (build_kanji.lift_skirt(300,60)(kanji.grone.thread))
+    (kanji.rare.flat);
+  expand_pbox;
+enddef;
+
+vardef kanji.grfive.naked =
+  push_pbox_toexpand("kanji.grfive.naked");
+  build_kanji.level(build_kanji.tb(430,20)
+    (kanji.toprad.blue)
+    (kanji.grone.thread));
+  expand_pbox;
+enddef;
+
 vardef kanji.grfive.sever =
   push_pbox_toexpand("kanji.grfive.sever");
   build_kanji.lr(440,0)
     (build_kanji.lift_skirt(300,60)(kanji.grone.thread))
     (build_kanji.sscale(xyscaled (1,0.95))(kanji.grtwo.colour));
+  expand_pbox;
+enddef;
+
+vardef kanji.grfive.sutra =
+  push_pbox_toexpand("kanji.grfive.sever");
+  build_kanji.level(build_kanji.lr(440,0)
+    (build_kanji.sscale(yscaled 1.10)(build_kanji.lift_skirt(300,60)
+       (kanji.grone.thread)))
+    (kanji.rare.sacred));
   expand_pbox;
 enddef;
 
@@ -227,6 +261,12 @@ begintsuglyph("uni7D1A",26);
   tsu_render;
 endtsuglyph;
 
+% su/moto "naked"
+begintsuglyph("uni7D20",32);
+  kanji.grfive.naked;
+  tsu_render;
+endtsuglyph;
+
 % dai/hoso "dainty"
 begintsuglyph("uni7D30",48);
   kanji.grtwo.dainty;
@@ -242,6 +282,12 @@ endtsuglyph;
 % so/ku "assemble"
 begintsuglyph("uni7D44",68);
   kanji.grtwo.assemble;
+  tsu_render;
+endtsuglyph;
+
+% kei/tate "sutra" (and many other meanings)
+begintsuglyph("uni7D4C",76);
+  kanji.grfive.sutra;
   tsu_render;
 endtsuglyph;
 
@@ -281,6 +327,12 @@ begintsuglyph("uni7D9A",154);
   tsu_render;
 endtsuglyph;
 
+% men/wata "cotton"
+begintsuglyph("uni7DBF",191);
+  kanji.grfive.cotton;
+  tsu_render;
+endtsuglyph;
+
 % sou/subete "whole"
 begintsuglyph("uni7DCF",207);
   kanji.grfive.whole;
@@ -296,6 +348,12 @@ endtsuglyph;
 % sen/suji "line" (geometric, rail, telephone)
 begintsuglyph("uni7DDA",218);
   kanji.grtwo.line;
+  tsu_render;
+endtsuglyph;
+
+% hen/amu "knit" and metaphorically "edit"
+begintsuglyph("uni7DE8",232);
+  kanji.grfive.knit;
   tsu_render;
 endtsuglyph;
 

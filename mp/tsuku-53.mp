@@ -1,6 +1,6 @@
 %
 % Unicode page 53 (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012, 2013, 2014, 2016  Matthew Skala
+% Copyright (C) 2011, 2012, 2013, 2014, 2016, 2017  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -127,6 +127,12 @@ vardef kanji.grfive.thick =
 enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% in/suku "equal"
+begintsuglyph("uni5300",0);
+  kanji.rare.equal;
+  tsu_render;
+endtsuglyph;
 
 % hou/tsutsu "wrap"
 begintsuglyph("uni5305",5);

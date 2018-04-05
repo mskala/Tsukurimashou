@@ -1,6 +1,6 @@
 %
 % Unicode page 4E (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012, 2013, 2014, 2016  Matthew Skala
+% Copyright (C) 2011, 2012, 2013, 2014, 2016, 2017  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -277,6 +277,12 @@ endtsuglyph;
 % extra "vertical line"
 begintsuglyph("uni4E28",40);
   kanji.radical.vline;
+  tsu_render;
+endtsuglyph;
+
+% simplified "half trunk" used as character component
+begintsuglyph("uni4E2C",44);
+  build_kanji.lr(480,0)(kanji.radical.half_trunk)();
   tsu_render;
 endtsuglyph;
 

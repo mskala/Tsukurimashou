@@ -2,7 +2,7 @@
 
 #
 # Makefile source for Kleknev
-# Copyright (C) 2013, 2014, 2015  Matthew Skala
+# Copyright (C) 2013, 2014, 2015, 2017  Matthew Skala
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -35,6 +35,8 @@ empty:=
 space:=$(empty) $(empty)
 comma:=,
 percent=%
+
+$(error This Makefile must be edited by Perl code in config.status before use)
 
 SHELL=$(if $(wildcard @KLEKNEV@),@KLEKNEV@,$(if \
   $(wildcard /bin/bash),/bin/bash,/bin/sh))
@@ -126,12 +128,11 @@ endif
 
 STANDALONE_QVFG:=
 EXTRA_DIST:= \
-  $(if $(filter $(distdir),$(top_distdir)),$(STANDALONE_QVFG))
-
+  $(if $(filter no,@parasite@),$(STANDALONE_QVFG))
 
 STANDALONE_FPEVCGF:=
 dist_noinst_SCRIPTS:= \
-  $(if $(filter $(distdir),$(top_distdir)),$(STANDALONE_FPEVCGF)) \
+  $(if $(filter no,@parasite@),$(STANDALONE_FPEVCGF)) \
   $(GCOV_TESTS)
 
 bin_PROGRAMS = kleknev kleknev-argo
@@ -151,11 +152,17 @@ kleknev_argo_SOURCES = kleknev-argo.c kleknev.h wrapper.c
 
 MOSTLYCLEANFILES =
 
-CLEANFILES =
+CLEANFILES = \
+  $(if $(filter yes,@parasite@),$(STANDALONE_QVFG) $(STANDALONE_FPEVCGF))
 
-DISTCLEANFILES =
+DISTCLEANFILES = \
+  aminclude.am _stdint.h
 
 MAINTAINERCLEANFILES =
+
+distcleancheck_listfiles = \
+  find . -type f -exec sh -c 'test -f $(srcdir)/$$1 || echo $$1' \
+    sh '{}' ';'
 
 ############################################################################
 
@@ -232,6 +239,9 @@ m4/tsu_bad_paths.m4: ../m4/tsu_bad_paths.m4
 	$(TSU_V_CP) cp $< $@
 
 m4/tsu_colourise.m4: ../m4/tsu_colourise.m4
+	$(TSU_V_CP) cp $< $@
+
+m4/tsu_fix_makefile.m4: ../m4/tsu_fix_makefile.m4
 	$(TSU_V_CP) cp $< $@
 
 endif

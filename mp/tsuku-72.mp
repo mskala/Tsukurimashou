@@ -1,6 +1,6 @@
 %
 % Unicode page 72 (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012, 2013, 2016  Matthew Skala
+% Copyright (C) 2011, 2012, 2013, 2016, 2017  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -33,6 +33,7 @@
 beginfont
 
 % AUTODEPS
+input bkencl.mp;
 input buildkanji.mp;
 input gradeeight.mp;
 input gradenine.mp;
@@ -75,6 +76,61 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vardef kanji.grfive.situation =
+  push_pbox_toexpand("kanji.grfive.situation");
+  build_kanji.lr(340,40)
+    (kanji.radical.half_trunk)
+    (kanji.grone.dog);
+  expand_pbox;
+enddef;
+
+vardef kanji.grfive.crime =
+  push_pbox_toexpand("kanji.grfive.crime");
+  build_kanji.lr(430,-40)
+    (kanji.leftrad.dog)
+    (kanji.radical.ancient_seal);
+  expand_pbox;
+enddef;
+
+vardef kanji.grfive.edition =
+  push_pbox_toexpand("kanji.grfive.edition");
+  build_kanji.lr(460,30)
+    (kanji.grsix.slice)
+    (kanji.grthree.anti);
+  expand_pbox;
+enddef;
+
+vardef kanji.grfive.germany =
+  push_pbox_toexpand("kanji.grfive.germany");
+  build_kanji.lr(390,-10)
+    (kanji.leftrad.dog)
+    (tsu_xform(identity yscaled 1.12)(kanji.grone.bug));
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+vardef kanji.grsix.slice =
+  push_pbox_toexpand("kanji.grsix.slice");
+  push_stroke((200,780){down}..(145,130)..(50,-50),
+    (1.7,1.7)--(1.5,1.5)--(1,1));
+  set_boserif(0,0,10);
+  push_stroke((510,840)--(510,560),(1.6,1.6)--(1.5,1.5));
+  set_boserif(0,0,10);
+  push_stroke((get_strokep(-1) intersectionpoint ((0,560)--(500,560)))
+      --(800,560),
+    (1.6,1.6)--(1.6,1.6));
+  set_boserif(0,1,9);
+  push_stroke((get_strokep(-2) intersectionpoint ((0,320)--(500,320)))
+      --(600,320)--(600,-80),
+    (1.6,1.6)--(1.6,1.6)--(1.5,1.5));
+  set_botip(0,1,1);
+  set_boserif(0,1,4);
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 vardef kanji.grnine.male =
   push_pbox_toexpand("kanji.grnine.male");
   build_kanji.lr(450,80)
@@ -94,11 +150,37 @@ vardef kanji.leftrad.cow =
   expand_pbox;
 enddef;
 
+vardef kanji.leftrad.dog =
+  push_pbox_toexpand("kanji.leftrad.dog");
+  push_stroke(
+    (120,840){curl 0}..tension 1.4..(820,320)..(640,40)..{curl 0.6}(100,40),
+    (1.1,1.1)--(1.5,1.5)--(1.6,1.6)--(1.4,1.4));
+  push_stroke((770,870)..tension 1.2..(550,700)..(200,510),
+    (1.6,1.6)--(1.4,1.4)--(1.1,1.1));
+  set_boserif(0,0,10);
+  push_stroke((point 0.75 of get_strokep(-1))
+      ..tension 1.2..(550,330)..{curl 0.6}(290,250),
+    (point 0.6 of get_strokeq(-1))..(1.3,1.3)..(1.1,1.1));
+  expand_pbox;
+enddef;
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % chichi "father"
 begintsuglyph("uni7236",54);
   kanji.grtwo.father;
+  tsu_render;
+endtsuglyph;
+
+% hen/kata "slice"
+begintsuglyph("uni7247",71);
+  kanji.grsix.slice;
+  tsu_render;
+endtsuglyph;
+
+% han "edition"
+begintsuglyph("uni7248",72);
+  kanji.grfive.edition;
   tsu_render;
 endtsuglyph;
 
@@ -185,6 +267,24 @@ endtsuglyph;
 % inu "dog"
 begintsuglyph("uni72AC",172);
   kanji.grone.dog;
+  tsu_render;
+endtsuglyph;
+
+% han/oka "crime"
+begintsuglyph("uni72AF",175);
+  kanji.grfive.crime;
+  tsu_render;
+endtsuglyph;
+
+% shou "situation"
+begintsuglyph("uni72B6",182);
+  kanji.grfive.situation;
+  tsu_render;
+endtsuglyph;
+
+% doku/hito "Germany"
+begintsuglyph("uni72EC",236);
+  kanji.grfive.germany;
   tsu_render;
 endtsuglyph;
 

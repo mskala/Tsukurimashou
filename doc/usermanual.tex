@@ -2,7 +2,7 @@
 
 %
 % User Manual for Tsukurimashou
-% Copyright (C) 2011, 2012, 2013, 2014, 2015  Matthew Skala
+% Copyright (C) 2011, 2012, 2013, 2014, 2015, 2017  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -150,7 +150,7 @@ This project's English-language home page is at\\
 \vspace*{1in}
 
 User manual for Tsukurimashou\\
-Copyright © 2011, 2012, 2013, 2014, 2015\quad Matthew Skala
+Copyright © 2011, 2012, 2013, 2014, 2015, 2017\quad Matthew Skala
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -401,115 +401,75 @@ Matthew Skala\\mskala@ansuz.sooke.bc.ca\\\TsukurimashouReleaseDate
 \blsubsection{\TsukurimashouVWide
 のニュース}{What's new in \TsukurimashouVersion?}
 
-Version 0.9 has been a long time coming.  There are not all that many new
-kanji.  The current count is 1754 kanji, up from 1502 in version 0.8 roughly
-a year ago.  This includes all the elementary-school kanji through Grade
-Four, and 100 of the 185 kanji in Grade Five.  A lot of infrastructure work
-has also been done.  This version was prepared in a hurry, for reasons to be
-described below.
+I said in the version~0.9 ``what's new'' that the future of the project was
+uncertain because of my career situation.  That was a little over three
+years ago.  Subsequent to the 0.9 release, I went to Denmark for a couple of
+years on a postdoctoral fellowship.  I made some effort to work
+Tsukurimashou into my academic work, including a couple of publications I
+will cite below, but for the most part, work on this project was shelved as
+I made it my top priority to find a long-term academic position.
 
-This version of Tsukurimashou introduces FontAnvil, a standalone interpreter
-for FontForge's native scripting language (PE script).  The decision to
-bundle a more or less complete font editor, drastically increasing the
-amount of code in the project and thus increasing the maintenance costs, was
-not made lightly.  The issue is that within the last two years or so I have
-been involved in FontForge development, and it is clear that the strategic
-direction of that project will present problems for the long-term use of
-FontForge within Tsukurimashou.  FontForge's development team is primarily
-interested in end-user GUI features (even going so far as social networking)
-and encourages Python for all new code; they have even seriously discussed,
-though not yet committed to, removing PE script support entirely, which
-would be fatal to Tsukurimashou if Tsukurimashou continued to rely on
-FontForge.  Especially given that Tsukurimashou already bundles its own
-versions of several other critical tools (such as Metatype1 and t1asm), it
-seems reasonable to bundle Tsukurimashou's own replacement for FontForge. 
-This is hoped to be of benefit to FontForge development as well, because it
-may make it easier for them to stop supporting PE script should they want to
-in the future; they can encourage PE script users to use FontAnvil instead
-of leaving such users out in the cold.
+My efforts were not successful, and in 2016, after 15 years in academic
+research aiming for a professorship, I decided it was time to seek a
+different career path.  I moved back to Canada and went into the electronic
+musical instruments business.  Please visit North Coast Synthesis Ltd., at
+\url{https://northcoastsynthesis.com/}, for high-quality Eurorack modules
+and kits.
 
-FontForge has very recently made significant improvements to its
-spline-geometry operations (remove overlaps, find intersections, add
-extrema).  I have been complaining about those bugs for \emph{years}; they
-are critical to Tsukurimashou.  Many thanks are due to Frank Trampe of the
-FontForge team for his assiduous work on the spline geometry issues.  The
-latest changes to these features from FontForge were ported into FontAnvil
-at the last minute before the Tsukurimashou 0.9 release, along with some
-quick-and-dirty last-minute hacking on other stability issues (infinite
-loops and segfaults) to just get the build working.  I cannot vouch for
-Tsukurimashou 0.9 to build properly with any font compiler except the
-development FontAnvil bundled with it; and I cannot vouch for that version
-of FontAnvil to do anything except build Tsukurimashou 0.9 more or less
-correctly.  However, that specific combination, on my specific desktop
-computer, seems to work pretty well.
+With November 2017, I was considering doing a NaNoWriMo project (``National
+Novel Writing Month''---the idea is to write a 50,000-word work of fiction
+in 30 days) but decided instead to aim for adding five new kanji to
+Tsukurimashou each day and have them be the ones needed for the next
+release, namely Grade Five kanji.  That actually meant more than five
+characters per day on average, as some of the Grade Fives entailed creating
+other characters first to use as components.  A few days ago I completed
+the Grade Five set and have spent the time since, working on other issues
+needed to prepare the 0.10 release.
 
-I presented Tsukurimashou at TUG 2013 in Tokyo.  Slides from that talk are
-at \url{https://tug.org/tug2013/slides/skala-slides.pdf}, and the associated
-\emph{TUGboat} article is available to TUG members at
-\url{https://www.tug.org/members/TUGboat/tb34-3/tb108skala.pdf}; it will
-eventually become open-access.  Most of the source code for the article
-(maybe not including the absolute latest edits, made by the journal editors
-instead of by me) is in the \texttt{tug2013/} subdirectory of
-Tsukurimashou's version control system.
+This version~0.10 is being pushed out in a bit of a rush, again, because
+after three years with no releases I'd like to confirm that the project is
+not dead, and get as much visible progress in this November push as
+possible.  My roadmap for future releases is to push 0.11 halfway through
+Grade Six, 0.12 at the end of Grade Six, and then it'll be the big one:
+Tsukurimashou~1.0, with no specific kanji promised beyond Grade Six but a
+more polished release addressing issues that may still remain after the 0.12
+release.  It is my hope that version~1.0 will be usable enough that I can
+sell precompiled binaries of it; I have no illusions of actually making any
+real money that way, but maybe some people would like to have an official,
+physical DVD of the Tsukurimashou fonts and support the project a little.
 
-In this version the Korean-language fonts have had their names changed to
-``Mandeubsida''; from talking to some people at the TUG meeting, it appears
-that this is a better translation of the name Tsukurimashou into Korean. 
-The GSUB features to support Korean glyph shaping have been redesigned to
-better work with some shapers (in particular, recent versions of HarfBuzz).
-Also in this version, build system support for an experimental font family
-called Kazoemashou (``let's count!'') has been added; this is intended to
-become a Unicode Math font based on Tsukurimashou, but as of this writing it
-is very fragmentary and not usable.
+My academic journal article about IDSgrep was published in the
+International Journal of Asian Language Processing and you can read
+it (open access) at
+\url{http://colips.org/journals/volume23/23.2.4_idsgrep-article-final.pdf}. 
+I also presented a conference paper on algorithmic aspects at the 9th
+International Conference on Similarity Search and Applications (SISAP 2016)
+in Tokyo, and that one is online (behind a paywall) at
+\url{https://link.springer.com/chapter/10.1007/978-3-319-46759-7_11}.
 
-An academic article about IDSgrep is currently in submission to \emph{ACM
-Transactions on Asian Language Information Processing}.  You can read a
-preprint version at \url{http://arxiv.org/abs/1404.5585}.
+This version contains significant revisions to FontAnvil and some of the
+other associated software, but those are still too new and experimental for
+detailed comment here.  FontForge contained a lot of semi-hardcoded tables
+of font information, with semi-automated software for generating the C code
+to express those tables.  I have introduced a new tool of my own called
+Icemap for solving that problem in a more principled way, but I'm not up to
+writing a detailed document for it yet.  Dig around in the source code, and
+consider it pre-alpha, if you want.
 
-Version 0.9 was prepared in a hurry, and there are some ongoing questions
-about the future of Tsukurimashou as a result of my life and employment
-situations.  This release is a fair bit less polished than other releases
-have been, and some parts of the documentation (especially in the parasite
-packages) may not have been properly updated.  I am releasing it as it
-stands because after a year, we need a new version; the kanji planned for
-inclusion in this version are complete at least; and it may be a long time
-before I have another chance.
-
-I mentioned in last version's release notes that I was unhappy about being
-single and unemployed.  It took me a year and a half to find an academic
-job.  During that time I lived mostly on savings, with occasional
-short-term contracts.  During that time my availability to work on
-Tsukurimashou was limited and development was slow.  I eventually obtained a
-postdoctoral position at the IT University of Copenhagen, working for a
-project called Scaleable Similarity Search.  This project's subject matter
-is a close match to the kind of thing I wrote about in my doctoral
-dissertation, and I am excited about getting to do more work on it.  As I
-write this text (August 16, 2014) I am in the middle of packing to move from
-Canada to Denmark.  Now I am rushing to get the Tsukurimashou 0.9 release
-out the door before I leave, because if I don't, it won't go out until much
-later, if ever.  Very soon I will be shutting down and packing my main
-development computer so it can be shipped; and it will probably be at least
-two months before I can use this computer again.
-
-Once I arrive in Copenhagen, I don't know if I will be spending a lot of
-time trying to learn to speak Danish, and if so what that will do to my
-Japanese studies.  Despite strict Danish government regulations limiting
-employment work hours, I don't know how much leisure time I will really have
-to devote to Tsukurimashou; and I don't know to what extent I will be able
-to fit continued Tsukurimashou development into my future career plans.  I
-am now six years post-PhD.  My job in Copenhagen is to be at most two years
-long, and given that it took me a year and a half to find this job, and next
-time, if I am to have a real academic career at all then my next job had
-better be at the faculty level, it appears that I should \emph{already} have
-been searching for my next job since something like a year ago.
-
-This is an extremely stressful state to be in and it is destructive to my
-ability to pursue side projects like Tsukurimashou.  I am conscious that my
-life outside of work is also far from what it should be, it is not
-clear whether I will ever be able to have the life that I was promised and
-have earned, and that too is destructive.  The bottom line is that I can't
-predict much about possible future development of Tsukurimashou.
-バージョン０．９は、楽しんで下さい。
+Without wanting to get too personal, the next couple of years are going to
+be critical for me in the course of my life.  I'm not making Tsukurimashou
+for money but I do need money; academia didn't work out and it's not clear
+electronics manufacturing will either; and any help and support you can give
+me is welcome if it is in the form I need.  The best thing you can do is buy
+my synthesizer modules (that URL again is
+\url{https://northcoastsynthesis.com/}); but I realize they are only of use
+to a few people.  Failing that anything that increases the profile of my
+business or this project would be very welcome.  Please, circulate that URL
+and the URL of the Tsukurimashou home page
+(\url{http://tsukurimashou.osdn.jp/}) in your social media, and talk and
+write about Tsukurimashou!  It is only
+because of your continued support that I am able to continue working
+on this project.  よろしくお願いします。
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -669,7 +629,7 @@ accomplished with, for instance, Adobe Multiple Master.
 \blsubsection{デベロップメントロードマップ}{Development roadmap}
 
 This version contains all the kyouiku kanji (the ones taught in Japanese
-elementary school) through Grade 4.  The current plan is
+elementary school) through Grade 5.  The current plan is
 to release a minor version after each grade level of kyouiku kanji and one
 halfway through each grade level, which will take us up to version 0.12 at
 the end of Grade 6.  Version 1.0 will probably be a separate version
@@ -732,26 +692,27 @@ Tsukurimashou.
 %   0.7    20130307   2456358    1291      2770   48879
 %   0.8    20130826   2456530    1502      2981   52508
 %   0.9    20140817   2456887    1754      3234   56641
+%   0.10   20171117   2458075    2353      3831   63345
 
 \begin{figure}
-\tikzset{horizontal axis/.style={xscale=0.09,xshift=1.5cm}}
+\tikzset{horizontal axis/.style={xscale=0.045,xshift=1.5cm}}
 \tikzset{vertical axis/.style={yscale=0.2}}
 \centering
 \begin{tikzpicture}
   \begin{scope}[vertical axis]
-    \draw[arrows=-triangle 60] (0,-1) -- (0,32);
+    \draw[arrows=-triangle 60] (0,-1) -- (0,42);
     \foreach \y/\ylbl in
-      {0/0,5/500,10/1000,15/1500,20/2000,25/2500,30/3000} {
+      {0/0,10/1000,20/2000,30/3000,40/4000} {
       \draw (-0.2,\y) -- (0.2,\y);
-      \node[anchor=east] at (-0.2,\y) {\ylbl};
+      \node[anchor=east] at (-0.2,\y) {\scriptsize\ylbl};
     }
     \node[rotate=90] at (-2,16) {glyphs};
   \end{scope}
   \begin{scope}[horizontal axis]
-    \draw[arrows=-triangle 60] (-2,0) -- (132.0,0);
+    \draw[arrows=-triangle 60] (-2,0) -- (252.0,0);
     \foreach \x/\xlbl in
       {1.2/0.1,5.8/0.2,9.2/0.3,25.1/0.4,31.1/0.5,49.6/0.6,76.0/0.7,%
-       93.0/0.8,128.7/0.9} {
+       93.0/0.8,128.7/0.9,247.5/0.10} {
       \draw (\x,-0.2) -- (\x,0.2);
       \node[anchor=north] at (\x,-0.2) {\scriptsize\xlbl};
     }
@@ -767,6 +728,7 @@ Tsukurimashou.
     \node (v7k) at (75.7,12.91) {漢};
     \node (v8k) at (93.0,15.02) {漢};
     \node (v9k) at (128.7,17.54) {漢};
+    \node (v10k) at (247.5,23.53) {漢};
     \node (v1t) at (1.2,13.07) {\labelitemi};
     \node (v2t) at (5.8,16.46) {\labelitemi};
     \node (v3t) at (9.2,17.97) {\labelitemi};
@@ -775,13 +737,14 @@ Tsukurimashou.
     \node (v6t) at (49.6,25.86) {\labelitemi};
     \node (v7t) at (75.7,27.70) {\labelitemi};
     \node (v8t) at (93.0,29.81) {\labelitemi};
-    \node (v9t) at (128.7 ,32.34) {\labelitemi};
+    \node (v9t) at (128.7,32.34) {\labelitemi};
+    \node (v10t) at (247.5,38.31) {\labelitemi};
     \draw (v1k) -- (v2k) -- (v3k) -- (v4k) 
-      -- (v5k) -- (v6k) -- (v7k) node[sloped,above,midway] {kanji};
-    \draw (v7k) -- (v8k) -- (v9k);
+      -- (v5k) -- (v6k) -- (v7k) -- (v8k) -- (v9k)
+      -- (v10k) node[sloped,above,midway] {kanji};
     \draw (v1t) -- (v2t) -- (v3t) -- (v4t)
-      -- (v5t) -- (v6t) -- (v7t) node[sloped,above,midway] {total};
-    \draw (v7t) -- (v8t) -- (v9t);
+      -- (v5t) -- (v6t) -- (v7t) -- (v8t) -- (v9t)
+      -- (v10t) node[sloped,above,midway] {total};
   \end{scope}
 \end{tikzpicture}
 \caption{Growth of glyph counts}
@@ -796,25 +759,25 @@ Mandeubsida) plotted against the total number of glyphs in the main
 Tsukurimashou family.
 
 \begin{figure}
-\tikzset{horizontal axis/.style={xscale=0.3}}
-\tikzset{vertical axis/.style={yscale=0.18}}
+\tikzset{horizontal axis/.style={xscale=0.25}}
+\tikzset{vertical axis/.style={yscale=0.15}}
 \centering
 \begin{tikzpicture}
   \begin{scope}[vertical axis]
-    \draw[arrows=-triangle 60] (0,0) -- (0,62);
+    \draw[arrows=-triangle 60] (0,0) -- (0,72);
     \foreach \y/\ylbl in
-      {0/0,10/10000,20/20000,30/30000,40/40000,50/50000,60/60000} {
+      {0/0,10/10000,20/20000,30/30000,40/40000,50/50000,60/60000,70/70000} {
       \draw (-0.2,\y) -- (0.2,\y);
-      \node[anchor=east] at (-0.2,\y) {\ylbl};
+      \node[anchor=east] at (-0.2,\y) {\scriptsize\ylbl};
     }
     \node[rotate=90] at (-2.2,25) {lines of code};
   \end{scope}
   \begin{scope}[horizontal axis]
-    \draw[arrows=-triangle 60] (0,0) -- (32,0);
+    \draw[arrows=-triangle 60] (0,0) -- (42,0);
     \foreach \x/\xlbl in
-      {0/0,5/500,10/1000,15/1500,20/2000,25/2500,30/3000} {
+      {0/0,10/1000,20/2000,30/3000,40/4000} {
       \draw (\x,-0.2) -- (\x,0.2);
-      \node[anchor=north] at (\x,-0.2) {\xlbl};
+      \node[anchor=north] at (\x,-0.2) {\scriptsize\xlbl};
     }
     \node at (15,-1.3) {glyphs};
   \end{scope}
@@ -828,8 +791,9 @@ Tsukurimashou family.
     \node (v7) at (27.70,48.879) {\labelitemi};
     \node (v8) at (29.81,52.508) {\labelitemi};
     \node (v9) at (32.34,56.641) {\labelitemi};
+    \node (v10) at (38.31,63.345) {\labelitemi};
     \draw (v1) -- (v2) -- (v3) -- (v4) -- (v5) -- (v6) -- (v7)
-      -- (v8) -- (v9);
+      -- (v8) -- (v9) -- (v10);
   \end{scope}
 \end{tikzpicture}
 \caption{Lines of code per glyph}

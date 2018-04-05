@@ -2,7 +2,7 @@
 
 #
 # Configuration source for IDSgrep
-# Copyright (C) 2012, 2013, 2014, 2015  Matthew Skala
+# Copyright (C) 2012, 2013, 2014, 2015, 2017  Matthew Skala
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -168,6 +168,8 @@ AC_CONFIG_MACRO_DIR([m4])
 AC_REVISION([$Id: configure.ac 1015 2011-12-15 22:24:32Z mskala $])
 AC_COPYRIGHT([Copyright (C) 2012, 2013, 2014  Matthew Skala])
 AC_SUBST([release_date],["March 27, 2014"])
+# this must be early so it will happen before depfiles
+TSU_FIX_MAKEFILE
 AM_SILENT_RULES
 #
 ############################################################################
@@ -202,6 +204,9 @@ AS_IF([test "x$KLEKNEV" = "x"],
 AC_ARG_VAR([PERL],[Perl])
 AS_IF([test "x$PERL" = "x"],
   [AC_PATH_PROG([PERL],[perl])])
+AC_ARG_VAR([UNICODE_URL],[Unicode data root])
+AS_IF([test "x$UNICODE_URL" = "x"],
+  [UNICODE_URL=http://unicode.org/Public/])
 AC_ARG_VAR([VALGRIND],[Valgrind])
 AS_IF([test "x$VALGRIND" = "x"],
   [AC_PATH_PROG([VALGRIND],[valgrind])])
@@ -216,17 +221,6 @@ AS_IF([test "x$VALGRIND" = "x"],
 AC_ARG_VAR([XELATEX],[XeLaTeX],[no])
 AS_IF([test "x$XELATEX" = "x"],
   [AC_PATH_PROG([XELATEX],[xelatex])])
-#
-############################################################################
-#
-# Check for parasite build
-#
-AC_MSG_CHECKING([whether we are building as a parasite])
-AM_CONDITIONAL([COND_PARASITE],
-  [grep Tsukurimashou ../Makefile > /dev/null 2> /dev/null])
-AM_COND_IF([COND_PARASITE],
-  [AC_MSG_RESULT([yes])],
-  [AC_MSG_RESULT([no])])
 #
 ############################################################################
 #
@@ -296,6 +290,13 @@ AX_AM_JOBSERVER
 #
 # User-settable options
 #
+AC_ARG_ENABLE([download],
+  [AS_HELP_STRING([--enable-download=[yes|no]],
+    [automatically download Unicode data from UNICODE_URL [no]])],
+    [],
+    [enable_download=no])
+AM_CONDITIONAL([COND_DOWNLOAD],[test '!' "$enable_download" = no])
+#
 AC_ARG_ENABLE([gcov],
   [AS_HELP_STRING([--enable-gcov],
     [use Gcov to test the test suite])],
@@ -331,9 +332,9 @@ AC_SUBST([with_chise_ids])
 AS_IF([test "x$prefix" = "xNONE"],[prefix="$ac_default_prefix"])
 AC_ARG_WITH([edict2],
   [AS_HELP_STRING([--with-edict2=PATH],
-     [EDICT2 database [auto]])],
-     [],
-     [with_edict2=auto])
+    [EDICT2 database [auto]])],
+  [],
+  [with_edict2=auto])
 AS_IF([test "x$with_edict2" = "xauto"],[
 AC_MSG_CHECKING([for EDICT2])
 m4_foreach_w([edcheckpath],m4_expand([$srcdir dnl
@@ -357,8 +358,8 @@ AS_IF([test "x$prefix" = "xNONE"],[prefix="$ac_default_prefix"])
 AC_ARG_WITH([kanjivg],
   [AS_HELP_STRING([--with-kanjivg=PATH],
      [KanjiVG database [auto]])],
-     [],
-     [with_kanjivg=auto])
+   [],
+   [with_kanjivg=auto])
 AS_IF([test "x$with_kanjivg" = "xauto"],[
 AC_MSG_CHECKING([for KanjiVG])
 m4_foreach_w([kvcheckpath],m4_expand([$srcdir dnl
@@ -381,8 +382,8 @@ AC_SUBST([with_kanjivg])
 AC_ARG_WITH([tsuku-build],
   [AS_HELP_STRING([--with-tsuku-build=PATH],
      [Tsukurimashou build dir [auto]])],
-     [],
-     [with_tsuku_build=auto])
+   [],
+   [with_tsuku_build=auto])
 AS_IF([test "x$with_tsuku_build" = "xauto"],[
 AC_MSG_CHECKING([for Tsukurimashou build dir])
 m4_foreach_w([tbcheckname],m4_expand([tsukurimashou dnl
@@ -405,22 +406,23 @@ AC_SUBST([with_tsuku_build])
 AC_ARG_ENABLE([cjkvi-style],
   [AS_HELP_STRING([--enable-cjkvi-style=[[gtjkvxhau]]],
     [which CJKVI dictionaries to build [j]])],
-    [],
-    [enable_cjkvi_style=j])
+  [],
+  [enable_cjkvi_style=j])
 AC_SUBST([enable_cjkvi_style])
 #
 AC_ARG_ENABLE([colour-build],
   [AS_HELP_STRING([--disable-colour-build],
     [turn off ANSI colour in build scripts])],
-    [],
-    [enable_colour_build=yes])
+  [],
+  [enable_colour_build=yes])
 AC_ARG_ENABLE([color-build],[dnl],[],[enable_color_build=yes])
+# ]
 #
 AC_ARG_ENABLE([docs],
   [AS_HELP_STRING([--disable-docs],
     [turn off PDF documentation])],
-    [],
-    [enable_docs=yes])
+  [],
+  [enable_docs=yes])
 #
 AC_ARG_ENABLE([edict-decomp],
   [AS_HELP_STRING([--enable-edict-decomp[[=cjkvi-X|chise|kanjivg|tsuku]]],
@@ -443,11 +445,17 @@ AS_IF([test "$enable_edict_decomp" = "no"],
       [edict_decomp=])
 AC_SUBST([edict_decomp])
 #
+AC_ARG_ENABLE([parasite],
+  [AS_HELP_STRING([--enable-parasite=[yes|no|auto]],
+    [build as a parasite [auto]])],
+  [],
+  [enable_parasite=auto])
+#
 AC_ARG_WITH([valgrind],
   [AS_HELP_STRING([--with-valgrind],
     [use Valgrind for tests if available])],
-    [],
-    [with_valgrind=no])
+  [],
+  [with_valgrind=no])
 #
 # Process user options
 #
@@ -470,6 +478,22 @@ AS_IF([test "x$enable_silent_rules" = "x"],
 #
 ############################################################################
 #
+# Check for parasite build
+#
+AC_MSG_CHECKING([whether we are building as a parasite])
+AS_IF([test "x$enable_parasite" = "xauto"],
+  [AS_IF([grep Tsukurimashou ../Makefile > /dev/null 2> /dev/null],
+    [enable_parasite=yes],
+    [enable_parasite=no])])
+AC_MSG_RESULT([$enable_parasite])
+AM_CONDITIONAL([COND_PARASITE],[test "x$enable_parasite" = "xyes"])
+AM_COND_IF([COND_PARASITE],
+  [parasite=yes],
+  [parasite=no])
+AC_SUBST([parasite])
+#
+############################################################################
+#
 # Generate output
 #
 AC_SUBST([flat_dictdir])
@@ -486,13 +510,6 @@ AC_DEFINE_UNQUOTED([DICTDIR],["$flat_dictdir"],
 #
 AC_SUBST([andt],[])
 AC_CONFIG_FILES([Makefile idsgrep.1 mitsuba.cfg])
-AC_CONFIG_COMMANDS([fix-makefile],
-  ["$PERL" -i -pe \
-'s#\t-\@?(test -z.* || )?rm -(r?)f (.*)#'\
-'\t\$(TSU_V_RM) '"'"'\3'"'"' \$(TSU_V_CHOPPER)\n'\
-'\t-\$(A''M_V_at)\1rm -\2f \3#;' \
-   Makefile],
-  [PERL=$PERL])
 TSU_BAD_PATHS
 AC_OUTPUT
 #
@@ -601,3 +618,6 @@ AS_IF([test "x$has_bad_paths" = "xyes"],
    AS_ECHO(["is quite likely to fail.  It would be better to eliminate all illegal"])
    AS_ECHO(["characters from pathnames before continuing."])
    ])
+AS_IF([test "x$parasite" = "xyes"],
+  [TSU_COLOURISE([Parasite build enabled.],[6])
+   AS_ECHO([])])

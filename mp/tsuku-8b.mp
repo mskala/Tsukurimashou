@@ -1,6 +1,6 @@
 %
 % Unicode page 8B (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012, 2013, 2014  Matthew Skala
+% Copyright (C) 2011, 2012, 2013, 2014, 2017  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -64,11 +64,36 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vardef kanji.grfive.apologize =
+  push_pbox_toexpand("kanji.grfive.apologize");
+  build_kanji.lcr(300,-20)(650,0)
+    (kanji.grtwo.word)
+    (kanji.grthree.body)
+    (kanji.grsix.inch);
+  expand_pbox;
+enddef;
+
+vardef kanji.grfive.discernment =
+  push_pbox_toexpand("kanji.grfive.discernment");
+  build_kanji.level(build_kanji.lr(400,-10)
+    (kanji.grtwo.word)
+    (kanji.rare.potters_clay));
+  expand_pbox;
+enddef;
+
 vardef kanji.grfive.lecture =
   push_pbox_toexpand("kanji.grfive.lecture");
   build_kanji.level(build_kanji.lr(400,-10)
     (kanji.grtwo.word)
     (kanji.rare.inner_palace));
+  expand_pbox;
+enddef;
+
+vardef kanji.grfive.safeguard =
+  push_pbox_toexpand("kanji.grfive.safeguard");
+  build_kanji.level(build_kanji.lr(400,-10)
+    (kanji.grtwo.word)
+    (kanji.rare.to_calculate));
   expand_pbox;
 enddef;
 
@@ -163,6 +188,12 @@ begintsuglyph("uni8B1C",28);
   build_kanji.level(build_kanji.lr(380,0)
     (kanji.grtwo.word)
     (kanji.grtwo.field));
+  tsu_render;
+endtsuglyph;
+
+% sha/ayama "apologize"
+begintsuglyph("uni8B1D",29);
+  kanji.grfive.apologize;
   tsu_render;
 endtsuglyph;
 
@@ -295,6 +326,12 @@ begintsuglyph("uni8B57",87);
   tsu_render;
 endtsuglyph;
 
+% shiki/shiru "discernment"
+begintsuglyph("uni8B58",88);
+  kanji.grfive.discernment;
+  tsu_render;
+endtsuglyph;
+
 % extra "false accusation"
 begintsuglyph("uni8B5B",91);
   build_kanji.level(build_kanji.lr(450,0)
@@ -322,6 +359,12 @@ endtsuglyph;
 % gi/kata "deliberation"
 begintsuglyph("uni8B70",112);
   kanji.grfour.deliberation;
+  tsu_render;
+endtsuglyph;
+
+% go/mamo "safeguard"
+begintsuglyph("uni8B77",119);
+  kanji.grfive.safeguard;
   tsu_render;
 endtsuglyph;
 

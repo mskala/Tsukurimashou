@@ -1,6 +1,6 @@
 %
 % Unicode page 7B (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012, 2013, 2014, 2016  Matthew Skala
+% Copyright (C) 2011, 2012, 2013, 2014, 2016, 2017  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -129,11 +129,31 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vardef kanji.grfive.construct =
+  push_pbox_toexpand("kanji.grfive.construct");
+  build_kanji.tb(340,40)
+    (kanji.grnine.ancient_clave)
+    (kanji.grone.wood);
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 vardef kanji.greight.code =
   push_pbox_toexpand("kanji.greight.code");
   build_kanji.level(build_kanji.tb(520,210)
     (kanji.toprad.bamboo)
     (kanji.grfour.attach));
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+vardef kanji.grnine.ancient_clave =
+  push_pbox_toexpand("kanji.grnine.ancient_clave");
+  build_kanji.level(build_kanji.tb(420,220)
+    (kanji.toprad.bamboo)
+    (kanji.rare.secure));
   expand_pbox;
 enddef;
 
@@ -175,6 +195,12 @@ begintsuglyph("uni7B49",73);
   tsu_render;
 endtsuglyph;
 
+% kokiri "ancient musical instrument" or "clave-like folk instrument"
+begintsuglyph("uni7B51",81);
+  kanji.grnine.ancient_clave;
+  tsu_render;
+endtsuglyph;
+
 % tou/kota "answer"
 begintsuglyph("uni7B54",84);
   kanji.grtwo.answer;
@@ -210,6 +236,12 @@ endtsuglyph;
 % setsu/fushi "section"
 begintsuglyph("uni7BC0",192);
   kanji.grfour.section;
+  tsu_render;
+endtsuglyph;
+
+% chiku/kizuku "construct"
+begintsuglyph("uni7BC9",201);
+  kanji.grfive.construct;
   tsu_render;
 endtsuglyph;
 

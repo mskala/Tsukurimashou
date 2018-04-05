@@ -1,7 +1,7 @@
-/* $Id: afile.h 4677 2016-02-24 12:17:11Z mskala $ */
+/* $Id: afile.h 5734 2017-11-10 04:37:40Z mskala $ */
 /*
  * File abstraction for FontAnvil
- * Copyright (C) 2015  Matthew Skala
+ * Copyright (C) 2015, 2016  Matthew Skala
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

@@ -1,6 +1,6 @@
 %
 % Unicode page 88 (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012, 2013, 2016  Matthew Skala
+% Copyright (C) 2011, 2012, 2013, 2016, 2017  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -62,6 +62,29 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vardef kanji.grfive.guard =
+  push_pbox_toexpand("kanji.grfive.guard");
+  build_kanji.go_enclose(360,-20-20*mincho)(kanji.radical.tanned_leather);
+  expand_pbox;
+enddef;
+
+vardef kanji.grfive.made =
+  push_pbox_toexpand("kanji.grfive.made");
+  build_kanji.tb(340,0)
+    (kanji.grfive.system)
+    (kanji.grfour.clothes);
+  expand_pbox;
+enddef;
+
+vardef kanji.grfive.method =
+  push_pbox_toexpand("kanji.grfive.method");
+  build_kanji.level(build_kanji.go_enclose(360,-40-20*mincho)
+    (kanji.radical.alt_millet));
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 vardef kanji.greight.collide =
   push_pbox_toexpand("kanji.greight.collide");
   build_kanji.go_enclose(400,10)
@@ -103,6 +126,12 @@ begintsuglyph("uni884E",78);
   tsu_render;
 endtsuglyph;
 
+% jutsu/sube "method"
+begintsuglyph("uni8853",83);
+  kanji.grfive.method;
+  tsu_render;
+endtsuglyph;
+
 % extra
 begintsuglyph("uni8855",85);
   build_kanji.go_enclose(440,-40)(kanji.grtwo.same);
@@ -130,6 +159,12 @@ endtsuglyph;
 % extra
 begintsuglyph("uni885A",90);
   build_kanji.go_enclose(460,0)(kanji.grnine.barbarian);
+  tsu_render;
+endtsuglyph;
+
+% ei "guard"
+begintsuglyph("uni885B",91);
+  kanji.grfive.guard;
   tsu_render;
 endtsuglyph;
 
@@ -305,6 +340,12 @@ begintsuglyph("uni88FC",252);
   build_kanji.lr(450,20)
     (kanji.leftrad.clothes)
     (kanji.grfive.easy);
+  tsu_render;
+endtsuglyph;
+
+% sei "made" (as in "made in Usa")
+begintsuglyph("uni88FD",253);
+  kanji.grfive.made;
   tsu_render;
 endtsuglyph;
 

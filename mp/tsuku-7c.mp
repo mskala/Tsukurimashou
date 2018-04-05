@@ -1,6 +1,6 @@
 %
 % Unicode page 7C (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012, 2013  Matthew Skala
+% Copyright (C) 2011, 2012, 2013, 2017  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -34,6 +34,7 @@ beginfont
 
 % AUTODEPS
 input bkencl.mp;
+input bottomrad.mp;
 input buildkanji.mp;
 input gradefour.mp;
 input gradeone.mp;
@@ -51,6 +52,16 @@ vardef kanji.grfour.powder =
   build_kanji.level(build_kanji.lr(520,30)
     (kanji.leftrad.rice)
     (kanji.grtwo.minute));
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+vardef kanji.grfive.semen =
+  push_pbox_toexpand("kanji.grfive.semen");
+  build_kanji.level(build_kanji.lr(480,0)
+    (kanji.leftrad.rice)
+    (kanji.grone.blue));
   expand_pbox;
 enddef;
 
@@ -81,6 +92,12 @@ endtsuglyph;
 % fun/kona "powder"
 begintsuglyph("uni7C89",137);
   kanji.grfour.powder;
+  tsu_render;
+endtsuglyph;
+
+% sei/shira "semen"
+begintsuglyph("uni7CBE",190);
+  kanji.grfive.semen;
   tsu_render;
 endtsuglyph;
 

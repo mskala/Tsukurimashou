@@ -1,6 +1,6 @@
 %
 % Unicode page 97 (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012  Matthew Skala
+% Copyright (C) 2011, 2012, 2017  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -98,6 +98,12 @@ endtsuglyph;
 % men/omo "face"
 begintsuglyph("uni9762",98);
   kanji.grthree.face;
+  tsu_render;
+endtsuglyph;
+
+% i/somu "tanned leather radical"
+begintsuglyph("uni97CB",203);
+  kanji.radical.tanned_leather;
   tsu_render;
 endtsuglyph;
 

@@ -1,6 +1,6 @@
-/* $Id: baseviews.h 5127 2016-09-18 10:21:52Z mskala $ */
+/* $Id: baseviews.h 5734 2017-11-10 04:37:40Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
- * Copyright (C) 2015  Matthew Skala
+ * Copyright (C) 2015, 2016  Matthew Skala
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:

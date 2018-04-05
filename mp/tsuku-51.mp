@@ -1,6 +1,6 @@
 %
 % Unicode page 51 (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012, 2013, 2014, 2016  Matthew Skala
+% Copyright (C) 2011, 2012, 2013, 2014, 2016, 2017  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -323,6 +323,12 @@ endtsuglyph;
 % ki/kinyou "windy radical"
 begintsuglyph("uni51E0",224);
   kanji.radical.windy;
+  tsu_render;
+endtsuglyph;
+
+% bon/oyoso "mediocre"
+begintsuglyph("uni51E1",225);
+  kanji.greight.mediocre;
   tsu_render;
 endtsuglyph;
 

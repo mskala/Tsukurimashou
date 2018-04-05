@@ -1,6 +1,6 @@
 %
 % Unicode page 57 (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012, 2013, 2016  Matthew Skala
+% Copyright (C) 2011, 2012, 2013, 2016, 2017  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -90,6 +90,23 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vardef kanji.grfive.equilibrium =
+  push_pbox_toexpand("kanji.grfive.equilibrium");
+  build_kanji.level(build_kanji.lr(370,20)
+    (kanji.leftrad.earth)
+    (kanji.rare.equal));
+  expand_pbox;
+enddef;
+
+vardef kanji.grfive.foundation =
+  push_pbox_toexpand("kanji.grfive.foundation");
+  build_kanji.level(build_kanji.tb(280,130)
+    (kanji.grnine.that)
+    (kanji.grone.earth;
+     replace_strokep(-1)(subpath (0.12,0.88) of oldp)));
+  expand_pbox;
+enddef;
+
 vardef kanji.grfive.pressure =
   push_pbox_toexpand("kanji.grfive.pressure");
   build_kanji.cliff_enclose(kanji.grone.earth);
@@ -160,6 +177,12 @@ begintsuglyph("uni5742",66);
   tsu_render;
 endtsuglyph;
 
+% kin/nara "equilibrium"
+begintsuglyph("uni5747",71);
+  kanji.grfive.equilibrium;
+  tsu_render;
+endtsuglyph;
+
 % extra: hai/tsuki "bowl"
 begintsuglyph("uni574F",79);
   build_kanji.level(build_kanji.lr(450,30)
@@ -183,6 +206,12 @@ endtsuglyph;
 % gei/u "art"
 begintsuglyph("uni57F6",246);
   kanji.rare.art;
+  tsu_render;
+endtsuglyph;
+
+% ki/moto "foundation"
+begintsuglyph("uni57FA",250);
+  kanji.grfive.foundation;
   tsu_render;
 endtsuglyph;
 

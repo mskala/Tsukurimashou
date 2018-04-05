@@ -1,6 +1,6 @@
 %
 % Radicals that are not common kanji in themselves
-% Copyright (C) 2011, 2012, 2013, 2016  Matthew Skala
+% Copyright (C) 2011, 2012, 2013, 2016, 2017  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -44,6 +44,32 @@ vardef kanji.radical.aitch =
   expand_pbox;
 enddef;
 
+vardef kanji.radical.alt_bamboo_slips =
+  push_pbox_toexpand("kanji.radical.alt_bamboo_slips");
+  kanji.radical.gmm;
+  push_stroke((383,780)--(383,0),(1.6,1.6)--(1.5,1.5));
+  push_stroke((617,780)--(617,0),(1.6,1.6)--(1.5,1.5));
+  push_stroke((150,410)--(850,410),(1.5,1.5)--(1.5,1.5));
+  expand_pbox;
+enddef;
+
+vardef kanji.radical.alt_millet =
+  push_pbox_toexpand("kanji.radical.alt_millet");
+  push_stroke((100,540)--(900,540),
+    (1.6,1.6)--(1.6,1.6));
+  set_boserif(0,1,9);
+  push_stroke((300,440)..(230,230)..(140,130)..(70,60),
+    (1.6,1.6)--(1.4,1.4)--(1.1,1.1)--(0.88,0.88));
+  set_boserif(0,0,10);
+  push_stroke((510,820)--(510,-50),(1.6,1.6)--(1.5,1.5));
+  set_boserif(0,0,10);
+  push_stroke((680,740)..tension 1.3..(760,680)..(790,620),
+    (1,1)--(1.4,1.4)--(1.8,1.8));
+  push_stroke((680,430)..tension 1.3..(830,240)..(900,110),
+    (1,1)--(1.4,1.4)--(1.8,1.8));
+  expand_pbox;
+enddef;
+
 vardef kanji.radical.alt_water =
   push_pbox_toexpand("kanji.radical.alt_water");
   push_stroke((510,810),(1.6,1.6));
@@ -58,6 +84,20 @@ vardef kanji.radical.alt_water =
   push_stroke((860,590)..(720,410)..(point 0.9 of get_strokep(0)),
     (1.6,1.6)--(1.4,1.4)--(1,1));
   set_boserif(0,0,10);
+  expand_pbox;
+enddef;
+
+vardef kanji.radical.ancient_seal =
+  push_pbox_toexpand("kanji.radical.ancient_seal");
+  push_stroke((180,450)--(660,450),(1.6,1.6)--(1.6,1.6));
+  build_kanji.add_jtail(0);
+  replace_strokep(0)(reverse oldp shifted (0,390));
+  replace_strokeq(0)(reverse oldq);
+  build_kanji.add_ltail(0);
+  set_boserif(0,3,4);
+  set_boserif(0,4,4);
+  set_botip(0,3,1);
+  set_botip(0,4,1);
   expand_pbox;
 enddef;
 
@@ -147,6 +187,25 @@ vardef kanji.radical.crossed_must_not =
   push_stroke((290,430)..tension 1.2..(480,370)..(660,210),
     (1,1)--(1.4,1.4)--(1.7,1.7));
   set_bosize(0,90);
+  expand_pbox;
+enddef;
+
+vardef kanji.radical_helper.curving_river =
+  push_pbox_toexpand("kanji.radical_helper.curving_river");
+  push_stroke(((840,840)..(630,720)..(420,620)..(200,520)) &
+      ((200,520)..tension 1.3..(560,300)..(800,80)),
+    (1.6,1.6)--(1.4,1.4)--(1.1,1.1)--(0.8,1.1)--(1.4,1.4)--(1.8,1.8));
+  set_boserif(0,0,10);
+  set_botip(0,3,1);
+  expand_pbox;
+enddef;
+
+vardef kanji.radical.curving_river =
+  push_pbox_toexpand("kanji.radical.curving_river");
+  build_kanji.level(build_kanji.lcr(365,0)(660,0)
+    (kanji.radical_helper.curving_river)
+    (kanji.radical_helper.curving_river)
+    (kanji.radical_helper.curving_river));
   expand_pbox;
 enddef;
 
@@ -243,6 +302,17 @@ vardef kanji.radical.gmm =
   expand_pbox;
 enddef;
 
+vardef kanji.radical.half_trunk =
+  push_pbox_toexpand("kanji.radical.half_trunk");
+  push_stroke((830,800)--(830,-30),(1.6,1.6)--(1.4,1.4));
+  set_boserif(0,0,10);
+  push_stroke((130,660)..tension 1.2..(330,570)..(430,500),
+    (1,1)--(1.5,1.5)--(1.8,1.8));
+  push_stroke((550,350)..(330,240)..tension 1.2..(100,200),
+    (1.2,1.2)--(1.6,1.6)--(1.9,1.9));
+  expand_pbox;
+enddef;
+
 vardef kanji.radical.kettle_lid =
   push_pbox_toexpand("kanji.radical.kettle_lid");
   push_stroke((500,700)..(500,160),(1.6,1.6)--(1.5,1.5));
@@ -256,7 +326,7 @@ enddef;
 
 vardef kanji.radical.legs =
   push_pbox_toexpand("kanji.radical.legs");
-  push_stroke((370,780){down}..(330,300)..(40,-60),
+  push_stroke((370,780){dir 269}..(330,300)..(40,-60),
     (1.6,1.6)--(1.6,1.6)--(1.6,1.6)--(0.8,0.7));
   replace_strokep(0)(insert_nodes(oldp)(1.3));
   set_bosize(0,110);
@@ -587,6 +657,23 @@ vardef kanji.radical.spoon =
   expand_pbox;
 enddef;
 
+vardef kanji.radical.tanned_leather =
+  push_pbox_toexpand("kanji.radical.tanned_leather");
+  build_kanji.tcb(540,-20)(300,20)
+    (kanji.grone.five;
+     set_bosize(-3,0);
+     set_boserif(-2,0,10))
+    (kanji.grone.mouth)
+    (push_stroke((180,570)--(820,570),(1.6,1.6)--(1.6,1.6));
+     set_boserif(0,1,9);
+     push_stroke((340,570)--(340,250),(1.6,1.6)--(1.6,1.6));
+     push_stroke((610,780)--(610,-10),(1.6,1.6)--(1.5,1.5));
+     set_boserif(0,0,10);
+     push_stroke((100,250)--(900,250),(1.6,1.6)--(1.6,1.6));
+     set_boserif(0,1,9));
+  expand_pbox;
+enddef;
+
 vardef kanji.radical.tasselled_spear =
   push_pbox_toexpand("kanji.radical.tasselled_spear");
   kanji.radical.ceremony;
@@ -765,5 +852,28 @@ vardef kanji.radical.wrapping =
     (1.6,1.6)--(1.6,1.6)--(1.5,1.5)--(1.1,1.1));
   set_boserif(0,1,4);
   set_botip(0,1,0);
+  expand_pbox;
+enddef;
+
+% "you are the wind beneath my wings" - connotes both literal bird flight
+% and high ambition
+vardef kanji.radical.yatwbmw =
+  push_pbox_toexpand("kanji.radical.yatwbmw");
+  build_kanji.level(
+    build_kanji.tb(560,80)
+      (build_kanji.sscale(xscaled 0.94 shifted (-30,0))
+         (kanji.radical.conservative_hat))
+      (kanji.radical.old_bird);
+    replace_strokep(-7)
+      (oldp
+         shifted (-point 2 of oldp)
+         scaled ((840-ypart (point 2 of oldp))
+                /(ypart (point 0 of oldp)-ypart (point 2 of oldp)))
+         shifted (point 2 of oldp));
+    replace_strokep(-6)
+      ((oldp intersectionpoint get_strokep(-7))--(point 1 of oldp));
+    replace_strokep(-4)
+      ((oldp intersectionpoint get_strokep(-7))--(point 1 of oldp));
+  );
   expand_pbox;
 enddef;

@@ -1,6 +1,6 @@
 %
 % Unicode page 8C (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012, 2013, 2014, 2016  Matthew Skala
+% Copyright (C) 2011, 2012, 2013, 2014, 2016, 2017  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -104,6 +104,14 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vardef kanji.grfive.bountiful =
+  push_pbox_toexpand("kanji.grfive.bountiful");
+  build_kanji.tb(440,-40)
+    (kanji.grthree.melody)
+    (kanji.grthree.bean);
+  expand_pbox;
+enddef;
+
 vardef kanji.grfive.congratulations =
   push_pbox_toexpand("kanji.grfive.congratulations");
   build_kanji.level(build_kanji.tb(560,-10)
@@ -202,6 +210,12 @@ endtsuglyph;
 % tou/mame "bean"
 begintsuglyph("uni8C46",70);
   kanji.grthree.bean;
+  tsu_render;
+endtsuglyph;
+
+% hou/yuta "bountiful
+begintsuglyph("uni8C4A",74);
+  kanji.grfive.bountiful;
   tsu_render;
 endtsuglyph;
 
@@ -338,11 +352,9 @@ begintsuglyph("uni8CC7",199);
   tsu_render;
 endtsuglyph;
 
-% extra ko/akina "tradesman"
+% ko/akina "tradesman"
 begintsuglyph("uni8CC8",200);
-  build_kanji.level(build_kanji.tb(560,-30)
-    (kanji.toprad.ticket)
-    (kanji.grone.shell));
+  kanji.rare.tradesman;
   tsu_render;
 endtsuglyph;
 

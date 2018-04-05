@@ -1,6 +1,6 @@
 %
 % Unicode page 55 (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012, 2013, 2014  Matthew Skala
+% Copyright (C) 2011, 2012, 2013, 2014, 2016  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by

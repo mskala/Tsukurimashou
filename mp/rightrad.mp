@@ -1,6 +1,6 @@
 %
 % Right-side radicals
-% Copyright (C) 2012, 2013  Matthew Skala
+% Copyright (C) 2012, 2013, 2016, 2017  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -31,6 +31,18 @@
 inclusion_lock(rightrad);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+vardef kanji.rightrad.attempt =
+  push_pbox_toexpand("kanji.rightrad.attempt");
+  build_kanji.tb(380,420)
+    (kanji.radical.tent)
+    (kanji.grfour.husband;
+     set_bosize(-3,0);
+     set_bosize(-2,0);
+     set_boserif(-1,0,whatever);
+     build_kanji.box((220,610),(780,360)));
+  expand_pbox;
+enddef;
 
 vardef kanji.rightrad.beta =
   push_pbox_toexpand("kanji.rightrad.beta");

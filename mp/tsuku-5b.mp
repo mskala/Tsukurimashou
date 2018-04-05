@@ -1,6 +1,6 @@
 %
 % Unicode page 5B (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012, 2013, 2014, 2016  Matthew Skala
+% Copyright (C) 2011, 2012, 2013, 2014, 2016, 2017  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -156,14 +156,6 @@ vardef kanji.grsix.filial_piety =
   expand_pbox;
 enddef;
 
-vardef kanji.grsix.space =
-  push_pbox_toexpand("kanji.grsix.space");
-  build_kanji.tb(570,150)
-    (kanji.radical.silly_hat)
-    (kanji.grthree.reason);
-  expand_pbox;
-enddef;
-
 vardef kanji.grsix.treasure =
   push_pbox_toexpand("kanji.grsix.treasure");
   build_kanji.tb(600,150)
@@ -250,15 +242,9 @@ begintsuglyph("uni5B6B",107);
   tsu_render;
 endtsuglyph;
 
-% extra
+% extra:  sen/yowa "weak" or "steep"
 begintsuglyph("uni5B71",113);
-  build_kanji.level(
-    kanji.radical.narrow_flag;
-    build_kanji.sscale(xyscaled (0.73,0.67) shifted (40,-150))
-      (build_kanji.tricluster(0.7)
-         (kanji.grone.child)
-         (build_kanji.sscale(scaled 0.9)(kanji.grone.child))
-         (build_kanji.sscale(scaled 0.9)(kanji.grone.child))));
+  kanji.rare.steep;
   tsu_render;
 endtsuglyph;
 
@@ -426,6 +412,12 @@ endtsuglyph;
 % ki/yo "draw near"
 begintsuglyph("uni5BC4",196);
   kanji.grfive.draw_near;
+  tsu_render;
+endtsuglyph;
+
+% in/tora "zodiac sign of the tiger"
+begintsuglyph("uni5BC5",197);
+  kanji.grnine.tiger_sign;
   tsu_render;
 endtsuglyph;
 

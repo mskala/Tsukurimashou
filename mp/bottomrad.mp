@@ -1,6 +1,6 @@
 %
 % Radicals for bottom (often special forms of other radicals)
-% Copyright (C) 2011, 2012, 2013, 2016  Matthew Skala
+% Copyright (C) 2011, 2012, 2013, 2016, 2017  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -75,6 +75,21 @@ vardef kanji.bottomrad.heart =
     (1,1)--(1.3,1.3)--(1.6,1.6));
   push_stroke((790,540)..tension 1.2..(880,310)..(930,130),
     (1,1)--(1.5,1.5)--(1.8,1.8));
+  expand_pbox;
+enddef;
+
+vardef kanji.bottomrad.job =
+  push_pbox_toexpand("kanji.bottomrad.job");
+  push_stroke((170,-40)--(170,860)--(830,860),
+    (1.5,1.5)--(1.6,1.6)--(1.6,1.6));
+  build_kanji.add_jtail(0);
+  set_botip(0,1,1);
+  set_botip(0,2,1);
+  set_boserif(0,1,4);
+  set_boserif(0,2,4);
+  push_stroke((500,860)--(500,-10),(1.6,1.6)--(1.5,1.5));
+  push_stroke((170,610)--(830,610),(1.5,1.5)--(1.5,1.5));
+  push_stroke((170,350)--(830,350),(1.5,1.5)--(1.5,1.5));
   expand_pbox;
 enddef;
 

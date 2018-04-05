@@ -2,7 +2,7 @@
 
 #
 # Font log generator for Tsukurimashou
-# Copyright (C) 2011, 2012, 2013, 2014, 2015  Matthew Skala
+# Copyright (C) 2011, 2012, 2013, 2014, 2015, 2017  Matthew Skala
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -52,7 +52,7 @@ close(MAKEFILE);
 print <<EOF;
 TSUKURIMASHOU PARAMETRIC FONT FAMILY
 Version $tsuversion ($svnversion)
-Copyright © 2011, 2012, 2013, 2014, 2015  Matthew Skala
+Copyright © 2011, 2012, 2013, 2014, 2015, 2017  Matthew Skala
 
 English-language home page: http://tsukurimashou.osdn.jp/index.html.en
 日本語のページが http://tsukurimashou.osdn.jp/index.html.ja

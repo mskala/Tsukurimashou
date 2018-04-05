@@ -1,6 +1,6 @@
 %
 % Unicode page 68 (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012, 2013, 2016  Matthew Skala
+% Copyright (C) 2011, 2012, 2013, 2016, 2017  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -119,6 +119,17 @@ vardef kanji.grfour.prosperity =
 enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+vardef kanji.grfive.sakura =
+  push_pbox_toexpand("kanji.grfive.sakura");
+  build_kanji.level(build_kanji.lr(420,30)
+    (kanji.leftrad.wood)
+    (build_kanji.tb(520,40-20*mincho)
+       (build_kanji.sscale(xyscaled (1.25,0.7))
+          (kanji.toprad.alt_sparkle_three))
+       (kanji.grone.woman)));
+  expand_pbox;
+enddef;
 
 vardef kanji.grfive.rank =
   push_pbox_toexpand("kanji.grfive.rank");
@@ -636,6 +647,12 @@ begintsuglyph("uni6859",89);
   build_kanji.lr(440,20)
     (kanji.leftrad.wood)
     (kanji.grnine.moo);
+  tsu_render;
+endtsuglyph;
+
+% ou/sakura "cherry blossom"
+begintsuglyph("uni685C",92);
+  kanji.grfive.sakura;
   tsu_render;
 endtsuglyph;
 

@@ -1,6 +1,6 @@
 %
 % Unicode page 7F (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012, 2013  Matthew Skala
+% Copyright (C) 2011, 2012, 2013, 2017  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -43,6 +43,7 @@ input gradethree.mp;
 input gradetwo.mp;
 input leftrad.mp;
 input radical.mp;
+input rare.mp;
 input toprad.mp;
 
 do_late_includes;
@@ -70,6 +71,24 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vardef kanji.grfive.group =
+  push_pbox_toexpand("kanji.grfive.group");
+  build_kanji.lr(480,0)
+    (kanji.grthree.junior)
+    (kanji.grthree.sheep);
+  expand_pbox;
+enddef;
+
+vardef kanji.grfive.wrongdoing =
+  push_pbox_toexpand("kanji.grfive.wrongdoing");
+  build_kanji.level(build_kanji.tb(640,0)
+    (kanji.toprad.eye)
+    (kanji.grfive.mistake));
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 % kan/kama "tin can"
 begintsuglyph("uni7F36",54);
   kanji.greight.tin_can;
@@ -81,6 +100,12 @@ begintsuglyph("uni7F58",88);
   build_kanji.tb(600,-60)
     (kanji.toprad.eye)
     (kanji.grfour.non);
+  tsu_render;
+endtsuglyph;
+
+% zai/tsumi "wrongdoing"
+begintsuglyph("uni7F6A",106);
+  kanji.grfive.wrongdoing;
   tsu_render;
 endtsuglyph;
 
@@ -99,6 +124,12 @@ endtsuglyph;
 % bi/utsuku "beauty"
 begintsuglyph("uni7F8E",142);
   kanji.grthree.beauty;
+  tsu_render;
+endtsuglyph;
+
+% gun/mure "group"
+begintsuglyph("uni7FA4",164);
+  kanji.grfive.group;
   tsu_render;
 endtsuglyph;
 

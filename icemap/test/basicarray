@@ -1,5 +1,8 @@
 #!/bin/sh
 
+scripthome=`realpath $0`
+scripthome=`dirname $scripthome`
+
 mkdir batmp$$
 cd batmp$$
 
@@ -18,7 +21,7 @@ err=0
 ../icemap -C map.c -H map.h ba.im || err=$?
 if test $err = 0
 then
-  gcc -g -O0 -I. -o inttest ../inttest.c map.c || err=$?
+  gcc -g -O0 -I. -o inttest $scripthome/../inttest.c map.c || err=$?
 fi
 if test $err = 0 ; then ./inttest 0 63 > results.dat || err=$? ; fi
 

@@ -1,6 +1,6 @@
 %
 % Unicode page 4F (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012, 2013, 2014, 2016  Matthew Skala
+% Copyright (C) 2011, 2012, 2013, 2014, 2016, 2017  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -138,6 +138,20 @@ vardef kanji.grfour.tradition =
 enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+vardef kanji.grfive.discipline =
+  push_pbox_toexpand("kanji.grfive.discipline");
+  build_kanji.lr(420,40)
+    (build_kanji.lr(500,160)
+      (kanji.leftrad.person)
+      (kanji.radical.vline;
+       replace_strokep(0)(subpath (0.2,0.9) of oldp)))
+    (build_kanji.tb(360,80)
+      (kanji.radical.winter)
+      (build_kanji.sscale(scaled 0.91 shifted (-80-10*mincho,30-30*mincho))
+        (kanji.rightrad.short_hair)));
+  expand_pbox;
+enddef;
 
 vardef kanji.grfive.imitate =
   push_pbox_toexpand("kanji.grfive.imitate");
@@ -749,9 +763,21 @@ begintsuglyph("uni4FDD",221);
   tsu_render;
 endtsuglyph;
 
+% extra needed for U+8F38
+begintsuglyph("uni4FDE",222);
+  kanji.rare.approve;
+  tsu_render;
+endtsuglyph;
+
 % shin "believe"
 begintsuglyph("uni4FE1",225);
   kanji.grfour.believe;
+  tsu_render;
+endtsuglyph;
+
+% shuu/osa "discipline"
+begintsuglyph("uni4FEE",238);
+  kanji.grfive.discipline;
   tsu_render;
 endtsuglyph;
 

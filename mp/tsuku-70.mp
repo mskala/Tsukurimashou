@@ -1,6 +1,6 @@
 %
 % Unicode page 70 (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012, 2013  Matthew Skala
+% Copyright (C) 2011, 2012, 2013, 2017  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -41,6 +41,7 @@ input gradeone.mp;
 input gradesix.mp;
 input gradethree.mp;
 input leftrad.mp;
+input radical.mp;
 
 do_late_includes;
 
@@ -78,6 +79,16 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vardef kanji.grfive.calamity =
+  push_pbox_toexpand("kanji.five.calamity");
+  build_kanji.tb(420,20)
+    (kanji.radical.curving_river)
+    (kanji.grone.fire);
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 % hi/ka "fire"
 begintsuglyph("uni706B",107);
   kanji.grone.fire;
@@ -93,6 +104,12 @@ endtsuglyph;
 % kai/hai "ash"
 begintsuglyph("uni7070",112);
   kanji.grsix.ash;
+  tsu_render;
+endtsuglyph;
+
+% sai/wazawa "calamity"
+begintsuglyph("uni707D",125);
+  kanji.grfive.calamity;
   tsu_render;
 endtsuglyph;
 

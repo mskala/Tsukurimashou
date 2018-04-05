@@ -1,6 +1,6 @@
 %
 % Unicode page 6D (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012, 2013  Matthew Skala
+% Copyright (C) 2011, 2012, 2013, 2017  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -125,6 +125,14 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vardef kanji.grfive.blend =
+  push_pbox_toexpand("kanji.grfive.blend");
+  build_kanji.lr(320,-20)
+    (kanji.leftrad.water)
+    (kanji.greight.insect);
+  expand_pbox;
+enddef;
+
 vardef kanji.grfive.liquid =
   push_pbox_toexpand("kanji.grfive.liquid");
   build_kanji.lr(320,-20)
@@ -221,6 +229,12 @@ begintsuglyph("uni6DBC",188);
   tsu_render;
 endtsuglyph;
 
+% name of a specific river in China, needed for grfive "semi"
+begintsuglyph("uni6DEE",238);
+  kanji.rare.huai_river;
+  tsu_render;
+endtsuglyph;
+
 % extra en/i "soak" (in particular, making tea or coffee)
 begintsuglyph("uni6DF9",249);
   build_kanji.lr(360,0)
@@ -232,6 +246,12 @@ endtsuglyph;
 % shin/fuka "deep"
 begintsuglyph("uni6DF1",241);
   kanji.grthree.deep;
+  tsu_render;
+endtsuglyph;
+
+% kon/ma "blend"
+begintsuglyph("uni6DF7",247);
+  kanji.grfive.blend;
   tsu_render;
 endtsuglyph;
 

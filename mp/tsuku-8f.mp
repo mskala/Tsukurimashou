@@ -1,6 +1,6 @@
 %
 % Unicode page 8F (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012, 2013, 2014, 2016  Matthew Skala
+% Copyright (C) 2011, 2012, 2013, 2014, 2016, 2017  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -34,6 +34,7 @@ beginfont
 
 % AUTODEPS
 input bkencl.mp;
+input bottomrad.mp;
 input buildkanji.mp;
 input gradeeight.mp;
 input gradefive.mp;
@@ -44,6 +45,7 @@ input gradethree.mp;
 input gradetwo.mp;
 input radical.mp;
 input rare.mp;
+input rightrad.mp;
 input toprad.mp;
 
 do_late_includes;
@@ -85,6 +87,22 @@ vardef kanji.grfour.wheel =
   build_kanji.level(build_kanji.lr(480,-20)
     (kanji.grone.wheel)
     (kanji.rare.be_methodical));
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+vardef kanji.grfive.mention =
+  push_pbox_toexpand("kanji.grfive.mention");
+  build_kanji.road_enclose(kanji.radical.alt_millet);
+  expand_pbox;
+enddef;
+
+vardef kanji.grfive.transport =
+  push_pbox_toexpand("kanji.grfive.transport");
+  build_kanji.level(build_kanji.lr(480,-20)
+    (kanji.grone.wheel)
+    (kanji.rare.approve));
   expand_pbox;
 enddef;
 
@@ -135,6 +153,12 @@ enddef;
 % rin/wa "wheel"
 begintsuglyph("uni8F2A",42);
   kanji.grfour.wheel;
+  tsu_render;
+endtsuglyph;
+
+% yu "transport"
+begintsuglyph("uni8F38",56);
+  kanji.grfive.transport;
   tsu_render;
 endtsuglyph;
 
@@ -219,6 +243,12 @@ endtsuglyph;
 % tetsu "reshuffle"
 begintsuglyph("uni8FED",237);
   kanji.greight.reshuffle;
+  tsu_render;
+endtsuglyph;
+
+% jutsu/no "mention"
+begintsuglyph("uni8FF0",240);
+  kanji.grfive.mention;
   tsu_render;
 endtsuglyph;
 

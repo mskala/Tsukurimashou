@@ -1,6 +1,6 @@
 %
 % Unicode page 6E (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012, 2013, 2014  Matthew Skala
+% Copyright (C) 2011, 2012, 2013, 2014, 2017  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -125,6 +125,14 @@ vardef kanji.grfive.reduce =
   expand_pbox;
 enddef;
 
+vardef kanji.grfive.semi =
+  push_pbox_toexpand("kanji.grfive.semi");
+  build_kanji.tb(280,0)
+    (kanji.rare.huai_river)
+    (kanji.grone.ten);
+  expand_pbox;
+enddef;
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 vardef kanji.grsix.source =
@@ -216,6 +224,12 @@ endtsuglyph;
 % gen/minamoto "source" (also "gen" as in "Genji Monogatari")
 begintsuglyph("uni6E90",144);
   kanji.grsix.source;
+  tsu_render;
+endtsuglyph;
+
+% jun/jun "semi-" (or quasi-, para-, etc.)
+begintsuglyph("uni6E96",150);
+  kanji.grfive.semi;
   tsu_render;
 endtsuglyph;
 

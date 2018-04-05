@@ -1,6 +1,6 @@
 %
 % Unicode page 6B (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012, 2013, 2014, 2016  Matthew Skala
+% Copyright (C) 2011, 2012, 2013, 2014, 2016, 2017  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -100,6 +100,21 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vardef kanji.grfive.military =
+  push_pbox_toexpand("kanji.grthree.military");
+  kanji.radical.ceremony;
+  replace_strokep(-1)(oldp shifted (-950,0) xscaled 0.65 shifted (950,0));
+  replace_strokep(0)(oldp shifted (-950,0) xscaled 0.65 shifted (950,0));
+  push_stroke(subpath (0.1,0.43) of get_strokep(-2) shifted (0,130),
+      get_strokeq(-2));
+  set_boserif(0,1,9);
+  build_kanji.sscale(xyscaled (0.6,0.8) shifted (-150,-200))
+    (build_kanji.lift_skirt(400,250)(kanji.grtwo.cease));
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 % ketsu/ka/akubi "fail" or "yawn"
 begintsuglyph("uni6B20",32);
   kanji.grfour.fail;
@@ -127,6 +142,12 @@ endtsuglyph;
 % sei/tada/machi "correct"
 begintsuglyph("uni6B63",99);
   kanji.grone.correct;
+  tsu_render;
+endtsuglyph;
+
+% bu/take "military"
+begintsuglyph("uni6B66",102);
+  kanji.grfive.military;
   tsu_render;
 endtsuglyph;
 

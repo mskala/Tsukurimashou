@@ -1,6 +1,6 @@
 %
 % Grade Three kanji used on more than one page
-% Copyright (C) 2011, 2012, 2013, 2014, 2016  Matthew Skala
+% Copyright (C) 2011, 2012, 2013, 2014, 2016, 2017  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -99,6 +99,37 @@ enddef;
 vardef kanji.grthree.blood =
   push_pbox_toexpand("kanji.grthree.blood");
   build_kanji.attach_tick(620)(kanji.grthree.dish);
+  expand_pbox;
+enddef;
+
+vardef kanji.grthree.body =
+  push_pbox_toexpand("kanji.grthree.body");
+  build_kanji.attach_tick(690)(
+    push_stroke((270,240)--(270,720)--(720,720),
+      (1.5,1.5)--(1.6,1.6)--(1.6,1.6));
+    build_kanji.add_jtail(0);
+    set_boserif(0,1,4);
+    set_boserif(0,2,4);
+    set_botip(0,1,1);
+    set_botip(0,2,1);
+    push_stroke((270,570)--(720,570),
+      (1.5,1.5)--(1.5,1.5));
+    push_stroke((270,410)--(720,410),
+      (1.5,1.5)--(1.5,1.5));
+    push_stroke((100,230)..tension 1.3..(270,240)..(920,340),
+      (2,2)--(1.7,1.7)--(1,1));
+    push_stroke((900,580)..tension 1.2..(620,270)..(70,-20),
+      (1.6,1.6)--(1.4,1.4)--(1,1));
+    begingroup
+      save tval;
+      numeric tval;
+      tval=xpart (get_strokep(-1) intersectiontimes get_strokep(0));
+      replace_strokep(-1)(subpath (0,tval) of oldp);
+      replace_strokeq(-1)(subpath (0,tval) of oldq);
+    endgroup;
+  );
+  replace_strokep(0)(oldp shifted (-point 2 of oldp)
+    xyscaled (0.8,0.6) shifted (point 2 of oldp));
   expand_pbox;
 enddef;
 
@@ -777,8 +808,8 @@ vardef kanji.grthree.victory =
         replace_strokep(-2)
           (subpath (xpart (oldp intersectiontimes get_strokep(-1)),infinity)
            of oldp))
-    (build_kanji.sscale(xscaled 0.8 shifted (20,0))
-      (kanji.grone.power))));
+       (build_kanji.sscale(xscaled 0.8 shifted (20,0))
+          (kanji.grone.power))));
   expand_pbox;
 enddef;
 

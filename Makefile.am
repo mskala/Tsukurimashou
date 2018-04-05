@@ -2,7 +2,7 @@
 
 #
 # Makefile for Tsukurimashou
-# Copyright (C) 2011, 2012, 2013, 2014, 2015, 2016  Matthew Skala
+# Copyright (C) 2011, 2012, 2013, 2014, 2015, 2016, 2017  Matthew Skala
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -54,6 +54,7 @@ $(error This Makefile must be edited by Perl code in config.status before use)
 SHELL=$(if $(wildcard @KLEKNEV@),@KLEKNEV@,$(if \
   $(wildcard /bin/bash),/bin/bash,/bin/sh))
 SUBDIRS = $(EARLY_PARASITES) . $(PARASITES)
+DIST_SUBDIRS = . $(ALL_EARLY_PARASITES) $(ALL_PARASITES)
 
 ############################################################################
 
@@ -130,7 +131,7 @@ TSU_V_NAPERL_0=echo \
 TSU_V_NASKIP=$(TSU_V_NASKIP_$(V))
 TSU_V_NASKIP_=$(TSU_V_NASKIP_$(AM_DEFAULT_VERBOSITY))
 TSU_V_NASKIP_0=printf '%s%s%s' \
-  "$(ansi_cleareol)  SKIP  " $@ "$(ansi_home)";
+  "$(ansi_cleareol)  SKIP   " $@ "$(ansi_home)";
 
 TSU_V_OTF=$(TSU_V_OTF_$(V))
 TSU_V_OTF_=$(TSU_V_OTF_$(AM_DEFAULT_VERBOSITY))
@@ -177,10 +178,10 @@ TSU_V_TEXL_0=echo \
 KANJIDIC2=@with_kanjidic2@
 if COND_BOOKPROOFS
   MAYBE_BOOKPROOFS=$(foreach \
-    rn,I II III IV V VI VII VIII IX X XI XII XIII XIV XV, \
+    rn,I II III IV V VI VII VIII IX X XI XII XIII XIV XV XVI XVII, \
     doc/book$(rn).pdf doc/cover$(rn).pdf doc/spine$(rn).pdf doc/shelf.pdf)
   SPINE_PDFS=$(foreach \
-    rn,I II III IV V VI VII VIII IX X XI XII XIII XIV XV, \
+    rn,I II III IV V VI VII VIII IX X XI XII XIII XIV XV XVI XVII, \
     doc/spine$(rn).pdf)
   PROOF_ND_PASS=4
 else
@@ -306,6 +307,10 @@ DISTCLEANFILES = \
   aminclude.am chars.lst hamlog/config.hl doc/version.tex \
   */.dirstamp
 
+distcleancheck_listfiles = \
+  find . -type f -exec sh -c 'test -f $(srcdir)/$$1 || echo $$1' \
+    sh '{}' ';'
+
 ############################################################################
 
 # KILL EMPTY FILES AND RECORD BUILD START
@@ -415,11 +420,13 @@ hamlog/jnames.hl: txt/jnames.txt hamlog/.dirstamp
 	$(AM_V_at)'$(PERL)' -CSD -ne $(jnames_encode_script) \
 	  $(mvp)/txt/jnames.txt > hamlog/jnames.hl
 
+if COND_KANJIDIC2
 hamlog/kddata.hl: tools/make-kddata $(KANJIDIC2) hamlog/.dirstamp
 	$(TSU_V_PERL)
 	$(AM_V_at)'$(GZIP)' -cd $(KANJIDIC2) \
 	  | $(PERL) -CSD $(mvp)/tools/make-kddata \
 	    > hamlog/kddata.hl
+endif
 
 hamlog/macdep.ecl: tools/autodep hamlog/.dirstamp \
   $(sort $(wildcard $(mvp)/mp/*.mp) $(wildcard ./mp/*.mp))
@@ -487,6 +494,15 @@ makefile-vars.inc: \
 	  >> makefile-vars.inc
 	$(AM_V_at)echo PARASITES=`$(HAMLOG) 'P' \
 	  'parasite_available(P),want_parasite(P)' \
+	  hamlog/config.hl $(mvp)/hamlog/select.hl $(HAMLOG_AFTER)` \
+	  >> makefile-vars.inc
+	$(AM_V_at)echo ALL_EARLY_PARASITES=`$(HAMLOG) 'P' \
+	  'early_parasite_available(P)' \
+	  hamlog/config.hl $(mvp)/hamlog/select.hl \
+	  $(HAMLOG_AFTER) | sort -r` \
+	  >> makefile-vars.inc
+	$(AM_V_at)echo ALL_PARASITES=`$(HAMLOG) 'P' \
+	  'parasite_available(P)' \
 	  hamlog/config.hl $(mvp)/hamlog/select.hl $(HAMLOG_AFTER)` \
 	  >> makefile-vars.inc
 	$(AM_V_at)echo SHORT_STYLES=`$(HAMLOG) 'want_style_short(F,S,W,P)' \

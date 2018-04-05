@@ -1,6 +1,6 @@
 %
 % Unicode page 65 (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012, 2013, 2016  Matthew Skala
+% Copyright (C) 2011, 2012, 2013, 2016, 2017  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -166,6 +166,27 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vardef kanji.grfive.decision =
+  push_pbox_toexpand("kanji.grfive.decision");
+  build_kanji.lr(500,-40)
+    (build_kanji.sscale(xyscaled (0.75,0.88) shifted (40,70))
+       (kanji.grtwo.rice);
+     build_kanji.cup((120,840),(880,20));
+     set_bosize(-1,0);
+     set_boserif(0,1,9);
+     replace_strokep(-2)((point 0 of oldp)--(xpart point 1 of oldp,-80)))
+    (build_kanji.sscale(yscaled 1.10)(kanji.greight.axe));
+  expand_pbox;
+enddef;
+
+vardef kanji.grfive.enemy =
+  push_pbox_toexpand("kanji.grfive.enemy");
+  build_kanji.level(build_kanji.lr(520,0)
+    (kanji.rare.stalk)
+    (kanji.radical.folding_chair));
+  expand_pbox;
+enddef;
+
 vardef kanji.grfive.former =
   push_pbox_toexpand("kanji.grfive.former");
   build_kanji.level(build_kanji.lr(480,20)
@@ -326,6 +347,12 @@ begintsuglyph("uni6574",116);
   tsu_render;
 endtsuglyph;
 
+% teki/kataki "enemy"
+begintsuglyph("uni6575",117);
+  kanji.grfive.enemy;
+  tsu_render;
+endtsuglyph;
+
 % bun/fumi "sentence"
 begintsuglyph("uni6587",135);
   kanji.grone.sentence;
@@ -361,6 +388,12 @@ endtsuglyph;
 % zan/ki "decapitate
 begintsuglyph("uni65AC",172);
   kanji.greight.decapitate;
+  tsu_render;
+endtsuglyph;
+
+% dan/tatsu "decision"
+begintsuglyph("uni65AD",173);
+  kanji.grfive.decision;
   tsu_render;
 endtsuglyph;
 

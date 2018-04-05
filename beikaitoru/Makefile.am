@@ -2,7 +2,7 @@
 
 #
 # Makefile for Beikaitoru
-# Copyright (C) 2012, 2013, 2014, 2015  Matthew Skala
+# Copyright (C) 2012, 2013, 2014, 2015, 2017  Matthew Skala
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -44,6 +44,8 @@ empty:=
 space:=$(empty) $(empty)
 comma:=,
 percent=%
+
+$(error This Makefile must be edited by Perl code in config.status before use)
 
 SHELL=$(if $(wildcard @KLEKNEV@),@KLEKNEV@,$(if \
   $(wildcard /bin/bash),/bin/bash,/bin/sh))
@@ -168,17 +170,19 @@ BUILT_SOURCES=Makefile
 
 STANDALONE_QVFG:=fntbase.mp
 EXTRA_DIST:= \
-  $(if $(filter $(distdir),$(top_distdir)),$(STANDALONE_QVFG)) \
-  $(wildcard $(mvp)/*.mp)
+  $(if $(filter no,@parasite@),$(STANDALONE_QVFG)) \
+  $(wildcard $(mvp)/*.mp) beikaitoru.tex
 
 STANDALONE_FPEVCGF:=mp2pf pe/fontlint.pe pe/rmo.pe
 dist_noinst_SCRIPTS:= \
-  $(if $(filter $(distdir),$(top_distdir)),$(STANDALONE_FPEVCGF)) \
-  nelson
+  $(if $(filter no,@parasite@),$(STANDALONE_FPEVCGF)) \
+  nelson pe/merge.pe occident.dat oriental.dat \
+  pe/otf-100.pe pe/otf-150.pe pe/otf-200.pe pe/otf-300.pe \
+  pe/otf-400.pe pe/otf-500.pe pe/otf-600.pe
 
 dist_pdf_DATA = $(MAYBE_DOCS)
 
-dist_otf_DATA = otf/Beikaitoru156.otf
+dist_otf_DATA =
 dist_ttf_DATA =
 dist_type1_DATA =
 dist_afm_DATA = $(patsubst %.pfb,%.afm,$(dist_type1_DATA))
@@ -188,10 +192,20 @@ dist_afm_DATA = $(patsubst %.pfb,%.afm,$(dist_type1_DATA))
 # MAKE CLEAN
 
 MOSTLYCLEANFILES = \
-  *.afm *.otf *.pfb *.ttf
+  pfb/*.afm pfb/*.pfb pfbtmp/* merged/* \
+  beikaitoru.log beikaitoru.aux
+
+CLEANFILES = \
+  $(if $(filter yes,@parasite@),$(STANDALONE_QVFG) $(STANDALONE_FPEVCGF)) \
+  $(filter-out otf/Beikaitoru156.otf,$(wildcard otf/*.otf))
 
 DISTCLEANFILES = \
-  aminclude.am ffaetest.pe
+  aminclude.am ffaetest.pe \
+  */.dirstamp
+
+distcleancheck_listfiles = \
+  find . -type f -exec sh -c 'test -f $(srcdir)/$$1 || echo $$1' \
+    sh '{}' ';'
 
 ############################################################################
 
@@ -234,7 +248,8 @@ pfbtmp/$(1).pfb: pfbtmp/.dirstamp subfont.mp \
 	(cd $(1).tmp ; $$(expect_start)'$$(MPOST)' subfont.mp$$(expect_end) ) ; \
 	if '$$(GREP)' -q '^! ' $(1).tmp/subfont.log ; then exit 1 ; fi ; \
 	$$(TSU_V_NAPERL) \
-	'$$(PERL)' -CSD $$(mvp)/mp2pf $(1).tmp/subfont $$(TSU_V_REDIR) ; \
+	'$$(PERL)' -CSD $(if $(filter no,@parasite@),$(mvp)/)mp2pf \
+	  $(1).tmp/subfont $$(TSU_V_REDIR) ; \
 	(cd $(1).tmp ; '$$(realpath @T1ASM@)' -b subfont.p subfont.pfb ) ; \
 	if test -r $(1).tmp/subfont.pfb \
 	  && '$$(GREP)' -q 'output files\? written' $(1).tmp/subfont.log; then \
@@ -250,7 +265,8 @@ pfbtmp/$(1).pfb: pfbtmp/.dirstamp subfont.mp \
 pfb/$(1).pfb: pfbtmp/$(1).pfb pfb/.dirstamp pe/rmo.pe
 	$$(AM_V_at)$$(TSU_V_RMO) \
 	'$$(FONTANVIL)' -lang=ff -script \
-	  $$(mvp)/pe/rmo.pe pfbtmp/$(1).pfb pfb/$(1).pfb \
+	  $$(if $$(filter no,@parasite@),$$(mvp)/)pe/rmo.pe \
+	  pfbtmp/$(1).pfb pfb/$(1).pfb \
 	  $$(TSU_V_REDIR)
 endef
 
@@ -404,13 +420,18 @@ m4/tsu_bad_paths.m4: ../m4/tsu_bad_paths.m4
 m4/tsu_colourise.m4: ../m4/tsu_colourise.m4
 	$(TSU_V_CP) cp $< $@
 
+m4/tsu_fix_makefile.m4: ../m4/tsu_fix_makefile.m4
+	$(TSU_V_CP) cp $< $@
+
 mp2pf: ../tools/mp2pf
 	$(TSU_V_CP) cp $< $@
 
 pe/rmo.pe: ../pe/rmo.pe
+	$(AM_V_at)$(MKDIR_P) pe
 	$(TSU_V_CP) cp $< $@
 
 pe/fontlint.pe: ../pe/fontlint.pe
+	$(AM_V_at)$(MKDIR_P) pe
 	$(TSU_V_CP) cp $< $@
 
 endif

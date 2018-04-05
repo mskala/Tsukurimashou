@@ -2,7 +2,7 @@
 
 #
 # Font proof generator for Tsukurimashou
-# Copyright (C) 2011, 2012, 2013, 2014, 2015  Matthew Skala
+# Copyright (C) 2011, 2012, 2013, 2014, 2015, 2016, 2017  Matthew Skala
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -108,7 +108,8 @@ $prefix=~s!/tools/make-proof$!!;
   100=>'Infrastructure',
   801=>'Shared kyouiku kanji',
   807=>'Other shared kanji',
-  1000=>'U+0000 to U+2FFF',
+  1000=>'U+0000 to U+0FFF',
+  1016=>'U+1000 to U+2FFF',
   1048=>'U+3000 to U+4DFF',
   # breaks automatically inserted between U+4E00 and U+9FFF
   1247=>'U+A000 to U+10FFFF',
@@ -534,7 +535,6 @@ print "% GENERATED FILE - edit the source in make-proof instead!\n\n";
 
 $partarab=1;
 $countpictures=0;
-$lastpart=-1;
 
 # XeTeX code to set a glyph, even if its code point is deleted by xpua
 sub setgl {
@@ -553,6 +553,7 @@ sub setgl {
 # Generate the text of the proof document
 #
 
+$oldpb=0;
 foreach $file (@files) {
 
   # determine which part we are in
@@ -567,14 +568,19 @@ foreach $file (@files) {
   $partslant=($glp eq 'tsuita')?0.19:0;
   
   # start of new part
-  if ((defined $partbefore{$priority{$file}})
-   && ($priority{$file}>$lastpart)) {
-    print "\n\\fi\n\n" if $partarab!=1;
-    print "\n\\FileGroup{$partbefore{$priority{$file}}}{$partarab}\n";
-    print '\\'.$glp."DemoFonts\n";
-    print "\\def\\tmpmac{$partarab}\\ifx\\tmpmac\\partarab\\relax\n\n";
-    $partarab++;
-    $lastpart=$priority{$file};
+  while (1) {
+    if ((defined $partbefore{$oldpb})
+     && ($priority{$file}>=$oldpb)) {
+      print "\n\\fi\n\n" if $partarab!=1;
+      print "\n\\FileGroup{$partbefore{$oldpb}}{$partarab}\n";
+      print '\\'.$glp."DemoFonts\n";
+      print "\\def\\tmpmac{$partarab}\\ifx\\tmpmac\\partarab\\relax\n\n";
+      $partarab++;
+      $oldpb++;
+      last;
+    }
+    last if $oldpb>=$priority{$file};
+    $oldpb++;
   }
   
   # start of file

@@ -1,6 +1,6 @@
 %
 % Grade Nine kanji used on more than one page
-% Copyright (C) 2011, 2012, 2013, 2014, 2016  Matthew Skala
+% Copyright (C) 2011, 2012, 2013, 2014, 2016, 2017  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -225,6 +225,15 @@ vardef kanji.grnine.leap_year =
   expand_pbox;
 enddef;
 
+vardef kanji.grnine.malva_nut =
+  push_pbox_toexpand("kanji.grnine.malva_nut");
+  build_kanji.tcb(660,-10)(320,10)
+    (kanji.toprad.grass)
+    (kanji.grone.day)
+    (kanji.grone.big);
+  expand_pbox;
+enddef;
+
 vardef kanji.grnine.manor =
   push_pbox_toexpand("kanji.grnine.manor");
   build_kanji.dotcliff_enclose(kanji.grone.earth);
@@ -424,6 +433,19 @@ vardef kanji.grnine.two_branch_tree =
   push_pbox_toexpand("kanji.grnine.two_branch_tree");
   tsu_xform(identity shifted (0,-50))
     (build_kanji.add_beret(kanji.grone.wood));
+  expand_pbox;
+enddef;
+
+vardef kanji.grnine.tiger_sign =
+  push_pbox_toexpand("kanji.grnine.tiger_sign");
+  build_kanji.level(build_kanji.tb(80,0)
+    (kanji.grsix.space;
+     set_boserif(-1,0,whatever);
+     replace_strokep(-1)(subpath (0.05,1) of oldp);
+     push_stroke(((-240,0)--(240,0)) shifted (point 0 of get_strokep(-1)),
+       (1.6,1.6)--(1.6,1.6));
+     set_boserif(0,1,9))
+    (kanji.radical.eight));
   expand_pbox;
 enddef;
 

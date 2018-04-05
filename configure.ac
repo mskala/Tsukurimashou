@@ -2,7 +2,7 @@
 
 #
 # Configuration source for Tsukurimashou
-# Copyright (C) 2011, 2012, 2013, 2014, 2015  Matthew Skala
+# Copyright (C) 2011, 2012, 2013, 2014, 2015, 2016, 2017  Matthew Skala
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -190,7 +190,7 @@ Fine tuning of the installation directories:\
 # Autoconf initialization
 #
 AC_PREREQ([2.67])
-AC_INIT([Tsukurimashou],[0.9],[mskala@ansuz.sooke.bc.ca],[tsukurimashou],
+AC_INIT([Tsukurimashou],[0.11pre],[mskala@ansuz.sooke.bc.ca],[tsukurimashou],
   [[http://tsukurimashou.osdn.jp/]])
 AC_PRESERVE_HELP_ORDER
 AM_INIT_AUTOMAKE([foreign check-news color-tests dist-zip no-dist-gzip
@@ -199,9 +199,14 @@ AM_EXTRA_RECURSIVE_TARGETS([download])
 AC_CONFIG_SRCDIR([hamlog/hamlog])
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_MACRO_DIR([m4])
-AC_REVISION([$Id: configure.ac 5084 2016-08-30 06:13:42Z mskala $])
-AC_COPYRIGHT([Copyright (C) 2011, 2012, 2013, 2014 Matthew Skala])
-AC_SUBST([release_date],["August 17, 2014"])
+AC_REVISION([$Id: configure.ac 5795 2017-11-21 21:32:34Z mskala $])
+AC_COPYRIGHT([Copyright (C) 2011, 2012, 2013, 2014, 2015, 2016, 2017 Matthew Skala])
+AC_SUBST([release_date],["November 17, 2017"])
+# this must be early so it will happen before depfiles
+TSU_FIX_MAKEFILE([dnl
+   s#TESTS = #TESTS = \$(otf_DATA) #;dnl
+   s#^all: config.h#all: kill-empty config.h#],
+  [rm -f pfb-stamp* chl-stamp])
 AM_SILENT_RULES
 #
 ############################################################################
@@ -247,6 +252,9 @@ AS_IF([test "x$PERL" = "x"],
 AS_IF([unames=`uname -s` ; test "x$unames" = 'xDarwin'],
   [AC_PATH_PROGS([PROLOG],[swipl eclipse gprolog],[])],
   [AC_PATH_PROGS([PROLOG],[pl swipl eclipse gprolog],[])])
+AC_ARG_VAR([UNICODE_URL],[Unicode data root])
+AS_IF([test "x$UNICODE_URL" = "x"],
+  [UNICODE_URL=http://unicode.org/Public/])
 AC_ARG_VAR([XDVIPDFMX],[xdvipdfmx])
 AS_IF([test "x$XDVIPDFMX" = "x"],
   [AC_PATH_PROG([XDVIPDFMX],[xdvipdfmx])])
@@ -339,75 +347,80 @@ AX_AM_JOBSERVER
 AC_ARG_ENABLE([bitmap-kludge],
   [AS_HELP_STRING([--enable-bitmap-kludge],
     [generate bitmaps in 1000-glyph blocks])],
-    [enable_bitmap_kludge=yes],
-    [enable_bitmap_kludge=no])
+  [],
+  [enable_bitmap_kludge=no])
 AC_ARG_ENABLE([build-hacking],
   [AS_HELP_STRING([--disable-build-hacking],
     [turn off Autotools compatibility test])],
-    [],
-    [enable_build_hacking="test    "])
+  [],
+  [enable_build_hacking="test    "])
 AC_ARG_ENABLE([chars],
   [AS_HELP_STRING([--enable-chars[=TAGS]],
     [character set(s) to build [all]])],
-    [],
-    [enable_chars=all])
+  [],
+  [enable_chars=all])
 AC_ARG_ENABLE([colour-build],
   [AS_HELP_STRING([--disable-colour-build],
     [turn off ANSI colour in build scripts])],
-    [],
-    [enable_colour_build=yes])
+  [],
+  [enable_colour_build=yes])
 AC_ARG_ENABLE([color-build],[dnl],[],[enable_color_build=yes])
 AC_ARG_ENABLE([docs],
   [AS_HELP_STRING([--disable-docs],
     [turn off PDF documentation])],
-    [],
-    [enable_docs=yes])
+  [],
+  [enable_docs=yes])
+AC_ARG_ENABLE([download],
+  [AS_HELP_STRING([--enable-download=[yes|no]],
+    [automatically download Unicode data from UNICODE_URL [no]])],
+  [],
+  [enable_download=no])
 AC_ARG_ENABLE([ff-debug],
   [AS_HELP_STRING([--disable-ff-debug],
     [turn off FontAnvil debuggery warning])],
-    [],
-    [enable_ff_debug="test    "])
+  [],
+  [enable_ff_debug="test    "])
 AC_ARG_ENABLE([kanji-chart],
   [AS_HELP_STRING([--enable-kanji-chart],
     [kanji coverage chart [auto]])],
-    [],
-    [enable_kanji_chart=auto])
+  [],
+  [enable_kanji_chart=auto])
 AC_ARG_ENABLE([ot-features],
   [AS_HELP_STRING([--enable-ot-features[=TAGS]],
     [OpenType feature(s) to include [all,-pfed]])],
-    [],
-    [ot_feature_default_warn=yes
-     enable_ot_features='all,-pfed'])
+  [],
+  [ot_feature_default_warn=yes
+   enable_ot_features='all,-pfed'])
 AC_ARG_ENABLE([parasites],
   [AS_HELP_STRING([--enable-parasites[=TAGS]],
     [Parasite package(s) to build [auto]])],
-    [],
-    [enable_parasites='auto'])
+  [],
+  [enable_parasites='auto'])
 AC_ARG_ENABLE([proofs],
   [AS_HELP_STRING([--enable-proofs=[yes|no|book]],
     [proofs and pretty-printed source [no]])],
-    [],
-    [enable_proofs=no])
+  [],
+  [enable_proofs=no])
 AC_ARG_ENABLE([proportional],
   [AS_HELP_STRING([--disable-proportional],
     [turn off proportionally spaced, kerned fonts])],
-    [],
-    [enable_proportional=yes])
+  [],
+  [enable_proportional=yes])
 AC_ARG_ENABLE([styles],
   [AS_HELP_STRING([--enable-styles[=TAGS]],
     [type style(s) to build [tsuku&normal,mg&el,mg&eq]])],
-    [],
-    [enable_styles="tsuku&normal,mg&el,mg&eq"])
+  [],
+  [enable_styles="tsuku&normal,mg&el,mg&eq"])
 AC_ARG_WITH([kanjidic2],
   [AS_HELP_STRING([--with-kanjidic2=PATH],
     [gzipped KANJIDIC2 database [auto]])],
-    [],
-    [with_kanjidic2=auto])
+  [],
+  [with_kanjidic2=auto])
 AC_ARG_WITH([prolog],
   [AS_HELP_STRING([--with-prolog=PATH],
     [Prolog interpreter [auto]])],
-    [],
-    [with_prolog=auto])
+  [],
+  [with_prolog=auto])
 #
 # Process user options
 #
@@ -426,6 +439,8 @@ AC_SUBST([enable_chars])
 #
 AM_CONDITIONAL([COND_DOCS],[test '!' "$enable_docs" = no])
 AC_SUBST([enable_docs])
+#
+AM_CONDITIONAL([COND_DOWNLOAD],[test '!' "$enable_download" = no])
 #
 AC_SUBST([enable_ot_features])
 #
@@ -460,13 +475,13 @@ $prefix/dict $prefix/share dnl
        AC_MSG_RESULT([$with_kanjidic2])
        ])
 ])
-AM_CONDITIONAL([COND_KANJIDIC2], [test '!' "$with_kanjidic2" = no])
+AM_CONDITIONAL([COND_KANJIDIC2], [test '!' "x$with_kanjidic2" = "xno"])
 AC_SUBST([with_kanjidic2])
 #
 AS_IF([test "x$enable_kanji_chart" = "xauto"],
-  [AS_IF([test "$with_kanjidic2" = "no"],
+  [AS_IF([test "x$with_kanjidic2" = "xno"],
     [enable_kanji_chart=no],[enable_kanji_chart=yes])])
-AM_CONDITIONAL([COND_KANJI_CHART], [test '!' "$enable_kanji_chart" = no])
+AM_CONDITIONAL([COND_KANJI_CHART], [test '!' "x$enable_kanji_chart" = "xno"])
 AC_SUBST([enable_kanji_chart])
 #
 AS_IF([test "x$enable_silent_rules" = "x"],
@@ -528,7 +543,8 @@ AM_CONDITIONAL([COND_PROLOG_GNU],[test "$tsu_prolog_style" = gnu])
 AM_CONDITIONAL([COND_PROLOG_ECLIPSE],[test "$tsu_prolog_style" = eclipse])
 #
 AM_CONDITIONAL([COND_PROOFS], [test '!' "$enable_proofs" = no])
-AM_CONDITIONAL([COND_BOOKPROOFS], [test "$enable_proofs" = book])
+AM_CONDITIONAL([COND_BOOKPROOFS],
+  [test "$enable_proofs" = book || test "$enable_proofs" = books])
 #
 AM_CONDITIONAL([COND_PROPORTIONAL], [test '!' "$enable_proportional" = no])
 AC_SUBST([enable_proportional])
@@ -753,21 +769,6 @@ AS_IF([test "x$has_bad_paths" = "xyes"],[can_build=no])
 #
 AC_SUBST([andt],[])
 AC_CONFIG_FILES([Makefile])
-AC_CONFIG_COMMANDS([fix-makefile],
-  ["$PERL" -i -pe \
-'s/ZZZZHACKZZZZ\s*=\s*//;$_="" if /\$\(error This Makefile must be /;'\
-'s#(\$\(AUTOMAKE\) --foreign( Makefile)?)(?! && ./config)#'\
-'\1 && \$(SHELL) ./config.status fix-makefile#;'\
-'s#config\.status \$\@ \$\(am__depfiles_maybe\)#'\
-'config.status \$\@ fix-makefile \$(am__depfiles_maybe)#;'\
-'s#TESTS = #TESTS = \$(otf_DATA) #;'\
-'s#^all: config.h#all: kill-empty config.h#;'\
-'s#\t-\@?(test -z.* || )?rm -(r?)f (.*)#'\
-'\t\$(TSU_V_RM) '"'"'\3'"'"' \$(TSU_V_CHOPPER)\n'\
-'\t-\$(A''M_V_at)\1rm -\2f \3#;' \
-   Makefile
-   rm -f pfb-stamp* chl-stamp],
-  [PERL=$PERL])
 AC_OUTPUT
 #
 ############################################################################
@@ -801,6 +802,8 @@ TSU_TABLE_LINE([fontanvil debugging    ],[$enable_ff_debug],
   [no],[$can_ffdebug])
 TSU_TABLE_LINE([build-system hacking   ],[$enable_build_hacking],
   [no],[$can_bshack])
+TSU_TABLE_LINE([Unicode auto-download  ],[$enable_download],
+  [$enable_download],[yes])
 AS_ECHO([])
 AS_ECHO_N(["Character selection    "])
 TSU_COLOURISE([$enable_chars],[6])AS_ECHO([])
@@ -1021,9 +1024,12 @@ AS_IF([test "x$dl_unicode_warn" = "xyes"],
    AS_ECHO(["possibilities.  The download target is recursive and running it from"])
    AS_ECHO(["the top directory will also attempt to fetch dictionary data for IDSgrep."])
    AS_ECHO(["Run make download in the fontanvil/ directory to only fetch what is"])
-   AS_ECHO(["required by FontAnvil.  This step will NOT be taken automatically, on"])
-   AS_ECHO(["the principle that build systems should never make network connections"])
-   AS_ECHO(["without a specific user request to do so."])])
+   AS_ECHO(["required by FontAnvil.  This step will NOT be taken automatically unless"])
+   AS_ECHO(["you specify the --enable-download=yes option, on the principle that build"])
+   AS_ECHO(["systems should never make network connections without a specific user"])
+   AS_ECHO(["request to do so.  Use the UNICODE_URL environment variable to specify"])
+   AS_ECHO(["an alternate URL for the source of the files and be a better neighbour"])
+   AS_ECHO(["to the Unicode Consortium."])])
 
 AS_IF([test "x$has_bad_paths" = "xyes"],
   [AS_ECHO([])

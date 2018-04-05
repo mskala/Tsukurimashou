@@ -1,6 +1,6 @@
 %
 % Unicode page 84 (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012  Matthew Skala
+% Copyright (C) 2011, 2012, 2016, 2017  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -34,6 +34,7 @@ beginfont
 
 % AUTODEPS
 input buildkanji.mp;
+input gradeeight.mp;
 input gradefour.mp;
 input gradenine.mp;
 input gradeone.mp;
@@ -41,6 +42,7 @@ input gradethree.mp;
 input gradetwo.mp;
 input leftrad.mp;
 input radical.mp;
+input rare.mp;
 input toprad.mp;
 
 do_late_includes;
@@ -82,6 +84,12 @@ endtsuglyph;
 % you/ha "leaf"
 begintsuglyph("uni8449",73);
   kanji.grthree.leaf;
+  tsu_render;
+endtsuglyph;
+
+% waku/hakari "to calculate"
+begintsuglyph("uni84A6",166);
+  kanji.rare.to_calculate;
   tsu_render;
 endtsuglyph;
 

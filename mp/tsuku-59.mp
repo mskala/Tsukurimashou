@@ -1,6 +1,6 @@
 %
 % Unicode page 59 (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012, 2013, 2016  Matthew Skala
+% Copyright (C) 2011, 2012, 2013, 2016, 2017  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -126,6 +126,23 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vardef kanji.grfive_helper.wife =
+  push_pbox_toexpand("kanji.grfive_helper.wife");
+  push_stroke((500,810)--(500,-60),(1.6,1.6)--(1.5,1.5));
+  set_boserif(0,0,10);
+  tsu_xform(identity yscaled 0.58 shifted (0,20))
+    (kanji.radical.pigs_snout);
+  push_stroke((140,660)--(870,660),
+    (1.6,1.6)--(1.6,1.6));
+  set_boserif(0,1,9);
+  replace_strokep(-4)((point 0 of oldp)--
+    (oldp intersectionpoint get_strokep(-1)));
+  for i=-4 upto 0: set_bosize(i,85); endfor;
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 vardef kanji.grfive.dream =
   push_pbox_toexpand("kanji.grfive.dream");
   build_kanji.tb(360,90)
@@ -134,6 +151,14 @@ vardef kanji.grfive.dream =
        (kanji.toprad.eye)
        (kanji.radical.conservative_hat)))
     (build_kanji.sscale(xscaled 0.94)(kanji.grone.evening));
+  expand_pbox;
+enddef;
+
+vardef kanji.grfive.wife =
+  push_pbox_toexpand("kanji.grfive.wife");
+  build_kanji.tb(330,20)
+    (kanji.grfive_helper.wife)
+    (kanji.grone.woman);
   expand_pbox;
 enddef;
 
@@ -274,6 +299,18 @@ endtsuglyph;
 % mai/imouto "younger sister"
 begintsuglyph("uni59B9",185);
   kanji.grtwo.little_sister;
+  tsu_render;
+endtsuglyph;
+
+% sai/tsuma "wife"
+begintsuglyph("uni59BB",187);
+  kanji.grfive.wife;
+  tsu_render;
+endtsuglyph;
+
+% shou/mekake "concubine"
+begintsuglyph("uni59BE",190);
+  kanji.rare.concubine;
   tsu_render;
 endtsuglyph;
 

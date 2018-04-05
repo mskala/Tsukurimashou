@@ -1,6 +1,6 @@
 %
 % Unicode page 96 (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012, 2013  Matthew Skala
+% Copyright (C) 2011, 2012, 2013, 2016, 2017  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -42,6 +42,7 @@ input gradenine.mp;
 input gradeone.mp;
 input gradethree.mp;
 input gradetwo.mp;
+input leftrad.mp;
 input radical.mp;
 input rare.mp;
 input toprad.mp;
@@ -128,6 +129,30 @@ vardef kanji.grfive.limit =
   build_kanji.lr(420,110)
     (kanji.radical.beta)
     (build_kanji.sscale(shifted (0,-10))(kanji.radical.northeast));
+  expand_pbox;
+enddef;
+
+vardef kanji.grfive.miscellaneous =
+  push_pbox_toexpand("kanji.grfive.miscellaneous");
+  build_kanji.lr(480,-20)
+    (build_kanji.level(build_kanji.tb(420,10)
+       (kanji.grone.nine)
+       (kanji.leftrad.wood)))
+    (kanji.radical.old_bird);
+  expand_pbox;
+enddef;
+
+vardef kanji.grfive.precipitous =
+  push_pbox_toexpand("kanji.grfive.precipitous");
+  build_kanji.level(build_kanji.lr(380,100-30*mincho)
+    (kanji.radical.beta)
+    (build_kanji.tb(380,420)
+       (kanji.radical.tent)
+       (kanji.grfour.husband;
+        set_bosize(-3,0);
+        set_bosize(-2,0);
+        set_boserif(-1,0,whatever);
+        build_kanji.box((220,610),(780,360)))));
   expand_pbox;
 enddef;
 
@@ -267,6 +292,12 @@ begintsuglyph("uni9678",120);
   tsu_render;
 endtsuglyph;
 
+% ken/kewa "precipitious"
+begintsuglyph("uni967A",122);
+  kanji.grfive.precipitous;
+  tsu_render;
+endtsuglyph;
+
 % you/hi "positive"
 begintsuglyph("uni967D",125);
   kanji.grthree.positive;
@@ -303,9 +334,27 @@ begintsuglyph("uni96B9",185);
   tsu_render;
 endtsuglyph;
 
+% koku/a "you are the wind beneath my wings"
+begintsuglyph("uni96BA",186);
+  kanji.radical.yatwbmw;
+  tsu_render;
+endtsuglyph;
+
+% seki "counter for ships"
+begintsuglyph("uni96BB",187);
+  kanji.greight.ship_counter;
+  tsu_render;
+endtsuglyph;
+
 % shuu/atsu "collect"
 begintsuglyph("uni96C6",198);
   kanji.grthree.collect;
+  tsu_render;
+endtsuglyph;
+
+% zatsu/maji "miscellaneous" (esp. "poetry not about the seasons or love")
+begintsuglyph("uni96D1",209);
+  kanji.grfive.miscellaneous;
   tsu_render;
 endtsuglyph;
 

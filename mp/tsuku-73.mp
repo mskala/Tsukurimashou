@@ -1,6 +1,6 @@
 %
 % Unicode page 73 (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012, 2014  Matthew Skala
+% Copyright (C) 2011, 2012, 2014, 2017  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -50,7 +50,30 @@ vardef kanji.grfive.actually =
   expand_pbox;
 enddef;
 
+vardef kanji.grfive.ratio =
+  push_pbox_toexpand("kanji.grfive.ratio");
+  build_kanji.level(build_kanji.tcb(610+40*mincho,10-20*mincho)(240,0)
+    (kanji.radical.kettle_lid)
+    (build_kanji.sscale(xscaled 0.6)(kanji.radical.short_thread);
+     push_stroke((80,740)..tension 1.2..(170,600)..(210,500),
+       (1,1)--(1.5,1.5)--(1.8,1.8));
+     push_stroke((230,330)..(160,190)..tension 1.2..(70,90),
+       (1.1,1.1)--(1.4,1.4)--(1.9,1.9));
+     push_stroke(get_strokep(-1) shifted ((760,330)-point 0 of get_strokep(-1)),
+       get_strokeq(-1));
+     push_stroke(get_strokep(-1) shifted ((760,480)-point 2 of get_strokep(-1)),
+       get_strokeq(-1)))
+    (kanji.grone.ten));
+  expand_pbox;
+enddef;
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% sotsu/hiki "ratio"
+begintsuglyph("uni7387",135);
+  kanji.grfive.ratio;
+  tsu_render;
+endtsuglyph;
 
 % gyoku/tama "ball" or "precious"
 begintsuglyph("uni7389",137);

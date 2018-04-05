@@ -1,6 +1,6 @@
 %
 % Unicode page 71 (Kanji) for Tsukurimashou
-% Copyright (C) 2012, 2013, 2014  Matthew Skala
+% Copyright (C) 2012, 2013, 2014, 2016, 2017  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -76,6 +76,16 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vardef kanji.grfive.burn =
+  push_pbox_toexpand("kanji.grfive.burn");
+  build_kanji.level(build_kanji.lr(340,20-20*mincho)
+    (build_kanji.sscale(shifted (0,20))(kanji.leftrad.fire))
+    (kanji.grfour.that_case));
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 vardef kanji.grnine.prosperous =
   push_pbox_toexpand("kanji.grnine.prosperous");
   build_kanji.tb(190,-30)
@@ -125,6 +135,12 @@ endtsuglyph;
 % netsu/atsu "heat"
 begintsuglyph("uni71B1",177);
   kanji.grfour.heat;
+  tsu_render;
+endtsuglyph;
+
+% nen/mo "burn"
+begintsuglyph("uni71C3",195);
+  kanji.grfive.burn;
   tsu_render;
 endtsuglyph;
 

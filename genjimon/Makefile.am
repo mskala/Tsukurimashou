@@ -2,7 +2,7 @@
 
 #
 # Makefile for Genjimon
-# Copyright (C) 2011, 2012, 2014  Matthew Skala
+# Copyright (C) 2011, 2012, 2014, 2017  Matthew Skala
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -44,6 +44,8 @@ empty:=
 space:=$(empty) $(empty)
 comma:=,
 percent=%
+
+$(error This Makefile must be edited by Perl code in config.status before use)
 
 SHELL=$(if $(wildcard @KLEKNEV@),@KLEKNEV@,$(if \
   $(wildcard /bin/bash),/bin/bash,/bin/sh))
@@ -158,12 +160,12 @@ BUILT_SOURCES=Makefile
 
 STANDALONE_QVFG:=fntbase.mp genjimon.mp mitsuba.cls
 EXTRA_DIST:= \
-  $(if $(filter $(distdir),$(top_distdir)),$(STANDALONE_QVFG)) \
+  $(if $(filter no,@parasite@),$(STANDALONE_QVFG)) \
   genfont.mp $(wildcard genjimon-*.mp) genjimon.tex
 
 STANDALONE_FPEVCGF:=fontlint.pe mp2pf
 dist_noinst_SCRIPTS:= \
-  $(if $(filter $(distdir),$(top_distdir)),$(STANDALONE_FPEVCGF)) \
+  $(if $(filter no,@parasite@),$(STANDALONE_FPEVCGF)) \
   makettf.pe
 
 dist_pdf_DATA = $(MAYBE_DOCS)
@@ -181,7 +183,15 @@ MOSTLYCLEANFILES = \
   *.pfb *.sfd *.ttf \
   genjimon.aux genjimon.log genjimon.out genjimon.pdf
 
-DISTCLEANFILES = aminclude.am
+CLEANFILES = \
+  $(if $(filter yes,@parasite@),$(STANDALONE_QVFG) $(STANDALONE_FPEVCGF))
+
+DISTCLEANFILES = \
+  aminclude.am
+
+distcleancheck_listfiles = \
+  find . -type f -exec sh -c 'test -f $(srcdir)/$$1 || echo $$1' \
+    sh '{}' ';'
 
 ############################################################################
 
@@ -197,7 +207,8 @@ DISTCLEANFILES = aminclude.am
 	(cd $*.tmp ; $(expect_start)'$(MPOST)' $*.mp$(expect_end) ) ; \
 	if '$(GREP)' -q '^! ' $*.tmp/$*.log ; then exit 1 ; fi ; \
 	$(TSU_V_NAPERL) \
-	'$(PERL)' -CSD $(mvp)/mp2pf $*.tmp/$* $(TSU_V_REDIR) ; \
+	'$(PERL)' -CSD $(if $(filter no,@parasite@),$(mvp)/)mp2pf \
+	  $*.tmp/$* $(TSU_V_REDIR) ; \
 	(cd $*.tmp ; '$(realpath @T1ASM@)' -b $*.p $*.pfb ) ; \
 	if test -r $*.tmp/$*.pfb \
 	  && '$(GREP)' -q 'output files\? written' $*.tmp/$*.log; then \
@@ -263,10 +274,14 @@ GenjimonRoundOutline.ttf: genjimon-routline.pfb makettf.pe
 genjimon.pdf: genjimon.tex mitsuba.cls \
   GenjimonMedium.ttf GenjimonReverse.ttf GenjimonWhite.ttf GenjimonBlack.ttf
 	$(AM_V_at)rm -f genjimon.aux
+	$(AM_V_at)if test '!' -r genjimon.tex ; then \
+	  cp $(mvp)/genjimon.tex . ; fi
+	$(AM_V_at)if test '!' -r mitsuba.cls ; then \
+	  cp $(mvp)/mitsuba.cls . ; fi
 	$(AM_V_at)$(TSU_V_TEX)$(expect_start)'$(XELATEX)' \
-	  $(mvp)/genjimon$(expect_end)
+	  genjimon$(expect_end)
 	$(AM_V_at)$(TSU_V_TEX)$(expect_start)'$(XELATEX)' \
-	  $(mvp)/genjimon$(expect_end)
+	  genjimon$(expect_end)
 
 ############################################################################
 
@@ -274,7 +289,7 @@ genjimon.pdf: genjimon.tex mitsuba.cls \
 
 TESTS = $(dist_ttf_DATA)
 TEST_EXTENSIONS = .ttf
-TTF_LOG_COMPILER = '$(FONTANVIL)' -lang=ff -script fontlint.pe
+TTF_LOG_COMPILER = '$(FONTANVIL)' -lang=ff -script $(mvp)/fontlint.pe
 
 ############################################################################
 
@@ -327,6 +342,9 @@ m4/tsu_bad_paths.m4: ../m4/tsu_bad_paths.m4
 	$(TSU_V_CP) cp $< $@
 
 m4/tsu_colourise.m4: ../m4/tsu_colourise.m4
+	$(TSU_V_CP) cp $< $@
+
+m4/tsu_fix_makefile.m4: ../m4/tsu_fix_makefile.m4
 	$(TSU_V_CP) cp $< $@
 
 mp2pf: ../tools/mp2pf

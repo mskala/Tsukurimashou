@@ -1,6 +1,6 @@
-/* $Id: autotrace.c 4674 2016-02-24 10:01:02Z mskala $ */
+/* $Id: autotrace.c 5734 2017-11-10 04:37:40Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
- * Copyright (C) 2015  Matthew Skala
+ * Copyright (C) 2015, 2016  Matthew Skala
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:

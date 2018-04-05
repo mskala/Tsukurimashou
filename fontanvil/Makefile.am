@@ -2,7 +2,7 @@
 
 #
 # Makefile for FontAnvil
-# Copyright (C) 2014, 2015  Matthew Skala
+# Copyright (C) 2014, 2015, 2016, 2017  Matthew Skala
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -36,6 +36,8 @@ empty:=
 space:=$(empty) $(empty)
 comma:=,
 percent=%
+
+$(error This Makefile must be edited by Perl code in config.status before use)
 
 SHELL=$(if $(wildcard @KLEKNEV@),@KLEKNEV@,$(if \
   $(wildcard /bin/bash),/bin/bash,/bin/sh))
@@ -322,7 +324,7 @@ texfiles = \
 
 STANDALONE_QVFG:=doc/mitsuba.cls
 EXTRA_DIST:= \
-  $(if $(filter $(distdir),$(top_distdir)),$(STANDALONE_QVFG)) \
+  $(if $(filter no,@parasite@),$(STANDALONE_QVFG)) \
   COPYING README \
   Unicode/README.TXT \
   $(texfiles) doc/anvil.pdf doc/quixote-daumier.jpg doc/quixote-dore.jpg \
@@ -347,7 +349,7 @@ EXTRA_DIST:= \
 
 STANDALONE_FPEVCGF:=
 dist_noinst_SCRIPTS:= \
-  $(if $(filter $(distdir),$(top_distdir)),$(STANDALONE_FPEVCGF)) \
+  $(if $(filter no,@parasite@),$(STANDALONE_FPEVCGF)) \
   $(TESTS) tools/dlunicode
 nodist_bin_SCRIPTS = \
   fontanvil/fontimage fontanvil/fontlint fontanvil/sfddiff
@@ -393,7 +395,13 @@ endif
 # ICEMAP
 
 download:
-	tools/dlunicode
+	$(top_srcdir)/tools/dlunicode @UNICODE_URL@
+
+if COND_DOWNLOAD
+
+dat/Unihan_OtherMappings.txt: download
+
+endif
 
 if COND_ICEMAP
 
@@ -408,6 +416,9 @@ fontanvil/macenctab.c: fontanvil/macenctab.h
 
 fontanvil/nonmactab.h: fontanvil/nonmactab.im \
   dat/texbase.dat dat/gb2312.dat dat/glyphlist.txt
+	$(AM_V_at)if test '!' "x$(VPATH)" = "x" ; then \
+	  cp $(mvp)/dat/glyphlist.txt dat/ ; fi
+	$(TSU_V_ICE)'$(ICEMAP)' -H$@ -C$(patsubst %.h,%.c,$@) $< $(TSU_V_REDIR)
 fontanvil/nonmactab.c: fontanvil/nonmactab.h
 
 fontanvil/unicodelib.h: fontanvil/unicodelib.im
@@ -462,6 +473,9 @@ fontanvil/sfddiff: fontanvil/sfddiff.pe
 doc/fontanvil.pdf: $(texfiles) doc/mitsuba.cls \
   doc/quixote-dore.jpg doc/quixote-daumier.jpg
 	$(AM_V_at)rm -f fontanvil.aux
+	$(AM_V_at)if test '!' "$(realpath $(mvp)/doc)" = \
+	  "$(realpath ./doc)" ; then \
+	  cp $(mvp)/doc/*.tex $(mvp)/doc/*.jpg doc/ ; fi
 	$(AM_V_at)I=1;$(TSU_V_TEXL) cd doc ; \
 	  '$(PDFLATEX)' fontanvil.tex $(TSU_V_REDIR)
 	$(AM_V_at)cd doc ; makeindex fontanvil.idx $(TSU_V_REDIR)
@@ -477,6 +491,8 @@ doc/fontanvil.pdf: $(texfiles) doc/mitsuba.cls \
 MOSTLYCLEANFILES = \
   *~ */*~ \
   fontanvil/fontimage fontanvil/fontlint fontanvil/sfddiff \
+  doc/fontanvil.aux doc/fontanvil.log doc/fontanvil.toc doc/fontanvil.out \
+  doc/fontanvil.idx doc/fontanvil.ilg doc/fontanvil.ind \
   test/atconfig \
   $(MO_FILES) $(noinst_FILES)
   
@@ -484,15 +500,27 @@ mostlyclean-local:
 	$(TSU_V_RM) 'ttmp'
 	$(AM_V_at)rm -rf ttmp
 
-CLEANFILES =
+CLEANFILES = \
+  $(if $(filter yes,@parasite@),$(STANDALONE_QVFG) $(STANDALONE_FPEVCGF))
 
 DISTCLEANFILES = \
   aminclude.am _stdint.h \
   inc/fontanvil-config.h inc/stamp-h1 \
+  $(filter-out $(dist_noinst_DATA),$(wildcard dat/*)) \
   */.dirstamp
+
+distclean-local:
+	$(TSU_V_RM) 'dat/apple'
+	$(AM_V_at)rm -rf dat/apple
+	$(TSU_V_RM) 'dat/adobe'
+	$(AM_V_at)rm -rf dat/adobe
 
 MAINTAINERCLEANFILES = \
   inc/fontanvil-config.h.in
+
+distcleancheck_listfiles = \
+  find . -type f -exec sh -c 'test -f $(srcdir)/$$1 || echo $$1' \
+    sh '{}' ';'
 
 ############################################################################
 
@@ -531,6 +559,7 @@ automake_rules = here
 if COND_PARASITE
 
 doc/mitsuba.cls: ../mitsuba/mitsuba.cls
+	$(MKDIR_P) doc
 	$(TSU_V_CP) cp $< $@
 
 m4/ax_add_am_macro.m4: ../m4/ax_add_am_macro.m4
@@ -566,7 +595,11 @@ m4/tsu_bad_paths.m4: ../m4/tsu_bad_paths.m4
 m4/tsu_colourise.m4: ../m4/tsu_colourise.m4
 	$(TSU_V_CP) cp $< $@
 
+m4/tsu_fix_makefile.m4: ../m4/tsu_fix_makefile.m4
+	$(TSU_V_CP) cp $< $@
+
 dat/UnicodeData.txt: $(wildcard ../idsgrep/UnicodeData.txt)
+	$(MKDIR_P) dat
 	$(TSU_V_CP) if test -s ../idsgrep/UnicodeData.txt ; \
 	  then cp ../idsgrep/UnicodeData.txt $@ ; fi
 

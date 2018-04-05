@@ -1,6 +1,6 @@
 %
 % Grade Eight kanji used on more than one page
-% Copyright (C) 2011, 2012, 2013, 2014, 2016  Matthew Skala
+% Copyright (C) 2011, 2012, 2013, 2014, 2016, 2017  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -96,6 +96,15 @@ vardef kanji.greight.chastity =
     (kanji.grone.ten;
      replace_strokep(0)(subpath (0.5,0.8) of oldp shifted (5,40)))
     (kanji.grone.shell));
+  expand_pbox;
+enddef;
+
+vardef kanji.greight.chinese_spear =
+  push_pbox_toexpand("kanji.greight.chinese_spear");
+  kanji.grthree.before;
+  push_stroke(insert_nodes((500,480)..tension 1.1..
+      (320,250)..{curl 1.2}(100,130))(0.3),
+    (1.6,1.6)--(1.6,1.6)--(1.4,1.4)--(1.1,1.1));
   expand_pbox;
 enddef;
 
@@ -340,6 +349,14 @@ vardef kanji.greight.inflammation =
   expand_pbox;
 enddef;
 
+vardef kanji.greight.insect =
+  push_pbox_toexpand("kanji.greight.insect");
+  build_kanji.level(build_kanji.tb(420,-20)
+    (kanji.grone.day)
+    (kanji.grfive.compare));
+  expand_pbox;
+enddef;
+
 vardef kanji.greight.instant =
   push_pbox_toexpand("kanji.greight.instant");
   build_kanji.level(build_kanji.lr(520,0)
@@ -371,6 +388,14 @@ vardef kanji.greight.mediate =
     tsu_xform(identity yscaled 0.63)(kanji.radical.aitch);
     obstacktype[find_whatever(otstroke,-2)]:=otnull;
   );
+  expand_pbox;
+enddef;
+
+vardef kanji.greight.mediocre =
+  push_pbox_toexpand("kanji.greight.mediocre");
+  kanji.radical.windy;
+  push_stroke((370,550)..tension 1.2..(490,420)..(550-20*mincho,280),
+    (0.9,0.9)--(1.5,1.5)--(1.7,1.7));
   expand_pbox;
 enddef;
 
@@ -537,6 +562,14 @@ vardef kanji.greight.seedling =
   build_kanji.tb(600,40)
     (kanji.toprad.grass)
     (kanji.grone.paddy);
+  expand_pbox;
+enddef;
+
+vardef kanji.greight.ship_counter =
+  push_pbox_toexpand("kanji.greight.ship_counter");
+  build_kanji.tb(320,-30)
+    (kanji.radical.old_bird)
+    (kanji.greight.otoh);
   expand_pbox;
 enddef;
 

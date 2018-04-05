@@ -1,6 +1,6 @@
 %
 % Unicode page 90 (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012, 2013, 2014, 2015, 2016  Matthew Skala
+% Copyright (C) 2011, 2012, 2013, 2014, 2015, 2016, 2017  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -150,6 +150,12 @@ vardef kanji.grfive.occasional =
   expand_pbox;
 enddef;
 
+vardef kanji.grfive.upside_down =
+  push_pbox_toexpand("kanji.grfive.upside_down");
+  build_kanji.road_enclose(kanji.rare.disobedient);
+  expand_pbox;
+enddef;
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 vardef kanji.greight.avoid =
@@ -230,6 +236,12 @@ endtsuglyph;
 % tou/ni "escape"
 begintsuglyph("uni9003",3);
   kanji.greight.escape;
+  tsu_render;
+endtsuglyph;
+
+% gyaku/saka "upside-down"
+begintsuglyph("uni9006",6);
+  kanji.grfive.upside_down;
   tsu_render;
 endtsuglyph;
 

@@ -1,6 +1,6 @@
 %
 % Unicode page 52 (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012, 2013, 2014, 2016  Matthew Skala
+% Copyright (C) 2011, 2012, 2013, 2014, 2016, 2017  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -157,6 +157,14 @@ vardef kanji.grfive.effect =
   expand_pbox;
 enddef;
 
+vardef kanji.grfive.energy =
+  push_pbox_toexpand("kanji.grfive.energy");
+  build_kanji.tb(280,0)
+    (kanji.rare.art)
+    (kanji.grone.power);
+  expand_pbox;
+enddef;
+
 vardef kanji.grfive.judge =
   push_pbox_toexpand("kanji.grfive.judge");
   build_kanji.level(build_kanji.lr(560,20)
@@ -173,14 +181,13 @@ vardef kanji.grfive.publication =
   expand_pbox;
 enddef;
 
-vardef kanji.grfive.system =
-  push_pbox_toexpand("kanji.grfive.system");
-  build_kanji.level(build_kanji.lr(560,0)
-    (build_kanji.tb(300,40)
-       (kanji.grtwo.cow)
-       (build_kanji.sscale(xscaled 0.92 shifted (0,100))(kanji.radical.gmm));
-     replace_strokep(-2)(point 0 of oldp--(xpart point 1 of oldp,-60)))
-    (kanji.rightrad.sword));
+vardef kanji.grfive.serve =
+  push_pbox_toexpand("kanji.grfive.serve");
+  build_kanji.lr(470,-20)
+    (kanji.greight.chinese_spear)
+    (build_kanji.tb(400,40)
+       (kanji.radical.folding_chair)
+       (kanji.grone.power));
   expand_pbox;
 enddef;
 
@@ -416,6 +423,12 @@ begintsuglyph("uni5237",55);
   tsu_render;
 endtsuglyph;
 
+% ken "ticket"
+begintsuglyph("uni5238",56);
+  kanji.grfive.ticket;
+  tsu_render;
+endtsuglyph;
+
 % satsu "temple/central pillar of pagoda"
 begintsuglyph("uni5239",57);
   kanji.greight.temple;
@@ -545,9 +558,21 @@ begintsuglyph("uni52D5",213);
   tsu_render;
 endtsuglyph;
 
+% mu/tsuto "serve"
+begintsuglyph("uni52D9",217);
+  kanji.grfive.serve;
+  tsu_render;
+endtsuglyph;
+
 % shou/ka "victory"
 begintsuglyph("uni52DD",221);
   kanji.grthree.victory;
+  tsu_render;
+endtsuglyph;
+
+% sei/ikio "energy"
+begintsuglyph("uni52E2",226);
+  kanji.grfive.energy;
   tsu_render;
 endtsuglyph;
 

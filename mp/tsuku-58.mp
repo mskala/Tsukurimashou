@@ -1,6 +1,6 @@
 %
 % Unicode page 58 (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012, 2013, 2016  Matthew Skala
+% Copyright (C) 2011, 2012, 2013, 2016, 2017  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -108,6 +108,15 @@ vardef kanji.grfive.report =
   expand_pbox;
 enddef;
 
+vardef kanji.grfive.tomb =
+  push_pbox_toexpand("kanji.grfive.tomb");
+  build_kanji.level(build_kanji.tb(240,100)
+    (build_kanji.spread_legs(150)(kanji.grnine.malva_nut))
+    (kanji.grone.earth;
+     replace_strokep(-1)(subpath (0.12,0.88) of oldp)));
+  expand_pbox;
+enddef;
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 vardef kanji.greight.legal_one =
@@ -154,6 +163,12 @@ endtsuglyph;
 % zou/masu "increase"
 begintsuglyph("uni5897",151);
   kanji.grfive.increase;
+  tsu_render;
+endtsuglyph;
+
+% bo/haka "tomb"
+begintsuglyph("uni5893",147);
+  kanji.grfive.tomb;
   tsu_render;
 endtsuglyph;
 

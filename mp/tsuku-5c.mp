@@ -1,6 +1,6 @@
 %
 % Unicode page 5C (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012, 2013, 2016  Matthew Skala
+% Copyright (C) 2011, 2012, 2013, 2016, 2017  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -73,6 +73,15 @@ vardef kanji.grthree.beach =
 enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+vardef kanji.grfive.genus =
+  push_pbox_toexpand("kanji.grfive.genus");
+  build_kanji.level(
+    kanji.radical.narrow_flag;
+    build_kanji.sscale(xyscaled (0.75,0.55) shifted (40,-150))
+      (kanji.rare.yu_the_great));
+  expand_pbox;
+enddef;
 
 vardef kanji.grfive.guide =
   push_pbox_toexpand("kanji.grfive.guide");
@@ -300,12 +309,24 @@ begintsuglyph("uni5C53",83);
   tsu_render;
 endtsuglyph;
 
+% zoku/sakan "genus" (or "dependent abstract thing")
+begintsuglyph("uni5C5E",94);
+  kanji.grfive.genus;
+  tsu_render;
+endtsuglyph;
+
 % extra "slaughter"
 begintsuglyph("uni5C60",96);
   build_kanji.level(
     kanji.radical.narrow_flag;
     build_kanji.sscale(xyscaled (0.72,0.66) shifted (40,-120))
       (kanji.grthree.person));
+  tsu_render;
+endtsuglyph;
+
+% geki/saka "disobedient"
+begintsuglyph("uni5C70",112);
+  kanji.rare.disobedient;
   tsu_render;
 endtsuglyph;
 

@@ -1,7 +1,7 @@
-/* $Id: featurefile.c 4672 2016-02-24 09:01:30Z mskala $ */
+/* $Id: featurefile.c 5734 2017-11-10 04:37:40Z mskala $ */
 /* Copyright (C) 2000-2012  George Williams
  * Copyright (C) 2012  Khaled Hosny
- * Copyright (C) 2013, 2014, 2015  Matthew Skala
+ * Copyright (C) 2013, 2014, 2015, 2016  Matthew Skala
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:

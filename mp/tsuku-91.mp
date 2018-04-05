@@ -1,6 +1,6 @@
 %
 % Unicode page 91 (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012, 2013, 2016  Matthew Skala
+% Copyright (C) 2011, 2012, 2013, 2016, 2017  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -87,6 +87,18 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vardef kanji.grfive.acid =
+  push_pbox_toexpand("kanji.grfive.acid");
+  build_kanji.lr(480,20-10*mincho)
+    (kanji.grnine.bird_sign)
+    (build_kanji.level(build_kanji.tb(380,20)
+       (kanji.grnine.permission)
+       (kanji.radical.winter)));
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 vardef kanji.greight.bartending =
   push_pbox_toexpand("kanji.greight.bartending");
   build_kanji.lr(520,0)
@@ -148,6 +160,12 @@ endtsuglyph;
 % shu/sake "alcoholic drink"
 begintsuglyph("uni9152",82);
   kanji.grthree.alcohol;
+  tsu_render;
+endtsuglyph;
+
+% sai/su "acid"
+begintsuglyph("uni9178",120);
+  kanji.grfive.acid;
   tsu_render;
 endtsuglyph;
 

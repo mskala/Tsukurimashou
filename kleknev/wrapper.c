@@ -1,6 +1,6 @@
 /*
  * Profiling wrapper for shell-based systems (shared code)
- * Copyright (C) 2013, 2015  Matthew Skala
+ * Copyright (C) 2013, 2015, 2018  Matthew Skala
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,6 +28,7 @@
 #include <sys/resource.h>
 #include <sys/time.h>
 #include <sys/types.h>
+#include <sys/wait.h>
 #include <time.h>
 #include <unistd.h>
 

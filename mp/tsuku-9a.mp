@@ -1,6 +1,6 @@
 %
 % Unicode page 9A (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012, 2013  Matthew Skala
+% Copyright (C) 2011, 2012, 2013, 2017  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -35,6 +35,7 @@ beginfont
 % AUTODEPS
 input buildkanji.mp;
 input gradefive.mp;
+input gradefour.mp;
 input gradeone.mp;
 input gradesix.mp;
 input gradetwo.mp;
@@ -71,21 +72,6 @@ vardef kanji.greight.surprise =
   build_kanji.thickness(0.9)(build_kanji.level(build_kanji.tb(420,0)
     (kanji.grsix.respect)
     (kanji.grtwo.horse)));
-  expand_pbox;
-enddef;
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-vardef kanji.rightrad.attempt =
-  push_pbox_toexpand("kanji.rightrad.attempt");
-  build_kanji.level(
-    build_kanji.sscale(yscaled 0.8 shifted (0,100))(kanji.radical.tent);
-    build_kanji.sscale(yscaled 0.71 shifted (0,-125))
-      (push_stroke((500,780){curl 0}..(430,310)..(280,90)..(20,-90),
-         (1.6,1.6)--(1.5,1.5)--(1.3,1.3)--(0.85,0.85));
-       push_stroke((520,290)..tension 1.2..(640,120)..(920,-50),
-         (1.2,1.2)--(1.4,1.4)--(1.6,1.6));
-       build_kanji.box((230,610),(770,320))));
   expand_pbox;
 enddef;
 

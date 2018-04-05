@@ -1,6 +1,6 @@
 %
 % General shared code for Tsukurimashou
-% Copyright (C) 2011, 2012, 2013, 2015, 2016  Matthew Skala
+% Copyright (C) 2011, 2012, 2013, 2015, 2016, 2017  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -72,6 +72,8 @@ def begintsuglyph(expr name,code) =
   encode(name) (code); standard_introduce(name);
   write ("BEGINGLYPH '"&name& "' "&decimal code) to "proof.prf";
   beginglyph(name);
+    numeric proof_stroke_i;
+    proof_stroke_i:=1;
     init_obstack;
     string perl_structure;
     perl_structure:="$structure{'"&name&"'}=['"&name&"',";
@@ -551,10 +553,9 @@ def tsu_render_in_circle(expr fitcircle) =
     fi;
   fi; endfor;
   begingroup
-    numeric i,j,k,l,s,t,si,ngls,flati;
+    numeric i,j,k,l,s,t,si,ngls;
     path bqi,p,q,glstk[];
     ngls:=0;
-    flati:=1;
     for i=1 upto sp-1: if obstacktype[i]=otstroke:
       if unknown obstackna.bobrush[i]:
         obstackna.bobrush[i]:=brletter;
@@ -633,14 +634,14 @@ def tsu_render_in_circle(expr fitcircle) =
                  fi;
                endgroup;
              endfor;
-             write ("SEGMENT "&(decimal flati)&" "&(decimal s)&" "&(decimal t))
+             write ("SEGMENT "&(decimal proof_stroke_i)&" "&(decimal s)&" "&(decimal t))
                to "proof.prf";
              for lcbj=0 upto length p:
-               write ("POINT "&(decimal flati)&" "&(decimal ltime[lcbj])&" "
+               write ("POINT "&(decimal proof_stroke_i)&" "&(decimal ltime[lcbj])&" "
                  &(decimal xpart point lcbj of p)&" "
                  &(decimal ypart point lcbj of p)) to "proof.prf";
              endfor;
-             flati:=flati+1;
+             proof_stroke_i:=proof_stroke_i+1;
              tsu_render_segment(i,p,q,obstackna.bobrush[i]);
            fi;
          fi;

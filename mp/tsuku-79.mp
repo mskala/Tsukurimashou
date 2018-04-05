@@ -1,6 +1,6 @@
 %
 % Unicode page 79 (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012, 2013, 2014, 2016  Matthew Skala
+% Copyright (C) 2011, 2012, 2013, 2014, 2016, 2017  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -253,6 +253,12 @@ endtsuglyph;
 % fuku/toshi "good luck"
 begintsuglyph("uni798F",143);
   kanji.grthree.good_luck;
+  tsu_render;
+endtsuglyph;
+
+% refers to a specific legendary Chinese emperor, founder of the Xia Dynasty
+begintsuglyph("uni79B9",185);
+  kanji.rare.yu_the_great;
   tsu_render;
 endtsuglyph;
 

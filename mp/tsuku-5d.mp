@@ -1,6 +1,6 @@
 %
 % Unicode page 5D (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012, 2013, 2016  Matthew Skala
+% Copyright (C) 2011, 2012, 2013, 2016, 2017  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -108,6 +108,12 @@ begintsuglyph("uni5D53",83);
   tsu_render;
 endtsuglyph;
 
+% sen/kawa "curving river radical"
+begintsuglyph("uni5DDB",219);
+  kanji.radical.curving_river;
+  tsu_render;
+endtsuglyph;
+
 % kawa "river"
 begintsuglyph("uni5DDD",221);
   kanji.grone.river;
@@ -141,6 +147,12 @@ endtsuglyph;
 % kou/taku "adroit"
 begintsuglyph("uni5DE7",231);
   kanji.greight.adroit;
+  tsu_render;
+endtsuglyph;
+
+% kyou "secure"
+begintsuglyph("uni5DE9",233);
+  kanji.rare.secure;
   tsu_render;
 endtsuglyph;
 

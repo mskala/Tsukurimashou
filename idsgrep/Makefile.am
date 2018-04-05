@@ -2,7 +2,7 @@
 
 #
 # Makefile source for IDSgrep
-# Copyright (C) 2012, 2013, 2014, 2015  Matthew Skala
+# Copyright (C) 2012, 2013, 2014, 2015, 2017  Matthew Skala
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -35,6 +35,8 @@ empty:=
 space:=$(empty) $(empty)
 comma:=,
 percent=%
+
+$(error This Makefile must be edited by Perl code in config.status before use)
 
 SHELL=$(if $(wildcard @KLEKNEV@),@KLEKNEV@,$(if \
   $(wildcard /bin/bash),/bin/bash,/bin/sh))
@@ -178,12 +180,13 @@ endif
 
 STANDALONE_QVFG:=mitsuba.cls
 EXTRA_DIST:= \
-  $(if $(filter $(distdir),$(top_distdir)),$(STANDALONE_QVFG)) \
-  gnugetopt.h idsgrep.tex idsgrep.bib widthtab.im
+  $(if $(filter no,@parasite@),$(STANDALONE_QVFG)) \
+  gnugetopt.h idsgrep.tex idsgrep.bib widthtab.im \
+  chise.eids idsgrep.pdf
 
 STANDALONE_FPEVCGF:=
 dist_noinst_SCRIPTS:= \
-  $(if $(filter $(distdir),$(top_distdir)),$(STANDALONE_FPEVCGF)) \
+  $(if $(filter no,@parasite@),$(STANDALONE_FPEVCGF)) \
   chise2eids cjkvi2eids ed22eids kvg2eids \
   cjkvi-ids.txt \
   $(GCOV_TESTS) test/vgneko test/rmgcda test/gcov
@@ -209,15 +212,23 @@ man1_MANS = idsgrep.1
 # MAKE CLEAN
 
 MOSTLYCLEANFILES = \
-  idsgrep.aux idsgrep.log idsgrep.blg idsgrep.bbl idsgrep.toc \
+  idsgrep.aux idsgrep.log idsgrep.blg idsgrep.bbl idsgrep.toc idsgrep.out \
   *.bvec *.gcda *.gcno *.gcov
 
-CLEANFILES = chise.errs edict.eids kanjivg.eids tsukurimashou.eids
+CLEANFILES = \
+  $(if $(filter yes,@parasite@),$(STANDALONE_QVFG) $(STANDALONE_FPEVCGF)) \
+  chise.errs cjkvi-?.eids edict.eids kanjivg.eids tsukurimashou.eids \
+  widthtab.h
 
 DISTCLEANFILES = \
-  $(if $(VPATH),idsgrep.pdf chise.eids,) _stdint.h aminclude.am
+  _stdint.h aminclude.am \
+  EastAsianWidth.txt UnicodeData.txt
 
 MAINTAINERCLEANFILES = idsgrep.pdf chise.eids
+
+distcleancheck_listfiles = \
+  find . -type f -exec sh -c 'test -f $(srcdir)/$$1 || echo $$1' \
+    sh '{}' ';'
 
 ############################################################################
 
@@ -226,6 +237,10 @@ MAINTAINERCLEANFILES = idsgrep.pdf chise.eids
 idsgrep.pdf: idsgrep.tex mitsuba.cls mitsuba.cfg idsgrep.bib \
   @with_tsuku_build@/otf/TsukurimashouMincho.otf
 	$(AM_V_at)rm -f idsgrep.aux
+	$(AM_V_at)if test '!' -r idsgrep.tex ; then \
+	  cp $(mvp)/idsgrep.tex . ; fi
+	$(AM_V_at)if test '!' -r mitsuba.cls ; then \
+	  cp $(mvp)/mitsuba.cls . ; fi
 	$(AM_V_at)I=1;$(TSU_V_TEXL) \
 	  $(expect_start)'$(XELATEX)' $(mvp)/idsgrep.tex $(expect_end) ; \
 	export BIBINPUTS=$(mvp) ; bibtex idsgrep.aux $(TSU_V_REDIR) ; \
@@ -285,16 +300,20 @@ tsukurimashou.eids: @with_tsuku_build@/txt/tsukurimashou.eids
 # BUILD THE WIDTH TABLE
 
 download:
-	-wget -N -nd \
-	  http://www.unicode.org/Public/UNIDATA/EastAsianWidth.txt
-	-wget -N -nd \
-	  http://www.unicode.org/Public/UNIDATA/UnicodeData.txt
+	-wget -N -nd @UNICODE_URL@UNIDATA/EastAsianWidth.txt
+	-wget -N -nd @UNICODE_URL@UNIDATA/UnicodeData.txt
+
+if COND_DOWNLOAD
+
+EastAsianWidth.txt UnicodeData.txt: download
+
+endif
 
 cook.o: widthtab.h
 
 if COND_ICEMAP
 widthtab.h: widthtab.im $(ICEMAP) EastAsianWidth.txt UnicodeData.txt
-	$(ICEMAP) widthtab.im
+	$(ICEMAP) $<
 
 widthtab.c: widthtab.h
 endif
@@ -348,6 +367,9 @@ m4/tsu_bad_paths.m4: ../m4/tsu_bad_paths.m4
 	$(TSU_V_CP) cp $< $@
 
 m4/tsu_colourise.m4: ../m4/tsu_colourise.m4
+	$(TSU_V_CP) cp $< $@
+
+m4/tsu_fix_makefile.m4: ../m4/tsu_fix_makefile.m4
 	$(TSU_V_CP) cp $< $@
 
 UnicodeData.txt: $(wildcard ../fontanvil/dat/UnicodeData.txt)

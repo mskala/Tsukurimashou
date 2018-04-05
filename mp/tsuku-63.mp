@@ -1,6 +1,6 @@
 %
 % Unicode page 63 (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012, 2013  Matthew Skala
+% Copyright (C) 2011, 2012, 2013, 2017  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -43,6 +43,7 @@ input gradethree.mp;
 input gradetwo.mp;
 input leftrad.mp;
 input radical.mp;
+input rare.mp;
 input toprad.mp;
 
 do_late_includes;
@@ -98,6 +99,14 @@ vardef kanji.grfive.gather =
   build_kanji.level(build_kanji.lr(420,0)
     (kanji.leftrad.hand)
     (kanji.greight.dice));
+  expand_pbox;
+enddef;
+
+vardef kanji.grfive.graft =
+  push_pbox_toexpand("kanji.grfive.graft");
+  build_kanji.level(build_kanji.lr(360,20)
+    (kanji.leftrad.hand)
+    (kanji.rare.concubine));
   expand_pbox;
 enddef;
 
@@ -177,6 +186,12 @@ endtsuglyph;
 % sai/to "gather"
 begintsuglyph("uni63A1",161);
   kanji.grfive.gather;
+  tsu_render;
+endtsuglyph;
+
+% setsu/tsugu "graft"
+begintsuglyph("uni63A5",165);
+  kanji.grfive.graft;
   tsu_render;
 endtsuglyph;
 

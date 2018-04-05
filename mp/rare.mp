@@ -1,6 +1,6 @@
 %
 % Rare kanji needed to build others
-% Copyright (C) 2011, 2012, 2013, 2014, 2016  Matthew Skala
+% Copyright (C) 2011, 2012, 2013, 2014, 2016, 2017  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -41,9 +41,19 @@ vardef kanji.rare.ancient_pig =
   expand_pbox;
 enddef;
 
+vardef kanji.rare.approve =
+  push_pbox_toexpand("kanji.rare.approve");
+  build_kanji.level(build_kanji.tb(420,280)
+    (kanji.radical.tent)
+    (build_kanji.lr(560,30)
+       (kanji.bottomrad.moon)
+       (kanji.rightrad.sword)));
+  expand_pbox;
+enddef;
+
 vardef kanji.rare.art =
   push_pbox_toexpand("kanji.rare.art");
-  build_kanji.level(build_kanji.lr(420,10)
+  build_kanji.level(build_kanji.lr(440,10)
     (build_kanji.sscale(yscaled 0.94 shifted (0,-40))(build_kanji.tb(330,40)
        (kanji.rare.mushroom)
        (kanji.leftrad.earth)))
@@ -72,10 +82,7 @@ vardef kanji.rare.be_methodical =
   build_kanji.level(
     build_kanji.sscale(yscaled 0.8 shifted (0,100))(kanji.radical.tent);
     build_kanji.sscale(yscaled 0.56 shifted (0,-200))
-      (kanji.radical.gmm;
-       push_stroke((383,780)--(383,0),(1.6,1.6)--(1.5,1.5));
-       push_stroke((617,780)--(617,0),(1.6,1.6)--(1.5,1.5));
-       push_stroke((150,410)--(850,410),(1.5,1.5)--(1.5,1.5))));
+      (kanji.radical.alt_bamboo_slips));
   expand_pbox;
 enddef;
 
@@ -160,6 +167,14 @@ vardef kanji.rare.clod_of_earth =
   expand_pbox;
 enddef;
 
+vardef kanji.rare.concubine =
+  push_pbox_toexpand("kanji.rare.concubine");
+  build_kanji.tb(440,-20)
+    (kanji.grone.stand_up)
+    (kanji.grone.woman);
+  expand_pbox;
+enddef;
+
 vardef kanji.rare.crooked_mouth =
   push_pbox_toexpand("kanji.rare.crooked_mouth");
   build_kanji.level(
@@ -240,6 +255,22 @@ vardef kanji.rare.director =
   expand_pbox;
 enddef;
 
+vardef kanji.rare.disobedient =
+  push_pbox_toexpand("kanji.rare.disobedient");
+  build_kanji.level(
+    build_kanji.tb(540,20)
+      (build_kanji.sscale(xyscaled (0.75,1.1) shifted (0,80))
+         (kanji.toprad.sparkle_two);
+       push_stroke((70,40)--(930,40),(1.6,1.6)--(1.6,1.6));
+       set_boserif(0,0,whatever);
+       set_boserif(0,1,9))
+      (build_kanji.cup((210,720),(790,320)));
+    push_stroke((point 0.5 of get_strokep(-3))--
+        (500,380){down}..(430,120)..{curl 1}(180,-100),
+      (1.6,1.6)--(1.55,1.55)--(1.4,1.4)--(0.7,0.7)));
+  expand_pbox;
+enddef;
+
 vardef kanji.rare.dollar =
   push_pbox_toexpand("kanji.rare.dollar");
   push_stroke((140,680)--(800,680)--(800,440),
@@ -281,6 +312,17 @@ vardef kanji.rare.early_death =
   expand_pbox;
 enddef;
 
+vardef kanji.rare.equal =
+  push_pbox_toexpand("kanji.rare.equal");
+  kanji.radical.wrapping;
+  push_stroke((350,500)..tension 1.2..(420,450)..(480,370),
+    (1.1,1.1)--(1.4,1.4)--(1.8,1.8));
+  push_stroke(insert_nodes((700,360)..tension 1.1..
+       (520,170)..{curl 1.2}(280,80))(0.3),
+    (0.9,0.9)--(1.1,1.1)--(1.4,1.4)--(2.2,2.2));
+  expand_pbox;
+enddef;
+
 vardef kanji.rare.extremely =
   push_pbox_toexpand("kanji.rare.extremely");
   build_kanji.level(
@@ -316,11 +358,31 @@ vardef kanji.rare.finally =
   expand_pbox;
 enddef;
 
+vardef kanji.rare.flat =
+  push_pbox_toexpand("kanji.rare.flat");
+  tsu_xform(identity yscaled (630/730))(build_kanji.level
+    (kanji.radical.narrow_flag;
+     build_kanji.sscale(scaled 0.60 shifted (60,-180))
+       (kanji.radical.alt_bamboo_slips)));
+  push_stroke((120,760)--(880,760),(1.6,1.6));
+  set_boserif(0,1,9);
+  set_bosize(0,85);
+  expand_pbox;
+enddef;
+
 vardef kanji.rare.glorious =
   push_pbox_toexpand("kanji.rare.glorious");
   kanji.grfour.non;
   push_stroke((130,-70)--(870,-70),(1.5,1.5)--(1.5,1.5));
   set_boserif(0,1,9);
+  expand_pbox;
+enddef;
+
+vardef kanji.rare.go_around =
+  push_pbox_toexpand("kanji.rare.go_around");
+  build_kanji.level(build_kanji.tb()
+    (kanji.grone.one)
+    (kanji.greight.towel));
   expand_pbox;
 enddef;
 
@@ -337,6 +399,14 @@ vardef kanji.rare.history_inside =
   build_kanji.tb(420,80)
     (kanji.grone.grove)
     (kanji.grtwo.cease);
+  expand_pbox;
+enddef;
+
+vardef kanji.rare.huai_river =
+  push_pbox_toexpand("kanji.rare.huai_river");
+  build_kanji.lr(300,-20)
+    (kanji.leftrad.water)
+    (kanji.radical.old_bird);
   expand_pbox;
 enddef;
 
@@ -576,6 +646,17 @@ vardef kanji.rare.penetrate =
   expand_pbox;
 enddef;
 
+vardef kanji.rare.potters_clay =
+  push_pbox_toexpand("kanji.rare.potters_clay");
+  build_kanji.level(
+    build_kanji.lr(460,80)
+      (kanji.grone.noise;
+       obstacktype[find_whatever(otstroke,-3)]:=otnull)
+      (kanji.radical.tasselled_spear);
+      replace_strokep(-3)((70,470)--(910,470)));
+  expand_pbox;
+enddef;
+
 vardef kanji.rare.punish =
   push_pbox_toexpand("kanji.rare.punish");
   build_kanji.level(build_kanji.lr(420,0)
@@ -600,6 +681,15 @@ vardef kanji.rare.sacred =
   build_kanji.level(build_kanji.tb(380,100)
     (kanji.greight.otoh)
     (kanji.grone.earth));
+  expand_pbox;
+enddef;
+
+vardef kanji.rare.secure =
+  push_pbox_toexpand("kanji.rare.secure");
+  build_kanji.level(build_kanji.lr(380,140)
+    (tsu_xform(identity shifted (0,50))(build_kanji.lift_skirt(400,250)
+       (kanji.grtwo.craft)))
+    (kanji.greight.mediocre));
   expand_pbox;
 enddef;
 
@@ -634,6 +724,27 @@ vardef kanji.rare.spiced_liqueur =
   expand_pbox;
 enddef;
 
+vardef kanji.rare.stalk =
+  push_pbox_toexpand("kanji.rare.stalk");
+  build_kanji.level(build_kanji.tb(570,60)
+    (kanji.toprad.stand_up;
+     pop_stroke)
+    (kanji.bottomrad.stalk));
+  expand_pbox;
+enddef;
+
+vardef kanji.rare.steep =
+  push_pbox_toexpand("kanji.rare.steep");
+  build_kanji.level(
+    kanji.radical.narrow_flag;
+    build_kanji.sscale(xyscaled (0.73,0.67) shifted (40,-150))
+      (build_kanji.tricluster(0.7)
+         (kanji.grone.child)
+         (build_kanji.sscale(scaled 0.9)(kanji.grone.child))
+         (build_kanji.sscale(scaled 0.9)(kanji.grone.child))));
+  expand_pbox;
+enddef;
+
 vardef kanji.rare.sun =
   push_pbox_toexpand("kanji.rare.sun");
   build_kanji.tb(510,-30)
@@ -645,19 +756,18 @@ vardef kanji.rare.sun =
   expand_pbox;
 enddef;
 
-vardef kanji.rare.stalk =
-  push_pbox_toexpand("kanji.rare.stalk");
-  build_kanji.level(build_kanji.tb(570,60)
-    (kanji.toprad.stand_up;
-     pop_stroke)
-    (kanji.bottomrad.stalk));
-  expand_pbox;
-enddef;
-
 vardef kanji.rare.swim =
   push_pbox_toexpand("kanji.rare.swim");
   build_kanji.level(build_kanji.flag_enclose(0.72,0.7)
     (kanji.grone.child));
+  expand_pbox;
+enddef;
+
+vardef kanji.rare.ceremonial_tea_towel =
+  push_pbox_toexpand("kanji.rare.ceremonial_tea_towel");
+  build_kanji.level(build_kanji.tb(420,10)
+    (kanji.grone.white)
+    (kanji.greight.towel));
   expand_pbox;
 enddef;
 
@@ -696,6 +806,22 @@ vardef kanji.rare.the_same =
   expand_pbox;
 enddef;
 
+vardef kanji.rare.to_calculate =
+  push_pbox_toexpand("kanji.rare.to_calculate");
+  build_kanji.tb(650,-30)
+    (kanji.toprad.grass)
+    (kanji.greight.ship_counter);
+  expand_pbox;
+enddef;
+
+vardef kanji.rare.tradesman =
+  push_pbox_toexpand("kanji.rare.tradesman");
+  build_kanji.level(build_kanji.tb(560,-30)
+    (kanji.toprad.ticket)
+    (kanji.grone.shell));
+  expand_pbox;
+enddef;
+
 vardef kanji.rare.uncultivated =
   push_pbox_toexpand("kanji.rare.uncultivated");
   build_kanji.level(build_kanji.tb(650,70)
@@ -718,16 +844,7 @@ vardef kanji.rare.walled_road =
   set_boserif(0,1,4);
   push_stroke((320,660)..tension 1.2..(490,590)..(520,560),
     (1.1,1.1)--(1.5,1.5)--(1.8,1.8));
-  push_stroke((170,-40)--(170,530)--(830,530),
-    (1.5,1.5)--(1.6,1.6)--(1.6,1.6));
-  build_kanji.add_jtail(0);
-  set_botip(0,1,1);
-  set_botip(0,2,1);
-  set_boserif(0,1,4);
-  set_boserif(0,2,4);
-  push_stroke((500,530)--(500,-20),(1.6,1.6)--(1.5,1.5));
-  push_stroke((170,370)--(830,370),(1.5,1.5)--(1.5,1.5));
-  push_stroke((170,210)--(830,210),(1.5,1.5)--(1.5,1.5));
+  build_kanji.sscale(yscaled 0.63 shifted (0,-140))(kanji.bottomrad.job);
   expand_pbox;
 enddef;
 
@@ -744,5 +861,18 @@ vardef kanji.rare.yin =
   build_kanji.tb(380,100)
     (kanji.grtwo.now)
     (kanji.grnine.declaim);
+  expand_pbox;
+enddef;
+
+vardef kanji.rare.yu_the_great =
+  push_pbox_toexpand("kanji.rare.yu_the_great");
+  build_kanji.sscale(xyscaled (0.85,0.95) shifted (0,100))
+    (build_kanji.add_beret(kanji.grone.bug));
+  replace_strokep(-5)(oldp shifted (-500,0) xscaled 0.7 shifted (500,0));
+  replace_strokep(-3)(oldp shifted (-500,0) xscaled 0.7 shifted (500,0));
+  replace_strokep(-2)(oldp shifted (0,-500) yscaled 0.8 shifted (0,580));
+  replace_strokep(-1)(oldp shifted (0,-500) yscaled 0.8 shifted (0,580));
+  build_kanji.sscale(xyscaled (0.95,0.50) shifted (0,-220))
+    (kanji.radical.gmm);
   expand_pbox;
 enddef;

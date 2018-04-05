@@ -1,6 +1,6 @@
 %
 % Unicode page 82 (Kanji) for Tsukurimashou
-% Copyright (C) 2011, 2012, 2013, 2016  Matthew Skala
+% Copyright (C) 2011, 2012, 2013, 2016, 2017  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -89,9 +89,83 @@ enddef;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vardef kanji.grfive.entertainment =
+  push_pbox_toexpand("kanji.grfive.entertainment");
+  build_kanji.tb(120,20)(
+    push_stroke((320,810)..tension 1.2..(220,750)..{curl 1}(100,700)
+        --(100,600)--(100,0),
+      (1.6,1.6)--(1.6,1.6)--(1.6,1.6)--(1.5,1.5));
+    set_botip(0,2,1);
+    set_boserif(0,0,10);
+    push_stroke((100,700)--(100,0),(1.6,1.6)--(1.5,1.5));
+    set_boserif(0,0,10);
+    push_stroke((100,480)--(280,480),(1.5,1.5)--(1.5,1.5));
+    set_boserif(0,1,9);
+    push_stroke((100,240)--(280,240),(1.5,1.5)--(1.5,1.5));
+    set_boserif(0,1,9);
+    push_stroke((350,0)--(350,720)--(650,720)--(650,0),
+      (1.5,1.5)--(1.6,1.6)--(1.6,1.6)--(1.5,1.5));
+    set_boserif(0,1,4);
+    set_boserif(0,2,4);
+    set_botip(0,1,1);
+    set_botip(0,2,1);
+    push_stroke((430,580)--(570,580),(1.5,1.5)--(1.5,1.5));
+    set_boserif(0,1,9);
+    build_kanji.box((430,460),(570,240));
+    push_stroke((700,720)--(900,720)--(900,0),
+      (1.6,1.6)--(1.5,1.5)--(1.5,1.5));
+    set_boserif(0,1,4);
+    set_botip(0,1,1);
+    push_stroke((700+30*mincho,480)--(900,480),(1.5,1.5)--(1.5,1.5));
+    push_stroke((700+30*mincho,240)--(900,240),(1.5,1.5)--(1.5,1.5));
+    push_stroke((40,0)--(960,0),(1.6,1.6)--(1.6,1.6));
+    set_boserif(0,1,9);
+    for i=-11 upto 0: set_bosize(i,80); endfor;
+  )(kanji.radical.eight);
+  expand_pbox;
+enddef;
+
+vardef kanji.grfive.house =
+  push_pbox_toexpand("kanji.grfive.house");
+  build_kanji.level(
+    tsu_xform(identity yscaled 0.78 shifted (0,200))
+      (kanji.radical.tent);
+    pop_stroke;
+    build_kanji.sscale(xyscaled (0.72,0.8) shifted (0,-90))
+      (kanji.greight.good_luck);
+    begingroup
+      save myxf;
+      transform myxf;
+      (point 0.5 of get_strokep(-2)) transformed myxf=
+        (point 0.5 of get_strokep(-3));
+      (point 0.5 of get_strokep(-3)) transformed myxf=
+        (point 0.5 of get_strokep(-2));
+      ((100,0)+point 0.5 of get_strokep(-3)) transformed myxf=
+        ((100,0)+point 0.5 of get_strokep(-2));
+      replace_strokep(-3)(oldp transformed myxf);
+      replace_strokep(-2)(oldp transformed myxf);
+    endgroup;
+    );
+  expand_pbox;
+enddef;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% kou/oko "entertainment"
+begintsuglyph("uni8208",8);
+  kanji.grfive.entertainment;
+  tsu_render;
+endtsuglyph;
+
 % zetsu/shita "tongue"
 begintsuglyph("uni820C",12);
   kanji.grfive.tongue;
+  tsu_render;
+endtsuglyph;
+
+% ja/mado "house"
+begintsuglyph("uni820E",14);
+  kanji.grfive.house;
   tsu_render;
 endtsuglyph;
 

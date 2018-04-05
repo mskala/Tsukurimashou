@@ -192,9 +192,11 @@ AM_INIT_AUTOMAKE([foreign color-tests dist-zip no-dist-gzip
   parallel-tests silent-rules])
 AC_CONFIG_SRCDIR([msk-ocra.mp])
 AC_CONFIG_MACRO_DIR([m4])
-AC_REVISION([$Id: configure.ac 4474 2015-12-03 12:33:00Z mskala $])
+AC_REVISION([$Id: configure.ac 5795 2017-11-21 21:32:34Z mskala $])
 AC_COPYRIGHT([public domain])
 AC_SUBST([release_date],["March 7, 2013"])
+# this must be early so it will happen before depfiles
+TSU_FIX_MAKEFILE
 AM_SILENT_RULES
 #
 ############################################################################
@@ -236,21 +238,6 @@ AS_IF([test "x$XELATEX" = "x"],
 #
 ############################################################################
 #
-# Check for parasite build
-#
-AC_MSG_CHECKING([whether we are building as a parasite])
-AM_CONDITIONAL([COND_PARASITE],
-  [grep Tsukurimashou ../Makefile > /dev/null 2> /dev/null])
-AM_COND_IF([COND_PARASITE],
-  [AC_MSG_RESULT([yes])
-   T1ASM=../t1asm/t1asm],
-  [AC_MSG_RESULT([no])
-   AC_PATH_PROG([T1ASM],[t1asm])
-  ])
-AC_SUBST([T1ASM])
-#
-############################################################################
-#
 # Checks for system services
 #
 AC_SYS_LONG_FILE_NAMES
@@ -265,14 +252,22 @@ AX_AM_JOBSERVER
 AC_ARG_ENABLE([colour-build],
   [AS_HELP_STRING([--disable-colour-build],
     [turn off ANSI colour in build scripts])],
-    [],
-    [enable_colour_build=yes])
+  [],
+  [enable_colour_build=yes])
 AC_ARG_ENABLE([color-build],[dnl],[],[enable_color_build=yes])
+# ]
+#
 AC_ARG_ENABLE([docs],
   [AS_HELP_STRING([--disable-docs],
     [turn off PDF documentation])],
-    [],
-    [enable_docs=yes])
+  [],
+  [enable_docs=yes])
+#
+AC_ARG_ENABLE([parasite],
+  [AS_HELP_STRING([--enable-parasite=[yes|no|auto]],
+    [build as a parasite [auto]])],
+  [],
+  [enable_parasite=auto])
 #
 # Process user options
 #
@@ -304,17 +299,29 @@ AC_MSG_RESULT([$ae_arg_okay])
 #
 ############################################################################
 #
+# Check for parasite build
+#
+AC_MSG_CHECKING([whether we are building as a parasite])
+AS_IF([test "x$enable_parasite" = "xauto"],
+  [AS_IF([grep Tsukurimashou ../Makefile > /dev/null 2> /dev/null],
+    [enable_parasite=yes],
+    [enable_parasite=no])])
+AC_MSG_RESULT([$enable_parasite])
+AM_CONDITIONAL([COND_PARASITE],[test "x$enable_parasite" = "xyes"])
+AM_COND_IF([COND_PARASITE],
+  [T1ASM=../t1asm/t1asm
+   parasite=yes],
+  [AC_PATH_PROG([T1ASM],[t1asm])
+   parasite=no])
+AC_SUBST([T1ASM])
+AC_SUBST([parasite])
+#
+############################################################################
+#
 # Generate output
 #
 AC_SUBST([andt],[])
 AC_CONFIG_FILES([Makefile])
-AC_CONFIG_COMMANDS([fix-makefile],
-  ["$PERL" -i -pe \
-'s#\t-\@?(test -z.* || )?rm -(r?)f (.*)#'\
-'\t\$(TSU_V_RM) '"'"'\3'"'"' \$(TSU_V_CHOPPER)\n'\
-'\t-\$(A''M_V_at)\1rm -\2f \3#;' \
-   Makefile],
-  [PERL=$PERL])
 TSU_BAD_PATHS
 AC_OUTPUT
 #
@@ -370,3 +377,6 @@ AS_IF([test "x$has_bad_paths" = "xyes"],
    AS_ECHO(["is quite likely to fail.  It would be better to eliminate all illegal"])
    AS_ECHO(["characters from pathnames before continuing."])
    ])
+AS_IF([test "x$parasite" = "xyes"],
+  [TSU_COLOURISE([Parasite build enabled.],[6])
+   AS_ECHO([])])

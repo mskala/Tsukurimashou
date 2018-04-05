@@ -1,6 +1,6 @@
 %
 % Grade Five kanji used on more than one page
-% Copyright (C) 2011, 2012, 2013, 2014, 2016  Matthew Skala
+% Copyright (C) 2011, 2012, 2013, 2014, 2016, 2017  Matthew Skala
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -362,6 +362,17 @@ vardef kanji.grfive.surplus =
   expand_pbox;
 enddef;
 
+vardef kanji.grfive.system =
+  push_pbox_toexpand("kanji.grfive.system");
+  build_kanji.level(build_kanji.lr(560,0)
+    (build_kanji.tb(300,40)
+       (kanji.grtwo.cow)
+       (build_kanji.sscale(xscaled 0.92 shifted (0,100))(kanji.radical.gmm));
+     replace_strokep(-2)(point 0 of oldp--(xpart point 1 of oldp,-60)))
+    (kanji.rightrad.sword));
+  expand_pbox;
+enddef;
+
 vardef kanji.grfive.talent =
   push_pbox_toexpand("kanji.grfive.talent");
   build_kanji.level(build_kanji.lr(520,0)
@@ -371,6 +382,23 @@ vardef kanji.grfive.talent =
     (build_kanji.tb(420,-10)
        (kanji.radical.spoon)
        (kanji.radical.spoon)));
+  expand_pbox;
+enddef;
+
+vardef kanji.grfive.ticket =
+  push_pbox_toexpand("kanji.grfive.ticket");
+  build_kanji.level(build_kanji.tb(320,100)
+       (build_kanji.sscale(yscaled 0.4 shifted (0,230))
+          (kanji.toprad.sparkle_two);
+        kanji.grone.person;
+        build_kanji.sscale(xyscaled (1,0.37) shifted (0,-40))
+          (kanji.grone.two);
+        replace_strokep(-2)
+          (subpath (xpart (oldp intersectiontimes get_strokep(-1)),infinity)
+           of oldp))
+       (build_kanji.sscale(xscaled 0.55 shifted (10,20))
+          (kanji.grtwo.sword);
+        replace_strokep(-1)(oldp slanted 0.05 shifted (-70,0))));
   expand_pbox;
 enddef;
 
