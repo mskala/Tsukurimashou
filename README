@@ -1,11 +1,10 @@
-This copy of the Tsukurimashou source code is being checked into Github to
-increase its visibility, and I will try to keep it up to date, but the
-official location for Tsukurimashou development is on Sourceforge.JP:
+It is not planned for there to be further updates to this Github-based copy
+of Tsukurimashou.  The main home for Tsukurimashou development is here:
 
    http://osdn.jp/projects/tsukurimashou/
 
 Submit all bug reports, support requests, patches, and other items related
-to Tsukurimashou development through Sourceforge.JP, not through Github.
+to Tsukurimashou development through OSDN, not through Github.
 
 QUICK START FROM SOURCE CONTROL CHECKOUT
 
@@ -19,4 +18,3 @@ character databases.
 
 Matthew Skala
 mskala@ansuz.sooke.bc.ca
-November 9, 2015
